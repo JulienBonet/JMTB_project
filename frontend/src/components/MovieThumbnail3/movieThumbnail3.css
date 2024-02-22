@@ -1,0 +1,42 @@
+.thumbail_container3 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 15rem;
+  height: 16rem;
+  gap: 15px;
+  margin: min(10px);
+  margin-bottom: 1rem;
+  cursor: pointer;
+}
+.thumbail_cover3 {
+  height: 12rem;
+}
+.thumbail_title3 {
+  font-family: "Roboto", sans-serif;
+  font-weight: bold;
+  color: var(--color-primary);
+  text-align: center;
+}
+.thumbail_title3:hover {
+  color: var(--color-secondary);
+}
+.thumbail_year3 {
+  font-family: "Roboto", sans-serif;
+  font-weight: 600;
+}
+.Movie_Modal {
+  display: "flex";
+  justify-content: "center";
+  align-items: "center";
+  overflow-y: auto;
+}
+.modal_closed_btn {
+  text-align: right;
+  font-family: "Courier New", Courier, monospace;
+  font-weight: 600;
+  color: var(--color-secondary);
+  cursor: pointer;
+  padding: 1rem 1rem 1rem 0;
+  margin: 0 5% 0 0;
+}

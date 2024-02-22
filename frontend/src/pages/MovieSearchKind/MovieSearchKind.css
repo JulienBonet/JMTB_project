@@ -1,0 +1,104 @@
+.search_kind_contents {
+}
+
+.search_kind_position {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 6rem;
+  overflow: auto;
+}
+
+.search_kind_position::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.search_kind_container {
+  display: flex;
+  justify-content: flex-start;
+}
+.Kind_Choice {
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 13px;
+  padding: 10px;
+}
+
+.MuiButton-root.btn_Kind_Choice:hover {
+  background-color: var(--color-third);
+  color: var(--color-background);
+}
+
+.Kinds_btn_rows_pagination {
+  display: flex;
+  justify-content: center;
+}
+.pagination_content {
+  border: dashed 1px var(--color-secondary);
+  border-top: 0;
+  border-radius: 0 0 10px 10px;
+}
+.MuiPaginationItem-root {
+  color: var(--color-third) !important;
+}
+.kinds_bloc_position {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 43rem;
+}
+.kinds_bear_position {
+  display: flex;
+  justify-content: center;
+}
+.kinds_bear_container {
+  display: flex;
+  justify-content: space-evenly;
+  border: solid 1px white;
+  border-radius: 25px;
+  padding: 2rem 0;
+  width: 90%;
+}
+.kinds_pitch_container {
+  display: flex;
+  align-items: center;
+  font-size: 3rem;
+  width: 59%;
+}
+.kinds_pitch {
+  font-family: "Nova Square", sans-serif;
+  text-align: center;
+  line-height: normal;
+  color: var(--color-primary);
+}
+.kinds_bear_illustr {
+  width: 32%;
+  border-radius: 25px;
+}
+.MovieThumbnails_Kind_container {
+  display: flex;
+  justify-content: center;
+  border: solid 1px white;
+  border-radius: 25px;
+  margin-top: 1rem;
+  padding: 1.5rem 0;
+  width: 95%;
+  height: 568px;
+  overflow: auto;
+}
+
+.MovieThumbnails_kind {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  width: 90%;
+}
+.btn_sort_container_kind {
+  width: 83%;
+  display: flex;
+  justify-content: space-between;
+}

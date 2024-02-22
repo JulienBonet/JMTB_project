@@ -1,0 +1,6 @@
+.Footer {
+  background-color: var(--color-background2);
+  height: 2.4rem;
+  border-top: solid 1px var(--color-secondary);
+  border-radius: 20px 20px 0 0;
+}

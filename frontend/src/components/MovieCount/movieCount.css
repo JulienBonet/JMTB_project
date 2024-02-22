@@ -1,0 +1,21 @@
+.Amount_info_container {
+  display: flex;
+  justify-content: center;
+}
+
+.Amount_info {
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
+  font-size: 1rem;
+  text-align: center;
+  background-color: var(--color-background2);
+  color: var(--color-primary);
+  padding: 10px 0;
+  border-top: solid 1px var(--color-secondary);
+  border-radius: 15px 15px 0 0;
+  width: min(13%);
+}
+
+.whiteString {
+  color: whitesmoke;
+}
