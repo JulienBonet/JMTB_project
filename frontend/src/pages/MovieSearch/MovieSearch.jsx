@@ -1,14 +1,18 @@
 import { useState, useEffect } from "react";
+import { useLoaderData } from "react-router-dom";
 import "./movieSearch.css";
 import "../../assets/css/scrollButton.css";
 import MovieThumbnail from "../../components/MovieThumbnail/MovieThumbnail";
 import MovieCount from "../../components/MovieCount/MovieCount";
-import data from "../../data/data.json";
+// import data from "../../data/data.json";
 import BearSearch from "../../assets/ico/search_Bear_02.jpeg";
 
 function MovieSearch() {
   const [search, setSearch] = useState("");
   const [showButton, setShowButton] = useState(false);
+
+  // database back//
+  const data = useLoaderData();
 
   const handleTyping = (e) => {
     let { value } = e.target;
