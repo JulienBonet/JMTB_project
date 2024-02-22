@@ -1,28 +1,22 @@
+/* eslint-disable camelcase */
+/* eslint-disable react/prop-types */
 import { useState } from "react";
 import PropTypes from "prop-types";
 import "./movieCard.css";
 import ReactPlayer from "react-player";
-import Arrow from "../../assets/ico/outline_play_arrow_white_24dp.png";
 
 function MovieCard({ movie }) {
   const {
     title,
-    title2,
+    altTitle,
     year,
-    country,
-    genre,
     duration,
-    director,
-    screenwriter,
-    music,
-    studio,
-    casting,
+    cover,
     trailer,
     story,
-    support,
     location,
-    cover_location,
-    file_size,
+    videoSupport,
+    fileSize,
   } = movie;
 
   const FichierMultimedia = "Fichier multimédia";
@@ -40,48 +34,48 @@ function MovieCard({ movie }) {
           <div className="MovieCard_Cover_Position">
             <img
               className="MovieCard_cover"
-              src={cover_location}
+              src={cover}
               alt={`Cover ${title}`}
             />
           </div>
           <div className="infos_bloc_1">
             <p className="MovieCard_title">{title}</p>
-            <div className="divider"></div>
+            <div className="divider" />
             {isTrailerVisible ? (
               <div className="MovieCard_trailer">
                 <ReactPlayer url={trailer} className="video_player" />
               </div>
             ) : (
               <>
-                <p className="MovieCard_info">{title2}</p>
+                <p className="MovieCard_info">{altTitle}</p>
                 <p className="MovieCard_info">
-                  <span className="paraph_bolder">Genre:</span> {genre}
+                  {/* <span className="paraph_bolder">Genre:</span> {genres} */}
                 </p>
                 <p className="MovieCard_info">
                   <span className="paraph_bolder">Année:</span> {year}
                 </p>
                 <p className="MovieCard_info">
-                  <span className="paraph_bolder">Pays:</span> {country}
+                  {/* <span className="paraph_bolder">Pays:</span> {countries} */}
                 </p>
                 <p className="MovieCard_info">
                   <span className="paraph_bolder">Durée:</span> {duration}mn
                 </p>
-                <div className="divider_dashed"></div>
+                <div className="divider_dashed" />
                 {/* Autres détails du film */}
-                {director && (
+                {/* {director_name && (
                   <p className="MovieCard_info">
                     <span className="paraph_bolder paraph_color_2">
                       Réalisateur:
                     </span>{" "}
-                    {director}
+                    {director_name}
                   </p>
                 )}
-                {screenwriter && (
+                {screenwriters && (
                   <p className="MovieCard_info">
                     <span className="paraph_bolder paraph_color_2">
                       Scénariste:
                     </span>{" "}
-                    {screenwriter}
+                    {screenwriters}
                   </p>
                 )}
                 {music && (
@@ -92,23 +86,23 @@ function MovieCard({ movie }) {
                     {music}
                   </p>
                 )}
-                {studio && (
+                {studios && (
                   <p className="MovieCard_info">
                     <span className="paraph_bolder paraph_color_2">
                       Studio:
                     </span>{" "}
-                    {studio}
+                    {studios}
                   </p>
                 )}
-                {casting && (
+                {cast && (
                   <p className="MovieCard_info MovieCard_casting paraph_height">
                     <span className="paraph_bolder paraph_color_2">
                       Casting:
                     </span>{" "}
-                    {casting}
+                    {cast}
                   </p>
-                )}
-                <div className="divider"></div>
+                )} */}
+                <div className="divider" />
               </>
             )}
           </div>
@@ -116,26 +110,26 @@ function MovieCard({ movie }) {
 
         <section className="MC_line2">
           {isTrailerVisible ? (
-            <div className="MovieCard_trailer"></div>
+            <div className="MovieCard_trailer" />
           ) : (
             <>
               <p className="MovieCard_info paraph_bolder">Résumé:</p>
               <p className="MovieCard_info MovieCard_story  paraph_height">
                 {story}
               </p>
-              <div className="divider_dashed"></div>
+              <div className="divider_dashed" />
               <p className="MovieCard_info">
-                <span className="paraph_bolder">Support:</span> {support}
+                <span className="paraph_bolder">Support:</span> {videoSupport}
               </p>
 
-              {support === FichierMultimedia && (
+              {videoSupport === FichierMultimedia && (
                 <>
                   <p className="MovieCard_info paraph_height">
                     <span className="paraph_bolder">Emplacement:</span>{" "}
                     {location}
                   </p>
                   <p className="MovieCard_info">
-                    <span className="paraph_bolder">Size:</span> {file_size}
+                    <span className="paraph_bolder">Size:</span> {fileSize}
                   </p>
                 </>
               )}
@@ -144,7 +138,7 @@ function MovieCard({ movie }) {
 
           {trailer && (
             <div className="MovieCard_trailer">
-              <div className="divider_dashed divider_trailer"></div>
+              <div className="divider_dashed divider_trailer" />
               <div className="Toggle_video_player" onClick={toggleTrailerVideo}>
                 <p className="MovieCard_info Toggle_video_btn">
                   {isTrailerVisible
