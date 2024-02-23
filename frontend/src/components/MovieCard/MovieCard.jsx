@@ -1,12 +1,16 @@
 /* eslint-disable camelcase */
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import "./movieCard.css";
 import ReactPlayer from "react-player";
 
 function MovieCard({ movie }) {
+  // movies data
+
+  const [movieData, setMovieData] = useState([]);
   const {
+    id,
     title,
     altTitle,
     year,
@@ -18,6 +22,32 @@ function MovieCard({ movie }) {
     videoSupport,
     fileSize,
   } = movie;
+
+  const {
+    genres,
+    countries,
+    director_name,
+    screenwriters,
+    music,
+    studios,
+    cast,
+  } = movieData;
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movies/${id}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setMovieData(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  }, [id]);
 
   const FichierMultimedia = "Fichier multimédia";
 
@@ -49,20 +79,20 @@ function MovieCard({ movie }) {
               <>
                 <p className="MovieCard_info">{altTitle}</p>
                 <p className="MovieCard_info">
-                  {/* <span className="paraph_bolder">Genre:</span> {genres} */}
+                  <span className="paraph_bolder">Genre:</span> {genres}
                 </p>
                 <p className="MovieCard_info">
                   <span className="paraph_bolder">Année:</span> {year}
                 </p>
                 <p className="MovieCard_info">
-                  {/* <span className="paraph_bolder">Pays:</span> {countries} */}
+                  <span className="paraph_bolder">Pays:</span> {countries}
                 </p>
                 <p className="MovieCard_info">
                   <span className="paraph_bolder">Durée:</span> {duration}mn
                 </p>
                 <div className="divider_dashed" />
                 {/* Autres détails du film */}
-                {/* {director_name && (
+                {director_name && (
                   <p className="MovieCard_info">
                     <span className="paraph_bolder paraph_color_2">
                       Réalisateur:
@@ -101,7 +131,7 @@ function MovieCard({ movie }) {
                     </span>{" "}
                     {cast}
                   </p>
-                )} */}
+                )}
                 <div className="divider" />
               </>
             )}

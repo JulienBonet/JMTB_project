@@ -10,9 +10,76 @@ import BearSearch from "../../assets/ico/search_Bear_02.jpeg";
 function MovieSearch() {
   const [search, setSearch] = useState("");
   const [showButton, setShowButton] = useState(false);
+  const [sortOrderA, setSortOrderA] = useState("asc");
+  const [sortOrderY, setSortOrderY] = useState("desc");
 
   // database back//
-  const data = useLoaderData();
+  const initialData = useLoaderData();
+  const [data, setData] = useState(initialData);
+
+  const movieSortedA = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/movies/sorted/0`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const newData = await response.json();
+      setData(newData);
+      setSortOrderA("asc");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const movieSortedZ = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/movies/sorted/1`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const newData = await response.json();
+      setData(newData);
+      setSortOrderA("desc");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const movieSortedYear = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/movies/sorted/2`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const newData = await response.json();
+      setData(newData);
+      setSortOrderY("asc");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const movieSortedYearDesc = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/movies/sorted/3`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const newData = await response.json();
+      setData(newData);
+      setSortOrderY("desc");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   const handleTyping = (e) => {
     let { value } = e.target;
@@ -69,6 +136,16 @@ function MovieSearch() {
               className="search_bar"
             />
           </div>
+          {/* <button onClick={sortOrderA === "asc" ? movieSortedZ : movieSortedA}>
+            ALPHABETIK
+          </button> */}
+          <button
+            onClick={
+              sortOrderY === "asc" ? movieSortedYearDesc : movieSortedYear
+            }
+          >
+            YEARS
+          </button>
         </section>
       </section>
       <div className="dashed_secondary_bar" />
