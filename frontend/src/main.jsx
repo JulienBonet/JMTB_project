@@ -30,6 +30,9 @@ const router = createBrowserRouter([
       {
         path: "/movie_kind",
         element: <MovieSearchKind />,
+        loader: () => {
+          return fetch(`${import.meta.env.VITE_BACKEND_URL}/api/kinds`);
+        },
       },
       {
         path: "/movie_directors",

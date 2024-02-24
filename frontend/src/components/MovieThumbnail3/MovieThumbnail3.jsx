@@ -6,7 +6,7 @@ import "./movieThumbnail3.css";
 import MovieCard from "../MovieCard/MovieCard";
 
 function MovieThumbnail({ data }) {
-  const { title, year, cover_location, ID_IMDb } = data;
+  const { title, year, cover, id } = data;
 
   const [selectedMovie, setSelectedMovie] = useState(null);
 
@@ -27,12 +27,8 @@ function MovieThumbnail({ data }) {
 
   return (
     <>
-      <div className="thumbail_container3" key={ID_IMDb} onClick={openModal}>
-        <img
-          className="thumbail_cover3"
-          src={cover_location}
-          alt={`Cover ${title}`}
-        />
+      <div className="thumbail_container3" key={id} onClick={openModal}>
+        <img className="thumbail_cover3" src={cover} alt={`Cover ${title}`} />
         <p className="thumbail_title3">
           {title} <span className="thumbail_year3">({year})</span>
         </p>

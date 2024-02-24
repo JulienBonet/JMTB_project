@@ -4,7 +4,6 @@ import "./movieSearch.css";
 import "../../assets/css/scrollButton.css";
 import MovieThumbnail from "../../components/MovieThumbnail/MovieThumbnail";
 import MovieCount from "../../components/MovieCount/MovieCount";
-// import data from "../../data/data.json";
 import BearSearch from "../../assets/ico/search_Bear_02.jpeg";
 
 function MovieSearch() {
@@ -140,6 +139,7 @@ function MovieSearch() {
             ALPHABETIK
           </button> */}
           <button
+            type="button"
             onClick={
               sortOrderY === "asc" ? movieSortedYearDesc : movieSortedYear
             }

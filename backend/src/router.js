@@ -8,9 +8,11 @@ const router = express.Router();
 
 // Import routes here
 const moviesRouter = require("./routes/moviesRoute");
+const kindsRouter = require("./routes/kindsRoute");
 
 // Apply routes
 router.use(moviesRouter);
+router.use(kindsRouter);
 
 /* ************************************************************************* */
 
