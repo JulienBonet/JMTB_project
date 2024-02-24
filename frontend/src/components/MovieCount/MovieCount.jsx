@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 import "./movieCount.css";
 
 function MovieCount({ movieAmount }) {
@@ -9,5 +10,10 @@ function MovieCount({ movieAmount }) {
     </section>
   );
 }
+
+// Validation des types des props
+MovieCount.propTypes = {
+  movieAmount: PropTypes.number.isRequired,
+};
 
 export default MovieCount;

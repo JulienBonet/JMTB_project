@@ -6,18 +6,16 @@ import Button from "@mui/material/Button";
 import "./movieDirectors.css";
 import "../../assets/css/common_elements.css";
 import "../../assets/css/scrollButton.css";
-// import data from "../../data/data.json";
 import MovieCount from "../../components/MovieCount/MovieCount";
 import MovieThumbnail from "../../components/MovieThumbnail/MovieThumbnail";
 import DirectorBear from "../../assets/ico/director_bear_01.jpeg";
 
 function MovieDirectors() {
+  // DATAS
   const directorsData = useLoaderData();
-  const [selectedDirector, setSelectedDirector] = useState("");
   const [movies, setMovies] = useState([]);
+  const [selectedDirector, setSelectedDirector] = useState("");
   const [search, setSearch] = useState("");
-
-  console.info(movies);
 
   useEffect(() => {
     fetch(
@@ -39,10 +37,12 @@ function MovieDirectors() {
       });
   }, [selectedDirector]);
 
+  // SELECT DIRECTOR
   const handleDirectorClick = (director) => {
     setSelectedDirector(director);
   };
 
+  // SEARCH BAR
   const handleTyping = (e) => {
     let { value } = e.target;
     value = value.replace(/-/g, "").toLowerCase();
@@ -64,6 +64,7 @@ function MovieDirectors() {
   // AFFICHER LE NOMBRE DE FILMS
   const movieAmount = movies.length;
 
+  // STYLE MUI
   const theme = createTheme({
     palette: {
       dir_alphabet_Nav: {
