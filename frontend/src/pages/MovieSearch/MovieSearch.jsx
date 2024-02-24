@@ -1,14 +1,106 @@
 import { useState, useEffect } from "react";
+import { useLoaderData } from "react-router-dom";
 import "./movieSearch.css";
 import "../../assets/css/scrollButton.css";
 import MovieThumbnail from "../../components/MovieThumbnail/MovieThumbnail";
 import MovieCount from "../../components/MovieCount/MovieCount";
-import data from "../../data/data.json";
 import BearSearch from "../../assets/ico/search_Bear_02.jpeg";
 
 function MovieSearch() {
   const [search, setSearch] = useState("");
   const [showButton, setShowButton] = useState(false);
+  const [sortOrderA, setSortOrderA] = useState("asc");
+  const [sortOrderY, setSortOrderY] = useState("desc");
+  const [allMoviesClicked, setAllMoviesClicked] = useState(false);
+
+  // database back//
+  const initialData = useLoaderData();
+  const [data, setData] = useState(initialData);
+
+  const allMovies = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/movies`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const newData = await response.json();
+      if (Array.isArray(newData)) {
+        setData(newData);
+        setSearch("");
+        setAllMoviesClicked(true);
+      } else {
+        console.error("Invalid data format received");
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const movieSortedA = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/movies/sorted/0`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const newData = await response.json();
+      setData(newData);
+      setSortOrderA("asc");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const movieSortedZ = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/movies/sorted/1`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const newData = await response.json();
+      setData(newData);
+      setSortOrderA("desc");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const movieSortedYear = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/movies/sorted/2`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const newData = await response.json();
+      setData(newData);
+      setSortOrderY("asc");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  const movieSortedYearDesc = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/movies/sorted/3`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const newData = await response.json();
+      setData(newData);
+      setSortOrderY("desc");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   const handleTyping = (e) => {
     let { value } = e.target;
@@ -65,12 +157,29 @@ function MovieSearch() {
               className="search_bar"
             />
           </div>
+          <button
+            type="button"
+            onClick={sortOrderA === "asc" ? movieSortedZ : movieSortedA}
+          >
+            ALPHABETIK
+          </button>
+          <button
+            type="button"
+            onClick={
+              sortOrderY === "asc" ? movieSortedYearDesc : movieSortedYear
+            }
+          >
+            YEARS
+          </button>
+          <button type="button" onClick={allMovies}>
+            ALL MOVIES
+          </button>
         </section>
       </section>
       <div className="dashed_secondary_bar" />
       <section className="search_bear_position">
         {/* Vérifier si la recherche est vide */}
-        {search === "" && (
+        {search === "" && !allMoviesClicked && (
           <div className="search_bear_background_container">
             <div className="Search_pitch_container">
               <p className="Search_pitch">QUEL FILM CHERCHONS NOUS ?</p>
@@ -80,6 +189,17 @@ function MovieSearch() {
               alt="Que cherchons-nous ?"
               className="search_bear_background"
             />
+          </div>
+        )}
+        {search === "" && allMoviesClicked && (
+          <div className="MovieThumbnails_container">
+            <div className="scroll_zone">
+              <div className="MovieThumbnails">
+                {data.map((movieData) => (
+                  <MovieThumbnail key={movieData.id} data={movieData} />
+                ))}
+              </div>
+            </div>
           </div>
         )}
         {/* Afficher les vignettes des films si une recherche est effectuée */}

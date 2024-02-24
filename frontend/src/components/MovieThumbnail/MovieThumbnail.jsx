@@ -1,3 +1,5 @@
+/* eslint-disable react/jsx-boolean-value */
+/* eslint-disable react/prop-types */
 import { useState } from "react";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
@@ -6,7 +8,7 @@ import "./movieThumbnail.css";
 import MovieCard from "../MovieCard/MovieCard";
 
 function MovieThumbnail({ data }) {
-  const { title, year, cover_location, ID_IMDb } = data;
+  const { title, year, cover, id } = data;
 
   const [selectedMovie, setSelectedMovie] = useState(null);
 
@@ -20,12 +22,13 @@ function MovieThumbnail({ data }) {
 
   return (
     <>
-      <div className="thumbail_container" key={ID_IMDb} onClick={openModal}>
-        <img
-          className="thumbail_cover"
-          src={cover_location}
-          alt={`Cover ${title}`}
-        />
+      <div
+        className="thumbail_container"
+        key={id}
+        onClick={openModal}
+        onKeyDown={openModal}
+      >
+        <img className="thumbail_cover" src={cover} alt={`Cover ${title}`} />
         <p className="thumbail_title">
           {title} <span className="thumbail_year">({year})</span>
         </p>

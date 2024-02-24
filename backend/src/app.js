@@ -120,8 +120,18 @@ app.get("*", (req, res) => {
 });
 */
 
-const publicFolderPath = path.join(__dirname, "../public/assets/covers");
+const publicFolderPath = path.join(__dirname, "../public");
 app.use(express.static(publicFolderPath));
+
+// Définir l'environnement
+const env = process.env.NODE_ENV || "development";
+
+// Définir l'URL de base des images en fonction de l'environnement
+// eslint-disable-next-line no-unused-vars
+const imageBaseUrl =
+  env === "production"
+    ? "https://streetarthunterz.creativebrain.fr/covers"
+    : "http://localhost:3310/covers";
 
 /* ************************************************************************* */
 

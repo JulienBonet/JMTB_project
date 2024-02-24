@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLoaderData } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Pagination, Stack, Button } from "@mui/material";
 import "./MovieSearchKind.css";
 import "../../assets/css/scrollButton.css";
-import data from "../../data/data.json";
 import MovieCount from "../../components/MovieCount/MovieCount";
 import MovieThumbail3 from "../../components/MovieThumbnail3/MovieThumbnail3";
 import BearKinds from "../../assets/ico/camera_Bear_03.jpeg";
@@ -13,111 +13,107 @@ import ChronologicBtn from "../../components/ChronologicBtn/ChronologicBtn";
 // import DurationBtn from "../../components/DurationBtn/DurationBtn";
 
 function MovieSearchKind() {
+  // database back//
+  const kindsData = useLoaderData();
+  const [movies, setMovies] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState("");
   const [selectedButton, setSelectedButton] = useState("");
+  const [sortOrderA, setSortOrderA] = useState("asc");
+  const [sortOrderY, setSortOrderY] = useState("desc");
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/kinds/${selectedGenre}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setMovies(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  }, [selectedGenre]);
 
   const handleChoice = (genre) => {
     setSelectedGenre(genre);
     setSelectedButton(genre);
   };
 
-  // TRI PAR GENRES----------------------------------//
-  const filteredMovies = selectedGenre
-    ? data.filter((dataItem) => dataItem.genre.includes(selectedGenre))
-    : [];
-
-  const ignoredPrefixes = [
-    "The",
-    "Le",
-    "La",
-    "L'",
-    "Les",
-    "De",
-    "Het",
-    "D'",
-    "Sa",
-    "Un",
-    "Une",
-    "Der",
-    "Nos",
-  ];
-
-  const sortedMovies = filteredMovies.slice().sort((a, b) => {
-    const extractTitle = (title) => {
-      if (typeof title !== "string") {
-        return title;
+  const movieSortedA = async () => {
+    try {
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/kinds/${selectedGenre}/sorted/0`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
       }
+      const newData = await response.json();
+      setMovies(newData);
+      setSortOrderA("asc");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
-      for (const prefix of ignoredPrefixes) {
-        const prefixWithSpace = prefix + " ";
-        if (title.startsWith(prefixWithSpace)) {
-          return title.slice(prefixWithSpace.length);
-        }
+  const movieSortedZ = async () => {
+    try {
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/kinds/${selectedGenre}/sorted/1`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
       }
-      return title;
-    };
+      const newData = await response.json();
+      setMovies(newData);
+      setSortOrderA("desc");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
-    const titleA = extractTitle(a.title);
-    const titleB = extractTitle(b.title);
+  const movieSortedYear = async () => {
+    try {
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/kinds/${selectedGenre}/sorted/2`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const newData = await response.json();
+      console.info(newData);
+      setMovies(newData);
+      setSortOrderY("asc");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
-    const compareTitles =
-      typeof titleA === "string" && typeof titleB === "string"
-        ? titleA.toLowerCase().localeCompare(titleB.toLowerCase(), "fr")
-        : 0; // Si l'un des titres n'est pas une chaîne, renvoie 0 pour conserver l'ordre initial
-
-    return compareTitles;
-  });
-
-  // RECUPERER LISTE DES GENRES + SORTED + Btn KIND CHOICE DESIGN--------//
-  const uniqueGenres = [
-    ...new Set(
-      data.flatMap((film) => film.genre.split(",").map((genre) => genre.trim()))
-    ),
-  ];
-
-  const customOrder = [
-    "Drame",
-    "Comédie",
-    "Romantique",
-    "Policier",
-    "Suspense",
-    "Mystère",
-    "Fantastique",
-    "Horreur",
-    "Science-fiction",
-    "Aventures",
-    "Action",
-    "Séries",
-    "Séries Animées",
-    "Biopic",
-    "Histoire",
-    "Guerre",
-    "Western",
-    "Péplum",
-    "Heroic Fantasy",
-    "Super-Héros",
-    "Comics",
-    "Manga",
-    "Animation",
-    "Dessin animé",
-    "Familial",
-    "Sport",
-    "Musical",
-    "Concert",
-    "Spectacle",
-    "Documentaire",
-    "Court-métrage",
-    "Film noir",
-    "Blackploitation",
-    "Asia",
-    "Yakuzas",
-    "Chanbara",
-    "Wu Xa Pian",
-    "Adulte",
-  ];
-  const orderedGenres = customOrder.filter((genre) =>
-    uniqueGenres.includes(genre)
-  );
+  const movieSortedYearDesc = async () => {
+    try {
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/kinds/${selectedGenre}/sorted/3`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const newData = await response.json();
+      setMovies(newData);
+      setSortOrderY("desc");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   // STYLE Btn KIND ----------------------------------//
   const theme = createTheme({
@@ -142,58 +138,22 @@ function MovieSearchKind() {
   // PAGINATION Btn KIND ----------------------------------//
 
   const itemsPerRow = 13;
-
-  const totalRows = Math.ceil(orderedGenres.length / itemsPerRow);
-
+  const totalRows = Math.ceil(kindsData.length / itemsPerRow);
   const [currentRow, setCurrentRow] = useState(1);
-
   const startRowIndex = (currentRow - 1) * itemsPerRow;
-
   const endRowIndex = startRowIndex + itemsPerRow;
-
-  const genresForRow = orderedGenres.slice(startRowIndex, endRowIndex);
+  const genresForRow = kindsData
+    .slice(startRowIndex, endRowIndex)
+    .map((item) => item.genre);
 
   const handlePageChange = (event, value) => {
     setCurrentRow(value);
   };
 
-  // TRI CHRONOLOGIQUE ----------------------------------//
-  const [isSortedChronologic, setIsSortedChronologic] = useState(false);
-  const [isChronologicAscending, setIsChronologicAscending] = useState(false);
-
-  const sortChronologic = () => {
-    const sortedChronologic = sortedMovies.slice().sort((a, b) => {
-      const dateA = new Date(a.year).getTime();
-      const dateB = new Date(b.year).getTime();
-
-      if (isChronologicAscending) {
-        return dateA - dateB;
-      } else {
-        return dateB - dateA;
-      }
-    });
-
-    return sortedChronologic;
-  };
-
-  //- Gestion 'ChronologicBtn'
-  const handleChronologicClick = () => {
-    setIsSortedChronologic(true);
-    setIsChronologicAscending(!isChronologicAscending);
-  };
-
-  const handleAlphabeticClick = () => {
-    setIsSortedChronologic(false); // Mettre à jour l'état pour revenir au tri alphabétique
-  };
-
-  // SELECTION FILM EN FONCTION DU BTN sorted ----------------------------------//
-  const moviesToDisplay = isSortedChronologic
-    ? sortChronologic()
-    : sortedMovies;
-
   // AFFICHER LE NOMBRE DE FILMS ----------------------------------//
-  const movieAmount = data.length;
-  const movieAmountKind = sortedMovies.length;
+  const movieAmount = 0;
+  const movieAmountKind = movies.length;
+
   return (
     <main>
       <section className="search_kind_contents">
@@ -201,9 +161,9 @@ function MovieSearchKind() {
           <div className="search_kind_container">
             <ThemeProvider theme={theme}>
               <Stack spacing={2} direction="row" className="Kind_Choice">
-                {genresForRow.map((genre) => (
+                {genresForRow.map((genre, index) => (
                   <Button
-                    key={genre}
+                    key={index}
                     value={genre}
                     onClick={() => handleChoice(genre)}
                     variant={
@@ -234,7 +194,7 @@ function MovieSearchKind() {
         </Stack>
       </div>
       <section className="kinds_bloc_position">
-        {selectedGenre == "" && (
+        {selectedGenre === "" && (
           <section className="kinds_bear_position">
             <div className="kinds_bear_container">
               <div className="kinds_pitch_container">
@@ -254,7 +214,7 @@ function MovieSearchKind() {
           <section className="MovieThumbnails_Kind_container">
             <div className="scroll_zone">
               <div className="MovieThumbnails_kind">
-                {moviesToDisplay.map((movieData) => (
+                {movies.map((movieData) => (
                   <MovieThumbail3 key={movieData.id} data={movieData} />
                 ))}
               </div>
@@ -262,8 +222,14 @@ function MovieSearchKind() {
           </section>
         )}
         <div className="btn_sort_container_kind">
-          <AlphabeticBtn onClick={handleAlphabeticClick} />
-          <ChronologicBtn onClick={handleChronologicClick} />
+          <AlphabeticBtn
+            onClick={sortOrderA === "asc" ? movieSortedZ : movieSortedA}
+          />
+          <ChronologicBtn
+            onClick={
+              sortOrderY === "asc" ? movieSortedYearDesc : movieSortedYear
+            }
+          />
           {/* <CountryBtn />
           <DurationBtn /> */}
         </div>
