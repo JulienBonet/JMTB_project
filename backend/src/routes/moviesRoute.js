@@ -8,5 +8,6 @@ router.get("/movies/sorted/0", moviesController.getAllSorted0);
 router.get("/movies/sorted/1", moviesController.getAllSorted1);
 router.get("/movies/sorted/2", moviesController.getAllSorted2);
 router.get("/movies/sorted/3", moviesController.getAllSorted3);
+router.get("/movies/sorted/nox", moviesController.getAllSortedNox);
 
 module.exports = router;

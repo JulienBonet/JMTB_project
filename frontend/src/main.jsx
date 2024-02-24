@@ -19,6 +19,11 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Home />,
+        loader: () => {
+          return fetch(
+            `${import.meta.env.VITE_BACKEND_URL}/api/movies/sorted/nox`
+          );
+        },
       },
       {
         path: "/movie_search",
@@ -37,6 +42,9 @@ const router = createBrowserRouter([
       {
         path: "/movie_directors",
         element: <MovieDirectors />,
+        loader: () => {
+          return fetch(`${import.meta.env.VITE_BACKEND_URL}/api/directors`);
+        },
       },
     ],
   },

@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
+import { useLoaderData } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import "../../assets/css/common_elements.css";
 import "./home.css";
-import data from "../../data/data.json";
 import MovieThumbnail2 from "../../components/MovieThumbnail2/MovieThumbnail2";
 import MovieCount from "../../components/MovieCount/MovieCount";
 import CameraBear from "../../assets/ico/camera_Bear_01.jpeg";
 
 function Home() {
-  // GERER LE SHUFLLE DE FILMS ------------------------------------------/
+  const data = useLoaderData();
+
+  // SHUFFLE DE FILMS
 
   const [shuffledData, setShuffledData] = useState([]);
 

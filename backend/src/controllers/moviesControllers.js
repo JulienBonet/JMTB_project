@@ -45,6 +45,15 @@ const getAllSorted3 = async (req, res, next) => {
   }
 };
 
+const getAllSortedNox = async (req, res, next) => {
+  try {
+    const [movies] = await moviesModel.findAllSortedNoX();
+    res.status(200).json(movies);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getById = async (req, res, next) => {
   try {
     const [[movie]] = await moviesModel.findById(req.params.id);
@@ -65,4 +74,5 @@ module.exports = {
   getAllSorted1,
   getAllSorted2,
   getAllSorted3,
+  getAllSortedNox,
 };

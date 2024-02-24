@@ -1,12 +1,13 @@
 import { useState } from "react";
+import PropTypes from "prop-types";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import { Container } from "@mui/material";
 import "./movieThumbnail3.css";
 import MovieCard from "../MovieCard/MovieCard";
 
-function MovieThumbnail({ data }) {
-  const { title, year, cover, id } = data;
+function MovieThumbnail3({ data }) {
+  const { title, year, cover } = data;
 
   const [selectedMovie, setSelectedMovie] = useState(null);
 
@@ -18,16 +19,24 @@ function MovieThumbnail({ data }) {
     setSelectedMovie(null);
   };
 
+  // without this: front homepage bug !
+  // eslint-disable-next-line no-unused-vars
   const customStyles = {
     content: {
-      width: "1500px", // Définir la largeur souhaitée
-      margin: "auto", // Pour centrer la modal horizontalement
+      width: "1500px",
+      margin: "auto",
     },
   };
 
   return (
     <>
-      <div className="thumbail_container3" key={id} onClick={openModal}>
+      <div
+        className="thumbail_container3"
+        role="button"
+        tabIndex={0}
+        onClick={openModal}
+        onKeyDown={openModal}
+      >
         <img className="thumbail_cover3" src={cover} alt={`Cover ${title}`} />
         <p className="thumbail_title3">
           {title} <span className="thumbail_year3">({year})</span>
@@ -35,12 +44,22 @@ function MovieThumbnail({ data }) {
       </div>
 
       {selectedMovie && (
-        <Modal open={true} onClose={closeModal} className="Movie_Modal">
+        <Modal open onClose={closeModal} className="Movie_Modal">
           <Box>
             <Container>
-              <p onClick={closeModal} className="modal_closed_btn">
+              <div
+                onClick={closeModal}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    closeModal();
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                className="modal_closed_btn"
+              >
                 X Fermer
-              </p>
+              </div>
               <MovieCard movie={selectedMovie} />
             </Container>
           </Box>
@@ -50,4 +69,12 @@ function MovieThumbnail({ data }) {
   );
 }
 
-export default MovieThumbnail;
+// VALIDATION PROPTYPES
+MovieThumbnail3.propTypes = {
+  data: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    year: PropTypes.number.isRequired,
+    cover: PropTypes.string.isRequired,
+  }).isRequired,
+};
+export default MovieThumbnail3;

@@ -1,6 +1,5 @@
-/* eslint-disable react/jsx-boolean-value */
-/* eslint-disable react/prop-types */
 import { useState } from "react";
+import PropTypes from "prop-types";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import { Container } from "@mui/material";
@@ -8,7 +7,7 @@ import "./movieThumbnail.css";
 import MovieCard from "../MovieCard/MovieCard";
 
 function MovieThumbnail({ data }) {
-  const { title, year, cover, id } = data;
+  const { title, year, cover } = data;
 
   const [selectedMovie, setSelectedMovie] = useState(null);
 
@@ -24,7 +23,8 @@ function MovieThumbnail({ data }) {
     <>
       <div
         className="thumbail_container"
-        key={id}
+        role="button"
+        tabIndex={0}
         onClick={openModal}
         onKeyDown={openModal}
       >
@@ -35,12 +35,22 @@ function MovieThumbnail({ data }) {
       </div>
 
       {selectedMovie && (
-        <Modal open={true} onClose={closeModal} className="Movie_Modal">
+        <Modal open onClose={closeModal} className="Movie_Modal">
           <Box>
             <Container maxWidth="lg">
-              <p onClick={closeModal} className="modal_closed_btn">
+              <div
+                onClick={closeModal}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    closeModal();
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                className="modal_closed_btn"
+              >
                 X Fermer
-              </p>
+              </div>
               <MovieCard movie={selectedMovie} />
             </Container>
           </Box>
@@ -49,5 +59,14 @@ function MovieThumbnail({ data }) {
     </>
   );
 }
+
+// VALIDATION PROPTYPES
+MovieThumbnail.propTypes = {
+  data: PropTypes.shape({
+    title: PropTypes.string.isRequired,
+    year: PropTypes.number.isRequired,
+    cover: PropTypes.string.isRequired,
+  }).isRequired,
+};
 
 export default MovieThumbnail;

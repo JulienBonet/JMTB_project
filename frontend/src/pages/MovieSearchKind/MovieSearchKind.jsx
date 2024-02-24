@@ -13,7 +13,7 @@ import ChronologicBtn from "../../components/ChronologicBtn/ChronologicBtn";
 // import DurationBtn from "../../components/DurationBtn/DurationBtn";
 
 function MovieSearchKind() {
-  // database back//
+  // DATAS
   const kindsData = useLoaderData();
   const [movies, setMovies] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState("");
@@ -36,11 +36,6 @@ function MovieSearchKind() {
         console.error("Error fetching user data:", error);
       });
   }, [selectedGenre]);
-
-  const handleChoice = (genre) => {
-    setSelectedGenre(genre);
-    setSelectedButton(genre);
-  };
 
   const movieSortedA = async () => {
     try {
@@ -89,7 +84,6 @@ function MovieSearchKind() {
         throw new Error("Network response was not ok");
       }
       const newData = await response.json();
-      console.info(newData);
       setMovies(newData);
       setSortOrderY("asc");
     } catch (error) {
@@ -115,7 +109,28 @@ function MovieSearchKind() {
     }
   };
 
-  // STYLE Btn KIND ----------------------------------//
+  // SELECT GENRE
+  const handleChoice = (genre) => {
+    setSelectedGenre(genre);
+    setSelectedButton(genre);
+  };
+
+  // PAGINATION BUTTONS GENRES
+
+  const itemsPerRow = 13;
+  const totalRows = Math.ceil(kindsData.length / itemsPerRow);
+  const [currentRow, setCurrentRow] = useState(1);
+  const startRowIndex = (currentRow - 1) * itemsPerRow;
+  const endRowIndex = startRowIndex + itemsPerRow;
+  const genresForRow = kindsData
+    .slice(startRowIndex, endRowIndex)
+    .map((item) => item.genre);
+
+  const handlePageChange = (event, value) => {
+    setCurrentRow(value);
+  };
+
+  // STYLE BUTTONS GENRES
   const theme = createTheme({
     palette: {
       JmdbColorKindNav: {
@@ -135,22 +150,8 @@ function MovieSearchKind() {
       },
     },
   });
-  // PAGINATION Btn KIND ----------------------------------//
 
-  const itemsPerRow = 13;
-  const totalRows = Math.ceil(kindsData.length / itemsPerRow);
-  const [currentRow, setCurrentRow] = useState(1);
-  const startRowIndex = (currentRow - 1) * itemsPerRow;
-  const endRowIndex = startRowIndex + itemsPerRow;
-  const genresForRow = kindsData
-    .slice(startRowIndex, endRowIndex)
-    .map((item) => item.genre);
-
-  const handlePageChange = (event, value) => {
-    setCurrentRow(value);
-  };
-
-  // AFFICHER LE NOMBRE DE FILMS ----------------------------------//
+  // MOVIE AMOUNT
   const movieAmount = 0;
   const movieAmountKind = movies.length;
 
@@ -161,9 +162,9 @@ function MovieSearchKind() {
           <div className="search_kind_container">
             <ThemeProvider theme={theme}>
               <Stack spacing={2} direction="row" className="Kind_Choice">
-                {genresForRow.map((genre, index) => (
+                {genresForRow.map((genre) => (
                   <Button
-                    key={index}
+                    key={genre.id}
                     value={genre}
                     onClick={() => handleChoice(genre)}
                     variant={
