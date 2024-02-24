@@ -20,6 +20,15 @@ const findAllSortedYearDESC = () => {
   return db.query("SELECT * FROM movies ORDER BY year DESC;", []);
 };
 
+const findAllSortedNoX = () => {
+  return db.query(
+    `SELECT *
+    FROM movies
+    WHERE id NOT IN (SELECT movieId FROM jmdb.movie_genre WHERE genreId = 24);`,
+    []
+  );
+};
+
 const findById = (id) => {
   return db.query(
     `SELECT movies.*,
@@ -62,4 +71,5 @@ module.exports = {
   findAllSortedZeta,
   findAllSortedYear,
   findAllSortedYearDESC,
+  findAllSortedNoX,
 };

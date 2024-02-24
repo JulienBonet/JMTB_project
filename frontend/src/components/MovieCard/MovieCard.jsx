@@ -1,13 +1,11 @@
 /* eslint-disable camelcase */
-/* eslint-disable react/prop-types */
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import "./movieCard.css";
 import ReactPlayer from "react-player";
 
 function MovieCard({ movie }) {
-  // movies data
-
+  // DATA
   const [movieData, setMovieData] = useState([]);
   const {
     id,
@@ -51,7 +49,7 @@ function MovieCard({ movie }) {
 
   const FichierMultimedia = "Fichier multimédia";
 
-  // Gestion toggle
+  // TOGGLE trailer
   const [isTrailerVisible, setIsTrailerVisible] = useState(false);
   const toggleTrailerVideo = () => {
     setIsTrailerVisible(!isTrailerVisible);
@@ -169,7 +167,17 @@ function MovieCard({ movie }) {
           {trailer && (
             <div className="MovieCard_trailer">
               <div className="divider_dashed divider_trailer" />
-              <div className="Toggle_video_player" onClick={toggleTrailerVideo}>
+              <div
+                className="Toggle_video_player"
+                role="button"
+                tabIndex={0}
+                onClick={toggleTrailerVideo}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    toggleTrailerVideo();
+                  }
+                }}
+              >
                 <p className="MovieCard_info Toggle_video_btn">
                   {isTrailerVisible
                     ? "VOIR FICHE DU FILM"
@@ -184,28 +192,29 @@ function MovieCard({ movie }) {
   );
 }
 
+// VALIDATION PROPTYPES
 MovieCard.propTypes = {
   movie: PropTypes.shape({
+    id: PropTypes.number.isRequired,
     title: PropTypes.string.isRequired,
-    title2: PropTypes.string.isRequired,
+    altTitle: PropTypes.string,
     year: PropTypes.number.isRequired,
-    country: PropTypes.string.isRequired,
-    genre: PropTypes.string.isRequired,
-    langage: PropTypes.string.isRequired,
-    duration: PropTypes.number.isRequired,
-    director: PropTypes.string.isRequired,
-    screenwriter: PropTypes.string.isRequired,
-    music: PropTypes.string.isRequired,
-    studio: PropTypes.string.isRequired,
-    casting: PropTypes.string.isRequired,
-    trailer: PropTypes.string.isRequired,
-    pitch: PropTypes.string.isRequired,
-    story: PropTypes.string.isRequired,
-
-    support: PropTypes.string.isRequired,
-    location: PropTypes.string.isRequired,
-    cover_location: PropTypes.string.isRequired,
-    file_size: PropTypes.string.isRequired,
+    duration: PropTypes.number,
+    cover: PropTypes.string.isRequired,
+    trailer: PropTypes.string,
+    story: PropTypes.string,
+    location: PropTypes.string,
+    videoSupport: PropTypes.string,
+    fileSize: PropTypes.string,
+  }).isRequired,
+  movieData: PropTypes.shape({
+    genres: PropTypes.arrayOf(PropTypes.string),
+    countries: PropTypes.arrayOf(PropTypes.string),
+    director_name: PropTypes.string,
+    screenwriters: PropTypes.arrayOf(PropTypes.string),
+    music: PropTypes.arrayOf(PropTypes.string),
+    studios: PropTypes.arrayOf(PropTypes.string),
+    cast: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
 };
 

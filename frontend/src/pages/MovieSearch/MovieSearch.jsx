@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLoaderData } from "react-router-dom";
 import "./movieSearch.css";
 import "../../assets/css/scrollButton.css";
@@ -7,15 +7,13 @@ import MovieCount from "../../components/MovieCount/MovieCount";
 import BearSearch from "../../assets/ico/search_Bear_02.jpeg";
 
 function MovieSearch() {
+  // DATAS
+  const initialData = useLoaderData();
+  const [data, setData] = useState(initialData);
   const [search, setSearch] = useState("");
-  const [showButton, setShowButton] = useState(false);
   const [sortOrderA, setSortOrderA] = useState("asc");
   const [sortOrderY, setSortOrderY] = useState("desc");
   const [allMoviesClicked, setAllMoviesClicked] = useState(false);
-
-  // database back//
-  const initialData = useLoaderData();
-  const [data, setData] = useState(initialData);
 
   const allMovies = async () => {
     try {
@@ -102,6 +100,7 @@ function MovieSearch() {
     }
   };
 
+  // SEARCH BAR
   const handleTyping = (e) => {
     let { value } = e.target;
     value = value.replace(/-/g, "").toLowerCase();
@@ -116,34 +115,8 @@ function MovieSearch() {
       .includes(search.toLowerCase())
   );
 
-  // Afficher nombre de films
+  // MOVIE AMOUNT
   const movieAmount = filteredMovies.length;
-
-  // SCROLLBUTTON ----------------------------------//
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  };
-
-  useEffect(() => {
-    // Afficher le bouton quand on fait défiler la page
-    const handleScroll = () => {
-      if (document.documentElement.scrollTop > 300) {
-        setShowButton(true);
-      } else {
-        setShowButton(false);
-      }
-    };
-
-    window.addEventListener("scroll", handleScroll);
-
-    // Retirer l'écouteur d'événement lors du démontage du composant
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
 
   return (
     <main>
@@ -216,12 +189,6 @@ function MovieSearch() {
         )}
       </section>
       <MovieCount movieAmount={movieAmount} />
-      {showButton && (
-        // eslint-disable-next-line react/button-has-type
-        <button className="scrollToTopButton" onClick={scrollToTop}>
-          Remonter en haut
-        </button>
-      )}
     </main>
   );
 }
