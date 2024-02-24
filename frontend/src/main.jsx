@@ -37,6 +37,9 @@ const router = createBrowserRouter([
       {
         path: "/movie_directors",
         element: <MovieDirectors />,
+        loader: () => {
+          return fetch(`${import.meta.env.VITE_BACKEND_URL}/api/directors`);
+        },
       },
     ],
   },

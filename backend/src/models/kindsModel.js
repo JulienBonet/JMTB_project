@@ -1,7 +1,7 @@
 const db = require("../../database/client");
 
 const findAllKinds = () => {
-  return db.query(`SELECT * FROM genre`, []);
+  return db.query(`SELECT * FROM genre WHERE genre IS NOT NULL`, []);
 };
 
 const findAllMoviesByKinds = (genre) => {
