@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLoaderData } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
@@ -12,6 +13,34 @@ import MovieThumbnail from "../../components/MovieThumbnail/MovieThumbnail";
 import DirectorBear from "../../assets/ico/director_bear_01.jpeg";
 
 function MovieDirectors() {
+  const directorsData = useLoaderData();
+  const [selectedDirector, setSelectedDirector] = useState("");
+  const [movies, setMovies] = useState([""]);
+
+  useEffect(() => {
+    fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api//directors/${
+        selectedDirector.id
+      }`
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setMovies(data);
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  }, [selectedDirector]);
+
+  const handleDirectorClick = (director) => {
+    setSelectedDirector(director);
+  };
+
   /////////////////////////////////////////////////////
   // AFFICHER LE NOMBRE DE FILMS --------------------//
   /////////////////////////////////////////////////////
@@ -33,85 +62,6 @@ function MovieDirectors() {
       },
     },
   });
-
-  /////////////////////////////////////////////////////
-  // ---- LISTE BOUTONS DIRECTORS -------------------//
-  ////////////////////////////////////////////////////
-
-  // Création d'une structure avec les noms complets des réalisateurs et leurs noms de famille
-  const directorData = data
-    .map((movieData) => {
-      const fullName = movieData.director;
-      if (fullName.trim() !== "") {
-        const namesArray = fullName.split(" ");
-        const lastName = namesArray[namesArray.length - 1];
-        return { fullName, lastName };
-      }
-      return null;
-    })
-    .filter(Boolean);
-
-  // Création d'un objet pour stocker les réalisateurs groupés par lettre
-  const groupedDirectors = {};
-
-  // Regrouper les réalisateurs par lettre
-  directorData.forEach((director) => {
-    const firstLetter = director.lastName[0].toUpperCase();
-    if (!groupedDirectors[firstLetter]) {
-      groupedDirectors[firstLetter] = [];
-    }
-    groupedDirectors[firstLetter].push(director.fullName);
-  });
-
-  // Trier les groupes par lettre
-  const sortedGroupedDirectors = Object.keys(groupedDirectors).sort();
-
-  // État local pour stocker le groupe sélectionné
-  const [selectedGroup, setSelectedGroup] = useState(null);
-
-  // Créer une liste ordonnée et sans doublons des réalisateurs par défaut
-  useEffect(() => {
-    const defaultDirectorsList = directorData
-      .map((director) => director.fullName)
-      .filter((name, index, self) => self.indexOf(name) === index)
-      .sort((a, b) => {
-        const lastNameA = a.split(" ").pop(); // Récupérer le dernier mot de A
-        const lastNameB = b.split(" ").pop(); // Récupérer le dernier mot de B
-        return lastNameA.localeCompare(lastNameB); // Trier en utilisant localeCompare
-      });
-
-    setSelectedGroup(defaultDirectorsList);
-  }, []);
-
-  // Afficher les réalisateurs du groupe sélectionné
-  const handleGroupClick = (letter) => {
-    // Récupérer le groupe de réalisateurs associé à la lettre sélectionnée
-    const directorsForLetter = groupedDirectors[letter];
-
-    // Supprimer les doublons en utilisant un ensemble (Set) pour stocker les noms uniques
-    const uniqueDirectors = [...new Set(directorsForLetter)];
-
-    // Mettre à jour l'état pour afficher les réalisateurs sans doublons
-    setSelectedGroup(uniqueDirectors);
-  };
-
-  /////////////////////////////////////////////////////
-  // ---- MOVIES BY DIRECTORS -----------------------//
-  ////////////////////////////////////////////////////
-
-  // Ajouter un nouvel état local pour stocker les films du réalisateur sélectionné
-  const [selectedDirectorFilms, setSelectedDirectorFilms] = useState("");
-
-  // Créer une fonction pour mettre à jour les films du réalisateur sélectionné
-  const handleDirectorClick = (directorName) => {
-    // Filtrer les films pour le réalisateur sélectionné
-    const filmsForDirector = data.filter(
-      (movie) => movie.director === directorName
-    );
-
-    // Mettre à jour l'état local pour afficher les films du réalisateur sélectionné
-    setSelectedDirectorFilms(filmsForDirector);
-  };
 
   /////////////////////////////////////////////////////
   // ------ SCROLLBUTTON ---------------------------//
@@ -144,7 +94,7 @@ function MovieDirectors() {
   //////////////////////////////////////////////////////
   // -------AFFICHER LE NOMBRE DE FILMS --------------//
   //////////////////////////////////////////////////////
-  const movieAmount2 = selectedDirectorFilms.length;
+  const movieAmount2 = movies.length;
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////
   // ---------------- [RETURN] -----------------------------------------------------------------------//
@@ -152,7 +102,7 @@ function MovieDirectors() {
   return (
     <main>
       <section className="directors_content">
-        <section className="alphabet_menu">
+        {/* <section className="alphabet_menu">
           <ThemeProvider theme={theme}>
             <Stack spacing={2} direction="row" className="alphabet_buttons">
               {sortedGroupedDirectors.map((letter, index) => (
@@ -170,32 +120,31 @@ function MovieDirectors() {
               ))}
             </Stack>
           </ThemeProvider>
-        </section>
+        </section> */}
         <div className="dashed_secondary_bar" />
         <section className="directors_seach_container">
           <section className="directors_groups">
             <div className="directors_groups_content">
               <ThemeProvider theme={theme}>
                 <Stack spacing={2} direction="row" className="directors_list">
-                  {selectedGroup &&
-                    selectedGroup.map((director, index) => (
-                      <Button
-                        key={index}
-                        variant="text"
-                        color="dir_list"
-                        size="small"
-                        className="director_button"
-                        onClick={() => handleDirectorClick(director)}
-                      >
-                        {director}
-                      </Button>
-                    ))}
+                  {directorsData.map((director) => (
+                    <Button
+                      key={director.id}
+                      variant="text"
+                      color="dir_list"
+                      size="small"
+                      className="director_button"
+                      onClick={() => handleDirectorClick(director)} // Passer le nom du réalisateur
+                    >
+                      {director.name} {/* Afficher le nom du réalisateur */}
+                    </Button>
+                  ))}
                 </Stack>
               </ThemeProvider>
             </div>
           </section>
 
-          {selectedDirectorFilms === "" && (
+          {selectedDirector === "" && (
             <section className="director_bear">
               <section className="director_bear_position">
                 <div className="director_bear_container">
@@ -213,11 +162,11 @@ function MovieDirectors() {
               </section>
             </section>
           )}
-          {selectedDirectorFilms !== "" && (
+          {selectedDirector !== "" && (
             <section className="director_filmo">
               <div className="scroll_zone scroll_zone_2">
                 <div className="director_filmo_thumbs">
-                  {selectedDirectorFilms.map((filmo) => (
+                  {movies.map((filmo) => (
                     <MovieThumbnail key={filmo.id} data={filmo} />
                   ))}
                 </div>
@@ -232,10 +181,8 @@ function MovieDirectors() {
           Remonter en haut
         </button>
       )}
-      {selectedDirectorFilms === "" && <MovieCount movieAmount={movieAmount} />}
-      {selectedDirectorFilms !== "" && (
-        <MovieCount movieAmount={movieAmount2} />
-      )}
+      {selectedDirector === "" && <MovieCount movieAmount={movieAmount} />}
+      {selectedDirector !== "" && <MovieCount movieAmount={movieAmount2} />}
     </main>
   );
 }
