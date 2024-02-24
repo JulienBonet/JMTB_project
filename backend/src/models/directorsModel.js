@@ -3,7 +3,8 @@ const db = require("../../database/client");
 const findAllDirectorsAsc = () => {
   return db.query(
     `SELECT * 
-    FROM director 
+    FROM director
+    WHERE name IS NOT NULL 
     ORDER BY SUBSTRING_INDEX(name, ' ', -1) ASC;`,
     []
   );
@@ -12,7 +13,8 @@ const findAllDirectorsAsc = () => {
 const findAllfindAllDirectorsDesc = () => {
   return db.query(
     `SELECT * 
-      FROM director 
+      FROM director
+      WHERE name IS NOT NULL 
       ORDER BY SUBSTRING_INDEX(name, ' ', -1) DESC;`,
     []
   );
@@ -24,7 +26,7 @@ const findAllMoviesByDirectorId = (id) => {
       FROM movies m
       JOIN movie_director md ON m.id = md.movieId
       JOIN director d ON md.directorId = d.id
-      WHERE d.id = ?;`,
+      WHERE d.id = ? AND d.name IS NOT NULL;`,
     [id]
   );
 };
@@ -35,7 +37,7 @@ const findAllMoviesByDirectorIdAsc = (id) => {
       FROM movies m
       JOIN movie_director md ON m.id = md.movieId
       JOIN director d ON md.directorId = d.id
-      WHERE d.id = ?
+      WHERE d.id = ? AND d.name IS NOT NULL
       ORDER BY m.title ASC;`,
     [id]
   );
@@ -47,7 +49,7 @@ const findAllMoviesByDirectorIdDesc = (id) => {
         FROM movies m
         JOIN movie_director md ON m.id = md.movieId
         JOIN director d ON md.directorId = d.id
-        WHERE d.id = ?
+        WHERE d.id = ? AND d.name IS NOT NULL
         ORDER BY m.title DESC;`,
     [id]
   );
@@ -59,7 +61,7 @@ const findAllMoviesByDirectorIdYearAsc = (id) => {
         FROM movies m
         JOIN movie_director md ON m.id = md.movieId
         JOIN director d ON md.directorId = d.id
-        WHERE d.id = ?
+        WHERE d.id = ? AND d.name IS NOT NULL
         ORDER BY m.year ASC;`,
     [id]
   );
@@ -71,7 +73,7 @@ const findAllMoviesByDirectorIdYearDesc = (id) => {
         FROM movies m
         JOIN movie_director md ON m.id = md.movieId
         JOIN director d ON md.directorId = d.id
-        WHERE d.id = ?
+        WHERE d.id = ? AND d.name IS NOT NULL
         ORDER BY m.year DESC;`,
     [id]
   );
