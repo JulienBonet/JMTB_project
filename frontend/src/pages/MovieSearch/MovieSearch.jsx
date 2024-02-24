@@ -4,13 +4,14 @@ import "./movieSearch.css";
 import "../../assets/css/scrollButton.css";
 import MovieThumbnail from "../../components/MovieThumbnail/MovieThumbnail";
 import MovieCount from "../../components/MovieCount/MovieCount";
-// import BearSearch from "../../assets/ico/search_Bear_02.jpeg";
+import BearSearch from "../../assets/ico/search_Bear_02.jpeg";
 
 function MovieSearch() {
   const [search, setSearch] = useState("");
   const [showButton, setShowButton] = useState(false);
   const [sortOrderA, setSortOrderA] = useState("asc");
   const [sortOrderY, setSortOrderY] = useState("desc");
+  const [allMoviesClicked, setAllMoviesClicked] = useState(false);
 
   // database back//
   const initialData = useLoaderData();
@@ -27,8 +28,8 @@ function MovieSearch() {
       const newData = await response.json();
       if (Array.isArray(newData)) {
         setData(newData);
-        console.info(newData);
         setSearch("");
+        setAllMoviesClicked(true);
       } else {
         console.error("Invalid data format received");
       }
@@ -178,7 +179,7 @@ function MovieSearch() {
       <div className="dashed_secondary_bar" />
       <section className="search_bear_position">
         {/* Vérifier si la recherche est vide */}
-        {/* {search === "" && (
+        {search === "" && !allMoviesClicked && (
           <div className="search_bear_background_container">
             <div className="Search_pitch_container">
               <p className="Search_pitch">QUEL FILM CHERCHONS NOUS ?</p>
@@ -189,8 +190,8 @@ function MovieSearch() {
               className="search_bear_background"
             />
           </div>
-        )} */}
-        {search === "" && (
+        )}
+        {search === "" && allMoviesClicked && (
           <div className="MovieThumbnails_container">
             <div className="scroll_zone">
               <div className="MovieThumbnails">
