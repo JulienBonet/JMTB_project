@@ -1,6 +1,6 @@
-.directors_content {
+.artists_content {
 }
-.alphabet_menu {
+/* .alphabet_menu {
   display: flex;
   justify-content: flex-start;
   height: 6rem;
@@ -11,48 +11,61 @@
   justify-content: center;
   align-items: center;
   padding: 10px 0;
+} */
+.artists_section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 }
-.alphabet_buttons {
-}
-.directors_seach_container {
+.artists_seach_container {
   display: flex;
   justify-content: space-around;
-  height: 43rem;
+  min-height: calc(100vh - 160px);
   align-items: center;
 }
-.directors_groups {
+.artists_groups {
   display: flex;
-  justify-content: flex-start;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 20%;
 }
-.directors_groups_content {
-  width: 20rem;
+.artists_groups_content {
+  width: 18rem;
   height: 600px;
   padding: 1rem;
   border: solid 1px white;
-  border-radius: 25px;
+  border-radius: 25px 0 0 25px;
   overflow: auto;
 }
 
-.directors_groups_content::-webkit-scrollbar {
+.artists_groups_content::-webkit-scrollbar {
   width: 0;
   height: 0;
 }
 
-.directors_list {
+.artists_list {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
 }
 
-.MuiButton-root.director_button {
+.MuiButton-root.artists_button {
   font-family: "Courier New", Courier, monospace;
   font-size: medium;
   display: flex;
   flex-wrap: wrap;
   width: 90%;
 }
-.director_bear {
-  width: 70%;
+.filmo_artists {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 75%;
+}
+.artists_bear {
+  width: 92%;
   height: 600px;
   padding: 1rem;
   border: solid 1px whitesmoke;
@@ -62,42 +75,42 @@
   align-items: center;
   justify-content: space-evenly;
 }
-.director_bear_position {
+.artists_bear_position {
   display: flex;
   justify-content: center;
   width: 100%;
 }
-.director_bear_container {
+.artists_bear_container {
   display: flex;
   justify-content: space-evenly;
   width: 88%;
   column-gap: 2rem;
 }
-.director_pitch_container {
+.artists_pitch_container {
   display: flex;
   align-items: center;
   font-size: 1.8rem;
   width: 50%;
 }
-.director_pitch {
+.artists_pitch {
   font-family: "Nova Square", sans-serif;
   text-align: center;
   line-height: normal;
   color: var(--color-primary);
 }
-.director_bear_illustr {
+.artists_bear_illustr {
   width: 45%;
   border-radius: 25px;
 }
-.director_filmo {
-  width: 70%;
+.artists_filmo {
+  width: 92%;
   height: 600px;
   padding: 1rem;
   border: solid 1px whitesmoke;
   border-radius: 25px;
   overflow: auto;
 }
-.director_filmo_thumbs {
+.artists_filmo_thumbs {
   display: flex;
   flex-wrap: wrap;
 }

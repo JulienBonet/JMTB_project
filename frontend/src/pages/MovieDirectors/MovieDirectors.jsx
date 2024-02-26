@@ -7,6 +7,7 @@ import "./movieDirectors.css";
 import "../../assets/css/common_elements.css";
 import "../../assets/css/scrollButton.css";
 import MovieCount from "../../components/MovieCount/MovieCount";
+import Counter from "../../components/Counters/Counters";
 import MovieThumbnail from "../../components/MovieThumbnail/MovieThumbnail";
 import DirectorBear from "../../assets/ico/director_bear_01.jpeg";
 
@@ -16,6 +17,7 @@ function MovieDirectors() {
   const [movies, setMovies] = useState([]);
   const [selectedDirector, setSelectedDirector] = useState("");
   const [search, setSearch] = useState("");
+  const [movieAmount, setMovieAmount] = useState(0);
 
   useEffect(() => {
     fetch(
@@ -31,6 +33,7 @@ function MovieDirectors() {
       })
       .then((moviesData) => {
         setMovies(moviesData);
+        setMovieAmount(moviesData.length);
       })
       .catch((error) => {
         console.error("Error fetching user data:", error);
@@ -61,8 +64,9 @@ function MovieDirectors() {
       )
     : [];
 
-  // AFFICHER LE NOMBRE DE FILMS
-  const movieAmount = movies.length;
+  // AFFICHER LE NOMBRE DE REALISATEURS
+  const directorsAmount = directorsData.length;
+  const selectedDirectorAmount = filteredDirectors.length;
 
   // STYLE MUI
   const theme = createTheme({
@@ -84,7 +88,7 @@ function MovieDirectors() {
 
   return (
     <main>
-      <section className="directors_content">
+      <section className="artists_content">
         <section className="search_bar_contents">
           <section className="search_bar_position">
             <div className="search_bar_container">
@@ -98,83 +102,94 @@ function MovieDirectors() {
           </section>
         </section>
         <div className="dashed_secondary_bar" />
-        <section className="directors_seach_container">
-          <section className="directors_groups">
-            {search === "" && (
-              <div className="directors_groups_content">
-                <ThemeProvider theme={theme}>
-                  <Stack spacing={2} direction="row" className="directors_list">
-                    {directorsData.map((director) => (
-                      <Button
-                        key={director.id}
-                        variant="text"
-                        color="dir_list"
-                        size="small"
-                        className="director_button"
-                        onClick={() => handleDirectorClick(director)}
-                      >
-                        {director.name}
-                      </Button>
-                    ))}
-                  </Stack>
-                </ThemeProvider>
-              </div>
-            )}
-            {search !== "" && (
-              <div className="directors_groups_content">
-                <ThemeProvider theme={theme}>
-                  <Stack spacing={2} direction="row" className="directors_list">
-                    {filteredDirectors.map((director) => (
-                      <Button
-                        key={director.id}
-                        variant="text"
-                        color="dir_list"
-                        size="small"
-                        className="director_button"
-                        onClick={() => handleDirectorClick(director)}
-                      >
-                        {director.name}
-                      </Button>
-                    ))}
-                  </Stack>
-                </ThemeProvider>
-              </div>
-            )}
-          </section>
-
-          {selectedDirector === "" && (
-            <section className="director_bear">
-              <section className="director_bear_position">
-                <div className="director_bear_container">
-                  <div className="director_pitch_container">
-                    <p className="director_pitch">
-                      QUEL REALISATEUR CHERCHONS NOUS ?
-                    </p>
+        <section>
+          <section className="artists_seach_container">
+            <section className="artists_groups">
+              {search === "" && (
+                <div className="artists_groups_content">
+                  <ThemeProvider theme={theme}>
+                    <Stack spacing={2} direction="row" className="artists_list">
+                      {directorsData.map((director) => (
+                        <Button
+                          key={director.id}
+                          variant="text"
+                          color="dir_list"
+                          size="small"
+                          className="artists_button"
+                          onClick={() => handleDirectorClick(director)}
+                        >
+                          {director.name}
+                        </Button>
+                      ))}
+                    </Stack>
+                  </ThemeProvider>
+                </div>
+              )}
+              {search !== "" && (
+                <div className="artists_groups_content">
+                  <ThemeProvider theme={theme}>
+                    <Stack spacing={2} direction="row" className="artists_list">
+                      {filteredDirectors.map((director) => (
+                        <Button
+                          key={director.id}
+                          variant="text"
+                          color="dir_list"
+                          size="small"
+                          className="artists_button"
+                          onClick={() => handleDirectorClick(director)}
+                        >
+                          {director.name}
+                        </Button>
+                      ))}
+                    </Stack>
+                  </ThemeProvider>
+                </div>
+              )}
+              {search === "" && (
+                <Counter origin="directors" countAmount={directorsAmount} />
+              )}
+              {search !== "" && (
+                <Counter
+                  origin="directors"
+                  countAmount={selectedDirectorAmount}
+                />
+              )}
+            </section>
+            <section className="filmo_artists">
+              {selectedDirector === "" && (
+                <section className="artists_bear">
+                  <section className="artists_bear_position">
+                    <div className="artists_bear_container">
+                      <div className="artists_pitch_container">
+                        <p className="artists_pitch">
+                          QUEL REALISATEUR CHERCHONS NOUS ?
+                        </p>
+                      </div>
+                      <img
+                        src={DirectorBear}
+                        alt="a Bear director"
+                        className="artists_bear_illustr"
+                      />
+                    </div>
+                  </section>
+                </section>
+              )}
+              {selectedDirector !== "" && (
+                <section className="artists_filmo">
+                  <div className="scroll_zone scroll_zone_2">
+                    <div className="artists_filmo_thumbs">
+                      {movies.map((filmo) => (
+                        <MovieThumbnail key={filmo.id} data={filmo} />
+                      ))}
+                    </div>
                   </div>
-                  <img
-                    src={DirectorBear}
-                    alt="a Bear director"
-                    className="director_bear_illustr"
-                  />
-                </div>
-              </section>
+                </section>
+              )}
+              <MovieCount movieAmount={movieAmount} />
             </section>
-          )}
-          {selectedDirector !== "" && (
-            <section className="director_filmo">
-              <div className="scroll_zone scroll_zone_2">
-                <div className="director_filmo_thumbs">
-                  {movies.map((filmo) => (
-                    <MovieThumbnail key={filmo.id} data={filmo} />
-                  ))}
-                </div>
-              </div>
-            </section>
-          )}
+          </section>
         </section>
       </section>
-
-      <MovieCount movieAmount={movieAmount} />
     </main>
   );
 }

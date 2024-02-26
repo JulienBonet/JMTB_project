@@ -1,7 +1,7 @@
 .home_title_position {
   display: flex;
   justify-content: center;
-  height: 6rem;
+  height: 5rem;
 }
 
 .home_Main_Title {
@@ -13,9 +13,10 @@
 }
 .welcome_container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 43rem;
+  min-height: calc(100vh - 175px);
 }
 .welcome_content {
   display: flex;
