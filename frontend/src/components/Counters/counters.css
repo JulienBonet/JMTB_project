@@ -1,9 +1,9 @@
-.Amount_info_container {
+.Amount_info_container_counter {
   display: flex;
   justify-content: center;
 }
 
-.Amount_info {
+.Amount_info_counter {
   font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
     "Lucida Sans", Arial, sans-serif;
   font-size: 1rem;
@@ -15,6 +15,6 @@
   border-radius: 0 0 20px 20px;
 }
 
-.whiteString {
-  color: var(--color-secondary);
+.whiteString_counter {
+  color: var(--color-primary);
 }

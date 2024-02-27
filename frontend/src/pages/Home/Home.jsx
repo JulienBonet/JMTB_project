@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 import { useState, useEffect } from "react";
 import { useLoaderData } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -106,8 +107,8 @@ function Home() {
             </ThemeProvider>
           </div>
         </div>
+        <MovieCount movieAmount={movieAmount} />
       </section>
-      <MovieCount movieAmount={movieAmount} />
     </main>
   );
 }

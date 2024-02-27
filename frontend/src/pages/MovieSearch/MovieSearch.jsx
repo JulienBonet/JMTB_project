@@ -1,7 +1,10 @@
+/* eslint-disable react/jsx-no-duplicate-props */
 import { useState } from "react";
 import { useLoaderData } from "react-router-dom";
 import "./movieSearch.css";
 import "../../assets/css/scrollButton.css";
+import AlphabeticBtn from "../../components/AlphabeticBtn/AlphabeticBtn";
+import ChronologicBtn from "../../components/ChronologicBtn/ChronologicBtn";
 import MovieThumbnail from "../../components/MovieThumbnail/MovieThumbnail";
 import MovieCount from "../../components/MovieCount/MovieCount";
 import BearSearch from "../../assets/ico/search_Bear_02.jpeg";
@@ -123,33 +126,27 @@ function MovieSearch() {
       <section className="search_bar_contents">
         <section className="search_bar_position">
           <div className="search_bar_container">
-            <span className="material-symbols-outlined">search</span>
             <input
               value={search}
               onChange={handleTyping}
               className="search_bar"
+              placeholder="recherche"
             />
           </div>
-          <button
-            type="button"
-            onClick={sortOrderA === "asc" ? movieSortedZ : movieSortedA}
-          >
-            ALPHABETIK
-          </button>
-          <button
-            type="button"
-            onClick={
-              sortOrderY === "asc" ? movieSortedYearDesc : movieSortedYear
-            }
-          >
-            YEARS
-          </button>
-          <button type="button" onClick={allMovies}>
-            ALL MOVIES
-          </button>
         </section>
       </section>
       <div className="dashed_secondary_bar" />
+      <div className="AllMoviesPosition_seach">
+        <div
+          role="button"
+          className="allMoviesBtn_search"
+          onClick={allMovies}
+          onKeyDown={allMovies}
+          tabIndex={0}
+        >
+          SELECT ALL MOVIES
+        </div>
+      </div>
       <section className="search_bear_position">
         {/* Vérifier si la recherche est vide */}
         {search === "" && !allMoviesClicked && (
@@ -187,8 +184,20 @@ function MovieSearch() {
             </div>
           </div>
         )}
+        <div className="btn_sort_container_search">
+          <AlphabeticBtn
+            onClick={sortOrderA === "asc" ? movieSortedZ : movieSortedA}
+          />
+          <MovieCount movieAmount={movieAmount} />
+          <ChronologicBtn
+            onClick={
+              sortOrderY === "asc" ? movieSortedYearDesc : movieSortedYear
+            }
+          />
+          {/* <CountryBtn />
+          <DurationBtn /> */}
+        </div>
       </section>
-      <MovieCount movieAmount={movieAmount} />
     </main>
   );
 }

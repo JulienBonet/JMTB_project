@@ -1,8 +1,9 @@
+/* eslint-disable react/prop-types */
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import "./alphabeticBtn.css";
 
-function AlphabeticBtn({ onClick }) {
+function AlphabeticBtn({ onClick, origin }) {
   const theme = createTheme({
     palette: {
       sortedBtn: {
@@ -19,7 +20,9 @@ function AlphabeticBtn({ onClick }) {
       <Button
         variant="outlined"
         color="sortedBtn"
-        className="alphabetic_btn"
+        className={
+          origin !== "artists" ? "alphabetic_btn" : "alphabetic_btn_artists"
+        }
         onClick={onClick}
       >
         TRI ALPHABÉTIQUE

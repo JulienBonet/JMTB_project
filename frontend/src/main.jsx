@@ -2,14 +2,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import "./assets/css/reset_style.css";
-import "./assets/css/var_color.css";
-import "./assets/css/common_elements.css";
 import App from "./App.jsx";
 import Home from "./pages/Home/Home.jsx";
 import MovieSearch from "./pages/MovieSearch/MovieSearch.jsx";
 import MovieSearchKind from "./pages/MovieSearchKind/MovieSearchKind.jsx";
-import MovieDirectors from "./pages/MovieDirectors/MovieDirectors.jsx";
+import MovieDirectors from "./pages/MovieArtist/MovieDirectors.jsx";
 
 const router = createBrowserRouter([
   {

@@ -226,6 +226,8 @@ function MovieSearchKind() {
           <AlphabeticBtn
             onClick={sortOrderA === "asc" ? movieSortedZ : movieSortedA}
           />
+          {selectedGenre === "" && <MovieCount movieAmount={movieAmount} />}
+          {selectedGenre !== "" && <MovieCount movieAmount={movieAmountKind} />}
           <ChronologicBtn
             onClick={
               sortOrderY === "asc" ? movieSortedYearDesc : movieSortedYear
@@ -235,8 +237,6 @@ function MovieSearchKind() {
           <DurationBtn /> */}
         </div>
       </section>
-      {selectedGenre === "" && <MovieCount movieAmount={movieAmount} />}
-      {selectedGenre !== "" && <MovieCount movieAmount={movieAmountKind} />}
     </main>
   );
 }

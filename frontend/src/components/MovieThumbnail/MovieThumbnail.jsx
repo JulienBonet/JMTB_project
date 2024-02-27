@@ -64,7 +64,7 @@ function MovieThumbnail({ data }) {
 MovieThumbnail.propTypes = {
   data: PropTypes.shape({
     title: PropTypes.string.isRequired,
-    year: PropTypes.number.isRequired,
+    // year: PropTypes.number.isRequired,
     cover: PropTypes.string.isRequired,
   }).isRequired,
 };
