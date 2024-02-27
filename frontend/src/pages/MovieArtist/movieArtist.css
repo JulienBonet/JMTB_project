@@ -1,17 +1,5 @@
 .artists_content {
 }
-/* .alphabet_menu {
-  display: flex;
-  justify-content: flex-start;
-  height: 6rem;
-}
-.MuiStack-root.alphabet_buttons {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  padding: 10px 0;
-} */
 .artists_section {
   display: flex;
   align-items: center;
@@ -122,4 +110,8 @@
 .scroll_zone_2 {
   justify-content: flex-start;
   height: 100%;
+}
+.css-18l2pqx-MuiButtonBase-root-MuiButton-root .Btn_artists {
+  width: 15%;
+  line-height: 0;
 }

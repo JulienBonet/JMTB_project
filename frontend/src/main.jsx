@@ -6,7 +6,7 @@ import App from "./App.jsx";
 import Home from "./pages/Home/Home.jsx";
 import MovieSearch from "./pages/MovieSearch/MovieSearch.jsx";
 import MovieSearchKind from "./pages/MovieSearchKind/MovieSearchKind.jsx";
-import MovieDirectors from "./pages/MovieDirectors/MovieDirectors.jsx";
+import MovieDirectors from "./pages/MovieArtist/MovieDirectors.jsx";
 
 const router = createBrowserRouter([
   {

@@ -1,4 +1,5 @@
-.alphabetic_btn {
+.alphabetic_btn,
+.alphabetic_btn_artists {
   font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
     "Lucida Sans", Arial, sans-serif;
   font-size: 1rem;
@@ -12,7 +13,13 @@
   cursor: pointer;
 }
 
-.alphabetic_btn:hover {
+.alphabetic_btn_artists {
+  width: 15%;
+  line-height: 0;
+}
+
+.alphabetic_btn:hover,
+.alphabetic_btn_artists:hover {
   color: var(--color-third);
 }
 .alphabetic_btn:active {

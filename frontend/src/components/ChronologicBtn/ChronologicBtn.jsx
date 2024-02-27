@@ -1,8 +1,9 @@
+/* eslint-disable react/prop-types */
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import "./chronologicBtn.css";
 
-function ChronologicBtn({ onClick }) {
+function ChronologicBtn({ onClick, origin }) {
   const theme = createTheme({
     palette: {
       sortedBtn: {
@@ -19,7 +20,9 @@ function ChronologicBtn({ onClick }) {
       <Button
         variant="outlined"
         color="sortedBtn"
-        className="chronologic_btn"
+        className={
+          origin !== "artists" ? "chronologic_btn" : "chronologic_btn_artists"
+        }
         onClick={onClick}
       >
         TRI CHRONOLOGIQUE
