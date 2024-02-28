@@ -10,6 +10,11 @@ function Counters({ countAmount, origin }) {
           réalisateurs
         </p>
       )}
+      {origin === "casting" && (
+        <p className="Amount_info_counter">
+          <span className="whiteString_counter">{countAmount}</span> acteurs
+        </p>
+      )}
     </section>
   );
 }
