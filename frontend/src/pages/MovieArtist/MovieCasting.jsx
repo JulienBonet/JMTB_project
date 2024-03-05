@@ -189,7 +189,7 @@ function MovieCasting() {
         contrastText: "#242105",
       },
       artists_list: {
-        main: "#fefee2", // Assurez-vous que la couleur principale est correctement définie
+        main: "#fefee2",
         light: "#ffa500",
         dark: "#e59100",
         contrastText: "#242105",
@@ -270,7 +270,7 @@ function MovieCasting() {
                     <div className="artists_bear_container">
                       <div className="artists_pitch_container">
                         <p className="artists_pitch">
-                          QUEL ACTEUR/ACTRICE CHERCHONS NOUS ?
+                          QUEL ACTEUR CHERCHONS NOUS ?
                         </p>
                       </div>
                       <img

@@ -25,7 +25,11 @@ function AlphabetDropdown({ onLetterChange }) {
     </option>
   ));
 
-  return <select onChange={handleChange}>{options}</select>;
+  return (
+    <select onChange={handleChange} className="AlphabetDropdown">
+      {options}
+    </select>
+  );
 }
 
 export default AlphabetDropdown;
