@@ -68,6 +68,16 @@ const getAllSorted3 = async (req, res, next) => {
   }
 };
 
+const getAllByLetter = async (req, res, next) => {
+  try {
+    const { letter } = req.params;
+    const [artists] = await directorsModel.findAllByLetter(letter);
+    res.status(200).json(artists);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAllArtistAsc,
   getAllArtistDesc,
@@ -76,4 +86,5 @@ module.exports = {
   getAllSorted1,
   getAllSorted2,
   getAllSorted3,
+  getAllByLetter,
 };

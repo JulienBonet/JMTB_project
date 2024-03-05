@@ -7,6 +7,7 @@ import "./movieArtist.css";
 import "../../assets/css/common_elements.css";
 import "../../assets/css/scrollButton.css";
 import MovieCount from "../../components/MovieCount/MovieCount";
+import AlphabetDropdown from "../../components/AlphabetOption/AlphabetDropdown";
 import Counter from "../../components/Counters/Counters";
 import AlphabeticBtn from "../../components/AlphabeticBtn/AlphabeticBtn";
 import ChronologicBtn from "../../components/ChronologicBtn/ChronologicBtn";
@@ -23,7 +24,32 @@ function MovieDirectors() {
   const [sortOrderA, setSortOrderA] = useState("asc");
   const [sortOrderY, setSortOrderY] = useState("desc");
   const [movieAmount, setMovieAmount] = useState(0);
+  const [selectedLetter, SetSelectedLetter] = useState("a");
+  const [selectedDirectorByLetter, setSelectedDirectorByLetter] = useState([]);
 
+  // REQUEST ALL ARTIST BY LETTER
+  useEffect(() => {
+    fetch(
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/api/directors/sorted/${selectedLetter}`
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((directorsDataLetter) => {
+        console.info(directorsDataLetter);
+        setSelectedDirectorByLetter(directorsDataLetter);
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  }, [selectedLetter]);
+
+  // REQUEST ALL MOVIES by ARTIST ID
   useEffect(() => {
     fetch(
       `${import.meta.env.VITE_BACKEND_URL}/api/directors/${selectedDirector.id}`
@@ -43,6 +69,12 @@ function MovieDirectors() {
       });
   }, [selectedDirector]);
 
+  // SELECT LETTER
+  const handleLetterChange = (letter) => {
+    SetSelectedLetter(letter);
+    setSearch("");
+  };
+
   // SELECT DIRECTOR
   const handleDirectorClick = (director) => {
     setSelectedDirector(director);
@@ -53,6 +85,7 @@ function MovieDirectors() {
     let { value } = e.target;
     value = value.replace(/-/g, "").toLowerCase();
     setSearch(value);
+    SetSelectedLetter("");
   };
 
   const filteredDirectors = directorsData
@@ -68,7 +101,7 @@ function MovieDirectors() {
     : [];
 
   // AFFICHER LE NOMBRE DE REALISATEURS
-  const directorsAmount = directorsData.length;
+  const directorsAmount = selectedDirectorByLetter.length;
   const selectedDirectorAmount = filteredDirectors.length;
 
   // SORTED BTN
@@ -184,11 +217,12 @@ function MovieDirectors() {
         <section>
           <section className="artists_seach_container">
             <section className="artists_groups">
+              <AlphabetDropdown onLetterChange={handleLetterChange} />
               {search === "" && (
                 <div className="artists_groups_content">
                   <ThemeProvider theme={theme}>
                     <Stack spacing={2} direction="row" className="artists_list">
-                      {directorsData.map((director) => (
+                      {selectedDirectorByLetter.map((director) => (
                         <Button
                           key={director.id}
                           variant="text"

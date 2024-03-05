@@ -9,5 +9,6 @@ router.get("/directors/:id/sorted/0", directorsController.getAllSorted0);
 router.get("/directors/:id/sorted/1", directorsController.getAllSorted1);
 router.get("/directors/:id/sorted/2", directorsController.getAllSorted2);
 router.get("/directors/:id/sorted/3", directorsController.getAllSorted3);
+router.get("/directors/sorted/:letter", directorsController.getAllByLetter);
 
 module.exports = router;
