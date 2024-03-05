@@ -48,6 +48,11 @@ export default function BasicButtons() {
             CASTING
           </Button>
         </Link>
+        <Link to="/movie_screenwriters">
+          <Button variant="outlined" color="JmdbColorNav">
+            SCENARISTES
+          </Button>
+        </Link>
       </Stack>
     </ThemeProvider>
   );

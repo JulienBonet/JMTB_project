@@ -80,7 +80,6 @@ const findAllMoviesByArtistIdYearDesc = (id) => {
 };
 
 const findAllByLetter = (letter) => {
-  console.info("findAllByLetter function called with letter:", letter);
   const query = `
     SELECT *
     FROM director

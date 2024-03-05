@@ -11,7 +11,7 @@ import Counter from "../../components/Counters/Counters";
 import AlphabeticBtn from "../../components/AlphabeticBtn/AlphabeticBtn";
 import ChronologicBtn from "../../components/ChronologicBtn/ChronologicBtn";
 import MovieThumbnail from "../../components/MovieThumbnail/MovieThumbnail";
-import ActorBear from "../../assets/ico/actor-bear.jpeg";
+import ActorBear from "../../assets/ico/actor-bear.jpg";
 import AlphabetDropdown from "../../components/AlphabetOption/AlphabetDropdown";
 
 function MovieCasting() {
@@ -39,7 +39,6 @@ function MovieCasting() {
         return response.json();
       })
       .then((castingDataLetter) => {
-        console.info(castingDataLetter);
         setSelectedCastingByLetter(castingDataLetter);
       })
       .catch((error) => {
@@ -275,7 +274,7 @@ function MovieCasting() {
                       </div>
                       <img
                         src={ActorBear}
-                        alt="a Bear director"
+                        alt="a Bear actor"
                         className="artists_bear_illustr"
                       />
                     </div>

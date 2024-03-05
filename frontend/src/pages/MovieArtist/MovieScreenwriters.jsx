@@ -12,27 +12,27 @@ import Counter from "../../components/Counters/Counters";
 import AlphabeticBtn from "../../components/AlphabeticBtn/AlphabeticBtn";
 import ChronologicBtn from "../../components/ChronologicBtn/ChronologicBtn";
 import MovieThumbnail from "../../components/MovieThumbnail/MovieThumbnail";
-import DirectorBear from "../../assets/ico/director_bear_01.jpeg";
+import ScreenwriterBear from "../../assets/ico/screenwiter-bear.jpeg";
 
-function MovieDirectors() {
+function MovieScreenwriters() {
   // DATAS
-  const directorsData = useLoaderData();
+  const screenWData = useLoaderData();
   const [movies, setMovies] = useState([]);
   const [data, setData] = useState(movies);
-  const [selectedDirector, setSelectedDirector] = useState("");
   const [search, setSearch] = useState("");
   const [sortOrderA, setSortOrderA] = useState("asc");
   const [sortOrderY, setSortOrderY] = useState("desc");
   const [movieAmount, setMovieAmount] = useState(0);
   const [selectedLetter, SetSelectedLetter] = useState("a");
-  const [selectedDirectorByLetter, setSelectedDirectorByLetter] = useState([]);
+  const [selectedScreenW, setselectedScreenW] = useState("");
+  const [selecteScreenWByLetter, setSelecteScreenWByLetter] = useState([]);
 
   // REQUEST ALL ARTIST BY LETTER
   useEffect(() => {
     fetch(
       `${
         import.meta.env.VITE_BACKEND_URL
-      }/api/directors/sorted/${selectedLetter}`
+      }/api/screenwriters/sorted/${selectedLetter}`
     )
       .then((response) => {
         if (!response.ok) {
@@ -40,18 +40,20 @@ function MovieDirectors() {
         }
         return response.json();
       })
-      .then((directorsDataLetter) => {
-        setSelectedDirectorByLetter(directorsDataLetter);
+      .then((screenwritersDataLetter) => {
+        setSelecteScreenWByLetter(screenwritersDataLetter);
       })
       .catch((error) => {
         console.error("Error fetching user data:", error);
       });
   }, [selectedLetter]);
 
-  // REQUEST ALL MOVIES by ARTIST ID
+  // REQUEST ALL MOVIES
   useEffect(() => {
     fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/directors/${selectedDirector.id}`
+      `${import.meta.env.VITE_BACKEND_URL}/api/screenwriters/${
+        selectedScreenW.id
+      }`
     )
       .then((response) => {
         if (!response.ok) {
@@ -66,7 +68,7 @@ function MovieDirectors() {
       .catch((error) => {
         console.error("Error fetching user data:", error);
       });
-  }, [selectedDirector]);
+  }, [selectedScreenW]);
 
   // SELECT LETTER
   const handleLetterChange = (letter) => {
@@ -74,9 +76,9 @@ function MovieDirectors() {
     setSearch("");
   };
 
-  // SELECT DIRECTOR
-  const handleDirectorClick = (director) => {
-    setSelectedDirector(director);
+  // SELECT ARTIST
+  const handleArtistClick = (ScreenW) => {
+    setselectedScreenW(ScreenW);
   };
 
   // SEARCH BAR
@@ -87,8 +89,8 @@ function MovieDirectors() {
     SetSelectedLetter("");
   };
 
-  const filteredDirectors = directorsData
-    ? directorsData.filter(
+  const filteredCasting = screenWData
+    ? screenWData.filter(
         (dataItem) =>
           dataItem.name &&
           dataItem.name
@@ -99,9 +101,9 @@ function MovieDirectors() {
       )
     : [];
 
-  // AFFICHER LE NOMBRE DE REALISATEURS
-  const directorsAmount = selectedDirectorByLetter.length;
-  const selectedDirectorAmount = filteredDirectors.length;
+  // AFFICHER LE NOMBRE D'ARTISTES
+  const castingAmount = selecteScreenWByLetter.length;
+  const selectedCastingAmount = filteredCasting.length;
 
   // SORTED BTN
   useEffect(() => {
@@ -111,8 +113,8 @@ function MovieDirectors() {
   const movieSortedA = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/directors/${
-          selectedDirector.id
+        `${import.meta.env.VITE_BACKEND_URL}/api/screenwriters/${
+          selectedScreenW.id
         }/sorted/0`
       );
       if (!response.ok) {
@@ -129,8 +131,8 @@ function MovieDirectors() {
   const movieSortedZ = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/directors/${
-          selectedDirector.id
+        `${import.meta.env.VITE_BACKEND_URL}/api/screenwriters/${
+          selectedScreenW.id
         }/sorted/1`
       );
       if (!response.ok) {
@@ -147,8 +149,8 @@ function MovieDirectors() {
   const movieSortedYear = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/directors/${
-          selectedDirector.id
+        `${import.meta.env.VITE_BACKEND_URL}/api/screenwriters/${
+          selectedScreenW.id
         }/sorted/2`
       );
       if (!response.ok) {
@@ -165,8 +167,8 @@ function MovieDirectors() {
   const movieSortedYearDesc = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/directors/${
-          selectedDirector.id
+        `${import.meta.env.VITE_BACKEND_URL}/api/screenwriters/${
+          selectedScreenW.id
         }/sorted/3`
       );
       if (!response.ok) {
@@ -190,7 +192,7 @@ function MovieDirectors() {
         contrastText: "#242105",
       },
       artists_list: {
-        main: "#fefee2", // Assurez-vous que la couleur principale est correctement définie
+        main: "#fefee2",
         light: "#ffa500",
         dark: "#e59100",
         contrastText: "#242105",
@@ -221,16 +223,16 @@ function MovieDirectors() {
                 <div className="artists_groups_content">
                   <ThemeProvider theme={theme}>
                     <Stack spacing={2} direction="row" className="artists_list">
-                      {selectedDirectorByLetter.map((director) => (
+                      {selecteScreenWByLetter.map((casting) => (
                         <Button
-                          key={director.id}
+                          key={casting.id}
                           variant="text"
                           color="artists_list"
                           size="small"
                           className="artists_button"
-                          onClick={() => handleDirectorClick(director)}
+                          onClick={() => handleArtistClick(casting)}
                         >
-                          {director.name}
+                          {casting.name}
                         </Button>
                       ))}
                     </Stack>
@@ -241,16 +243,16 @@ function MovieDirectors() {
                 <div className="artists_groups_content">
                   <ThemeProvider theme={theme}>
                     <Stack spacing={2} direction="row" className="artists_list">
-                      {filteredDirectors.map((director) => (
+                      {filteredCasting.map((casting) => (
                         <Button
-                          key={director.id}
+                          key={casting.id}
                           variant="text"
                           color="primary"
                           size="small"
                           className="artists_button"
-                          onClick={() => handleDirectorClick(director)}
+                          onClick={() => handleArtistClick(casting)}
                         >
-                          {director.name}
+                          {casting.name}
                         </Button>
                       ))}
                     </Stack>
@@ -258,35 +260,35 @@ function MovieDirectors() {
                 </div>
               )}
               {search === "" && (
-                <Counter origin="directors" countAmount={directorsAmount} />
+                <Counter origin="screenwriters" countAmount={castingAmount} />
               )}
               {search !== "" && (
                 <Counter
-                  origin="directors"
-                  countAmount={selectedDirectorAmount}
+                  origin="screenwriters"
+                  countAmount={selectedCastingAmount}
                 />
               )}
             </section>
             <section className="filmo_artists">
-              {selectedDirector === "" && (
+              {selectedScreenW === "" && (
                 <section className="artists_bear">
                   <section className="artists_bear_position">
                     <div className="artists_bear_container">
                       <div className="artists_pitch_container">
                         <p className="artists_pitch">
-                          QUEL REALISATEUR CHERCHONS NOUS ?
+                          QUEL SCENARISTE CHERCHONS NOUS ?
                         </p>
                       </div>
                       <img
-                        src={DirectorBear}
-                        alt="a Bear director"
+                        src={ScreenwriterBear}
+                        alt="a Bear screenwriter"
                         className="artists_bear_illustr"
                       />
                     </div>
                   </section>
                 </section>
               )}
-              {selectedDirector !== "" && (
+              {selectedScreenW !== "" && (
                 <section className="artists_filmo">
                   <div className="scroll_zone scroll_zone_2">
                     <div className="artists_filmo_thumbs">
@@ -318,4 +320,4 @@ function MovieDirectors() {
   );
 }
 
-export default MovieDirectors;
+export default MovieScreenwriters;
