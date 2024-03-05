@@ -11,7 +11,8 @@ import Counter from "../../components/Counters/Counters";
 import AlphabeticBtn from "../../components/AlphabeticBtn/AlphabeticBtn";
 import ChronologicBtn from "../../components/ChronologicBtn/ChronologicBtn";
 import MovieThumbnail from "../../components/MovieThumbnail/MovieThumbnail";
-import DirectorBear from "../../assets/ico/director_bear_01.jpeg";
+import ActorBear from "../../assets/ico/actor-bear.jpeg";
+import AlphabetDropdown from "../../components/AlphabetOption/AlphabetDropdown";
 
 function MovieCasting() {
   // DATAS
@@ -23,7 +24,30 @@ function MovieCasting() {
   const [sortOrderA, setSortOrderA] = useState("asc");
   const [sortOrderY, setSortOrderY] = useState("desc");
   const [movieAmount, setMovieAmount] = useState(0);
+  const [selectedLetter, SetSelectedLetter] = useState("a");
+  const [selectedCastingByLetter, setSelectedCastingByLetter] = useState([]);
 
+  // REQUEST ALL ARTIST BY LETTER
+  useEffect(() => {
+    fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/casting/sorted/${selectedLetter}`
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((castingDataLetter) => {
+        console.info(castingDataLetter);
+        setSelectedCastingByLetter(castingDataLetter);
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  }, [selectedLetter]);
+
+  // REQUEST ALL MOVIES
   useEffect(() => {
     fetch(
       `${import.meta.env.VITE_BACKEND_URL}/api/casting/${selectedCasting.id}`
@@ -43,8 +67,14 @@ function MovieCasting() {
       });
   }, [selectedCasting]);
 
-  // SELECT DIRECTOR
-  const handleDirectorClick = (casting) => {
+  // SELECT LETTER
+  const handleLetterChange = (letter) => {
+    SetSelectedLetter(letter);
+    setSearch("");
+  };
+
+  // SELECT ARTIST
+  const handleArtistClick = (casting) => {
     setSelectedCasting(casting);
   };
 
@@ -53,6 +83,7 @@ function MovieCasting() {
     let { value } = e.target;
     value = value.replace(/-/g, "").toLowerCase();
     setSearch(value);
+    SetSelectedLetter("");
   };
 
   const filteredCasting = castingData
@@ -67,8 +98,8 @@ function MovieCasting() {
       )
     : [];
 
-  // AFFICHER LE NOMBRE DE REALISATEURS
-  const castingAmount = castingData.length;
+  // AFFICHER LE NOMBRE D'ARTISTES
+  const castingAmount = selectedCastingByLetter.length;
   const selectedCastingAmount = filteredCasting.length;
 
   // SORTED BTN
@@ -184,18 +215,19 @@ function MovieCasting() {
         <section>
           <section className="artists_seach_container">
             <section className="artists_groups">
+              <AlphabetDropdown onLetterChange={handleLetterChange} />
               {search === "" && (
                 <div className="artists_groups_content">
                   <ThemeProvider theme={theme}>
                     <Stack spacing={2} direction="row" className="artists_list">
-                      {castingData.map((casting) => (
+                      {selectedCastingByLetter.map((casting) => (
                         <Button
                           key={casting.id}
                           variant="text"
                           color="artists_list"
                           size="small"
                           className="artists_button"
-                          onClick={() => handleDirectorClick(casting)}
+                          onClick={() => handleArtistClick(casting)}
                         >
                           {casting.name}
                         </Button>
@@ -215,7 +247,7 @@ function MovieCasting() {
                           color="primary"
                           size="small"
                           className="artists_button"
-                          onClick={() => handleDirectorClick(casting)}
+                          onClick={() => handleArtistClick(casting)}
                         >
                           {casting.name}
                         </Button>
@@ -242,7 +274,7 @@ function MovieCasting() {
                         </p>
                       </div>
                       <img
-                        src={DirectorBear}
+                        src={ActorBear}
                         alt="a Bear director"
                         className="artists_bear_illustr"
                       />

@@ -3,6 +3,7 @@ const castingModel = require("../models/castingModel");
 const getAllArtistAsc = async (req, res, next) => {
   try {
     const [artist] = await castingModel.findAllArtistAsc();
+    console.info(artist);
     res.status(200).json(artist);
   } catch (error) {
     next(error);
@@ -70,12 +71,11 @@ const getAllSorted3 = async (req, res, next) => {
 
 const getAllByLetter = async (req, res, next) => {
   try {
-    const { letter } = req.params; // Extraire la lettre des paramètres de la requête
-    console.info("Letter:", letter); // Afficher la lettre spécifiée dans la console
-    const [artists] = await castingModel.findAllByLetter(letter); // Utiliser la fonction du modèle pour obtenir les artistes par lettre
-    res.status(200).json(artists); // Renvoyer les artistes sous forme de réponse JSON
+    const { letter } = req.params;
+    const [artists] = await castingModel.findAllByLetter(letter);
+    res.status(200).json(artists);
   } catch (error) {
-    next(error); // Passer l'erreur au middleware suivant
+    next(error);
   }
 };
 

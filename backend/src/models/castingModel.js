@@ -79,25 +79,15 @@ const findAllMoviesByArtistIdYearDesc = (id) => {
   );
 };
 
-// const findAllByLetter = (letter) => {
-//   console.info("findAllByLetter function called with letter:", letter);
-//   const query = `
-//     SELECT *
-//     FROM casting
-//     WHERE SUBSTRING_INDEX(name, ' ', -1) LIKE $1
-//     ORDER BY SUBSTRING_INDEX(name, ' ', -1) ASC;
-//   `;
-//   return db.query(query, [`${letter}%`]);
-// };
-
-const findAllByLetter = () => {
-  return db.query(
-    `SELECT *
+const findAllByLetter = (letter) => {
+  console.info("findAllByLetter function called with letter:", letter);
+  const query = `
+    SELECT *
     FROM casting
-    WHERE SUBSTRING_INDEX(name, ' ', -1) LIKE 'A%'
-    ORDER BY SUBSTRING_INDEX(name, ' ', -1) ASC;`,
-    []
-  );
+    WHERE SUBSTRING_INDEX(name, ' ', -1) LIKE ?
+    ORDER BY SUBSTRING_INDEX(name, ' ', -1) ASC;
+  `;
+  return db.query(query, [`${letter}%`]);
 };
 
 module.exports = {
