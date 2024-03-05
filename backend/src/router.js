@@ -10,11 +10,13 @@ const router = express.Router();
 const moviesRouter = require("./routes/moviesRoute");
 const kindsRouter = require("./routes/kindsRoute");
 const directorsRouter = require("./routes/directorsRoute");
+const castingRouter = require("./routes/castingRoute");
 
 // Apply routes
 router.use(moviesRouter);
 router.use(kindsRouter);
 router.use(directorsRouter);
+router.use(castingRouter);
 
 /* ************************************************************************* */
 

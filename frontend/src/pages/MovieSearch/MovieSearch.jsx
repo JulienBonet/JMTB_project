@@ -166,7 +166,11 @@ function MovieSearch() {
             <div className="scroll_zone">
               <div className="MovieThumbnails">
                 {data.map((movieData) => (
-                  <MovieThumbnail key={movieData.id} data={movieData} />
+                  <MovieThumbnail
+                    key={movieData.id}
+                    data={movieData}
+                    classname="Amount_info"
+                  />
                 ))}
               </div>
             </div>

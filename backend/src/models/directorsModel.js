@@ -1,6 +1,6 @@
 const db = require("../../database/client");
 
-const findAllDirectorsAsc = () => {
+const findAllArtistAsc = () => {
   return db.query(
     `SELECT * 
     FROM director
@@ -10,7 +10,7 @@ const findAllDirectorsAsc = () => {
   );
 };
 
-const findAllfindAllDirectorsDesc = () => {
+const findAllArtistDesc = () => {
   return db.query(
     `SELECT * 
       FROM director
@@ -20,7 +20,7 @@ const findAllfindAllDirectorsDesc = () => {
   );
 };
 
-const findAllMoviesByDirectorId = (id) => {
+const findAllMoviesByArtistId = (id) => {
   return db.query(
     `SELECT m.*
       FROM movies m
@@ -31,7 +31,7 @@ const findAllMoviesByDirectorId = (id) => {
   );
 };
 
-const findAllMoviesByDirectorIdAsc = (id) => {
+const findAllMoviesByArtistIdAsc = (id) => {
   return db.query(
     `SELECT m.*
       FROM movies m
@@ -43,7 +43,7 @@ const findAllMoviesByDirectorIdAsc = (id) => {
   );
 };
 
-const findAllMoviesByDirectorIdDesc = (id) => {
+const findAllMoviesByArtistIdDesc = (id) => {
   return db.query(
     `SELECT m.*
         FROM movies m
@@ -55,7 +55,7 @@ const findAllMoviesByDirectorIdDesc = (id) => {
   );
 };
 
-const findAllMoviesByDirectorIdYearAsc = (id) => {
+const findAllMoviesByArtistIdYearAsc = (id) => {
   return db.query(
     `SELECT m.*
         FROM movies m
@@ -67,7 +67,7 @@ const findAllMoviesByDirectorIdYearAsc = (id) => {
   );
 };
 
-const findAllMoviesByDirectorIdYearDesc = (id) => {
+const findAllMoviesByArtistIdYearDesc = (id) => {
   return db.query(
     `SELECT m.*
         FROM movies m
@@ -80,11 +80,11 @@ const findAllMoviesByDirectorIdYearDesc = (id) => {
 };
 
 module.exports = {
-  findAllDirectorsAsc,
-  findAllfindAllDirectorsDesc,
-  findAllMoviesByDirectorId,
-  findAllMoviesByDirectorIdAsc,
-  findAllMoviesByDirectorIdDesc,
-  findAllMoviesByDirectorIdYearAsc,
-  findAllMoviesByDirectorIdYearDesc,
+  findAllArtistAsc,
+  findAllArtistDesc,
+  findAllMoviesByArtistId,
+  findAllMoviesByArtistIdAsc,
+  findAllMoviesByArtistIdDesc,
+  findAllMoviesByArtistIdYearAsc,
+  findAllMoviesByArtistIdYearDesc,
 };

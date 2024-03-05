@@ -7,6 +7,7 @@ import Home from "./pages/Home/Home.jsx";
 import MovieSearch from "./pages/MovieSearch/MovieSearch.jsx";
 import MovieSearchKind from "./pages/MovieSearchKind/MovieSearchKind.jsx";
 import MovieDirectors from "./pages/MovieArtist/MovieDirectors.jsx";
+import MovieCasting from "./pages/MovieArtist/MovieCasting.jsx";
 
 const router = createBrowserRouter([
   {
@@ -41,6 +42,13 @@ const router = createBrowserRouter([
         element: <MovieDirectors />,
         loader: () => {
           return fetch(`${import.meta.env.VITE_BACKEND_URL}/api/directors`);
+        },
+      },
+      {
+        path: "/movie_casting",
+        element: <MovieCasting />,
+        loader: () => {
+          return fetch(`${import.meta.env.VITE_BACKEND_URL}/api/casting`);
         },
       },
     ],
