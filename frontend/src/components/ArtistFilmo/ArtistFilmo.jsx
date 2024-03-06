@@ -4,6 +4,7 @@ import AlphabeticBtn from "../AlphabeticBtn/AlphabeticBtn";
 import ChronologicBtn from "../ChronologicBtn/ChronologicBtn";
 import MovieThumbnail from "../MovieThumbnail/MovieThumbnail";
 import DirectorBear from "../../assets/ico/director_bear_01.jpeg";
+import ActorBear from "../../assets/ico/actor-bear.jpg";
 
 function ArtistFilmo({
   selectedArtist,
@@ -32,6 +33,18 @@ function ArtistFilmo({
                 <img
                   src={DirectorBear}
                   alt="a Bear director"
+                  className="artists_bear_illustr"
+                />
+              </div>
+            )}
+            {origin === "casting" && (
+              <div className="artists_bear_container">
+                <div className="artists_pitch_container">
+                  <p className="artists_pitch">QUEL ACTEUR CHERCHONS NOUS ?</p>
+                </div>
+                <img
+                  src={ActorBear}
+                  alt="a Bear actor"
                   className="artists_bear_illustr"
                 />
               </div>

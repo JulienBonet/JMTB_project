@@ -66,7 +66,7 @@ function MovieDirectors() {
   };
 
   // SELECT DIRECTOR
-  const handleDirectorClick = (director) => {
+  const handleArtistClick = (director) => {
     setSelectedDirector(director);
   };
 
@@ -214,7 +214,7 @@ function MovieDirectors() {
               theme={theme}
               selectedByLetter={selectedDirectorByLetter}
               filteredArtist={filteredDirectors}
-              handleArtistClick={handleDirectorClick}
+              handleArtistClick={handleArtistClick}
               origin={origin}
               artistAmount={directorsAmount}
               selectedArtistAmount={selectedDirectorAmount}
