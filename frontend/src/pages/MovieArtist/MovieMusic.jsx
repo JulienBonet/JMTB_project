@@ -1,18 +1,9 @@
 import { useState, useEffect } from "react";
 import { useLoaderData } from "react-router-dom";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import Stack from "@mui/material/Stack";
-import Button from "@mui/material/Button";
+import { createTheme } from "@mui/material/styles";
 import "./movieArtist.css";
-import "../../assets/css/common_elements.css";
-import "../../assets/css/scrollButton.css";
-import MovieCount from "../../components/MovieCount/MovieCount";
-import Counter from "../../components/Counters/Counters";
-import AlphabeticBtn from "../../components/AlphabeticBtn/AlphabeticBtn";
-import ChronologicBtn from "../../components/ChronologicBtn/ChronologicBtn";
-import MovieThumbnail from "../../components/MovieThumbnail/MovieThumbnail";
-import MusicBear from "../../assets/ico/compositor-bear.jpeg";
-import AlphabetDropdown from "../../components/AlphabetOption/AlphabetDropdown";
+import ArtistList from "../../components/ArtistList/ArtistList";
+import ArtistFilmo from "../../components/ArtistFilmo/ArtistFilmo";
 
 function MovieCasting() {
   // DATAS
@@ -83,7 +74,7 @@ function MovieCasting() {
     SetSelectedLetter("");
   };
 
-  const filteredmusic = musicData
+  const filteredMusic = musicData
     ? musicData.filter(
         (dataItem) =>
           dataItem.name &&
@@ -95,15 +86,15 @@ function MovieCasting() {
       )
     : [];
 
-  // AFFICHER LE NOMBRE D'ARTISTES
+  // ARTISTS AMOUNT
   const musicAmount = selectedMusicByLetter.length;
-  const selectedMusicAmount = filteredmusic.length;
+  const selectedMusicAmount = filteredMusic.length;
 
   // SORTED BTN
   useEffect(() => {
     setData(movies);
   }, [movies]);
-
+  // REQUEST ALL MOVIES SORTED ALPHABETICAL ASC
   const movieSortedA = async () => {
     try {
       const response = await fetch(
@@ -121,7 +112,7 @@ function MovieCasting() {
       console.error("Error fetching data:", error);
     }
   };
-
+  // REQUEST ALL MOVIES SORTED ALPHABETICAL DESC
   const movieSortedZ = async () => {
     try {
       const response = await fetch(
@@ -139,7 +130,7 @@ function MovieCasting() {
       console.error("Error fetching data:", error);
     }
   };
-
+  // REQUEST ALL MOVIES SORTED CHRONOLOGICAL ASC
   const movieSortedYear = async () => {
     try {
       const response = await fetch(
@@ -157,7 +148,7 @@ function MovieCasting() {
       console.error("Error fetching data:", error);
     }
   };
-
+  // REQUEST ALL MOVIES SORTED CHRONOLOGICAL DSC
   const movieSortedYearDesc = async () => {
     try {
       const response = await fetch(
@@ -194,6 +185,9 @@ function MovieCasting() {
     },
   });
 
+  // PROPS FOR TEXTS & IMAGE
+  const origin = "music";
+
   return (
     <main>
       <section className="artists_content">
@@ -211,99 +205,29 @@ function MovieCasting() {
         <div className="dashed_secondary_bar" />
         <section>
           <section className="artists_seach_container">
-            <section className="artists_groups">
-              <AlphabetDropdown onLetterChange={handleLetterChange} />
-              {search === "" && (
-                <div className="artists_groups_content">
-                  <ThemeProvider theme={theme}>
-                    <Stack spacing={2} direction="row" className="artists_list">
-                      {selectedMusicByLetter.map((music) => (
-                        <Button
-                          key={music.id}
-                          variant="text"
-                          color="artists_list"
-                          size="small"
-                          className="artists_button"
-                          onClick={() => handleArtistClick(music)}
-                        >
-                          {music.name}
-                        </Button>
-                      ))}
-                    </Stack>
-                  </ThemeProvider>
-                </div>
-              )}
-              {search !== "" && (
-                <div className="artists_groups_content">
-                  <ThemeProvider theme={theme}>
-                    <Stack spacing={2} direction="row" className="artists_list">
-                      {filteredmusic.map((music) => (
-                        <Button
-                          key={music.id}
-                          variant="text"
-                          color="primary"
-                          size="small"
-                          className="artists_button"
-                          onClick={() => handleArtistClick(music)}
-                        >
-                          {music.name}
-                        </Button>
-                      ))}
-                    </Stack>
-                  </ThemeProvider>
-                </div>
-              )}
-              {search === "" && (
-                <Counter origin="music" countAmount={musicAmount} />
-              )}
-              {search !== "" && (
-                <Counter origin="music" countAmount={selectedMusicAmount} />
-              )}
-            </section>
-            <section className="filmo_artists">
-              {selectedMusic === "" && (
-                <section className="artists_bear">
-                  <section className="artists_bear_position">
-                    <div className="artists_bear_container">
-                      <div className="artists_pitch_container">
-                        <p className="artists_pitch">
-                          QUEL COMPOSITEUR CHERCHONS NOUS ?
-                        </p>
-                      </div>
-                      <img
-                        src={MusicBear}
-                        alt="a Bear actor"
-                        className="artists_bear_illustr"
-                      />
-                    </div>
-                  </section>
-                </section>
-              )}
-              {selectedMusic !== "" && (
-                <section className="artists_filmo">
-                  <div className="scroll_zone scroll_zone_2">
-                    <div className="artists_filmo_thumbs">
-                      {data.map((filmo) => (
-                        <MovieThumbnail key={filmo.id} data={filmo} />
-                      ))}
-                    </div>
-                  </div>
-                </section>
-              )}
-              <div className="btn_sort_container_search">
-                <AlphabeticBtn
-                  origin="artists"
-                  onClick={sortOrderA === "asc" ? movieSortedZ : movieSortedA}
-                />
-                <MovieCount movieAmount={movieAmount} />
-                <ChronologicBtn
-                  origin="artists"
-                  onClick={
-                    sortOrderY === "asc" ? movieSortedYearDesc : movieSortedYear
-                  }
-                />
-              </div>
-            </section>
+            <ArtistList
+              handleLetterChange={handleLetterChange}
+              search={search}
+              theme={theme}
+              selectedByLetter={selectedMusicByLetter}
+              filteredArtist={filteredMusic}
+              handleArtistClick={handleArtistClick}
+              origin={origin}
+              artistAmount={musicAmount}
+              selectedArtistAmount={selectedMusicAmount}
+            />
+            <ArtistFilmo
+              selectedArtist={selectedMusic}
+              origin={origin}
+              data={data}
+              sortOrderA={sortOrderA}
+              movieSortedZ={movieSortedZ}
+              movieSortedA={movieSortedA}
+              sortOrderY={sortOrderY}
+              movieSortedYearDesc={movieSortedYearDesc}
+              movieSortedYear={movieSortedYear}
+              movieAmount={movieAmount}
+            />
           </section>
         </section>
       </section>

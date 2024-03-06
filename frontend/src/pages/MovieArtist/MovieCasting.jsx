@@ -37,7 +37,7 @@ function MovieCasting() {
       });
   }, [selectedLetter]);
 
-  // REQUEST ALL MOVIES
+  // REQUEST MOVIE BY ID
   useEffect(() => {
     fetch(
       `${import.meta.env.VITE_BACKEND_URL}/api/casting/${selectedCasting.id}`
@@ -88,7 +88,7 @@ function MovieCasting() {
       )
     : [];
 
-  // AFFICHER LE NOMBRE D'ARTISTES
+  // ARTISTS AMOUNT
   const castingAmount = selectedCastingByLetter.length;
   const selectedCastingAmount = filteredCasting.length;
 
@@ -97,6 +97,7 @@ function MovieCasting() {
     setData(movies);
   }, [movies]);
 
+  // REQUEST ALL MOVIES SORTED ALPHABETICAL ASC
   const movieSortedA = async () => {
     try {
       const response = await fetch(
@@ -114,7 +115,7 @@ function MovieCasting() {
       console.error("Error fetching data:", error);
     }
   };
-
+  // REQUEST ALL MOVIES SORTED ALPHABETICAL DESC
   const movieSortedZ = async () => {
     try {
       const response = await fetch(
@@ -132,7 +133,7 @@ function MovieCasting() {
       console.error("Error fetching data:", error);
     }
   };
-
+  // REQUEST ALL MOVIES SORTED CHRONOLOGICAL ASC
   const movieSortedYear = async () => {
     try {
       const response = await fetch(
@@ -151,6 +152,7 @@ function MovieCasting() {
     }
   };
 
+  // REQUEST ALL MOVIES SORTED CHRONOLOGICAL DSC
   const movieSortedYearDesc = async () => {
     try {
       const response = await fetch(
@@ -187,6 +189,7 @@ function MovieCasting() {
     },
   });
 
+  // PROPS FOR TEXTS & IMAGE
   const origin = "casting";
 
   return (

@@ -39,7 +39,7 @@ function MovieScreenwriters() {
       });
   }, [selectedLetter]);
 
-  // REQUEST ALL MOVIES
+  // REQUEST MOVIE BY ID
   useEffect(() => {
     fetch(
       `${import.meta.env.VITE_BACKEND_URL}/api/screenwriters/${
@@ -92,7 +92,7 @@ function MovieScreenwriters() {
       )
     : [];
 
-  // AFFICHER LE NOMBRE D'ARTISTES
+  // ARTISTS AMOUNT
   const screenWriterAmount = selecteScreenWByLetter.length;
   const selectedscreenWriterAmount = filteredscreenWriter.length;
 
@@ -101,6 +101,7 @@ function MovieScreenwriters() {
     setData(movies);
   }, [movies]);
 
+  // REQUEST ALL MOVIES SORTED ALPHABETICAL ASC
   const movieSortedA = async () => {
     try {
       const response = await fetch(
@@ -118,7 +119,7 @@ function MovieScreenwriters() {
       console.error("Error fetching data:", error);
     }
   };
-
+  // REQUEST ALL MOVIES SORTED ALPHABETICAL DESC
   const movieSortedZ = async () => {
     try {
       const response = await fetch(
@@ -136,7 +137,7 @@ function MovieScreenwriters() {
       console.error("Error fetching data:", error);
     }
   };
-
+  // REQUEST ALL MOVIES SORTED CHRONOLOGICAL ASC
   const movieSortedYear = async () => {
     try {
       const response = await fetch(
@@ -154,7 +155,7 @@ function MovieScreenwriters() {
       console.error("Error fetching data:", error);
     }
   };
-
+  // REQUEST ALL MOVIES SORTED CHRONOLOGICAL DESC
   const movieSortedYearDesc = async () => {
     try {
       const response = await fetch(
@@ -190,7 +191,7 @@ function MovieScreenwriters() {
       },
     },
   });
-
+  // PROPS FOR TEXTS & IMAGE
   const origin = "screenwriters";
 
   return (
