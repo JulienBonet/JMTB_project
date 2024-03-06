@@ -37,7 +37,7 @@ function MovieCasting() {
       });
   }, [selectedLetter]);
 
-  // REQUEST ALL MOVIES
+  // REQUEST ALL MOVIES by ARTIST
   useEffect(() => {
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/music/${selectedMusic.id}`)
       .then((response) => {
@@ -94,6 +94,7 @@ function MovieCasting() {
   useEffect(() => {
     setData(movies);
   }, [movies]);
+
   // REQUEST ALL MOVIES SORTED ALPHABETICAL ASC
   const movieSortedA = async () => {
     try {
@@ -112,6 +113,7 @@ function MovieCasting() {
       console.error("Error fetching data:", error);
     }
   };
+
   // REQUEST ALL MOVIES SORTED ALPHABETICAL DESC
   const movieSortedZ = async () => {
     try {
@@ -130,6 +132,7 @@ function MovieCasting() {
       console.error("Error fetching data:", error);
     }
   };
+
   // REQUEST ALL MOVIES SORTED CHRONOLOGICAL ASC
   const movieSortedYear = async () => {
     try {
@@ -148,6 +151,7 @@ function MovieCasting() {
       console.error("Error fetching data:", error);
     }
   };
+
   // REQUEST ALL MOVIES SORTED CHRONOLOGICAL DSC
   const movieSortedYearDesc = async () => {
     try {

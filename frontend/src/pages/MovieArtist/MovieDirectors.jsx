@@ -39,7 +39,7 @@ function MovieDirectors() {
       });
   }, [selectedLetter]);
 
-  // REQUEST ALL MOVIES by ARTIST ID
+  // REQUEST ALL MOVIES by ARTIST
   useEffect(() => {
     fetch(
       `${import.meta.env.VITE_BACKEND_URL}/api/directors/${selectedDirector.id}`
@@ -65,7 +65,7 @@ function MovieDirectors() {
     setSearch("");
   };
 
-  // SELECT DIRECTOR
+  // SELECT ARTIST
   const handleArtistClick = (director) => {
     setSelectedDirector(director);
   };
@@ -90,7 +90,7 @@ function MovieDirectors() {
       )
     : [];
 
-  // AFFICHER LE NOMBRE DE REALISATEURS
+  // ARTISTS AMOUNT
   const directorsAmount = selectedDirectorByLetter.length;
   const selectedDirectorAmount = filteredDirectors.length;
 
@@ -99,6 +99,7 @@ function MovieDirectors() {
     setData(movies);
   }, [movies]);
 
+  // REQUEST ALL MOVIES SORTED ALPHABETICAL ASC
   const movieSortedA = async () => {
     try {
       const response = await fetch(
@@ -117,6 +118,7 @@ function MovieDirectors() {
     }
   };
 
+  // REQUEST ALL MOVIES SORTED ALPHABETICAL DESC
   const movieSortedZ = async () => {
     try {
       const response = await fetch(
@@ -135,6 +137,7 @@ function MovieDirectors() {
     }
   };
 
+  // REQUEST ALL MOVIES SORTED CHRONOLOGICAL ASC
   const movieSortedYear = async () => {
     try {
       const response = await fetch(
@@ -153,6 +156,7 @@ function MovieDirectors() {
     }
   };
 
+  // REQUEST ALL MOVIES SORTED CHRONOLOGICAL DSC
   const movieSortedYearDesc = async () => {
     try {
       const response = await fetch(
@@ -189,6 +193,7 @@ function MovieDirectors() {
     },
   });
 
+  // PROPS FOR TEXTS & IMAGE
   const origin = "directors";
 
   return (

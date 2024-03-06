@@ -7,6 +7,7 @@ import DirectorBear from "../../assets/ico/director_bear_01.jpeg";
 import ActorBear from "../../assets/ico/actor-bear.jpg";
 import ScreenwriterBear from "../../assets/ico/screenwiter-bear.jpeg";
 import MusicBear from "../../assets/ico/compositor-bear.jpeg";
+import StudioBear from "../../assets/ico/studio_bear.jpeg";
 
 function ArtistFilmo({
   selectedArtist,
@@ -74,6 +75,18 @@ function ArtistFilmo({
                 </div>
                 <img
                   src={MusicBear}
+                  alt="a Bear MUSIC COMPOSITOR"
+                  className="artists_bear_illustr"
+                />
+              </div>
+            )}
+            {origin === "studio" && (
+              <div className="artists_bear_container">
+                <div className="artists_pitch_container">
+                  <p className="artists_pitch">QUEL STUDIO CHERCHONS NOUS ?</p>
+                </div>
+                <img
+                  src={StudioBear}
                   alt="a Bear MUSIC COMPOSITOR"
                   className="artists_bear_illustr"
                 />

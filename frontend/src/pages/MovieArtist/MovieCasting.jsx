@@ -37,7 +37,7 @@ function MovieCasting() {
       });
   }, [selectedLetter]);
 
-  // REQUEST MOVIE BY ID
+  // REQUEST ALL MOVIES by ARTIST
   useEffect(() => {
     fetch(
       `${import.meta.env.VITE_BACKEND_URL}/api/casting/${selectedCasting.id}`

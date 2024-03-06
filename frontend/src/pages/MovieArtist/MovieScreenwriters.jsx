@@ -39,7 +39,7 @@ function MovieScreenwriters() {
       });
   }, [selectedLetter]);
 
-  // REQUEST MOVIE BY ID
+  // REQUEST ALL MOVIES by ARTIST
   useEffect(() => {
     fetch(
       `${import.meta.env.VITE_BACKEND_URL}/api/screenwriters/${
@@ -119,6 +119,7 @@ function MovieScreenwriters() {
       console.error("Error fetching data:", error);
     }
   };
+
   // REQUEST ALL MOVIES SORTED ALPHABETICAL DESC
   const movieSortedZ = async () => {
     try {
@@ -137,6 +138,7 @@ function MovieScreenwriters() {
       console.error("Error fetching data:", error);
     }
   };
+
   // REQUEST ALL MOVIES SORTED CHRONOLOGICAL ASC
   const movieSortedYear = async () => {
     try {
@@ -155,6 +157,7 @@ function MovieScreenwriters() {
       console.error("Error fetching data:", error);
     }
   };
+
   // REQUEST ALL MOVIES SORTED CHRONOLOGICAL DESC
   const movieSortedYearDesc = async () => {
     try {
@@ -191,6 +194,7 @@ function MovieScreenwriters() {
       },
     },
   });
+
   // PROPS FOR TEXTS & IMAGE
   const origin = "screenwriters";
 
