@@ -20,6 +20,17 @@ function Counters({ countAmount, origin }) {
           <span className="whiteString_counter">{countAmount}</span> scénaristes
         </p>
       )}
+      {origin === "music" && (
+        <p className="Amount_info_counter">
+          <span className="whiteString_counter">{countAmount}</span>{" "}
+          compositeurs
+        </p>
+      )}
+      {origin === "studio" && (
+        <p className="Amount_info_counter">
+          <span className="whiteString_counter">{countAmount}</span> studios
+        </p>
+      )}
     </section>
   );
 }

@@ -53,6 +53,16 @@ export default function BasicButtons() {
             SCENARISTES
           </Button>
         </Link>
+        <Link to="/movie_music">
+          <Button variant="outlined" color="JmdbColorNav">
+            COMPOSITEURS
+          </Button>
+        </Link>
+        <Link to="/movie_studio">
+          <Button variant="outlined" color="JmdbColorNav">
+            STUDIOS
+          </Button>
+        </Link>
       </Stack>
     </ThemeProvider>
   );
