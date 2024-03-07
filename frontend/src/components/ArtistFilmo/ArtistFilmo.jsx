@@ -108,11 +108,13 @@ function ArtistFilmo({
       )}
       <div className="btn_sort_container_search">
         <AlphabeticBtn
+          selectedItems={selectedArtist}
           origin="artists"
           onClick={sortOrderA === "asc" ? movieSortedZ : movieSortedA}
         />
         <MovieCount movieAmount={movieAmount} />
         <ChronologicBtn
+          selectedItems={selectedArtist}
           origin="artists"
           onClick={sortOrderY === "asc" ? movieSortedYearDesc : movieSortedYear}
         />

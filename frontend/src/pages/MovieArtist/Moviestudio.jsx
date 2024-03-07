@@ -202,6 +202,7 @@ function MovieCasting() {
                 value={search}
                 onChange={handleTyping}
                 className="search_bar"
+                placeholder="recherche studio"
               />
             </div>
           </section>

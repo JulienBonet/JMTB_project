@@ -208,6 +208,7 @@ function MovieScreenwriters() {
                 value={search}
                 onChange={handleTyping}
                 className="search_bar"
+                placeholder="recherche scénariste"
               />
             </div>
           </section>

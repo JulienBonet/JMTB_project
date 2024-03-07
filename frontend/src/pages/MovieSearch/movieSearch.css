@@ -47,15 +47,24 @@
   justify-content: center;
   align-items: center;
   padding: 1rem 0 0 0;
-  min-height: calc(100vh - 240px);
+  min-height: calc(100vh - 180px);
 }
+.MovieThumbnails_container,
 .search_bear_background_container {
   display: flex;
   justify-content: space-evenly;
   border: solid 1px white;
   border-radius: 25px;
   padding: 2rem 0;
-  width: 90%;
+  width: 92%;
+  height: 568px;
+}
+
+.MovieThumbnails_container {
+  justify-content: center;
+  /* margin-top: 1rem; */
+  padding: 1.5rem 0;
+  overflow: auto;
 }
 .Search_pitch_container {
   display: flex;
@@ -74,17 +83,7 @@
   border-radius: 25px;
   width: 32%;
 }
-.MovieThumbnails_container {
-  display: flex;
-  justify-content: center;
-  border: solid 1px white;
-  border-radius: 25px;
-  margin-top: 1rem;
-  padding: 1.5rem 0;
-  width: 95%;
-  height: 568px;
-  overflow: auto;
-}
+
 .MovieThumbnails_container::-webkit-scrollbar {
   width: 0;
   height: 0;
@@ -99,18 +98,4 @@
   width: 83%;
   display: flex;
   justify-content: space-between;
-}
-
-.allMoviesBtn_search {
-  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
-    "Lucida Sans", Arial, sans-serif;
-  font-size: 1rem;
-  text-align: center;
-  color: var(--color-primary);
-  cursor: pointer;
-  padding: 10px 1rem;
-}
-
-.allMoviesBtn_search:hover {
-  color: var(--color-third);
 }

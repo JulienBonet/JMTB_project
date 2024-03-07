@@ -206,6 +206,7 @@ function MovieDirectors() {
                 value={search}
                 onChange={handleTyping}
                 className="search_bar"
+                placeholder="recherche réalisateur"
               />
             </div>
           </section>
