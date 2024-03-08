@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useLoaderData } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Pagination, Stack, Button } from "@mui/material";
+import { Stack, Button } from "@mui/material";
 import "./MovieSearchKind.css";
 import "../../assets/css/scrollButton.css";
 import MovieCount from "../../components/MovieCount/MovieCount";
@@ -9,8 +9,6 @@ import MovieThumbail3 from "../../components/MovieThumbnail3/MovieThumbnail3";
 import BearKinds from "../../assets/ico/camera_Bear_03.jpeg";
 import AlphabeticBtn from "../../components/AlphabeticBtn/AlphabeticBtn";
 import ChronologicBtn from "../../components/ChronologicBtn/ChronologicBtn";
-// import CountryBtn from "../../components/CountryBtn/CountryBtn";
-// import DurationBtn from "../../components/DurationBtn/DurationBtn";
 
 function MovieSearchKind() {
   // DATAS
@@ -20,7 +18,9 @@ function MovieSearchKind() {
   const [selectedButton, setSelectedButton] = useState("");
   const [sortOrderA, setSortOrderA] = useState("asc");
   const [sortOrderY, setSortOrderY] = useState("desc");
+  const [currentRow, setCurrentRow] = useState(1);
 
+  // REQUEST ALL GENRES
   useEffect(() => {
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/kinds/${selectedGenre}`)
       .then((response) => {
@@ -117,17 +117,22 @@ function MovieSearchKind() {
 
   // PAGINATION BUTTONS GENRES
 
-  const itemsPerRow = 13;
+  const itemsPerRow = 10;
   const totalRows = Math.ceil(kindsData.length / itemsPerRow);
-  const [currentRow, setCurrentRow] = useState(1);
   const startRowIndex = (currentRow - 1) * itemsPerRow;
   const endRowIndex = startRowIndex + itemsPerRow;
   const genresForRow = kindsData
     .slice(startRowIndex, endRowIndex)
     .map((item) => item.genre);
 
-  const handlePageChange = (event, value) => {
-    setCurrentRow(value);
+  const handleRowUp = () => {
+    const nextRow = currentRow === totalRows ? 1 : currentRow + 1;
+    setCurrentRow(nextRow);
+  };
+
+  const handleRowDown = () => {
+    const nextRow = currentRow === 1 ? totalRows : currentRow - 1;
+    setCurrentRow(nextRow);
   };
 
   // STYLE BUTTONS GENRES
@@ -155,10 +160,36 @@ function MovieSearchKind() {
   const movieAmount = 0;
   const movieAmountKind = movies.length;
 
+  // EXPAND SORTED BTN
+  const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    if (selectedGenre !== "") {
+      setExpanded(true);
+    } else {
+      setExpanded(false);
+    }
+  }, [selectedGenre]);
   return (
     <main>
       <section className="search_kind_contents">
         <section className="search_kind_position">
+          <div className="arrow_container arrow_container_back">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="30"
+              viewBox="0 -960 960 960"
+              width="30"
+              fill="white"
+              onClick={handleRowDown}
+              role="button"
+              aria-label="Previous"
+              tabIndex="0"
+              cursor="pointer"
+            >
+              <path d="M400-80 0-480l400-400 71 71-329 329 329 329-71 71Z" />
+            </svg>
+          </div>
           <div className="search_kind_container">
             <ThemeProvider theme={theme}>
               <Stack spacing={2} direction="row" className="Kind_Choice">
@@ -180,20 +211,25 @@ function MovieSearchKind() {
               </Stack>
             </ThemeProvider>
           </div>
+          <div className="arrow_container arrow_container_forward">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              height="30"
+              viewBox="0 -960 960 960"
+              width="30"
+              fill="white"
+              onClick={handleRowUp}
+              role="button"
+              aria-label="next"
+              tabIndex="0"
+              cursor="pointer"
+            >
+              <path d="m321-80-71-71 329-329-329-329 71-71 400 400L321-80Z" />
+            </svg>
+          </div>
         </section>
       </section>
       <div className="dashed_secondary_bar" />
-      <div className="Kinds_btn_rows_pagination">
-        <Stack spacing={2} className="pagination_content">
-          <Pagination
-            count={totalRows}
-            page={currentRow}
-            onChange={handlePageChange}
-            shape="rounded"
-            size="small"
-          />
-        </Stack>
-      </div>
       <section className="kinds_bloc_position">
         {selectedGenre === "" && (
           <section className="kinds_bear_position">
@@ -224,11 +260,29 @@ function MovieSearchKind() {
         )}
         <div className="btn_sort_container_kind">
           <AlphabeticBtn
+            selectedItems={selectedGenre}
+            style={{
+              height: expanded ? "37px" : "0",
+              fontSize: expanded ? "1rem" : "0",
+              padding: expanded ? "10px 0" : "0",
+              border: expanded ? "solid 1px var(--color-primary)" : "0",
+              borderTop: expanded ? "0" : "none",
+              transition: "height 0.3s ease-in",
+            }}
             onClick={sortOrderA === "asc" ? movieSortedZ : movieSortedA}
           />
           {selectedGenre === "" && <MovieCount movieAmount={movieAmount} />}
           {selectedGenre !== "" && <MovieCount movieAmount={movieAmountKind} />}
           <ChronologicBtn
+            selectedItems={selectedGenre}
+            style={{
+              height: expanded ? "37px" : "0",
+              fontSize: expanded ? "1rem" : "0",
+              padding: expanded ? "10px 0" : "0",
+              border: expanded ? "solid 1px var(--color-primary)" : "0",
+              borderTop: expanded ? "0" : "none",
+              transition: "height 0.3s ease-in",
+            }}
             onClick={
               sortOrderY === "asc" ? movieSortedYearDesc : movieSortedYear
             }

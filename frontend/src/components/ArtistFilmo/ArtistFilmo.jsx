@@ -69,9 +69,7 @@ function ArtistFilmo({
             {origin === "music" && (
               <div className="artists_bear_container">
                 <div className="artists_pitch_container">
-                  <p className="artists_pitch">
-                    QUEL COMPOSITEUR CHERCHONS NOUS ?
-                  </p>
+                  <p className="artists_pitch">QUEL MAESTRO CHERCHONS NOUS ?</p>
                 </div>
                 <img
                   src={MusicBear}

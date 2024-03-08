@@ -48,6 +48,7 @@
   align-items: center;
   padding: 1rem 0 0 0;
   min-height: calc(100vh - 180px);
+  padding: 1rem 0 0 0;
 }
 .MovieThumbnails_container,
 .search_bear_background_container {
