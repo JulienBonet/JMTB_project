@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-duplicate-props */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useLoaderData } from "react-router-dom";
 import "./movieSearch.css";
 import "../../assets/css/scrollButton.css";
@@ -16,28 +16,6 @@ function MovieSearch() {
   const [search, setSearch] = useState("");
   const [sortOrderA, setSortOrderA] = useState("asc");
   const [sortOrderY, setSortOrderY] = useState("desc");
-  const [allMoviesClicked, setAllMoviesClicked] = useState(false);
-
-  const allMovies = async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/movies`
-      );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const newData = await response.json();
-      if (Array.isArray(newData)) {
-        setData(newData);
-        setSearch("");
-        setAllMoviesClicked(true);
-      } else {
-        console.error("Invalid data format received");
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
 
   const movieSortedA = async () => {
     try {
@@ -121,6 +99,16 @@ function MovieSearch() {
   // MOVIE AMOUNT
   const movieAmount = filteredMovies.length;
 
+  // EXPAND SORTED BTN
+  const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    if (search !== "") {
+      setExpanded(true);
+    } else {
+      setExpanded(false);
+    }
+  }, [search]);
   return (
     <main>
       <section className="search_bar_contents">
@@ -136,20 +124,8 @@ function MovieSearch() {
         </section>
       </section>
       <div className="dashed_secondary_bar" />
-      <div className="AllMoviesPosition_seach">
-        <div
-          role="button"
-          className="allMoviesBtn_search"
-          onClick={allMovies}
-          onKeyDown={allMovies}
-          tabIndex={0}
-        >
-          SELECT ALL MOVIES
-        </div>
-      </div>
       <section className="search_bear_position">
-        {/* Vérifier si la recherche est vide */}
-        {search === "" && !allMoviesClicked && (
+        {search === "" && (
           <div className="search_bear_background_container">
             <div className="Search_pitch_container">
               <p className="Search_pitch">QUEL FILM CHERCHONS NOUS ?</p>
@@ -161,22 +137,6 @@ function MovieSearch() {
             />
           </div>
         )}
-        {search === "" && allMoviesClicked && (
-          <div className="MovieThumbnails_container">
-            <div className="scroll_zone">
-              <div className="MovieThumbnails">
-                {data.map((movieData) => (
-                  <MovieThumbnail
-                    key={movieData.id}
-                    data={movieData}
-                    classname="Amount_info"
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-        {/* Afficher les vignettes des films si une recherche est effectuée */}
         {search !== "" && (
           <div className="MovieThumbnails_container">
             <div className="scroll_zone">
@@ -190,10 +150,28 @@ function MovieSearch() {
         )}
         <div className="btn_sort_container_search">
           <AlphabeticBtn
+            selectedItems={search}
+            style={{
+              height: expanded ? "37px" : "0",
+              fontSize: expanded ? "1rem" : "0",
+              padding: expanded ? "10px 0" : "0",
+              border: expanded ? "solid 1px var(--color-primary)" : "0",
+              borderTop: expanded ? "0" : "none",
+              transition: "height 0.3s ease-in",
+            }}
             onClick={sortOrderA === "asc" ? movieSortedZ : movieSortedA}
           />
           <MovieCount movieAmount={movieAmount} />
           <ChronologicBtn
+            selectedItems={search}
+            style={{
+              height: expanded ? "37px" : "0",
+              fontSize: expanded ? "1rem" : "0",
+              padding: expanded ? "10px 0" : "0",
+              border: expanded ? "solid 1px var(--color-primary)" : "0",
+              borderTop: expanded ? "0" : "none",
+              transition: "height 0.3s ease-in",
+            }}
             onClick={
               sortOrderY === "asc" ? movieSortedYearDesc : movieSortedYear
             }

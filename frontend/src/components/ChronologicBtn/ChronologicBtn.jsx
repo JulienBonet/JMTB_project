@@ -1,9 +1,10 @@
 /* eslint-disable react/prop-types */
+import { useState, useEffect } from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import "./chronologicBtn.css";
 
-function ChronologicBtn({ onClick, origin }) {
+function ChronologicBtn({ onClick, origin, selectedItems }) {
   const theme = createTheme({
     palette: {
       sortedBtn: {
@@ -14,15 +15,32 @@ function ChronologicBtn({ onClick, origin }) {
       },
     },
   });
+  const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    if (selectedItems !== "") {
+      setExpanded(true);
+    } else {
+      setExpanded(false);
+    }
+  }, [selectedItems]);
 
   return (
     <ThemeProvider theme={theme}>
       <Button
         variant="outlined"
         color="sortedBtn"
-        className={
-          origin !== "artists" ? "chronologic_btn" : "chronologic_btn_artists"
-        }
+        className={`${
+          origin !== "artists" ? "alphabetic_btn" : "alphabetic_btn_artists"
+        } ${expanded ? "expanded" : ""}`}
+        style={{
+          height: expanded ? "37px" : "0",
+          fontSize: expanded ? "1rem" : "0",
+          padding: expanded ? "10px 0" : "0",
+          border: expanded ? "solid 1px var(--color-primary)" : "0",
+          borderTop: expanded ? "0" : "none",
+          transition: "height 0.3s ease-in",
+        }}
         onClick={onClick}
       >
         TRI CHRONOLOGIQUE
