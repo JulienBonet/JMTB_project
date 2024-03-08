@@ -28,6 +28,7 @@
 .infos_bloc_1 {
   display: flex;
   flex-direction: column;
+  /* justify-content: center; */
   gap: 0.5rem;
 }
 .MovieCard_title {

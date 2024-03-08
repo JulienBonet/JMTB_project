@@ -7,21 +7,21 @@ import ArtistFilmo from "../../components/ArtistFilmo/ArtistFilmo";
 
 function MovieCasting() {
   // DATAS
-  const castingData = useLoaderData();
+  const studioData = useLoaderData();
   const [movies, setMovies] = useState([]);
   const [data, setData] = useState(movies);
-  const [selectedCasting, setSelectedCasting] = useState("");
   const [search, setSearch] = useState("");
   const [sortOrderA, setSortOrderA] = useState("asc");
   const [sortOrderY, setSortOrderY] = useState("desc");
   const [movieAmount, setMovieAmount] = useState(0);
   const [selectedLetter, SetSelectedLetter] = useState("a");
-  const [selectedCastingByLetter, setSelectedCastingByLetter] = useState([]);
+  const [selectedStudio, setselectedStudio] = useState("");
+  const [selectedStudioByLetter, setSelectedStudioByLetter] = useState([]);
 
-  // REQUEST ALL ARTIST BY LETTER
+  // REQUEST ALL STUDIOS BY LETTER
   useEffect(() => {
     fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/casting/sorted/${selectedLetter}`
+      `${import.meta.env.VITE_BACKEND_URL}/api/studio/sorted/${selectedLetter}`
     )
       .then((response) => {
         if (!response.ok) {
@@ -29,19 +29,17 @@ function MovieCasting() {
         }
         return response.json();
       })
-      .then((castingDataLetter) => {
-        setSelectedCastingByLetter(castingDataLetter);
+      .then((studioDataLetter) => {
+        setSelectedStudioByLetter(studioDataLetter);
       })
       .catch((error) => {
         console.error("Error fetching user data:", error);
       });
   }, [selectedLetter]);
 
-  // REQUEST ALL MOVIES by ARTIST
+  // REQUEST ALL MOVIES by STUDIO
   useEffect(() => {
-    fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/casting/${selectedCasting.id}`
-    )
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/studio/${selectedStudio.id}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -55,7 +53,7 @@ function MovieCasting() {
       .catch((error) => {
         console.error("Error fetching user data:", error);
       });
-  }, [selectedCasting]);
+  }, [selectedStudio]);
 
   // SELECT LETTER
   const handleLetterChange = (letter) => {
@@ -63,9 +61,9 @@ function MovieCasting() {
     setSearch("");
   };
 
-  // SELECT ARTIST
-  const handleArtistClick = (casting) => {
-    setSelectedCasting(casting);
+  // SELECT STUDIO
+  const handleArtistClick = (studio) => {
+    setselectedStudio(studio);
   };
 
   // SEARCH BAR
@@ -76,8 +74,8 @@ function MovieCasting() {
     SetSelectedLetter("");
   };
 
-  const filteredCasting = castingData
-    ? castingData.filter(
+  const filteredStudio = studioData
+    ? studioData.filter(
         (dataItem) =>
           dataItem.name &&
           dataItem.name
@@ -88,9 +86,9 @@ function MovieCasting() {
       )
     : [];
 
-  // ARTISTS AMOUNT
-  const castingAmount = selectedCastingByLetter.length;
-  const selectedCastingAmount = filteredCasting.length;
+  // AFFICHER LE NOMBRE D'ARTISTES
+  const studioAmount = selectedStudioByLetter.length;
+  const selectedStudioAmount = filteredStudio.length;
 
   // SORTED BTN
   useEffect(() => {
@@ -101,8 +99,8 @@ function MovieCasting() {
   const movieSortedA = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/casting/${
-          selectedCasting.id
+        `${import.meta.env.VITE_BACKEND_URL}/api/studio/${
+          selectedStudio.id
         }/sorted/0`
       );
       if (!response.ok) {
@@ -115,12 +113,13 @@ function MovieCasting() {
       console.error("Error fetching data:", error);
     }
   };
+
   // REQUEST ALL MOVIES SORTED ALPHABETICAL DESC
   const movieSortedZ = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/casting/${
-          selectedCasting.id
+        `${import.meta.env.VITE_BACKEND_URL}/api/studio/${
+          selectedStudio.id
         }/sorted/1`
       );
       if (!response.ok) {
@@ -133,12 +132,13 @@ function MovieCasting() {
       console.error("Error fetching data:", error);
     }
   };
+
   // REQUEST ALL MOVIES SORTED CHRONOLOGICAL ASC
   const movieSortedYear = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/casting/${
-          selectedCasting.id
+        `${import.meta.env.VITE_BACKEND_URL}/api/studio/${
+          selectedStudio.id
         }/sorted/2`
       );
       if (!response.ok) {
@@ -156,8 +156,8 @@ function MovieCasting() {
   const movieSortedYearDesc = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/casting/${
-          selectedCasting.id
+        `${import.meta.env.VITE_BACKEND_URL}/api/studio/${
+          selectedStudio.id
         }/sorted/3`
       );
       if (!response.ok) {
@@ -190,7 +190,7 @@ function MovieCasting() {
   });
 
   // PROPS FOR TEXTS & IMAGE
-  const origin = "casting";
+  const origin = "studio";
 
   return (
     <main>
@@ -202,7 +202,7 @@ function MovieCasting() {
                 value={search}
                 onChange={handleTyping}
                 className="search_bar"
-                placeholder="recherche acteur"
+                placeholder="recherche studio"
               />
             </div>
           </section>
@@ -214,15 +214,15 @@ function MovieCasting() {
               handleLetterChange={handleLetterChange}
               search={search}
               theme={theme}
-              selectedByLetter={selectedCastingByLetter}
-              filteredArtist={filteredCasting}
+              selectedByLetter={selectedStudioByLetter}
+              filteredArtist={filteredStudio}
               handleArtistClick={handleArtistClick}
               origin={origin}
-              artistAmount={castingAmount}
-              selectedArtistAmount={selectedCastingAmount}
+              artistAmount={studioAmount}
+              selectedArtistAmount={selectedStudioAmount}
             />
             <ArtistFilmo
-              selectedArtist={selectedCasting}
+              selectedArtist={selectedStudio}
               origin={origin}
               data={data}
               sortOrderA={sortOrderA}

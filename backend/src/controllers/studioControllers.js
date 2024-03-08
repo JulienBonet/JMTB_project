@@ -1,9 +1,9 @@
-const castingModel = require("../models/castingModel");
+const studioModel = require("../models/studioModel");
 
 const getAllArtistAsc = async (req, res, next) => {
   try {
-    const [artist] = await castingModel.findAllArtistAsc();
-    res.status(200).json(artist);
+    const [studio] = await studioModel.findAllArtistAsc();
+    res.status(200).json(studio);
   } catch (error) {
     next(error);
   }
@@ -11,8 +11,8 @@ const getAllArtistAsc = async (req, res, next) => {
 
 const getAllArtistDesc = async (req, res, next) => {
   try {
-    const [artist] = await castingModel.findAllArtistDesc();
-    res.status(200).json(artist);
+    const [studio] = await studioModel.findAllArtistDesc();
+    res.status(200).json(studio);
   } catch (error) {
     next(error);
   }
@@ -21,7 +21,7 @@ const getAllArtistDesc = async (req, res, next) => {
 const getAllMoviesByArtistId = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const [movies] = await castingModel.findAllMoviesByArtistId(id);
+    const [movies] = await studioModel.findAllMoviesByArtistId(id);
     res.status(200).json(movies);
   } catch (error) {
     next(error);
@@ -31,7 +31,7 @@ const getAllMoviesByArtistId = async (req, res, next) => {
 const getAllSorted0 = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const [movies] = await castingModel.findAllMoviesByArtistIdAsc(id);
+    const [movies] = await studioModel.findAllMoviesByArtistIdAsc(id);
     res.status(200).json(movies);
   } catch (error) {
     next(error);
@@ -41,7 +41,7 @@ const getAllSorted0 = async (req, res, next) => {
 const getAllSorted1 = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const [movies] = await castingModel.findAllMoviesByArtistIdDesc(id);
+    const [movies] = await studioModel.findAllMoviesByArtistIdDesc(id);
     res.status(200).json(movies);
   } catch (error) {
     next(error);
@@ -51,7 +51,7 @@ const getAllSorted1 = async (req, res, next) => {
 const getAllSorted2 = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const [movies] = await castingModel.findAllMoviesByArtistIdYearAsc(id);
+    const [movies] = await studioModel.findAllMoviesByArtistIdYearAsc(id);
     res.status(200).json(movies);
   } catch (error) {
     next(error);
@@ -61,7 +61,7 @@ const getAllSorted2 = async (req, res, next) => {
 const getAllSorted3 = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const [movies] = await castingModel.findAllMoviesByArtistIdYearDesc(id);
+    const [movies] = await studioModel.findAllMoviesByArtistIdYearDesc(id);
     res.status(200).json(movies);
   } catch (error) {
     next(error);
@@ -71,8 +71,8 @@ const getAllSorted3 = async (req, res, next) => {
 const getAllByLetter = async (req, res, next) => {
   try {
     const { letter } = req.params;
-    const [artists] = await castingModel.findAllByLetter(letter);
-    res.status(200).json(artists);
+    const [studio] = await studioModel.findAllByLetter(letter);
+    res.status(200).json(studio);
   } catch (error) {
     next(error);
   }
