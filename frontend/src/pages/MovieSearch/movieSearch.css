@@ -46,7 +46,6 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 1rem 0 0 0;
   min-height: calc(100vh - 180px);
   padding: 1rem 0 0 0;
 }
@@ -63,7 +62,6 @@
 
 .MovieThumbnails_container {
   justify-content: center;
-  /* margin-top: 1rem; */
   padding: 1.5rem 0;
   overflow: auto;
 }
