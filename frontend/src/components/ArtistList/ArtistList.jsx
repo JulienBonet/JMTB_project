@@ -21,7 +21,10 @@ function ArtistList({
 }) {
   return (
     <section className="artists_groups">
-      <AlphabetDropdown onLetterChange={handleLetterChange} />
+      <AlphabetDropdown
+        onLetterChange={handleLetterChange}
+        origin="artistlist"
+      />
       {search === "" && (
         <div className="artists_groups_content">
           <ThemeProvider theme={theme}>

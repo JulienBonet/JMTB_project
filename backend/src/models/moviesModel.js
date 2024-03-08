@@ -64,6 +64,27 @@ const findById = (id) => {
   );
 };
 
+const findByLetter = (letter) => {
+  return db.query(
+    "SELECT * FROM movies WHERE title LIKE ? ORDER BY title ASC;",
+    [`${letter}%`]
+  );
+};
+
+const findByLetterNumber = () => {
+  return db.query(
+    "SELECT * FROM movies WHERE title REGEXP '^[0-9]' ORDER BY title ASC;",
+    []
+  );
+};
+
+const findByYear = (year) => {
+  return db.query(
+    "SELECT * FROM movies WHERE year LIKE ? ORDER BY title ASC;",
+    [`${year}%`]
+  );
+};
+
 module.exports = {
   findAll,
   findById,
@@ -72,4 +93,7 @@ module.exports = {
   findAllSortedYear,
   findAllSortedYearDESC,
   findAllSortedNoX,
+  findByLetter,
+  findByLetterNumber,
+  findByYear,
 };

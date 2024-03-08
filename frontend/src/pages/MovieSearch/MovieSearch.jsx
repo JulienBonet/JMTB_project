@@ -5,6 +5,7 @@ import "./movieSearch.css";
 import "../../assets/css/scrollButton.css";
 import AlphabeticBtn from "../../components/AlphabeticBtn/AlphabeticBtn";
 import ChronologicBtn from "../../components/ChronologicBtn/ChronologicBtn";
+import AlphabetDropdown from "../../components/AlphabetOption/AlphabetDropdown";
 import MovieThumbnail from "../../components/MovieThumbnail/MovieThumbnail";
 import MovieCount from "../../components/MovieCount/MovieCount";
 import BearSearch from "../../assets/ico/search_Bear_02.jpeg";
@@ -16,7 +17,30 @@ function MovieSearch() {
   const [search, setSearch] = useState("");
   const [sortOrderA, setSortOrderA] = useState("asc");
   const [sortOrderY, setSortOrderY] = useState("desc");
+  const [selectedLetter, SetSelectedLetter] = useState("");
+  const [selectedMoviesByLetter, SetMoviesByLetter] = useState([]);
 
+  useEffect(() => {
+    fetch(
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/api/movies/sorted/4/${selectedLetter}`
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((MovieByLetter) => {
+        SetMoviesByLetter(MovieByLetter);
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  }, [selectedLetter]);
+
+  // REQUEST ALL MOVIES SORTED ALPHABETICAL ASC
   const movieSortedA = async () => {
     try {
       const response = await fetch(
@@ -33,6 +57,7 @@ function MovieSearch() {
     }
   };
 
+  // REQUEST ALL MOVIES SORTED ALPHABETICAL DESC
   const movieSortedZ = async () => {
     try {
       const response = await fetch(
@@ -49,6 +74,7 @@ function MovieSearch() {
     }
   };
 
+  // REQUEST ALL MOVIES SORTED CHRONOLOGICAL ASC
   const movieSortedYear = async () => {
     try {
       const response = await fetch(
@@ -65,6 +91,7 @@ function MovieSearch() {
     }
   };
 
+  // REQUEST ALL MOVIES SORTED CHRONOLOGICAL DSC
   const movieSortedYearDesc = async () => {
     try {
       const response = await fetch(
@@ -86,6 +113,7 @@ function MovieSearch() {
     let { value } = e.target;
     value = value.replace(/-/g, "").toLowerCase();
     setSearch(value);
+    SetSelectedLetter("");
   };
 
   const filteredMovies = data.filter((dataItem) =>
@@ -96,6 +124,12 @@ function MovieSearch() {
       .includes(search.toLowerCase())
   );
 
+  // SELECT LETTER
+  const handleLetterChange = (letter) => {
+    SetSelectedLetter(letter);
+    setSearch("");
+  };
+
   // MOVIE AMOUNT
   const movieAmount = filteredMovies.length;
 
@@ -103,12 +137,13 @@ function MovieSearch() {
   const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
-    if (search !== "") {
+    if (search !== "" || selectedLetter !== "") {
       setExpanded(true);
     } else {
       setExpanded(false);
     }
-  }, [search]);
+  }, [search, selectedLetter]);
+
   return (
     <main>
       <section className="search_bar_contents">
@@ -121,11 +156,15 @@ function MovieSearch() {
               placeholder="recherche"
             />
           </div>
+          <AlphabetDropdown
+            onLetterChange={handleLetterChange}
+            origin="search"
+          />
         </section>
       </section>
       <div className="dashed_secondary_bar" />
       <section className="search_bear_position">
-        {search === "" && (
+        {search === "" && selectedLetter === "" && (
           <div className="search_bear_background_container">
             <div className="Search_pitch_container">
               <p className="Search_pitch">QUEL FILM CHERCHONS NOUS ?</p>
@@ -142,6 +181,17 @@ function MovieSearch() {
             <div className="scroll_zone">
               <div className="MovieThumbnails">
                 {filteredMovies.map((movieData) => (
+                  <MovieThumbnail key={movieData.id} data={movieData} />
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+        {selectedLetter !== "" && (
+          <div className="MovieThumbnails_container">
+            <div className="scroll_zone">
+              <div className="MovieThumbnails">
+                {selectedMoviesByLetter.map((movieData) => (
                   <MovieThumbnail key={movieData.id} data={movieData} />
                 ))}
               </div>
