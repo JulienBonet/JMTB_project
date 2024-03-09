@@ -6,6 +6,7 @@ import "../../assets/css/scrollButton.css";
 import AlphabeticBtn from "../../components/AlphabeticBtn/AlphabeticBtn";
 import ChronologicBtn from "../../components/ChronologicBtn/ChronologicBtn";
 import YearDropdown from "../../components/YearOption/YearDropdown";
+import CountryDropdown from "../../components/CountryOption/CountryDropdown";
 import MovieThumbnail from "../../components/MovieThumbnail/MovieThumbnail";
 import MovieCount from "../../components/MovieCount/MovieCount";
 import BearSearch from "../../assets/ico/search_Bear_02.jpeg";
@@ -18,7 +19,12 @@ function MovieSearch() {
   const [sortOrderA, setSortOrderA] = useState("asc");
   const [sortOrderY, setSortOrderY] = useState("desc");
   const [selectedYear, SetSelectedYear] = useState("");
+  const [selectedCountry, SetSelectedCountry] = useState("");
   const [selectedMoviesByYear, SetMoviesByYear] = useState([]);
+  const [selectedMoviesByCountry, SetMoviesByCountry] = useState([]);
+
+  console.info("selectedMoviesByYear", selectedMoviesByYear);
+  console.info("selectedMoviesByCountry", selectedMoviesByCountry);
 
   // REQUEST ALL MOVIES BY YEAR
   useEffect(() => {
@@ -38,6 +44,28 @@ function MovieSearch() {
         console.error("Error fetching user data:", error);
       });
   }, [selectedYear]);
+
+  // REQUEST ALL MOVIES BY COUNTRY
+  useEffect(() => {
+    fetch(
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/api/movies/sorted/4/${selectedCountry}`
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((MovieBycountry) => {
+        SetMoviesByCountry([]);
+        SetMoviesByCountry(MovieBycountry);
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  }, [selectedCountry]);
 
   // REQUEST ALL MOVIES SORTED ALPHABETICAL ASC
   const movieSortedA = async () => {
@@ -112,7 +140,8 @@ function MovieSearch() {
     let { value } = e.target;
     value = value.replace(/-/g, "").toLowerCase();
     setSearch(value);
-    SetSelectedYear(""); // Mettre à jour selectedYear à une chaîne vide
+    SetSelectedYear("");
+    SetSelectedCountry("");
   };
 
   const filteredMovies = data.filter((dataItem) =>
@@ -127,6 +156,14 @@ function MovieSearch() {
   const handleYearChange = (year) => {
     SetSelectedYear(year);
     setSearch("");
+    SetSelectedCountry("");
+  };
+
+  // SELECT Country
+  const handleCountryChange = (country) => {
+    SetSelectedCountry(country);
+    setSearch("");
+    SetSelectedYear("");
   };
 
   // MOVIE AMOUNT
@@ -134,6 +171,7 @@ function MovieSearch() {
   const movieAmount = filteredMovies.length;
   const movieAmountSearchFilter = filteredMovies.length;
   const movieAmountYearSorted = selectedMoviesByYear.length;
+  const movieAmountCountrySorted = selectedMoviesByCountry.length;
 
   // EXPAND SORTED BTN
   const [expanded, setExpanded] = useState(false);
@@ -163,11 +201,16 @@ function MovieSearch() {
             search={search}
             selectedYearData={selectedYear}
           />
+          <CountryDropdown
+            onCountryChange={handleCountryChange}
+            search={search}
+            selectedCountryData={selectedCountry}
+          />
         </section>
       </section>
       <div className="dashed_secondary_bar" />
       <section className="search_bear_position">
-        {search === "" && selectedYear === "" && (
+        {search === "" && selectedYear === "" && selectedCountry === "" && (
           <div className="search_bear_background_container">
             <div className="Search_pitch_container">
               <p className="Search_pitch">QUEL FILM CHERCHONS NOUS ?</p>
@@ -179,8 +222,9 @@ function MovieSearch() {
             />
           </div>
         )}
-        {search !== "" && (
+        {search !== "" && selectedYear === "" && selectedCountry === "" && (
           <div className="MovieThumbnails_container">
+            {/* Contenu pour la recherche */}
             <div className="scroll_zone">
               <div className="MovieThumbnails">
                 {filteredMovies.map((movieData) => (
@@ -190,12 +234,31 @@ function MovieSearch() {
             </div>
           </div>
         )}
-        {selectedYear !== "" && (
+        {selectedYear !== "" && selectedCountry === "" && (
+          <div className="MovieThumbnails_container">
+            {/* Contenu pour l'année sélectionnée */}
+            <div className="scroll_zone">
+              <div className="MovieThumbnails">
+                {selectedMoviesByYear.map((movieByYearData) => (
+                  <MovieThumbnail
+                    key={movieByYearData.id}
+                    data={movieByYearData}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+        {selectedCountry !== "" && (
           <div className="MovieThumbnails_container">
             <div className="scroll_zone">
               <div className="MovieThumbnails">
-                {selectedMoviesByYear.map((movieData) => (
-                  <MovieThumbnail key={movieData.id} data={movieData} />
+                {selectedMoviesByCountry.map((movieByCountryData) => (
+                  <MovieThumbnail
+                    key={movieByCountryData.movieId}
+                    data={movieByCountryData}
+                    origin="country"
+                  />
                 ))}
               </div>
             </div>
@@ -214,7 +277,7 @@ function MovieSearch() {
             }}
             onClick={sortOrderA === "asc" ? movieSortedZ : movieSortedA}
           />
-          {search === "" && selectedYear === "" && (
+          {search === "" && selectedYear === "" && selectedCountry === "" && (
             <MovieCount movieAmount={movieAmount} />
           )}
           {search !== "" && (
@@ -222,6 +285,9 @@ function MovieSearch() {
           )}
           {selectedYear !== "" && (
             <MovieCount movieAmount={movieAmountYearSorted} />
+          )}
+          {selectedCountry !== "" && (
+            <MovieCount movieAmount={movieAmountCountrySorted} />
           )}
           <ChronologicBtn
             selectedItems={search}

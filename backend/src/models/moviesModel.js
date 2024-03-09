@@ -86,7 +86,7 @@ const findByCountry = (id) => {
 
 const findAllCountry = () => {
   return db.query(
-    "SELECT DISTINCT name FROM country WHERE name IS NOT NULL ORDER BY name ASC;"
+    "SELECT id, name FROM country WHERE name IS NOT NULL ORDER BY name ASC;"
   );
 };
 
