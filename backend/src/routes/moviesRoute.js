@@ -13,7 +13,19 @@ router.get(
   "/movies/sorted/4/letter_numbers",
   moviesController.getByLetterNumber
 );
-router.get("/movies/sorted/4/:id", moviesController.getAllByCountry);
+router.get("/movies/sorted/country/:id", moviesController.getAllByCountry);
+router.get(
+  "/movies/sorted/country/sorted/1/:id",
+  moviesController.getAllByCountrySorted1
+);
+router.get(
+  "/movies/sorted/country/sorted/2/:id",
+  moviesController.getAllByCountrySorted2
+);
+router.get(
+  "/movies/sorted/country/sorted/3/:id",
+  moviesController.getAllByCountrySorted3
+);
 router.get("/movies/sorted/5/:year", moviesController.getByYear);
 router.get("/years", moviesController.getAllYears);
 router.get("/country", moviesController.getAllCountry);

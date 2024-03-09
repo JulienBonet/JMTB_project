@@ -24,6 +24,7 @@ function ArtistList({
       <AlphabetDropdown
         onLetterChange={handleLetterChange}
         origin="artistlist"
+        search={search}
       />
       {search === "" && (
         <div className="artists_groups_content">

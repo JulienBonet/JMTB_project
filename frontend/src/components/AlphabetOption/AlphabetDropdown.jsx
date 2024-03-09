@@ -1,5 +1,6 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable react/prop-types */
+import { useEffect, useState } from "react";
 import "./alphabetDropdown.css";
 
 // GENERATE ALPHABET
@@ -11,7 +12,8 @@ function generateAlphabet() {
   return alphabet;
 }
 
-function AlphabetDropdown({ onLetterChange, origin }) {
+function AlphabetDropdown({ onLetterChange, origin, search }) {
+  const [options, setOptions] = useState([]);
   const letters = generateAlphabet();
 
   const handleChange = (event) => {
@@ -19,11 +21,14 @@ function AlphabetDropdown({ onLetterChange, origin }) {
     onLetterChange(selectedLetter);
   };
 
-  const options = letters.map((letter) => (
-    <option key={letter} value={letter}>
-      {letter}
-    </option>
-  ));
+  useEffect(() => {
+    const generatedOptions = letters.map((letter) => (
+      <option key={letter} value={letter}>
+        {letter}
+      </option>
+    ));
+    setOptions(generatedOptions);
+  }, [search]);
 
   return (
     <select
@@ -32,6 +37,7 @@ function AlphabetDropdown({ onLetterChange, origin }) {
         origin === "artistlist" ? "AlphabetDropdown" : "AlphabetDropdown2"
       }
     >
+      {search !== "" && <option value="">-</option>}
       {options}
     </select>
   );

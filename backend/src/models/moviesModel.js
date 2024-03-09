@@ -64,6 +64,12 @@ const findById = (id) => {
   );
 };
 
+const findAllYears = () => {
+  return db.query(
+    "SELECT DISTINCT year FROM movies WHERE year IS NOT NULL ORDER BY year DESC;"
+  );
+};
+
 const findByYear = (year) => {
   return db.query(
     "SELECT * FROM movies WHERE year LIKE ? ORDER BY title ASC;",
@@ -71,9 +77,9 @@ const findByYear = (year) => {
   );
 };
 
-const findAllYears = () => {
+const findAllCountry = () => {
   return db.query(
-    "SELECT DISTINCT year FROM movies WHERE year IS NOT NULL ORDER BY year DESC;"
+    "SELECT id, name FROM country WHERE name IS NOT NULL ORDER BY name ASC;"
   );
 };
 
@@ -84,9 +90,24 @@ const findByCountry = (id) => {
   );
 };
 
-const findAllCountry = () => {
+const findByCountrySortedZeta = (id) => {
   return db.query(
-    "SELECT id, name FROM country WHERE name IS NOT NULL ORDER BY name ASC;"
+    "SELECT * FROM movies AS m JOIN movie_country AS mc ON m.id = mc.movieId JOIN country AS c ON c.id = mc.countryId WHERE c.id = ? ORDER BY title DESC;",
+    [id]
+  );
+};
+
+const findByCountrySortedYearAsc = (id) => {
+  return db.query(
+    "SELECT * FROM movies AS m JOIN movie_country AS mc ON m.id = mc.movieId JOIN country AS c ON c.id = mc.countryId WHERE c.id = ? ORDER BY year ASC;",
+    [id]
+  );
+};
+
+const findByCountrySortedYearDesc = (id) => {
+  return db.query(
+    "SELECT * FROM movies AS m JOIN movie_country AS mc ON m.id = mc.movieId JOIN country AS c ON c.id = mc.countryId WHERE c.id = ? ORDER BY year DESC;",
+    [id]
   );
 };
 
@@ -102,4 +123,7 @@ module.exports = {
   findAllYears,
   findAllCountry,
   findByCountry,
+  findByCountrySortedZeta,
+  findByCountrySortedYearAsc,
+  findByCountrySortedYearDesc,
 };

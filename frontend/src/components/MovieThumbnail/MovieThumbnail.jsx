@@ -9,10 +9,8 @@ import MovieCard from "../MovieCard/MovieCard";
 
 function MovieThumbnail({ data, origin }) {
   const { title, year, cover } = data;
-  console.info("movieThumbail - data", data);
 
   const [selectedMovie, setSelectedMovie] = useState(null);
-  console.info("movieThumbail - selectedMovie", selectedMovie);
 
   const openModal = () => {
     setSelectedMovie(data);

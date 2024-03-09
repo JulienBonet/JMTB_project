@@ -23,9 +23,6 @@ function MovieSearch() {
   const [selectedMoviesByYear, SetMoviesByYear] = useState([]);
   const [selectedMoviesByCountry, SetMoviesByCountry] = useState([]);
 
-  console.info("selectedMoviesByYear", selectedMoviesByYear);
-  console.info("selectedMoviesByCountry", selectedMoviesByCountry);
-
   // REQUEST ALL MOVIES BY YEAR
   useEffect(() => {
     fetch(
@@ -45,12 +42,12 @@ function MovieSearch() {
       });
   }, [selectedYear]);
 
-  // REQUEST ALL MOVIES BY COUNTRY
+  // REQUEST ALL MOVIES BY COUNTRY (ALPHABETICAL ASC)
   useEffect(() => {
     fetch(
       `${
         import.meta.env.VITE_BACKEND_URL
-      }/api/movies/sorted/4/${selectedCountry}`
+      }/api/movies/sorted/country/${selectedCountry}`
     )
       .then((response) => {
         if (!response.ok) {
@@ -59,7 +56,6 @@ function MovieSearch() {
         return response.json();
       })
       .then((MovieBycountry) => {
-        SetMoviesByCountry([]);
         SetMoviesByCountry(MovieBycountry);
       })
       .catch((error) => {
@@ -167,7 +163,6 @@ function MovieSearch() {
   };
 
   // MOVIE AMOUNT
-
   const movieAmount = filteredMovies.length;
   const movieAmountSearchFilter = filteredMovies.length;
   const movieAmountYearSorted = selectedMoviesByYear.length;
@@ -177,12 +172,12 @@ function MovieSearch() {
   const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
-    if (search !== "") {
+    if (search !== "" || selectedCountry !== "") {
       setExpanded(true);
     } else {
       setExpanded(false);
     }
-  }, [search]);
+  }, [search, selectedCountry]);
 
   return (
     <main>
@@ -196,16 +191,18 @@ function MovieSearch() {
               placeholder="recherche"
             />
           </div>
-          <YearDropdown
-            onYearChange={handleYearChange}
-            search={search}
-            selectedYearData={selectedYear}
-          />
-          <CountryDropdown
-            onCountryChange={handleCountryChange}
-            search={search}
-            selectedCountryData={selectedCountry}
-          />
+          <div className="dropdown_search_container">
+            <YearDropdown
+              onYearChange={handleYearChange}
+              search={search}
+              selectedYearData={selectedYear}
+            />
+            <CountryDropdown
+              onCountryChange={handleCountryChange}
+              search={search}
+              selectedCountryData={selectedCountry}
+            />
+          </div>
         </section>
       </section>
       <div className="dashed_secondary_bar" />
@@ -224,7 +221,6 @@ function MovieSearch() {
         )}
         {search !== "" && selectedYear === "" && selectedCountry === "" && (
           <div className="MovieThumbnails_container">
-            {/* Contenu pour la recherche */}
             <div className="scroll_zone">
               <div className="MovieThumbnails">
                 {filteredMovies.map((movieData) => (
@@ -236,7 +232,6 @@ function MovieSearch() {
         )}
         {selectedYear !== "" && selectedCountry === "" && (
           <div className="MovieThumbnails_container">
-            {/* Contenu pour l'année sélectionnée */}
             <div className="scroll_zone">
               <div className="MovieThumbnails">
                 {selectedMoviesByYear.map((movieByYearData) => (
@@ -303,8 +298,6 @@ function MovieSearch() {
               sortOrderY === "asc" ? movieSortedYearDesc : movieSortedYear
             }
           />
-          {/* <CountryBtn />
-          <DurationBtn /> */}
         </div>
       </section>
     </main>

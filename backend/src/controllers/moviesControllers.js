@@ -139,6 +139,51 @@ const getAllByCountry = async (req, res, next) => {
   }
 };
 
+const getAllByCountrySorted1 = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const [movies] = await moviesModel.findByCountrySortedZeta(id);
+    if (!movies || movies.length === 0) {
+      res.sendStatus(404);
+    } else {
+      res.status(200).json(movies);
+    }
+  } catch (err) {
+    console.error("Error:", err);
+    next(err);
+  }
+};
+
+const getAllByCountrySorted2 = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const [movies] = await moviesModel.findByCountrySortedYearAsc(id);
+    if (!movies || movies.length === 0) {
+      res.sendStatus(404);
+    } else {
+      res.status(200).json(movies);
+    }
+  } catch (err) {
+    console.error("Error:", err);
+    next(err);
+  }
+};
+
+const getAllByCountrySorted3 = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const [movies] = await moviesModel.findByCountrySortedYearDesc(id);
+    if (!movies || movies.length === 0) {
+      res.sendStatus(404);
+    } else {
+      res.status(200).json(movies);
+    }
+  } catch (err) {
+    console.error("Error:", err);
+    next(err);
+  }
+};
+
 module.exports = {
   getAll,
   getById,
@@ -153,4 +198,7 @@ module.exports = {
   getAllYears,
   getAllCountry,
   getAllByCountry,
+  getAllByCountrySorted1,
+  getAllByCountrySorted2,
+  getAllByCountrySorted3,
 };
