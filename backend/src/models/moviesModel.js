@@ -64,20 +64,6 @@ const findById = (id) => {
   );
 };
 
-const findByLetter = (letter) => {
-  return db.query(
-    "SELECT * FROM movies WHERE title LIKE ? ORDER BY title ASC;",
-    [`${letter}%`]
-  );
-};
-
-const findByLetterNumber = () => {
-  return db.query(
-    "SELECT * FROM movies WHERE title REGEXP '^[0-9]' ORDER BY title ASC;",
-    []
-  );
-};
-
 const findByYear = (year) => {
   return db.query(
     "SELECT * FROM movies WHERE year LIKE ? ORDER BY title ASC;",
@@ -91,6 +77,19 @@ const findAllYears = () => {
   );
 };
 
+const findByCountry = (id) => {
+  return db.query(
+    "SELECT * FROM movies AS m JOIN movie_country AS mc ON m.id = mc.movieId JOIN country AS c ON c.id = mc.countryId WHERE c.id = ? ORDER BY title ASC;",
+    [id]
+  );
+};
+
+const findAllCountry = () => {
+  return db.query(
+    "SELECT DISTINCT name FROM country WHERE name IS NOT NULL ORDER BY name ASC;"
+  );
+};
+
 module.exports = {
   findAll,
   findById,
@@ -99,8 +98,8 @@ module.exports = {
   findAllSortedYear,
   findAllSortedYearDESC,
   findAllSortedNoX,
-  findByLetter,
-  findByLetterNumber,
   findByYear,
   findAllYears,
+  findAllCountry,
+  findByCountry,
 };

@@ -115,6 +115,30 @@ const getAllYears = async (req, res, next) => {
   }
 };
 
+const getAllCountry = async (req, res, next) => {
+  try {
+    const [years] = await moviesModel.findAllCountry();
+    res.status(200).json(years);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getAllByCountry = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const [movies] = await moviesModel.findByCountry(id);
+    if (!movies || movies.length === 0) {
+      res.sendStatus(404);
+    } else {
+      res.status(200).json(movies);
+    }
+  } catch (err) {
+    console.error("Error:", err);
+    next(err);
+  }
+};
+
 module.exports = {
   getAll,
   getById,
@@ -127,4 +151,6 @@ module.exports = {
   getByLetterNumber,
   getByYear,
   getAllYears,
+  getAllCountry,
+  getAllByCountry,
 };

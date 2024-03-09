@@ -13,8 +13,9 @@ router.get(
   "/movies/sorted/4/letter_numbers",
   moviesController.getByLetterNumber
 );
-router.get("/movies/sorted/4/:letter", moviesController.getByLetter);
+router.get("/movies/sorted/4/:id", moviesController.getAllByCountry);
 router.get("/movies/sorted/5/:year", moviesController.getByYear);
 router.get("/years", moviesController.getAllYears);
+router.get("/country", moviesController.getAllCountry);
 
 module.exports = router;
