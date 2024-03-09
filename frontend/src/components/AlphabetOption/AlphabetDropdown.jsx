@@ -11,7 +11,7 @@ function generateAlphabet() {
   return alphabet;
 }
 
-function AlphabetDropdown({ onLetterChange }) {
+function AlphabetDropdown({ onLetterChange, origin }) {
   const letters = generateAlphabet();
 
   const handleChange = (event) => {
@@ -26,7 +26,12 @@ function AlphabetDropdown({ onLetterChange }) {
   ));
 
   return (
-    <select onChange={handleChange} className="AlphabetDropdown">
+    <select
+      onChange={handleChange}
+      className={
+        origin === "artistlist" ? "AlphabetDropdown" : "AlphabetDropdown2"
+      }
+    >
       {options}
     </select>
   );

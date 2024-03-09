@@ -5,7 +5,7 @@ import "./movieSearch.css";
 import "../../assets/css/scrollButton.css";
 import AlphabeticBtn from "../../components/AlphabeticBtn/AlphabeticBtn";
 import ChronologicBtn from "../../components/ChronologicBtn/ChronologicBtn";
-import AlphabetDropdown from "../../components/AlphabetOption/AlphabetDropdown";
+import YearDropdown from "../../components/YearOption/YearDropdown";
 import MovieThumbnail from "../../components/MovieThumbnail/MovieThumbnail";
 import MovieCount from "../../components/MovieCount/MovieCount";
 import BearSearch from "../../assets/ico/search_Bear_02.jpeg";
@@ -17,14 +17,13 @@ function MovieSearch() {
   const [search, setSearch] = useState("");
   const [sortOrderA, setSortOrderA] = useState("asc");
   const [sortOrderY, setSortOrderY] = useState("desc");
-  const [selectedLetter, SetSelectedLetter] = useState("");
-  const [selectedMoviesByLetter, SetMoviesByLetter] = useState([]);
+  const [selectedYear, SetSelectedYear] = useState("");
+  const [selectedMoviesByYear, SetMoviesByYear] = useState([]);
 
+  // REQUEST ALL MOVIES BY YEAR
   useEffect(() => {
     fetch(
-      `${
-        import.meta.env.VITE_BACKEND_URL
-      }/api/movies/sorted/4/${selectedLetter}`
+      `${import.meta.env.VITE_BACKEND_URL}/api/movies/sorted/5/${selectedYear}`
     )
       .then((response) => {
         if (!response.ok) {
@@ -32,13 +31,13 @@ function MovieSearch() {
         }
         return response.json();
       })
-      .then((MovieByLetter) => {
-        SetMoviesByLetter(MovieByLetter);
+      .then((MovieByYear) => {
+        SetMoviesByYear(MovieByYear);
       })
       .catch((error) => {
         console.error("Error fetching user data:", error);
       });
-  }, [selectedLetter]);
+  }, [selectedYear]);
 
   // REQUEST ALL MOVIES SORTED ALPHABETICAL ASC
   const movieSortedA = async () => {
@@ -113,7 +112,7 @@ function MovieSearch() {
     let { value } = e.target;
     value = value.replace(/-/g, "").toLowerCase();
     setSearch(value);
-    SetSelectedLetter("");
+    SetSelectedYear(""); // Mettre à jour selectedYear à une chaîne vide
   };
 
   const filteredMovies = data.filter((dataItem) =>
@@ -124,25 +123,28 @@ function MovieSearch() {
       .includes(search.toLowerCase())
   );
 
-  // SELECT LETTER
-  const handleLetterChange = (letter) => {
-    SetSelectedLetter(letter);
+  // SELECT YEAR
+  const handleYearChange = (year) => {
+    SetSelectedYear(year);
     setSearch("");
   };
 
   // MOVIE AMOUNT
+
   const movieAmount = filteredMovies.length;
+  const movieAmountSearchFilter = filteredMovies.length;
+  const movieAmountYearSorted = selectedMoviesByYear.length;
 
   // EXPAND SORTED BTN
   const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
-    if (search !== "" || selectedLetter !== "") {
+    if (search !== "") {
       setExpanded(true);
     } else {
       setExpanded(false);
     }
-  }, [search, selectedLetter]);
+  }, [search]);
 
   return (
     <main>
@@ -156,15 +158,16 @@ function MovieSearch() {
               placeholder="recherche"
             />
           </div>
-          <AlphabetDropdown
-            onLetterChange={handleLetterChange}
-            origin="search"
+          <YearDropdown
+            onYearChange={handleYearChange}
+            search={search}
+            selectedYearData={selectedYear}
           />
         </section>
       </section>
       <div className="dashed_secondary_bar" />
       <section className="search_bear_position">
-        {search === "" && selectedLetter === "" && (
+        {search === "" && selectedYear === "" && (
           <div className="search_bear_background_container">
             <div className="Search_pitch_container">
               <p className="Search_pitch">QUEL FILM CHERCHONS NOUS ?</p>
@@ -187,11 +190,11 @@ function MovieSearch() {
             </div>
           </div>
         )}
-        {selectedLetter !== "" && (
+        {selectedYear !== "" && (
           <div className="MovieThumbnails_container">
             <div className="scroll_zone">
               <div className="MovieThumbnails">
-                {selectedMoviesByLetter.map((movieData) => (
+                {selectedMoviesByYear.map((movieData) => (
                   <MovieThumbnail key={movieData.id} data={movieData} />
                 ))}
               </div>
@@ -211,7 +214,15 @@ function MovieSearch() {
             }}
             onClick={sortOrderA === "asc" ? movieSortedZ : movieSortedA}
           />
-          <MovieCount movieAmount={movieAmount} />
+          {search === "" && selectedYear === "" && (
+            <MovieCount movieAmount={movieAmount} />
+          )}
+          {search !== "" && (
+            <MovieCount movieAmount={movieAmountSearchFilter} />
+          )}
+          {selectedYear !== "" && (
+            <MovieCount movieAmount={movieAmountYearSorted} />
+          )}
           <ChronologicBtn
             selectedItems={search}
             style={{

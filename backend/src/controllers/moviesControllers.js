@@ -106,6 +106,15 @@ const getByYear = async (req, res, next) => {
   }
 };
 
+const getAllYears = async (req, res, next) => {
+  try {
+    const [years] = await moviesModel.findAllYears();
+    res.status(200).json(years);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAll,
   getById,
@@ -117,4 +126,5 @@ module.exports = {
   getByLetter,
   getByLetterNumber,
   getByYear,
+  getAllYears,
 };

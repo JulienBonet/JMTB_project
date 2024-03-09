@@ -15,5 +15,6 @@ router.get(
 );
 router.get("/movies/sorted/4/:letter", moviesController.getByLetter);
 router.get("/movies/sorted/5/:year", moviesController.getByYear);
+router.get("/years", moviesController.getAllYears);
 
 module.exports = router;

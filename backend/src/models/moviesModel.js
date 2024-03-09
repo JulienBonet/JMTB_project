@@ -85,6 +85,12 @@ const findByYear = (year) => {
   );
 };
 
+const findAllYears = () => {
+  return db.query(
+    "SELECT DISTINCT year FROM movies WHERE year IS NOT NULL ORDER BY year DESC;"
+  );
+};
+
 module.exports = {
   findAll,
   findById,
@@ -96,4 +102,5 @@ module.exports = {
   findByLetter,
   findByLetterNumber,
   findByYear,
+  findAllYears,
 };
