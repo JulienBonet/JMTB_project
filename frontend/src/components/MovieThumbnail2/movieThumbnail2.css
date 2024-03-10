@@ -13,16 +13,16 @@
   height: 10rem;
 }
 .thumbail_title2 {
-  font-family: "Roboto", sans-serif;
+  font-family: var(--font-02);
   font-weight: bold;
-  color: var(--color-primary);
+  color: var(--color-01);
   text-align: center;
 }
 .thumbail_title2:hover {
-  color: var(--color-secondary);
+  color: var(--color-02);
 }
 .thumbail_year2 {
-  font-family: "Roboto", sans-serif;
+  font-family: var(--font-02);
   font-weight: 600;
 }
 .Movie_Modal {
@@ -36,9 +36,9 @@
 }
 .modal_closed_btn {
   text-align: right;
-  font-family: "Courier New", Courier, monospace;
+  font-family: var(--font-04);
   font-weight: 600;
-  color: var(--color-secondary);
+  color: var(--color-02);
   cursor: pointer;
   padding: 1rem 1rem 1rem 0;
   margin: 0 5% 0 0;

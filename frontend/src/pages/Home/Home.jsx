@@ -6,15 +6,12 @@ import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import "../../assets/css/common_elements.css";
 import "./home.css";
-import MovieThumbnail2 from "../../components/MovieThumbnail2/MovieThumbnail2";
-import MovieCount from "../../components/MovieCount/MovieCount";
-import CameraBear from "../../assets/ico/camera_Bear_01.jpeg";
+import MovieThumbnail from "../../components/MovieThumbnail3/MovieThumbnail3";
 
 function Home() {
   const data = useLoaderData();
 
   // SHUFFLE DE FILMS
-
   const [shuffledData, setShuffledData] = useState([]);
 
   // Fonction pour mélanger un tableau de données aléatoirement
@@ -32,7 +29,7 @@ function Home() {
 
   // Méthode pour déclencher le mélange des données
   const handleShuffle = () => {
-    const newShuffledData = shuffleArray([...data]).slice(0, 8);
+    const newShuffledData = shuffleArray([...data]).slice(0, 10);
     setShuffledData(newShuffledData);
   };
 
@@ -64,26 +61,24 @@ function Home() {
       },
     },
   });
-  // MovieCount ---------------------------------/
-  const movieAmount = data ? data.length : 0;
 
   return (
     <main>
       <section className="home_title_position">
-        <h1 className="home_Main_Title">JMDB</h1>
+        <h1 className="home_Main_Title">J M D B</h1>
       </section>
       <div className="dashed_secondary_bar" />
       <section className="welcome_container">
         <div className="welcome_content">
-          <img
+          {/* <img
             src={CameraBear}
             alt="A groovy bear on a camera in a cinema"
             className="camera_bear_welcome"
-          />
+          /> */}
           <div className="ShuffleThumbnails_welcome">
             <div className="MovieThumbnails_welcome">
               {shuffledData.map((movieData) => (
-                <MovieThumbnail2
+                <MovieThumbnail
                   key={movieData.id}
                   data={movieData}
                   className="thumbs_welcome"
@@ -107,7 +102,6 @@ function Home() {
             </ThemeProvider>
           </div>
         </div>
-        <MovieCount movieAmount={movieAmount} />
       </section>
     </main>
   );

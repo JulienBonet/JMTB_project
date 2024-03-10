@@ -4,11 +4,10 @@
 }
 
 .Amount_info {
-  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
-    "Lucida Sans", Arial, sans-serif;
+  font-family: var(--font-06);
   font-size: 1rem;
   text-align: center;
-  color: var(--color-secondary);
+  color: var(--color-02);
   padding: 10px 1rem;
   border: solid 1px white;
   border-top: 0;
@@ -16,5 +15,5 @@
 }
 
 .whiteString {
-  color: var(--color-secondary);
+  color: var(--color-02);
 }

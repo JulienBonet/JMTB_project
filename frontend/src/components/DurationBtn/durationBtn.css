@@ -1,11 +1,10 @@
 .duration_btn {
-  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
-    "Lucida Sans", Arial, sans-serif;
+  font-family: var(--font-06);
   font-size: 1rem;
   text-align: center;
-  color: var(--color-primary);
+  color: var(--color-01);
   padding: 10px 0;
-  border: solid 1px var(--color-primary);
+  border: solid 1px var(--color-02);
   border-top: 0;
   border-radius: 0 0 15px 15px;
   width: min(13%);

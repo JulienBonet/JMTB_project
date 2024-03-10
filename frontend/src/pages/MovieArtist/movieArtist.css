@@ -38,7 +38,7 @@
 }
 
 .MuiButton-root.artists_button {
-  font-family: "Courier New", Courier, monospace;
+  font-family: var(--font-04);
   font-size: medium;
   display: flex;
   flex-wrap: wrap;
@@ -79,10 +79,10 @@
   width: 50%;
 }
 .artists_pitch {
-  font-family: "Nova Square", sans-serif;
+  font-family: var(--font-03);
   text-align: center;
   line-height: normal;
-  color: var(--color-primary);
+  color: var(--color-01);
 }
 .artists_bear_illustr {
   width: 45%;

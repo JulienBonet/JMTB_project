@@ -1,8 +1,8 @@
 .YearsDropdown {
   text-align: center;
-  font-family: "Courier New", Courier, monospace;
-  color: var(--color-secondary);
-  background: var(--color-background);
+  font-family: var(--font-04);
+  color: var(--color-02);
+  background: var(--color-04);
   border: solid 1px white;
   padding: 5px 0;
   cursor: pointer;

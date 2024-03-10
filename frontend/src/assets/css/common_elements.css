@@ -3,12 +3,12 @@
 }
 
 .dashed_secondary_bar {
-  border-bottom: dashed 1px var(--color-secondary);
+  border-bottom: dashed 1px var(--color-02);
 }
 
 .search_bar {
   border-radius: 20px;
-  font-family: "Courier New", Courier, monospace;
+  font-family: var(--font-04);
   font-size: medium;
   text-align: center;
 }
