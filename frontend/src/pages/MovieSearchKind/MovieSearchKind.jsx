@@ -9,6 +9,7 @@ import MovieThumbail3 from "../../components/MovieThumbnail3/MovieThumbnail3";
 import BearKinds from "../../assets/ico/camera_Bear_03.jpeg";
 import AlphabeticBtn from "../../components/AlphabeticBtn/AlphabeticBtn";
 import ChronologicBtn from "../../components/ChronologicBtn/ChronologicBtn";
+import Loading from "../../components/Loading/Loading";
 
 function MovieSearchKind() {
   // DATAS
@@ -19,8 +20,9 @@ function MovieSearchKind() {
   const [sortOrderA, setSortOrderA] = useState("asc");
   const [sortOrderY, setSortOrderY] = useState("desc");
   const [currentRow, setCurrentRow] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // REQUEST ALL GENRES
+  // REQUEST ALL MOVIE BY GENRE
   useEffect(() => {
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/kinds/${selectedGenre}`)
       .then((response) => {
@@ -31,9 +33,15 @@ function MovieSearchKind() {
       })
       .then((data) => {
         setMovies(data);
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 3000);
       })
       .catch((error) => {
         console.error("Error fetching user data:", error);
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 2000);
       });
   }, [selectedGenre]);
 
@@ -164,12 +172,13 @@ function MovieSearchKind() {
   const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
-    if (selectedGenre !== "") {
+    if (selectedGenre !== "" && !isLoading) {
       setExpanded(true);
     } else {
       setExpanded(false);
     }
   }, [selectedGenre]);
+
   return (
     <main>
       <section className="search_kind_contents">
@@ -250,11 +259,15 @@ function MovieSearchKind() {
         {selectedGenre !== "" && (
           <section className="MovieThumbnails_Kind_container">
             <div className="scroll_zone">
-              <div className="MovieThumbnails_kind">
-                {movies.map((movieData) => (
-                  <MovieThumbail3 key={movieData.id} data={movieData} />
-                ))}
-              </div>
+              {isLoading ? (
+                <Loading />
+              ) : (
+                <div className="MovieThumbnails_kind">
+                  {movies.map((movieData) => (
+                    <MovieThumbail3 key={movieData.id} data={movieData} />
+                  ))}
+                </div>
+              )}
             </div>
           </section>
         )}
