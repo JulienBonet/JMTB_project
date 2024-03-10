@@ -2,6 +2,10 @@
   font-family: "azonix";
   src: url("../font/azonix/Azonix.otf") format("opentype");
 }
+@font-face {
+  font-family: "blanka";
+  src: url("../font/blanka/Blanka-Regular.otf") format("opentype");
+}
 
 :root {
   --color-01: #ffebcd;

@@ -1,7 +1,7 @@
 .AlphabetDropdown,
 .AlphabetDropdown2 {
   text-align: center;
-  font-family: var(--font-04);
+  font-family: var(--font-02);
   color: var(--color-02);
   background: var(--color-04);
   border: solid 1px white;
@@ -15,6 +15,7 @@
   border: solid 1px white;
   border-bottom: 0;
   border-radius: 10px 10px 0 0;
+  font-weight: bold;
 }
 
 .AlphabetDropdown2 {
