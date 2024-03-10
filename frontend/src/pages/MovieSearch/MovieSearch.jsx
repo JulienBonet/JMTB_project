@@ -210,6 +210,7 @@ function MovieSearch() {
               selectedCountryData={selectedCountry}
             />
             <svg
+              className="reset_search_btn"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 48 48"
               width="40px"
