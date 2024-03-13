@@ -4,7 +4,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import "./alphabeticBtn.css";
 
-function AlphabeticBtn({ onClick, origin, selectedItems }) {
+function AlphabeticBtn({ onClick, origin, selectedItems, onExpandedChange }) {
   const theme = createTheme({
     palette: {
       sortedBtn: {
@@ -24,7 +24,7 @@ function AlphabeticBtn({ onClick, origin, selectedItems }) {
     } else {
       setExpanded(false);
     }
-  }, [selectedItems]);
+  }, [selectedItems, onExpandedChange]);
 
   return (
     <ThemeProvider theme={theme}>

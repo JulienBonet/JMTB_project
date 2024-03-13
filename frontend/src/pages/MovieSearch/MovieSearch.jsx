@@ -22,6 +22,10 @@ function MovieSearch() {
   const [selectedCountry, SetSelectedCountry] = useState("");
   const [selectedMoviesByYear, SetMoviesByYear] = useState([]);
   const [selectedMoviesByCountry, SetMoviesByCountry] = useState([]);
+  const [selectedItems, setSelectedItems] = useState("");
+  const [expanded, setExpanded] = useState(false);
+
+  console.info(expanded);
 
   // REQUEST ALL MOVIES BY YEAR
   useEffect(() => {
@@ -131,6 +135,11 @@ function MovieSearch() {
     }
   };
 
+  // EXPAND SORTED BTN
+  const handleExpandedChange = (value) => {
+    setExpanded(value);
+  };
+
   // SEARCH BAR
   const handleTyping = (e) => {
     let { value } = e.target;
@@ -138,6 +147,7 @@ function MovieSearch() {
     setSearch(value);
     SetSelectedYear("");
     SetSelectedCountry("");
+    setSelectedItems(value);
   };
 
   const filteredMovies = data.filter((dataItem) =>
@@ -153,6 +163,7 @@ function MovieSearch() {
     SetSelectedYear(year);
     setSearch("");
     SetSelectedCountry("");
+    setSelectedItems(year);
   };
 
   // SELECT Country
@@ -160,6 +171,7 @@ function MovieSearch() {
     SetSelectedCountry(country);
     setSearch("");
     SetSelectedYear("");
+    setSelectedItems(country);
   };
 
   // SELECT SEARCH
@@ -167,6 +179,8 @@ function MovieSearch() {
     SetSelectedCountry("");
     setSearch("");
     SetSelectedYear("");
+    setExpanded(false);
+    setSelectedItems("");
   };
 
   // MOVIE AMOUNT
@@ -174,17 +188,6 @@ function MovieSearch() {
   const movieAmountSearchFilter = filteredMovies.length;
   const movieAmountYearSorted = selectedMoviesByYear.length;
   const movieAmountCountrySorted = selectedMoviesByCountry.length;
-
-  // EXPAND SORTED BTN
-  const [expanded, setExpanded] = useState(false);
-
-  useEffect(() => {
-    if (search !== "" || selectedCountry !== "") {
-      setExpanded(true);
-    } else {
-      setExpanded(false);
-    }
-  }, [search, selectedCountry]);
 
   return (
     <main>
@@ -286,7 +289,9 @@ function MovieSearch() {
         )}
         <div className="btn_sort_container_search">
           <AlphabeticBtn
-            selectedItems={search}
+            selectedItems={selectedItems}
+            expanded={expanded}
+            onExpandedChange={handleExpandedChange} // Passer la fonction de rappel
             style={{
               height: expanded ? "37px" : "0",
               fontSize: expanded ? "1rem" : "0",
@@ -310,7 +315,9 @@ function MovieSearch() {
             <MovieCount movieAmount={movieAmountCountrySorted} />
           )}
           <ChronologicBtn
-            selectedItems={search}
+            selectedItems={selectedItems}
+            expanded={expanded} // Passer la valeur de expanded comme prop
+            onExpandedChange={handleExpandedChange} // Passer la fonction de rappel
             style={{
               height: expanded ? "37px" : "0",
               fontSize: expanded ? "1rem" : "0",
