@@ -13,7 +13,6 @@ import MovieCount from "../../components/MovieCount/MovieCount";
 import BearSearch from "../../assets/ico/search_Bear_02.jpeg";
 
 function MovieSearch() {
-  // DATAS
   const initialData = useLoaderData();
   const [data, setData] = useState(initialData);
   const [search, setSearch] = useState("");
@@ -411,7 +410,7 @@ function MovieSearch() {
           <AlphabeticBtn
             selectedItems={selectedItems}
             expanded={expanded}
-            onExpandedChange={handleExpandedChange} // Passer la fonction de rappel
+            onExpandedChange={handleExpandedChange}
             style={{
               height: expanded ? "37px" : "0",
               fontSize: expanded ? "1rem" : "0",
@@ -420,7 +419,6 @@ function MovieSearch() {
               borderTop: expanded ? "0" : "none",
               transition: "height 0.3s ease-in",
             }}
-            // onClick={sortOrderA === "asc" ? movieSortedZ : movieSortedA}
             onClick={
               search !== ""
                 ? sortOrderA === "asc"
@@ -451,8 +449,8 @@ function MovieSearch() {
           )}
           <ChronologicBtn
             selectedItems={selectedItems}
-            expanded={expanded} // Passer la valeur de expanded comme prop
-            onExpandedChange={handleExpandedChange} // Passer la fonction de rappel
+            expanded={expanded}
+            onExpandedChange={handleExpandedChange}
             style={{
               height: expanded ? "37px" : "0",
               fontSize: expanded ? "1rem" : "0",
@@ -461,9 +459,6 @@ function MovieSearch() {
               borderTop: expanded ? "0" : "none",
               transition: "height 0.3s ease-in",
             }}
-            // onClick={
-            //   sortOrderY === "asc" ? movieSortedYearDesc : movieSortedYear
-            // }
             onClick={
               search !== ""
                 ? sortOrderY === "asc"
@@ -473,7 +468,7 @@ function MovieSearch() {
                   ? sortMovieByCountryOrderY === "asc"
                     ? MovieByCountryOrderYdesc
                     : MovieByCountryOrderYasc
-                  : () => {} // Fonction vide si aucune condition n'est remplie
+                  : () => {}
             }
           />
         </div>
