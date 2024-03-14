@@ -71,8 +71,19 @@ const findAllYears = () => {
 };
 
 const findByYear = (year) => {
+  return db.query("SELECT * FROM movies WHERE year LIKE ?;", [`${year}%`]);
+};
+
+const findByYearSortedA = (year) => {
   return db.query(
     "SELECT * FROM movies WHERE year LIKE ? ORDER BY title ASC;",
+    [`${year}%`]
+  );
+};
+
+const findByYearSortedZ = (year) => {
+  return db.query(
+    "SELECT * FROM movies WHERE year LIKE ? ORDER BY title DESC;",
     [`${year}%`]
   );
 };
@@ -126,7 +137,6 @@ module.exports = {
   findAllSortedYear,
   findAllSortedYearDESC,
   findAllSortedNoX,
-  findByYear,
   findAllYears,
   findAllCountry,
   findByCountry,
@@ -134,4 +144,7 @@ module.exports = {
   findByCountrySortedZeta,
   findByCountrySortedYearAsc,
   findByCountrySortedYearDesc,
+  findByYear,
+  findByYearSortedA,
+  findByYearSortedZ,
 };

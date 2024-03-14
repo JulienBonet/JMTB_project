@@ -21,8 +21,9 @@ function MovieSearch() {
   const [sortOrderY, setSortOrderY] = useState("desc");
   const [sortMovieByCountryOrderA, setSortMovieByCountryOrderA] =
     useState("asc");
-  // const [sortMovieByCountryOrderY, setSortMovieByCountryOrderY] =
-  //   useState("desc");
+  const [sortMovieByCountryOrderY, setSortMovieByCountryOrderY] =
+    useState("desc");
+  const [sortMovieByYearOrderA, setSortMovieByYearOrderA] = useState("asc");
   const [selectedYear, SetSelectedYear] = useState("");
   const [selectedCountry, SetSelectedCountry] = useState("");
   const [selectedMoviesByYear, SetMoviesByYear] = useState([]);
@@ -101,7 +102,9 @@ function MovieSearch() {
   // REQUEST ALL MOVIES BY YEAR
   useEffect(() => {
     fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/movies/sorted/5/${selectedYear}`
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/api/movies/year/sorted/${selectedYear}`
     )
       .then((response) => {
         if (!response.ok) {
@@ -116,6 +119,44 @@ function MovieSearch() {
         console.error("Error fetching user data:", error);
       });
   }, [selectedYear]);
+
+  // REQUEST ALL MOVIES BY YEAR (SORTED ALPHABETICAL ASC)
+  const MovieByYearOrderA = async () => {
+    try {
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/movies/year/sorted/0/${selectedYear}`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const newData = await response.json();
+      SetMoviesByYear(newData);
+      setSortMovieByYearOrderA("asc");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  // REQUEST ALL MOVIES BY YEAR (SORTED ALPHABETICAL DESC)
+  const MovieByYearOrderZ = async () => {
+    try {
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/movies/year/sorted/1/${selectedYear}`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const newData = await response.json();
+      SetMoviesByYear(newData);
+      setSortMovieByYearOrderA("desc");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   // REQUEST ALL MOVIES BY COUNTRY
   useEffect(() => {
@@ -171,6 +212,44 @@ function MovieSearch() {
       const newData = await response.json();
       SetMoviesByCountry(newData);
       setSortMovieByCountryOrderA("desc");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  // REQUEST ALL MOVIES BY COUNTRY (SORTED YEAR ASC)
+  const MovieByCountryOrderYasc = async () => {
+    try {
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/movies/sorted/country/sorted/2/${selectedCountry}`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const newData = await response.json();
+      SetMoviesByCountry(newData);
+      setSortMovieByCountryOrderY("asc");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  // REQUEST ALL MOVIES BY COUNTRY (SORTED YEAR DESC)
+  const MovieByCountryOrderYdesc = async () => {
+    try {
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/movies/sorted/country/sorted/3/${selectedCountry}`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const newData = await response.json();
+      SetMoviesByCountry(newData);
+      setSortMovieByCountryOrderY("desc");
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -351,7 +430,11 @@ function MovieSearch() {
                   ? sortMovieByCountryOrderA === "asc"
                     ? MovieByCountryOrderz
                     : MovieByCountryOrderA
-                  : () => {} // Fonction vide si aucune condition n'est remplie
+                  : selectedYear !== ""
+                    ? sortMovieByYearOrderA === "asc"
+                      ? MovieByYearOrderZ
+                      : MovieByYearOrderA
+                    : () => {} // Fonction vide si aucune condition n'est remplie
             }
           />
           {search === "" && selectedYear === "" && selectedCountry === "" && (
@@ -378,8 +461,19 @@ function MovieSearch() {
               borderTop: expanded ? "0" : "none",
               transition: "height 0.3s ease-in",
             }}
+            // onClick={
+            //   sortOrderY === "asc" ? movieSortedYearDesc : movieSortedYear
+            // }
             onClick={
-              sortOrderY === "asc" ? movieSortedYearDesc : movieSortedYear
+              search !== ""
+                ? sortOrderY === "asc"
+                  ? movieSortedYearDesc
+                  : movieSortedYear
+                : selectedCountry !== ""
+                  ? sortMovieByCountryOrderY === "asc"
+                    ? MovieByCountryOrderYdesc
+                    : MovieByCountryOrderYasc
+                  : () => {} // Fonction vide si aucune condition n'est remplie
             }
           />
         </div>
