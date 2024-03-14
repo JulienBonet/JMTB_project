@@ -85,6 +85,13 @@ const findAllCountry = () => {
 
 const findByCountry = (id) => {
   return db.query(
+    "SELECT * FROM movies AS m JOIN movie_country AS mc ON m.id = mc.movieId JOIN country AS c ON c.id = mc.countryId WHERE c.id = ?;",
+    [id]
+  );
+};
+
+const findByCountrySortedAlpha = (id) => {
+  return db.query(
     "SELECT * FROM movies AS m JOIN movie_country AS mc ON m.id = mc.movieId JOIN country AS c ON c.id = mc.countryId WHERE c.id = ? ORDER BY title ASC;",
     [id]
   );
@@ -123,6 +130,7 @@ module.exports = {
   findAllYears,
   findAllCountry,
   findByCountry,
+  findByCountrySortedAlpha,
   findByCountrySortedZeta,
   findByCountrySortedYearAsc,
   findByCountrySortedYearDesc,

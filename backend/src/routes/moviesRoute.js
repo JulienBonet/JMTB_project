@@ -15,6 +15,10 @@ router.get(
 );
 router.get("/movies/sorted/country/:id", moviesController.getAllByCountry);
 router.get(
+  "/movies/sorted/country/sorted/0/:id",
+  moviesController.getAllByCountrySorted0
+);
+router.get(
   "/movies/sorted/country/sorted/1/:id",
   moviesController.getAllByCountrySorted1
 );
