@@ -30,7 +30,9 @@ router.get(
   "/movies/sorted/country/sorted/3/:id",
   moviesController.getAllByCountrySorted3
 );
-router.get("/movies/sorted/5/:year", moviesController.getByYear);
+router.get("/movies/year/sorted/:year", moviesController.getByYear);
+router.get("/movies/year/sorted/0/:year", moviesController.getByYearSorted0);
+router.get("/movies/year/sorted/1/:year", moviesController.getByYearSorted1);
 router.get("/years", moviesController.getAllYears);
 router.get("/country", moviesController.getAllCountry);
 

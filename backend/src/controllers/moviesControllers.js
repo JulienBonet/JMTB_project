@@ -106,12 +106,33 @@ const getByYear = async (req, res, next) => {
   }
 };
 
-const getAllYears = async (req, res, next) => {
+const getByYearSorted0 = async (req, res, next) => {
   try {
-    const [years] = await moviesModel.findAllYears();
-    res.status(200).json(years);
-  } catch (error) {
-    next(error);
+    const { year } = req.params;
+    const [movies] = await moviesModel.findByYearSortedA(year);
+    if (!movies || movies.length === 0) {
+      res.sendStatus(404);
+    } else {
+      res.status(200).json(movies);
+    }
+  } catch (err) {
+    console.error("Error:", err);
+    next(err);
+  }
+};
+
+const getByYearSorted1 = async (req, res, next) => {
+  try {
+    const { year } = req.params;
+    const [movies] = await moviesModel.findByYearSortedZ(year);
+    if (!movies || movies.length === 0) {
+      res.sendStatus(404);
+    } else {
+      res.status(200).json(movies);
+    }
+  } catch (err) {
+    console.error("Error:", err);
+    next(err);
   }
 };
 
@@ -199,6 +220,15 @@ const getAllByCountrySorted3 = async (req, res, next) => {
   }
 };
 
+const getAllYears = async (req, res, next) => {
+  try {
+    const [years] = await moviesModel.findAllYears();
+    res.status(200).json(years);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAll,
   getById,
@@ -210,6 +240,8 @@ module.exports = {
   getByLetter,
   getByLetterNumber,
   getByYear,
+  getByYearSorted0,
+  getByYearSorted1,
   getAllYears,
   getAllCountry,
   getAllByCountry,
