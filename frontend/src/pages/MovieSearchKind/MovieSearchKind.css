@@ -76,8 +76,6 @@
 
 .MovieThumbnails_Kind_container {
   justify-content: center;
-  margin-top: 1rem;
-  padding: 1.5rem 0;
   overflow: auto;
   height: 568px;
 }

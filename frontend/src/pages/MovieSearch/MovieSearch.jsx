@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable react/jsx-no-duplicate-props */
 import { useState, useEffect } from "react";
 import { useLoaderData } from "react-router-dom";
@@ -18,50 +19,16 @@ function MovieSearch() {
   const [search, setSearch] = useState("");
   const [sortOrderA, setSortOrderA] = useState("asc");
   const [sortOrderY, setSortOrderY] = useState("desc");
+  const [sortMovieByCountryOrderA, setSortMovieByCountryOrderA] =
+    useState("asc");
+  // const [sortMovieByCountryOrderY, setSortMovieByCountryOrderY] =
+  //   useState("desc");
   const [selectedYear, SetSelectedYear] = useState("");
   const [selectedCountry, SetSelectedCountry] = useState("");
   const [selectedMoviesByYear, SetMoviesByYear] = useState([]);
   const [selectedMoviesByCountry, SetMoviesByCountry] = useState([]);
-
-  // REQUEST ALL MOVIES BY YEAR
-  useEffect(() => {
-    fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/movies/sorted/5/${selectedYear}`
-    )
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((MovieByYear) => {
-        SetMoviesByYear(MovieByYear);
-      })
-      .catch((error) => {
-        console.error("Error fetching user data:", error);
-      });
-  }, [selectedYear]);
-
-  // REQUEST ALL MOVIES BY COUNTRY (ALPHABETICAL ASC)
-  useEffect(() => {
-    fetch(
-      `${
-        import.meta.env.VITE_BACKEND_URL
-      }/api/movies/sorted/country/${selectedCountry}`
-    )
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((MovieBycountry) => {
-        SetMoviesByCountry(MovieBycountry);
-      })
-      .catch((error) => {
-        console.error("Error fetching user data:", error);
-      });
-  }, [selectedCountry]);
+  const [selectedItems, setSelectedItems] = useState("");
+  const [expanded, setExpanded] = useState(false);
 
   // REQUEST ALL MOVIES SORTED ALPHABETICAL ASC
   const movieSortedA = async () => {
@@ -131,6 +98,89 @@ function MovieSearch() {
     }
   };
 
+  // REQUEST ALL MOVIES BY YEAR
+  useEffect(() => {
+    fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/movies/sorted/5/${selectedYear}`
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((MovieByYear) => {
+        SetMoviesByYear(MovieByYear);
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  }, [selectedYear]);
+
+  // REQUEST ALL MOVIES BY COUNTRY
+  useEffect(() => {
+    fetch(
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/api/movies/sorted/country/${selectedCountry}`
+    )
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((MovieBycountry) => {
+        SetMoviesByCountry(MovieBycountry);
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  }, [selectedCountry]);
+
+  // REQUEST ALL MOVIES BY COUNTRY (SORTED ALPHABETICAL ASC)
+  const MovieByCountryOrderA = async () => {
+    try {
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/movies/sorted/country/sorted/0/${selectedCountry}`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const newData = await response.json();
+      SetMoviesByCountry(newData);
+      setSortMovieByCountryOrderA("asc");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  // REQUEST ALL MOVIES BY COUNTRY (SORTED ALPHABETICAL DESC)
+  const MovieByCountryOrderz = async () => {
+    try {
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/movies/sorted/country/sorted/1/${selectedCountry}`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const newData = await response.json();
+      SetMoviesByCountry(newData);
+      setSortMovieByCountryOrderA("desc");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  // EXPAND SORTED BTN
+  const handleExpandedChange = (value) => {
+    setExpanded(value);
+  };
+
   // SEARCH BAR
   const handleTyping = (e) => {
     let { value } = e.target;
@@ -138,6 +188,7 @@ function MovieSearch() {
     setSearch(value);
     SetSelectedYear("");
     SetSelectedCountry("");
+    setSelectedItems(value);
   };
 
   const filteredMovies = data.filter((dataItem) =>
@@ -153,6 +204,7 @@ function MovieSearch() {
     SetSelectedYear(year);
     setSearch("");
     SetSelectedCountry("");
+    setSelectedItems(year);
   };
 
   // SELECT Country
@@ -160,6 +212,7 @@ function MovieSearch() {
     SetSelectedCountry(country);
     setSearch("");
     SetSelectedYear("");
+    setSelectedItems(country);
   };
 
   // SELECT SEARCH
@@ -167,6 +220,8 @@ function MovieSearch() {
     SetSelectedCountry("");
     setSearch("");
     SetSelectedYear("");
+    setExpanded(false);
+    setSelectedItems("");
   };
 
   // MOVIE AMOUNT
@@ -174,17 +229,6 @@ function MovieSearch() {
   const movieAmountSearchFilter = filteredMovies.length;
   const movieAmountYearSorted = selectedMoviesByYear.length;
   const movieAmountCountrySorted = selectedMoviesByCountry.length;
-
-  // EXPAND SORTED BTN
-  const [expanded, setExpanded] = useState(false);
-
-  useEffect(() => {
-    if (search !== "" || selectedCountry !== "") {
-      setExpanded(true);
-    } else {
-      setExpanded(false);
-    }
-  }, [search, selectedCountry]);
 
   return (
     <main>
@@ -286,7 +330,9 @@ function MovieSearch() {
         )}
         <div className="btn_sort_container_search">
           <AlphabeticBtn
-            selectedItems={search}
+            selectedItems={selectedItems}
+            expanded={expanded}
+            onExpandedChange={handleExpandedChange} // Passer la fonction de rappel
             style={{
               height: expanded ? "37px" : "0",
               fontSize: expanded ? "1rem" : "0",
@@ -295,7 +341,18 @@ function MovieSearch() {
               borderTop: expanded ? "0" : "none",
               transition: "height 0.3s ease-in",
             }}
-            onClick={sortOrderA === "asc" ? movieSortedZ : movieSortedA}
+            // onClick={sortOrderA === "asc" ? movieSortedZ : movieSortedA}
+            onClick={
+              search !== ""
+                ? sortOrderA === "asc"
+                  ? movieSortedZ
+                  : movieSortedA
+                : selectedCountry !== ""
+                  ? sortMovieByCountryOrderA === "asc"
+                    ? MovieByCountryOrderz
+                    : MovieByCountryOrderA
+                  : () => {} // Fonction vide si aucune condition n'est remplie
+            }
           />
           {search === "" && selectedYear === "" && selectedCountry === "" && (
             <MovieCount movieAmount={movieAmount} />
@@ -310,7 +367,9 @@ function MovieSearch() {
             <MovieCount movieAmount={movieAmountCountrySorted} />
           )}
           <ChronologicBtn
-            selectedItems={search}
+            selectedItems={selectedItems}
+            expanded={expanded} // Passer la valeur de expanded comme prop
+            onExpandedChange={handleExpandedChange} // Passer la fonction de rappel
             style={{
               height: expanded ? "37px" : "0",
               fontSize: expanded ? "1rem" : "0",
