@@ -1,9 +1,8 @@
 .chronologic_btn,
 .chronologic_btn_artists {
-  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
-    "Lucida Sans", Arial, sans-serif;
+  font-family: var(--font-06);
   text-align: center;
-  color: var(--color-primary);
+  color: var(--color-01);
   border-radius: 0 0 15px 15px;
   width: min(13%);
   cursor: pointer;
@@ -16,5 +15,5 @@
 
 .chronologic_btn:hover,
 .chronologic_btn_artists:hover {
-  color: var(--color-third);
+  color: var(--color-03);
 }

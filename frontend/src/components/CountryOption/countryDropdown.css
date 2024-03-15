@@ -1,0 +1,13 @@
+.countryDropdown {
+  text-align: center;
+  font-family: var(--font-02);
+  color: var(--color-02);
+  background: var(--color-04);
+  border: solid 1px white;
+  padding: 5px 0;
+  cursor: pointer;
+  width: 50%;
+  font-size: medium;
+  font-weight: bold;
+  border-radius: 10px;
+}

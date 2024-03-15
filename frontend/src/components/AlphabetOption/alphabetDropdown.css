@@ -1,13 +1,26 @@
+.AlphabetDropdown,
+.AlphabetDropdown2 {
+  text-align: center;
+  font-family: var(--font-02);
+  color: var(--color-02);
+  background: var(--color-04);
+  border: solid 1px white;
+  padding: 5px 0;
+  cursor: pointer;
+}
+
 .AlphabetDropdown {
   width: 16%;
-  text-align: center;
-  font-family: "Courier New", Courier, monospace;
   font-size: medium;
-  color: var(--color-secondary);
   border: solid 1px white;
   border-bottom: 0;
   border-radius: 10px 10px 0 0;
-  background: var(--color-background);
-  padding: 5px 0;
-  cursor: pointer;
+  font-weight: bold;
+}
+
+.AlphabetDropdown2 {
+  width: 50%;
+  font-size: large;
+  font-weight: bold;
+  border-radius: 10px;
 }

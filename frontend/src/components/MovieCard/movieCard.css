@@ -8,7 +8,7 @@
 }
 
 .MovieCard {
-  background-color: var(--color-background);
+  background-color: var(--color-04);
   padding: 1.5rem;
   margin: 0 5%;
 }
@@ -32,8 +32,8 @@
   gap: 0.5rem;
 }
 .MovieCard_title {
-  font-family: "Nanum Gothic Coding", monospace;
-  color: var(--color-secondary);
+  font-family: var(--font-05);
+  color: var(--color-02);
   font-size: x-large;
   margin-bottom: 0.5rem;
 }
@@ -58,10 +58,9 @@
 }
 
 .MovieCard_info {
-  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
-    "Lucida Sans", Arial, sans-serif;
+  font-family: var(--font-06);
   font-size: 0.9rem;
-  color: var(--color-primary);
+  color: var(--color-01);
 }
 .MovieCard_story {
   text-align: justify;
@@ -70,7 +69,7 @@
   font-weight: bold;
 }
 .paraph_color_2 {
-  color: var(--color-secondary);
+  color: var(--color-02);
 }
 .paraph_height {
   line-height: 26px;
@@ -98,7 +97,7 @@
   cursor: pointer;
 }
 .Toggle_video_btn:hover {
-  color: var(--color-secondary);
+  color: var(--color-02);
 }
 .video_arrow_closed {
   transform: scaleX(-1);

@@ -1,10 +1,11 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable camelcase */
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import "./movieCard.css";
 import ReactPlayer from "react-player";
 
-function MovieCard({ movie }) {
+function MovieCard({ movie, origin }) {
   // DATA
   const [movieData, setMovieData] = useState([]);
   const {
@@ -31,21 +32,39 @@ function MovieCard({ movie }) {
     cast,
   } = movieData;
 
-  useEffect(() => {
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movies/${id}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((data) => {
-        setMovieData(data);
-      })
-      .catch((error) => {
-        console.error("Error fetching user data:", error);
-      });
-  }, [id]);
+  if (origin === "country") {
+    useEffect(() => {
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movies/${movie.movieId}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setMovieData(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching user data:", error);
+        });
+    }, [movie.id]);
+  } else {
+    useEffect(() => {
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movies/${id}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setMovieData(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching user data:", error);
+        });
+    }, [id]);
+  }
 
   const FichierMultimedia = "Fichier multimédia";
 

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { useState } from "react";
 import PropTypes from "prop-types";
 import Modal from "@mui/material/Modal";
@@ -6,7 +7,7 @@ import { Container } from "@mui/material";
 import "./movieThumbnail.css";
 import MovieCard from "../MovieCard/MovieCard";
 
-function MovieThumbnail({ data }) {
+function MovieThumbnail({ data, origin }) {
   const { title, year, cover } = data;
 
   const [selectedMovie, setSelectedMovie] = useState(null);
@@ -51,7 +52,7 @@ function MovieThumbnail({ data }) {
               >
                 X Fermer
               </div>
-              <MovieCard movie={selectedMovie} />
+              <MovieCard movie={selectedMovie} origin={origin} />
             </Container>
           </Box>
         </Modal>

@@ -64,6 +64,71 @@ const findById = (id) => {
   );
 };
 
+const findAllYears = () => {
+  return db.query(
+    "SELECT DISTINCT year FROM movies WHERE year IS NOT NULL ORDER BY year DESC;"
+  );
+};
+
+const findByYear = (year) => {
+  return db.query("SELECT * FROM movies WHERE year LIKE ?;", [`${year}%`]);
+};
+
+const findByYearSortedA = (year) => {
+  return db.query(
+    "SELECT * FROM movies WHERE year LIKE ? ORDER BY title ASC;",
+    [`${year}%`]
+  );
+};
+
+const findByYearSortedZ = (year) => {
+  return db.query(
+    "SELECT * FROM movies WHERE year LIKE ? ORDER BY title DESC;",
+    [`${year}%`]
+  );
+};
+
+const findAllCountry = () => {
+  return db.query(
+    "SELECT id, name FROM country WHERE name IS NOT NULL ORDER BY name ASC;"
+  );
+};
+
+const findByCountry = (id) => {
+  return db.query(
+    "SELECT * FROM movies AS m JOIN movie_country AS mc ON m.id = mc.movieId JOIN country AS c ON c.id = mc.countryId WHERE c.id = ?;",
+    [id]
+  );
+};
+
+const findByCountrySortedAlpha = (id) => {
+  return db.query(
+    "SELECT * FROM movies AS m JOIN movie_country AS mc ON m.id = mc.movieId JOIN country AS c ON c.id = mc.countryId WHERE c.id = ? ORDER BY title ASC;",
+    [id]
+  );
+};
+
+const findByCountrySortedZeta = (id) => {
+  return db.query(
+    "SELECT * FROM movies AS m JOIN movie_country AS mc ON m.id = mc.movieId JOIN country AS c ON c.id = mc.countryId WHERE c.id = ? ORDER BY title DESC;",
+    [id]
+  );
+};
+
+const findByCountrySortedYearAsc = (id) => {
+  return db.query(
+    "SELECT * FROM movies AS m JOIN movie_country AS mc ON m.id = mc.movieId JOIN country AS c ON c.id = mc.countryId WHERE c.id = ? ORDER BY year ASC;",
+    [id]
+  );
+};
+
+const findByCountrySortedYearDesc = (id) => {
+  return db.query(
+    "SELECT * FROM movies AS m JOIN movie_country AS mc ON m.id = mc.movieId JOIN country AS c ON c.id = mc.countryId WHERE c.id = ? ORDER BY year DESC;",
+    [id]
+  );
+};
+
 module.exports = {
   findAll,
   findById,
@@ -72,4 +137,14 @@ module.exports = {
   findAllSortedYear,
   findAllSortedYearDESC,
   findAllSortedNoX,
+  findAllYears,
+  findAllCountry,
+  findByCountry,
+  findByCountrySortedAlpha,
+  findByCountrySortedZeta,
+  findByCountrySortedYearAsc,
+  findByCountrySortedYearDesc,
+  findByYear,
+  findByYearSortedA,
+  findByYearSortedZ,
 };

@@ -41,12 +41,12 @@
 }
 
 .MuiButton-root.btn_Kind_Choice:hover {
-  background-color: var(--color-third);
-  color: var(--color-background);
+  background-color: var(--color-03);
+  color: var(--color-04);
 }
 
 .MuiPaginationItem-root {
-  color: var(--color-third) !important;
+  color: var(--color-03) !important;
 }
 .kinds_bloc_position {
   display: flex;
@@ -76,8 +76,6 @@
 
 .MovieThumbnails_Kind_container {
   justify-content: center;
-  margin-top: 1rem;
-  padding: 1.5rem 0;
   overflow: auto;
   height: 568px;
 }
@@ -89,10 +87,10 @@
   width: 59%;
 }
 .kinds_pitch {
-  font-family: "Nova Square", sans-serif;
+  font-family: var(--font-03);
   text-align: center;
   line-height: normal;
-  color: var(--color-primary);
+  color: var(--color-01);
 }
 .kinds_bear_illustr {
   width: 32%;

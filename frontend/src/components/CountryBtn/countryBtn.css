@@ -1,9 +1,8 @@
 .country_btn {
-  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
-    "Lucida Sans", Arial, sans-serif;
+  font-family: var(--font-06);
   font-size: 1rem;
-  color: var(--color-primary);
-  border: solid 1px var(--color-primary);
+  color: var(--color-01);
+  border: solid 1px var(--color-01);
   border-top: 0;
   cursor: pointer;
 }

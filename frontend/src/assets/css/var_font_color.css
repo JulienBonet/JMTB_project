@@ -1,0 +1,24 @@
+@font-face {
+  font-family: "azonix";
+  src: url("../font/azonix/Azonix.otf") format("opentype");
+}
+@font-face {
+  font-family: "blanka";
+  src: url("../font/blanka/Blanka-Regular.otf") format("opentype");
+}
+
+:root {
+  --color-01: #ffebcd;
+  --color-02: #ffa500;
+  --color-03: #00d9c0;
+  --color-04: rgb(56, 56, 56);
+  --color-05: #1e1612;
+
+  --font-01: "azonix";
+  --font-02: "Quicksand", sans-serif;
+  --font-03: "Nova Square", sans-serif;
+  --font-04: "Courier New", Courier, monospace;
+  --font-05: "Nanum Gothic Coding", monospace;
+  --font-06: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
+}
