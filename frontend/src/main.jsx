@@ -11,6 +11,7 @@ import MovieCasting from "./pages/MovieArtist/MovieCasting.jsx";
 import MovieScreenwriters from "./pages/MovieArtist/MovieScreenwriters.jsx";
 import MovieMusic from "./pages/MovieArtist/MovieMusic.jsx";
 import MovieStudio from "./pages/MovieArtist/Moviestudio.jsx";
+import NewMovie from "./pages/AdminFeatures/NewMovie.jsx";
 
 const router = createBrowserRouter([
   {
@@ -74,6 +75,10 @@ const router = createBrowserRouter([
         loader: () => {
           return fetch(`${import.meta.env.VITE_BACKEND_URL}/api/studio`);
         },
+      },
+      {
+        path: "/new_movie",
+        element: <NewMovie />,
       },
     ],
   },

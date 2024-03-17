@@ -55,6 +55,11 @@ export default function BasicButtons() {
               STUDIOS
             </Button>
           </Link>
+          <Link to="/new_movie">
+            <Button variant="outlined" color="JmdbColorNav">
+              ADD
+            </Button>
+          </Link>
         </Stack>
       </ThemeProvider>
     </section>
