@@ -21,6 +21,7 @@ function MovieSearchKind() {
   const [sortOrderY, setSortOrderY] = useState("desc");
   const [currentRow, setCurrentRow] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  console.info(kindsData);
 
   // REQUEST ALL MOVIE BY GENRE
   useEffect(() => {
@@ -129,9 +130,9 @@ function MovieSearchKind() {
   const totalRows = Math.ceil(kindsData.length / itemsPerRow);
   const startRowIndex = (currentRow - 1) * itemsPerRow;
   const endRowIndex = startRowIndex + itemsPerRow;
-  const genresForRow = kindsData
-    .slice(startRowIndex, endRowIndex)
-    .map((item) => item.genre);
+  const genresForRow = Array.isArray(kindsData)
+    ? kindsData.slice(startRowIndex, endRowIndex).map((item) => item.name)
+    : [];
 
   const handleRowUp = () => {
     const nextRow = currentRow === totalRows ? 1 : currentRow + 1;

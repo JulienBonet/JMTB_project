@@ -34,7 +34,7 @@ const findById = (id) => {
     `SELECT movies.*,
     director.name AS director_name,
     GROUP_CONCAT(DISTINCT CONCAT(casting.name, ', ') SEPARATOR '') AS cast,
-    GROUP_CONCAT(DISTINCT CONCAT(genre.genre, ', ') SEPARATOR '') AS genres,
+    GROUP_CONCAT(DISTINCT CONCAT(genre.name, ', ') SEPARATOR '') AS genres,
     GROUP_CONCAT(DISTINCT CONCAT(country.name, ',') SEPARATOR '') AS countries,
     GROUP_CONCAT(DISTINCT CONCAT(language.language, ', ') SEPARATOR '') AS languages,
     GROUP_CONCAT(DISTINCT CONCAT(music.name, ', ') SEPARATOR '') AS music,
