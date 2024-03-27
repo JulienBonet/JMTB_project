@@ -8,6 +8,7 @@ import AlphabeticBtn from "../../components/AlphabeticBtn/AlphabeticBtn";
 import ChronologicBtn from "../../components/ChronologicBtn/ChronologicBtn";
 import YearDropdown from "../../components/YearOption/YearDropdown";
 import CountryDropdown from "../../components/CountryOption/CountryDropdown";
+import KindsDropdown from "../../components/KindOption/KindsDropdown";
 import MovieThumbnail from "../../components/MovieThumbnail/MovieThumbnail";
 import MovieCount from "../../components/MovieCount/MovieCount";
 import BearSearch from "../../assets/ico/search_Bear_02.jpeg";
@@ -23,8 +24,12 @@ function MovieSearch() {
   const [sortMovieByCountryOrderY, setSortMovieByCountryOrderY] =
     useState("desc");
   const [sortMovieByYearOrderA, setSortMovieByYearOrderA] = useState("asc");
+  const [sortMovieByKindOrderA, setSortMovieByKindOrderA] = useState("asc");
+  const [sortMovieByKindOrderY, setSortMovieByKindOrderY] = useState("desc");
+  const [selectedKind, setSelectedKind] = useState("");
   const [selectedYear, SetSelectedYear] = useState("");
   const [selectedCountry, SetSelectedCountry] = useState("");
+  const [selectedMoviesByKind, SetMoviesByKind] = useState([]);
   const [selectedMoviesByYear, SetMoviesByYear] = useState([]);
   const [selectedMoviesByCountry, SetMoviesByCountry] = useState([]);
   const [selectedItems, setSelectedItems] = useState("");
@@ -93,6 +98,91 @@ function MovieSearch() {
       const newData = await response.json();
       setData(newData);
       setSortOrderY("desc");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  // REQUEST ALL MOVIES BY KINDS
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/kinds/${selectedKind}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((MovieBykind) => {
+        SetMoviesByKind(MovieBykind);
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  }, [selectedKind]);
+
+  // REQUEST ALL MOVIES BY KIND (SORTED ALPHABETICAL ASC)
+  const MovieByKindsOrderA = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/kinds/${selectedKind}/sorted/0`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const newData = await response.json();
+      SetMoviesByKind(newData);
+      setSortMovieByKindOrderA("asc");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  // REQUEST ALL MOVIES BY KIND (SORTED ALPHABETICAL DESC)
+  const MovieByKindsOrderZ = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/kinds/${selectedKind}/sorted/1`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const newData = await response.json();
+      SetMoviesByKind(newData);
+      setSortMovieByKindOrderA("desc");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  // REQUEST ALL MOVIES BY KIND (SORTED CHRONOLOGICAL ASC)
+  const MovieByKindsOrderYasc = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/kinds/${selectedKind}/sorted/2`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const newData = await response.json();
+      SetMoviesByKind(newData);
+      setSortMovieByKindOrderY("asc");
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  // REQUEST ALL MOVIES BY KIND (SORTED CHRONOLOGICAL DESC)
+  const MovieByKindsOrderYdesc = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/kinds/${selectedKind}/sorted/3`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const newData = await response.json();
+      SetMoviesByKind(newData);
+      setSortMovieByKindOrderY("desc");
     } catch (error) {
       console.error("Error fetching data:", error);
     }
@@ -277,16 +367,27 @@ function MovieSearch() {
       .includes(search.toLowerCase())
   );
 
+  // SELECT KINDS
+  const handleKindChange = (kind) => {
+    setSelectedKind(kind);
+    SetSelectedYear("");
+    setSearch("");
+    SetSelectedCountry("");
+    setSelectedItems(kind);
+  };
+
   // SELECT YEAR
   const handleYearChange = (year) => {
     SetSelectedYear(year);
     setSearch("");
     SetSelectedCountry("");
+    setSelectedKind("");
     setSelectedItems(year);
   };
 
   // SELECT Country
   const handleCountryChange = (country) => {
+    setSelectedKind("");
     SetSelectedCountry(country);
     setSearch("");
     SetSelectedYear("");
@@ -295,6 +396,7 @@ function MovieSearch() {
 
   // SELECT SEARCH
   const handleResetSearch = () => {
+    setSelectedKind("");
     SetSelectedCountry("");
     setSearch("");
     SetSelectedYear("");
@@ -305,6 +407,7 @@ function MovieSearch() {
   // MOVIE AMOUNT
   const movieAmount = filteredMovies.length;
   const movieAmountSearchFilter = filteredMovies.length;
+  const movieAmountKindSorted = selectedMoviesByKind.length;
   const movieAmountYearSorted = selectedMoviesByYear.length;
   const movieAmountCountrySorted = selectedMoviesByCountry.length;
 
@@ -321,6 +424,11 @@ function MovieSearch() {
             />
           </div>
           <div className="dropdown_search_container">
+            <KindsDropdown
+              onKindChange={handleKindChange}
+              search={search}
+              selectedKindData={selectedKind}
+            />
             <YearDropdown
               onYearChange={handleYearChange}
               search={search}
@@ -354,29 +462,51 @@ function MovieSearch() {
       </section>
       <div className="dashed_secondary_bar" />
       <section className="search_bear_position">
-        {search === "" && selectedYear === "" && selectedCountry === "" && (
-          <div className="search_bear_background_container">
-            <div className="Search_pitch_container">
-              <p className="Search_pitch">QUEL FILM CHERCHONS NOUS ?</p>
+        {search === "" &&
+          selectedKind === "" &&
+          selectedYear === "" &&
+          selectedCountry === "" && (
+            <div className="search_bear_background_container">
+              <div className="Search_pitch_container">
+                <p className="Search_pitch">QUEL FILM CHERCHONS NOUS ?</p>
+              </div>
+              <img
+                src={BearSearch}
+                alt="Que cherchons-nous ?"
+                className="search_bear_background"
+              />
             </div>
-            <img
-              src={BearSearch}
-              alt="Que cherchons-nous ?"
-              className="search_bear_background"
-            />
-          </div>
-        )}
-        {search !== "" && selectedYear === "" && selectedCountry === "" && (
-          <div className="MovieThumbnails_container">
-            <div className="scroll_zone">
-              <div className="MovieThumbnails">
-                {filteredMovies.map((movieData) => (
-                  <MovieThumbnail key={movieData.id} data={movieData} />
-                ))}
+          )}
+        {search !== "" &&
+          selectedKind === "" &&
+          selectedYear === "" &&
+          selectedCountry === "" && (
+            <div className="MovieThumbnails_container">
+              <div className="scroll_zone">
+                <div className="MovieThumbnails">
+                  {filteredMovies.map((movieData) => (
+                    <MovieThumbnail key={movieData.id} data={movieData} />
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        {selectedKind !== "" &&
+          selectedYear === "" &&
+          selectedCountry === "" && (
+            <div className="MovieThumbnails_container">
+              <div className="scroll_zone">
+                <div className="MovieThumbnails">
+                  {selectedMoviesByKind.map((movieByKindData) => (
+                    <MovieThumbnail
+                      key={movieByKindData.id}
+                      data={movieByKindData}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         {selectedYear !== "" && selectedCountry === "" && (
           <div className="MovieThumbnails_container">
             <div className="scroll_zone">
@@ -424,22 +554,30 @@ function MovieSearch() {
                 ? sortOrderA === "asc"
                   ? movieSortedZ
                   : movieSortedA
-                : selectedCountry !== ""
-                  ? sortMovieByCountryOrderA === "asc"
-                    ? MovieByCountryOrderz
-                    : MovieByCountryOrderA
-                  : selectedYear !== ""
-                    ? sortMovieByYearOrderA === "asc"
-                      ? MovieByYearOrderZ
-                      : MovieByYearOrderA
-                    : () => {} // Fonction vide si aucune condition n'est remplie
+                : selectedKind !== ""
+                  ? sortMovieByKindOrderA === "asc"
+                    ? MovieByKindsOrderZ
+                    : MovieByKindsOrderA
+                  : selectedCountry !== ""
+                    ? sortMovieByCountryOrderA === "asc"
+                      ? MovieByCountryOrderz
+                      : MovieByCountryOrderA
+                    : selectedYear !== ""
+                      ? sortMovieByYearOrderA === "asc"
+                        ? MovieByYearOrderZ
+                        : MovieByYearOrderA
+                      : () => {}
             }
           />
-          {search === "" && selectedYear === "" && selectedCountry === "" && (
-            <MovieCount movieAmount={movieAmount} />
-          )}
+          {search === "" &&
+            selectedKind === "" &&
+            selectedYear === "" &&
+            selectedCountry === "" && <MovieCount movieAmount={movieAmount} />}
           {search !== "" && (
             <MovieCount movieAmount={movieAmountSearchFilter} />
+          )}
+          {selectedKind !== "" && (
+            <MovieCount movieAmount={movieAmountKindSorted} />
           )}
           {selectedYear !== "" && (
             <MovieCount movieAmount={movieAmountYearSorted} />
@@ -464,11 +602,15 @@ function MovieSearch() {
                 ? sortOrderY === "asc"
                   ? movieSortedYearDesc
                   : movieSortedYear
-                : selectedCountry !== ""
-                  ? sortMovieByCountryOrderY === "asc"
-                    ? MovieByCountryOrderYdesc
-                    : MovieByCountryOrderYasc
-                  : () => {}
+                : selectedKind !== ""
+                  ? sortMovieByKindOrderY === "asc"
+                    ? MovieByKindsOrderYdesc
+                    : MovieByKindsOrderYasc
+                  : selectedCountry !== ""
+                    ? sortMovieByCountryOrderY === "asc"
+                      ? MovieByCountryOrderYdesc
+                      : MovieByCountryOrderYasc
+                    : () => {}
             }
           />
         </div>

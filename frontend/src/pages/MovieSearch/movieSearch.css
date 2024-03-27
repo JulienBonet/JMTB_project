@@ -16,12 +16,12 @@
 
 .search_bar {
   padding: 10px;
-  width: 80%;
+  width: 90%;
   background-color: var(--color-01);
 }
 .dropdown_search_container {
   display: flex;
-  width: 21%;
+  width: 50%;
   gap: 2rem;
 }
 
