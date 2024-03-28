@@ -25,11 +25,6 @@ export default function BasicButtons() {
               RECHERCHE
             </Button>
           </Link>
-          <Link to="/movie_kind">
-            <Button variant="outlined" color="JmdbColorNav">
-              GENRES
-            </Button>
-          </Link>
           <Link to="/movie_directors">
             <Button variant="outlined" color="JmdbColorNav">
               REALISATEURS

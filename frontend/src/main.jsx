@@ -5,7 +5,6 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import App from "./App.jsx";
 import Home from "./pages/Home/Home.jsx";
 import MovieSearch from "./pages/MovieSearch/MovieSearch.jsx";
-import MovieSearchKind from "./pages/MovieSearchKind/MovieSearchKind.jsx";
 import MovieDirectors from "./pages/MovieArtist/MovieDirectors.jsx";
 import MovieCasting from "./pages/MovieArtist/MovieCasting.jsx";
 import MovieScreenwriters from "./pages/MovieArtist/MovieScreenwriters.jsx";
@@ -31,13 +30,6 @@ const router = createBrowserRouter([
         element: <MovieSearch />,
         loader: () => {
           return fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movies`);
-        },
-      },
-      {
-        path: "/movie_kind",
-        element: <MovieSearchKind />,
-        loader: () => {
-          return fetch(`${import.meta.env.VITE_BACKEND_URL}/api/kinds`);
         },
       },
       {

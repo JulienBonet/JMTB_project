@@ -7,7 +7,7 @@
 .artists_seach_container {
   display: flex;
   justify-content: space-around;
-  min-height: calc(100vh - 160px);
+  min-height: calc(100vh - 180px);
   align-items: center;
 }
 .artists_groups {
