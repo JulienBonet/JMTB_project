@@ -39,7 +39,7 @@ function KindsDropdown({ onKindChange, selectedKindData, search }) {
       className="kindsDropdown"
       value={selectedKindData}
     >
-      <option value="">par genre</option>
+      <option value="">par genres</option>
       {options}
     </select>
   );
