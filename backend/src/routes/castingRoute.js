@@ -4,6 +4,7 @@ const castingController = require("../controllers/castingControllers");
 
 router.get("/casting", castingController.getAllArtistAsc);
 router.get("/casting/sorted_z", castingController.getAllArtistDesc);
+router.get("/casting/sorted_id", castingController.getAllArtistIdDesc);
 router.get("/casting/:id", castingController.getAllMoviesByArtistId);
 router.get("/casting/:id/sorted/0", castingController.getAllSorted0);
 router.get("/casting/:id/sorted/1", castingController.getAllSorted1);

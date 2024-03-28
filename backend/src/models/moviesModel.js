@@ -94,6 +94,10 @@ const findAllCountry = () => {
   );
 };
 
+const findAllCountryIdDesc = () => {
+  return db.query("SELECT * FROM country order by id desc;");
+};
+
 const findByCountry = (id) => {
   return db.query(
     "SELECT * FROM movies AS m JOIN movie_country AS mc ON m.id = mc.movieId JOIN country AS c ON c.id = mc.countryId WHERE c.id = ?;",
@@ -139,6 +143,7 @@ module.exports = {
   findAllSortedNoX,
   findAllYears,
   findAllCountry,
+  findAllCountryIdDesc,
   findByCountry,
   findByCountrySortedAlpha,
   findByCountrySortedZeta,

@@ -10,6 +10,7 @@ import MovieCasting from "./pages/MovieArtist/MovieCasting.jsx";
 import MovieScreenwriters from "./pages/MovieArtist/MovieScreenwriters.jsx";
 import MovieMusic from "./pages/MovieArtist/MovieMusic.jsx";
 import MovieStudio from "./pages/MovieArtist/Moviestudio.jsx";
+import AdminFeat from "./pages/AdminFeat/AdminFeat.jsx";
 
 const router = createBrowserRouter([
   {
@@ -66,6 +67,10 @@ const router = createBrowserRouter([
         loader: () => {
           return fetch(`${import.meta.env.VITE_BACKEND_URL}/api/studio`);
         },
+      },
+      {
+        path: "/admin_feat",
+        element: <AdminFeat />,
       },
     ],
   },

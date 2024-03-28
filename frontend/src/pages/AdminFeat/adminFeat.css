@@ -1,0 +1,21 @@
+.AdminFeatNav {
+  margin: 1rem 0;
+}
+
+.AdminFeatContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.AdminFeatContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: aliceblue;
+  width: 95%;
+  border-radius: 25px;
+  padding-bottom: 4rem;
+  margin-bottom: 4rem;
+}
