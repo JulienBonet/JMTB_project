@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
+import Pagination from "@mui/material/Pagination";
 import { Button, Container } from "@mui/material";
 import Modal from "@mui/material/Modal";
 import "./adminLists.css";
@@ -14,6 +15,7 @@ function AdminMovieList() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMovie, setSelectedMovie] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const openModal = (movieData) => {
     setSelectedMovie(movieData);
@@ -42,9 +44,20 @@ function AdminMovieList() {
       });
   }, []);
 
-  const filteredData = data.filter((movieData) =>
+  // PAGINATION
+  const moviesPerPage = 50;
+  const indexOfLastMovie = currentPage * moviesPerPage;
+  const indexOfFirstMovie = indexOfLastMovie - moviesPerPage;
+  const currentMovies = data.slice(indexOfFirstMovie, indexOfLastMovie);
+
+  const filteredData = currentMovies.filter((movieData) =>
     movieData.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
+
   return (
     <section className="AdminItemsSection">
       <section className="HeaderAdminItemsSection">
@@ -52,7 +65,7 @@ function AdminMovieList() {
           <h1 className="admin_Title_feat">MOVIES LIST</h1>
         </div>
         <div className="admin_feat_tools_line">
-          <div className="search_bar_container">
+          <div className="Admin_search_bar_container">
             <input
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -106,6 +119,15 @@ function AdminMovieList() {
           )}
         </tbody>
       </table>
+      <Box
+        sx={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
+      >
+        <Pagination
+          count={Math.ceil(data.length / moviesPerPage)}
+          shape="rounded"
+          onChange={handlePageChange}
+        />
+      </Box>
       {selectedMovie && (
         <Modal open onClose={closeModal} className="Movie_Modal">
           <Box>

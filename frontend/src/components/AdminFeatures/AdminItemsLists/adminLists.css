@@ -55,3 +55,12 @@ tbody tr:nth-child(even) {
   width: 100%;
   text-align: center;
 }
+
+.Admin_search_bar_container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 50%;
+  border-radius: 25px;
+  padding: 10px;
+}
