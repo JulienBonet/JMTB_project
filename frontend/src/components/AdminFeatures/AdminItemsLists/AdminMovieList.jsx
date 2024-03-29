@@ -16,6 +16,7 @@ function AdminMovieList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedMovie, setSelectedMovie] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [filteredData, setFilteredData] = useState([]);
 
   const openModal = (movieData) => {
     setSelectedMovie(movieData);
@@ -36,6 +37,7 @@ function AdminMovieList() {
       })
       .then((datas) => {
         setData(datas);
+        setFilteredData(datas); // Set filtered data initially to all data
         setLoading(false);
       })
       .catch((error) => {
@@ -44,15 +46,19 @@ function AdminMovieList() {
       });
   }, []);
 
+  // Update filtered data when search term changes
+  useEffect(() => {
+    const filtered = data.filter((movieData) =>
+      movieData.title.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredData(filtered);
+  }, [searchTerm, data]);
+
   // PAGINATION
   const moviesPerPage = 50;
   const indexOfLastMovie = currentPage * moviesPerPage;
   const indexOfFirstMovie = indexOfLastMovie - moviesPerPage;
-  const currentMovies = data.slice(indexOfFirstMovie, indexOfLastMovie);
-
-  const filteredData = currentMovies.filter((movieData) =>
-    movieData.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const currentMovies = filteredData.slice(indexOfFirstMovie, indexOfLastMovie);
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
@@ -95,7 +101,7 @@ function AdminMovieList() {
           {loading ? (
             <div className="LoaderTemp">LOADING...</div>
           ) : (
-            filteredData.map((movieData) => (
+            currentMovies.map((movieData) => (
               <tr key={movieData.id}>
                 <th scope="row">{movieData.id}</th>
                 <td>{movieData.title}</td>
@@ -123,7 +129,7 @@ function AdminMovieList() {
         sx={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
       >
         <Pagination
-          count={Math.ceil(data.length / moviesPerPage)}
+          count={Math.ceil(filteredData.length / moviesPerPage)}
           shape="rounded"
           onChange={handlePageChange}
         />

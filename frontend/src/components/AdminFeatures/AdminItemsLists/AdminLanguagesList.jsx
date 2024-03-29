@@ -5,11 +5,15 @@ import "./adminLists.css";
 import PreviewIcon from "@mui/icons-material/Preview";
 import ModeIcon from "@mui/icons-material/Mode";
 import DeleteIcon from "@mui/icons-material/Delete";
+import Box from "@mui/material/Box";
+import Pagination from "@mui/material/Pagination";
 
 function AdminLanguagesList() {
   const [data, setData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filteredData, setFilteredData] = useState([]);
 
   // REQUEST ALL LANGUAGES sorted ID desc
   useEffect(() => {
@@ -22,6 +26,7 @@ function AdminLanguagesList() {
       })
       .then((datas) => {
         setData(datas);
+        setFilteredData(datas); // Set filtered data initially to all data
         setLoading(false);
       })
       .catch((error) => {
@@ -30,18 +35,34 @@ function AdminLanguagesList() {
       });
   }, []);
 
-  const filteredData = data.filter(
-    (itemData) =>
-      itemData.language &&
-      itemData.language.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Update filtered data when search term changes
+  useEffect(() => {
+    const filtered = data.filter(
+      (itemData) =>
+        itemData.language &&
+        itemData.language.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredData(filtered);
+  }, [searchTerm, data]);
+
+  // PAGINATION
+  const itemsPerPage = 50;
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageChange = (event, value) => {
+    setCurrentPage(value);
+  };
 
   return (
     <section className="AdminItemsSection">
-      <section>
-        <h1 className="admin_Title_feat">LANGUAGE LIST</h1>
+      <section className="HeaderAdminItemsSection">
+        <div className="admin_Title_feat_container">
+          <h1 className="admin_Title_feat">LANGUAGES LIST</h1>
+        </div>
         <div className="admin_feat_tools_line">
-          <div className="search_bar_container">
+          <div className="Admin_search_bar_container">
             <input
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -51,7 +72,7 @@ function AdminLanguagesList() {
           </div>
           <Button
             variant="contained"
-            onClick={() => console.info("Ajouter une language")}
+            onClick={() => console.info("Ajouter une langue")}
           >
             ADD NEW LANGUAGE
           </Button>
@@ -68,15 +89,12 @@ function AdminLanguagesList() {
           {loading ? (
             <div className="LoaderTemp">LOADING...</div>
           ) : (
-            filteredData.map((DataItem) => (
-              <tr key={DataItem.id}>
-                <th scope="row">{DataItem.id}</th>
-                <td>{DataItem.language}</td>
+            currentItems.map((item) => (
+              <tr key={item.id}>
+                <th scope="row">{item.id}</th>
+                <td>{item.language}</td>
                 <td>
-                  <PreviewIcon
-                    className="admin_tools_ico"
-                    // onClick={() => openModal(movieData)}
-                  />
+                  <PreviewIcon className="admin_tools_ico" />
                 </td>
                 <td>
                   <ModeIcon className="admin_tools_ico" />
@@ -89,6 +107,15 @@ function AdminLanguagesList() {
           )}
         </tbody>
       </table>
+      <Box
+        sx={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
+      >
+        <Pagination
+          count={Math.ceil(filteredData.length / itemsPerPage)}
+          shape="rounded"
+          onChange={handlePageChange}
+        />
+      </Box>
     </section>
   );
 }
