@@ -1,12 +1,13 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useState, useEffect } from "react";
-import { Button } from "@mui/material";
+import { Button, Container } from "@mui/material";
+import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Pagination from "@mui/material/Pagination";
 import "./adminLists.css";
 import PreviewIcon from "@mui/icons-material/Preview";
-import ModeIcon from "@mui/icons-material/Mode";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AdminItemsCard from "../AdminItemsCards/AdminItemsCard";
 
 function AdminDirectorList() {
   const [data, setData] = useState([]);
@@ -14,6 +15,15 @@ function AdminDirectorList() {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredData, setFilteredData] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
+
+  const openModal = (DataItem) => {
+    setSelectedItem(DataItem);
+  };
+
+  const closeModal = () => {
+    setSelectedItem(null);
+  };
 
   // REQUEST ALL DIRECTORS sorted ID desc
   useEffect(() => {
@@ -97,10 +107,10 @@ function AdminDirectorList() {
                 <th scope="row">{DataItem.id}</th>
                 <td>{DataItem.name}</td>
                 <td>
-                  <PreviewIcon className="admin_tools_ico" />
-                </td>
-                <td>
-                  <ModeIcon className="admin_tools_ico" />
+                  <PreviewIcon
+                    className="admin_tools_ico"
+                    onClick={() => openModal(DataItem)}
+                  />
                 </td>
                 <td>
                   <DeleteIcon className="admin_tools_ico" />
@@ -119,6 +129,28 @@ function AdminDirectorList() {
           onChange={handlePageChange}
         />
       </Box>
+      {selectedItem && (
+        <Modal open onClose={closeModal} className="Movie_Modal">
+          <Box>
+            <Container maxWidth="lg">
+              <div
+                onClick={closeModal}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    closeModal();
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                className="modal_closed_btn"
+              >
+                X Fermer
+              </div>
+              <AdminItemsCard item={selectedItem} origin={origin} />
+            </Container>
+          </Box>
+        </Modal>
+      )}
     </section>
   );
 }

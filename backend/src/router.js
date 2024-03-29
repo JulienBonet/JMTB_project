@@ -16,6 +16,7 @@ const musicRouter = require("./routes/musicRoute");
 const studioRouter = require("./routes/studioRoute");
 const tagsRouter = require("./routes/tagsRoute");
 const languagesRouter = require("./routes/languagesRoutes");
+const editingRouter = require("./routes/editingRoute");
 
 // Apply routes
 router.use(moviesRouter);
@@ -27,6 +28,7 @@ router.use(musicRouter);
 router.use(studioRouter);
 router.use(tagsRouter);
 router.use(languagesRouter);
+router.use(editingRouter);
 
 /* ************************************************************************* */
 
