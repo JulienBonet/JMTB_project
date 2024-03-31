@@ -1,9 +1,27 @@
 const moviesModel = require("../models/moviesModel");
 
+const imageBaseUrl = "http://localhost:3310/public";
+
+// const getAll = async (req, res, next) => {
+//   try {
+//     const [movies] = await moviesModel.findAll();
+//     res.status(200).json(movies);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
 const getAll = async (req, res, next) => {
   try {
     const [movies] = await moviesModel.findAll();
-    res.status(200).json(movies);
+
+    // Pour chaque film, ajoutez l'URL de l'image à ses détails
+    const moviesWithImageUrl = movies.map((movie) => ({
+      ...movie,
+      imageUrl: `http://localhost:3310/${movie.image}`, // Supposons que le nom de l'image est stocké dans le champ "image" du modèle de film
+    }));
+    console.info(moviesWithImageUrl);
+    res.status(200).json(moviesWithImageUrl);
   } catch (error) {
     next(error);
   }
@@ -45,12 +63,31 @@ const getAllSorted3 = async (req, res, next) => {
   }
 };
 
+// const getAllSortedNox = async (req, res, next) => {
+//   try {
+//     const [movies] = await moviesModel.findAllSortedNoX();
+//     res.status(200).json(movies);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
+
 const getAllSortedNox = async (req, res, next) => {
   try {
     const [movies] = await moviesModel.findAllSortedNoX();
-    res.status(200).json(movies);
-  } catch (error) {
-    next(error);
+
+    if (!movies || movies.length === 0) {
+      res.sendStatus(404);
+    } else {
+      const moviesWithImageUrl = movies.map((movie) => ({
+        ...movie,
+        imageUrl: `${imageBaseUrl}/${movie.cover}`, // Utilisez imageBaseUrl pour former l'URL de l'image
+      }));
+      console.info(moviesWithImageUrl);
+      res.json(moviesWithImageUrl);
+    }
+  } catch (err) {
+    next(err);
   }
 };
 

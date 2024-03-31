@@ -1,34 +1,27 @@
-/* eslint-disable no-restricted-syntax */
 const db = require("../../database/client");
 
-const findDirectorById = (id) => {
-  return db
-    .query("SELECT * FROM director WHERE id = ?", [id])
-    .then(([rows]) => {
-      console.log("Director found:", rows);
-      return rows;
-    });
+const findDirectorById = (id) =>
+  db.query("SELECT * FROM director WHERE id = ?", [id]).then(([rows]) => rows);
+
+const editDirector = async (name, pitch, wikilink, imdblink, id) => {
+  const query = `
+        UPDATE director
+        SET name = ?, pitch = ?, wikilink = ?, imdblink = ?
+        WHERE id = ?
+      `;
+
+  const result = await db.query(query, [name, pitch, wikilink, imdblink, id]);
+
+  return result;
 };
 
-const editDirector = (name, pitch, wikilink, imdblink, id) => {
-  return db
-    .query(
-      `UPDATE director
-        SET
-          name = ?,
-          pitch = ?,
-          wikilink = ?,
-          imdblink = ?
-        WHERE id = ?;`,
-      [name, pitch, wikilink, imdblink, id]
-    )
-    .then(([result]) => {
-      console.log("Rows affected:", result.affectedRows);
-      return result;
-    });
-};
+const editDirectorImage = (imageUrl, id) =>
+  db
+    .query("UPDATE director SET image = ? WHERE id = ?", [imageUrl, id])
+    .then(([result]) => result);
 
 module.exports = {
   findDirectorById,
   editDirector,
+  editDirectorImage,
 };

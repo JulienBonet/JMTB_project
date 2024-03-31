@@ -28,15 +28,14 @@ function AdminFeat() {
     },
   });
 
-  // State pour suivre l'élément actuellement sélectionné
+  // ADMIN NAV
+
   const [selectedItem, setSelectedItem] = useState("FILMS");
 
-  // Fonction pour changer l'élément sélectionné
   const handleItemClick = (item) => {
     setSelectedItem(item);
   };
 
-  // Fonction pour rendre le composant sélectionné
   const renderSelectedItem = () => {
     switch (selectedItem) {
       case "FILMS":
@@ -58,7 +57,7 @@ function AdminFeat() {
       case "LANGUES":
         return <AdminLanguagesList />;
       case "THEMAS":
-        // Ajoutez le cas pour le composant THEMES
+        // WORK IN PROGRESS
         return <AdminTagsList />;
       case "TAGS":
         return <AdminTagsList />;

@@ -35,9 +35,9 @@
   color: var(--color-01);
 }
 .ItemsCard input {
-  width: 100%; /* Définit la largeur à 100% de son conteneur parent */
-  padding: 8px; /* Ajoute du padding pour plus d'espace à l'intérieur de l'input */
-  box-sizing: border-box; /* Inclut le padding et la bordure dans la largeur totale */
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
 }
 .Info_Btn-Modify {
   padding-top: 2rem;

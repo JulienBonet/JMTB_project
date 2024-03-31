@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { Button } from "@mui/material";
 import "./adminLists.css";
 import PreviewIcon from "@mui/icons-material/Preview";
-import ModeIcon from "@mui/icons-material/Mode";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Box from "@mui/material/Box";
 import Pagination from "@mui/material/Pagination";
@@ -95,9 +94,6 @@ function AdminCountryList() {
                 <td>{item.name}</td>
                 <td>
                   <PreviewIcon className="admin_tools_ico" />
-                </td>
-                <td>
-                  <ModeIcon className="admin_tools_ico" />
                 </td>
                 <td>
                   <DeleteIcon className="admin_tools_ico" />

@@ -36,7 +36,7 @@ function AdminDirectorList() {
       })
       .then((datas) => {
         setData(datas);
-        setFilteredData(datas); // Set filtered data initially to all data
+        setFilteredData(datas);
         setLoading(false);
       })
       .catch((error) => {

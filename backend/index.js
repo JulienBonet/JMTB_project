@@ -1,7 +1,7 @@
 // Load environment variables from .env file
 require("dotenv").config();
 
-// Import the Express application from src/app.js
+// Import app from app.js
 const app = require("./src/app");
 
 // Get the port from the environment variables

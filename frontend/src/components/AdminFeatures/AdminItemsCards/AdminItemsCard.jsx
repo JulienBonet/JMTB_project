@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useState, useRef } from "react";
 import ModeIcon from "@mui/icons-material/Mode";
 import DoneOutlineIcon from "@mui/icons-material/DoneOutline";
 import UndoIcon from "@mui/icons-material/Undo";
@@ -13,24 +13,64 @@ function AdminItemsCard({ item }) {
   const [wikilink, setWikilink] = useState(item.wikilink);
   const [imdblink, setImdblink] = useState(item.imdblink);
   const [isEditing, setIsEditing] = useState(false);
+  const [image, setImage] = useState(item.image);
+  const fileInputRef = useRef(null);
 
+  console.info(image);
   const openModif = () => {
     setIsModify(true);
     setIsEditing(true);
   };
 
-  const handleValidate = () => {
-    // Effectuer ici des opérations de validation ou de sauvegarde
-    setIsModify(false);
-    setIsEditing(false);
-    // Peut-être que vous voudrez également mettre à jour les données sur le serveur
+  const handleValidate = async () => {
+    try {
+      const data = {
+        name,
+        pitch,
+        wikilink,
+        imdblink,
+      };
+
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/director/${item.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        }
+      );
+      console.info(response);
+
+      if (response.ok) {
+        // Mise à jour réussie
+        console.info("Director successfully updated");
+        setIsModify(false);
+        setIsEditing(false);
+      } else {
+        // Erreur de mise à jour
+        console.error("Error updating director");
+      }
+    } catch (error) {
+      console.error("Request error:", error);
+    }
   };
 
   const handleUndo = () => {
-    // Effectuer ici des opérations de validation ou de sauvegarde
     setIsModify(false);
     setIsEditing(false);
-    // Peut-être que vous voudrez également mettre à jour les données sur le serveur
+    setImage(item.image);
+  };
+
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    const newImageUrl = URL.createObjectURL(file);
+    setImage(newImageUrl);
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current.click();
   };
 
   return (
@@ -103,12 +143,23 @@ function AdminItemsCard({ item }) {
         </div>
       </section>
       <section className="ItemsCard_Col2">
-        <img className="ItemImage" src={item.image} alt={`${item.name}`} />
+        {image && (
+          <img className="ItemImage" src={image} alt={`${item.name}`} />
+        )}
         {isModify && (
-          <FileUploadIcon
-            className="Item_uploadButton"
-            onClick={handleValidate}
-          />
+          <>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileUpload}
+              ref={fileInputRef}
+              style={{ display: "none" }}
+            />
+            <FileUploadIcon
+              className="Item_uploadButton"
+              onClick={handleUploadClick}
+            />
+          </>
         )}
       </section>
     </article>
