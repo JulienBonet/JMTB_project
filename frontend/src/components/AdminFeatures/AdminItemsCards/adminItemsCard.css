@@ -51,7 +51,8 @@
 .item_tools_ico,
 .Item_validateButton,
 .Item_UndoButton,
-.Item_uploadButton {
+.Item_uploadButto,
+.Item_reset_img_Button {
   cursor: pointer;
   color: var(--color-02);
   padding: 0.5rem 1rem;
@@ -71,6 +72,10 @@
 
 .Item_uploadButton {
   color: var(--color-03);
+}
+
+.Item_reset_img_Button {
+  color: whitesmoke;
 }
 
 .ItemImage {

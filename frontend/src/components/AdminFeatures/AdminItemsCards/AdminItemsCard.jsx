@@ -4,6 +4,7 @@ import ModeIcon from "@mui/icons-material/Mode";
 import DoneOutlineIcon from "@mui/icons-material/DoneOutline";
 import UndoIcon from "@mui/icons-material/Undo";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
+import CachedIcon from "@mui/icons-material/Cached";
 import "./adminItemsCard.css";
 
 function AdminItemsCard({ item }) {
@@ -14,6 +15,7 @@ function AdminItemsCard({ item }) {
   const [imdblink, setImdblink] = useState(item.imdblink);
   const [isEditing, setIsEditing] = useState(false);
   const [image, setImage] = useState(item.image);
+  const [showUploadButton, setShowUploadButton] = useState(true);
   const fileInputRef = useRef(null);
 
   console.info(image);
@@ -93,6 +95,7 @@ function AdminItemsCard({ item }) {
       // 4. Réinitialiser les états locaux
       setIsModify(false);
       setIsEditing(false);
+      setShowUploadButton(true); // Réinitialiser l'état du bouton de téléchargement
     } catch (error) {
       console.error("Request error:", error);
     }
@@ -102,16 +105,23 @@ function AdminItemsCard({ item }) {
     setIsModify(false);
     setIsEditing(false);
     setImage(item.image);
+    setShowUploadButton(true); // Réinitialiser l'état du bouton de téléchargement
   };
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     const newImageUrl = URL.createObjectURL(file);
     setImage(newImageUrl);
+    setShowUploadButton(false); // Masquer le bouton de téléchargement et afficher le bouton de réinitialisation
   };
 
   const handleUploadClick = () => {
     fileInputRef.current.click();
+  };
+
+  const handleResetImage = () => {
+    setImage(item.image);
+    setShowUploadButton(true); // Réinitialiser l'état du bouton de téléchargement
   };
 
   return (
@@ -196,10 +206,17 @@ function AdminItemsCard({ item }) {
               ref={fileInputRef}
               style={{ display: "none" }}
             />
-            <FileUploadIcon
-              className="Item_uploadButton"
-              onClick={handleUploadClick}
-            />
+            {showUploadButton ? (
+              <FileUploadIcon
+                className="Item_uploadButton"
+                onClick={handleUploadClick}
+              />
+            ) : (
+              <CachedIcon
+                className="Item_reset_img_Button"
+                onClick={handleResetImage}
+              />
+            )}
           </>
         )}
       </section>
