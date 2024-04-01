@@ -17,6 +17,8 @@ function AdminDirectorList() {
   const [filteredData, setFilteredData] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
 
+  const origin = "director";
+
   const openModal = (DataItem) => {
     setSelectedItem(DataItem);
   };
@@ -44,6 +46,24 @@ function AdminDirectorList() {
         setLoading(false);
       });
   }, []);
+
+  // REQUEST DIRECTORS LIST
+  const refreshDirectors = () => {
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/directors/sorted_id`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((datas) => {
+        setData(datas);
+        setFilteredData(datas);
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  };
 
   // Update filtered data when search term changes
   useEffect(() => {
@@ -146,7 +166,11 @@ function AdminDirectorList() {
               >
                 X Fermer
               </div>
-              <AdminItemsCard item={selectedItem} origin={origin} />
+              <AdminItemsCard
+                item={selectedItem}
+                origin={origin}
+                onUpdate={refreshDirectors}
+              />
             </Container>
           </Box>
         </Modal>

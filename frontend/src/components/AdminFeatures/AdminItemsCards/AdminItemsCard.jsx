@@ -7,7 +7,7 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 import CachedIcon from "@mui/icons-material/Cached";
 import "./adminItemsCard.css";
 
-function AdminItemsCard({ item }) {
+function AdminItemsCard({ item, origin, onUpdate }) {
   const [isModify, setIsModify] = useState(false);
   const [name, setName] = useState(item.name);
   const [pitch, setPitch] = useState(item.pitch);
@@ -33,7 +33,7 @@ function AdminItemsCard({ item }) {
       imageData.append("image", file);
 
       const imageResponse = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/director/${item.id}/image`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/${origin}/${item.id}/image`,
         {
           method: "PUT",
           body: imageData,
@@ -41,16 +41,15 @@ function AdminItemsCard({ item }) {
       );
 
       if (imageResponse.ok) {
-        console.info("Director image successfully updated");
+        console.info("Item image successfully updated");
       } else {
-        console.error("Error updating director image");
+        console.error("Error updating item image");
       }
     }
   };
 
   const handleValidate = async () => {
     try {
-      // Vérifier si les données du réalisateur ont changé
       const hasChanges =
         name !== item.name ||
         pitch !== item.pitch ||
@@ -65,9 +64,9 @@ function AdminItemsCard({ item }) {
           imdblink,
         };
 
-        // 1. Mettre à jour les données du réalisateur
+        // 1. Mettre à jour les infos
         const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/director/${item.id}`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/${origin}/${item.id}`,
           {
             method: "PUT",
             headers: {
@@ -78,24 +77,24 @@ function AdminItemsCard({ item }) {
         );
 
         if (!response.ok) {
-          console.error("Error updating director");
+          console.error("Error updating item");
           return;
         }
-
-        // 2. Mise à jour réussie des données du réalisateur
-        console.info("Director successfully updated");
+        console.info("Item successfully updated");
+        onUpdate();
       }
 
-      // 3. Mettre à jour l'image du réalisateur (si nécessaire)
+      // 2. Mettre à jour l'image'
       if (fileInputRef.current.files[0]) {
         handleUpdateImage();
-        console.info("Image successfully updated"); // Ajouter cette ligne
+        console.info("Image successfully updated");
+        onUpdate();
       }
 
-      // 4. Réinitialiser les états locaux
+      // 3. Réinitialiser les états locaux
       setIsModify(false);
       setIsEditing(false);
-      setShowUploadButton(true); // Réinitialiser l'état du bouton de téléchargement
+      setShowUploadButton(true);
     } catch (error) {
       console.error("Request error:", error);
     }
@@ -105,14 +104,14 @@ function AdminItemsCard({ item }) {
     setIsModify(false);
     setIsEditing(false);
     setImage(item.image);
-    setShowUploadButton(true); // Réinitialiser l'état du bouton de téléchargement
+    setShowUploadButton(true);
   };
 
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     const newImageUrl = URL.createObjectURL(file);
     setImage(newImageUrl);
-    setShowUploadButton(false); // Masquer le bouton de téléchargement et afficher le bouton de réinitialisation
+    setShowUploadButton(false);
   };
 
   const handleUploadClick = () => {
@@ -121,7 +120,7 @@ function AdminItemsCard({ item }) {
 
   const handleResetImage = () => {
     setImage(item.image);
-    setShowUploadButton(true); // Réinitialiser l'état du bouton de téléchargement
+    setShowUploadButton(true);
   };
 
   return (
