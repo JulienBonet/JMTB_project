@@ -22,36 +22,77 @@ function AdminItemsCard({ item }) {
     setIsEditing(true);
   };
 
-  const handleValidate = async () => {
-    try {
-      const data = {
-        name,
-        pitch,
-        wikilink,
-        imdblink,
-      };
+  const handleUpdateImage = async () => {
+    const fileInput = fileInputRef.current;
+    const file = fileInput.files[0];
 
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/director/${item.id}`,
+    if (file) {
+      const imageData = new FormData();
+      imageData.append("image", file);
+
+      const imageResponse = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/director/${item.id}/image`,
         {
           method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
+          body: imageData,
         }
       );
-      console.info(response);
 
-      if (response.ok) {
-        // Mise à jour réussie
-        console.info("Director successfully updated");
-        setIsModify(false);
-        setIsEditing(false);
+      if (imageResponse.ok) {
+        console.info("Director image successfully updated");
       } else {
-        // Erreur de mise à jour
-        console.error("Error updating director");
+        console.error("Error updating director image");
       }
+    }
+  };
+
+  const handleValidate = async () => {
+    try {
+      // Vérifier si les données du réalisateur ont changé
+      const hasChanges =
+        name !== item.name ||
+        pitch !== item.pitch ||
+        wikilink !== item.wikilink ||
+        imdblink !== item.imdblink;
+
+      if (hasChanges) {
+        const data = {
+          name,
+          pitch,
+          wikilink,
+          imdblink,
+        };
+
+        // 1. Mettre à jour les données du réalisateur
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/director/${item.id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          }
+        );
+
+        if (!response.ok) {
+          console.error("Error updating director");
+          return;
+        }
+
+        // 2. Mise à jour réussie des données du réalisateur
+        console.info("Director successfully updated");
+      }
+
+      // 3. Mettre à jour l'image du réalisateur (si nécessaire)
+      if (fileInputRef.current.files[0]) {
+        handleUpdateImage();
+        console.info("Image successfully updated"); // Ajouter cette ligne
+      }
+
+      // 4. Réinitialiser les états locaux
+      setIsModify(false);
+      setIsEditing(false);
     } catch (error) {
       console.error("Request error:", error);
     }
