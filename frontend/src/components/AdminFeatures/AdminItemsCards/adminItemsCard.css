@@ -51,7 +51,7 @@
 .item_tools_ico,
 .Item_validateButton,
 .Item_UndoButton,
-.Item_uploadButto,
+.Item_uploadButton,
 .Item_reset_img_Button {
   cursor: pointer;
   color: var(--color-02);

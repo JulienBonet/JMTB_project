@@ -18,7 +18,6 @@ function AdminItemsCard({ item, origin, onUpdate }) {
   const [showUploadButton, setShowUploadButton] = useState(true);
   const fileInputRef = useRef(null);
 
-  console.info(image);
   const openModif = () => {
     setIsModify(true);
     setIsEditing(true);
