@@ -1,5 +1,24 @@
 const editingModel = require("../models/editingModel");
 
+const addDirector = async (req, res) => {
+  try {
+    const { name } = req.body; // Supposant que vous envoyez le nom du directeur dans le corps de la requête
+
+    // Assurez-vous que le nom du directeur est fourni
+    if (!name) {
+      return res.status(400).json({ message: "Director's name is required" });
+    }
+
+    // Insérer le directeur dans la base de données
+    await editingModel.insertDirector(name);
+
+    return res.status(201).json({ message: "Director creation succes" });
+  } catch (error) {
+    console.error("Error director creation :", error);
+    return res.status(500).json({ message: "Error director creation" });
+  }
+};
+
 const editingDirector = async (req, res) => {
   try {
     const { name, pitch, wikilink, imdblink } = req.body;
@@ -74,7 +93,19 @@ const uploadDirectorImage = async (req, res) => {
   }
 };
 
+const eraseDirector = async (req, res, next) => {
+  try {
+    const directorId = req.params.id;
+    await editingModel.deleteDirector(directorId);
+    res.sendStatus(204);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
+  addDirector,
   editingDirector,
   uploadDirectorImage,
+  eraseDirector,
 };
