@@ -2,6 +2,7 @@
 import { useState, useRef } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
 import ModeIcon from "@mui/icons-material/Mode";
 import DoneOutlineIcon from "@mui/icons-material/DoneOutline";
 import UndoIcon from "@mui/icons-material/Undo";
@@ -9,7 +10,7 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 import CachedIcon from "@mui/icons-material/Cached";
 import "./adminItemsCard.css";
 
-function AdminItemsCard({ item, origin, onUpdate }) {
+function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
   const [isModify, setIsModify] = useState(false);
   const [name, setName] = useState(item.name);
   const [pitch, setPitch] = useState(item.pitch);
@@ -23,6 +24,10 @@ function AdminItemsCard({ item, origin, onUpdate }) {
   const openModif = () => {
     setIsModify(true);
     setIsEditing(true);
+  };
+
+  const handleReturn = () => {
+    closeModal();
   };
 
   const handleUpdateImage = async () => {
@@ -192,7 +197,16 @@ function AdminItemsCard({ item, origin, onUpdate }) {
               <UndoIcon className="Item_UndoButton" onClick={handleUndo} />
             </section>
           ) : (
-            <ModeIcon className="item_tools_ico" onClick={() => openModif()} />
+            <section className="Item_Editing_Buttons">
+              <KeyboardReturnIcon
+                className="item_return_ico"
+                onClick={handleReturn}
+              />
+              <ModeIcon
+                className="item_tools_ico"
+                onClick={() => openModif()}
+              />
+            </section>
           )}
         </div>
       </section>

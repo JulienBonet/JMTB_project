@@ -48,6 +48,7 @@
   gap: 2rem;
 }
 
+.item_return_ico,
 .item_tools_ico,
 .Item_validateButton,
 .Item_UndoButton,
@@ -58,6 +59,10 @@
   padding: 0.5rem 1rem;
   border: solid 1px;
   border-radius: 10px;
+}
+.item_return_ico,
+.Item_reset_img_Button {
+  color: whitesmoke;
 }
 .item_tools_ico {
   color: var(--color-02);
@@ -72,10 +77,6 @@
 
 .Item_uploadButton {
   color: var(--color-03);
-}
-
-.Item_reset_img_Button {
-  color: whitesmoke;
 }
 
 .ItemImage {

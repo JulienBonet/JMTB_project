@@ -214,6 +214,7 @@ function AdminDirectorList() {
                 item={selectedItem}
                 origin={origin}
                 onUpdate={refreshDirectors}
+                closeModal={closeModal}
               />
             </Container>
           </Box>
