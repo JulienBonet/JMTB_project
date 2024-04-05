@@ -222,7 +222,7 @@ function AdminDirectorList() {
       {newDirector && (
         <Modal open onClose={closeModalNewDirector} className="Movie_Modal">
           <Box>
-            <Container maxWidth="lg">
+            <Container maxWidth="sm">
               <div
                 onClick={closeModalNewDirector}
                 onKeyDown={(event) => {

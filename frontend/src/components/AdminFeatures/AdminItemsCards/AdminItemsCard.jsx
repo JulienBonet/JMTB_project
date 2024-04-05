@@ -1,5 +1,7 @@
 /* eslint-disable react/prop-types */
 import { useState, useRef } from "react";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import ModeIcon from "@mui/icons-material/Mode";
 import DoneOutlineIcon from "@mui/icons-material/DoneOutline";
 import UndoIcon from "@mui/icons-material/Undo";
@@ -91,6 +93,9 @@ function AdminItemsCard({ item, origin, onUpdate }) {
       }
 
       // 3. Réinitialiser les états locaux
+      toast.success(`${origin} successfully updated`, {
+        className: "custom-toast",
+      });
       setIsModify(false);
       setIsEditing(false);
       setShowUploadButton(true);
