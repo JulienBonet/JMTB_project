@@ -1,6 +1,9 @@
+/* eslint-disable no-alert */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useState, useEffect } from "react";
 import { Button, Container } from "@mui/material";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Pagination from "@mui/material/Pagination";
@@ -75,6 +78,37 @@ function AdminDirectorList() {
       });
   };
 
+  // DELETE DIRECTOR
+  const handleDelete = async (id) => {
+    // Display confirmation dialog
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this work?"
+    );
+
+    // If user confirms deletion
+    if (confirmDelete) {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/director/delete/${id}`,
+          {
+            method: "delete",
+          }
+        );
+        if (response.status === 204) {
+          console.info("delete ok");
+          toast.success("director deleted", {
+            className: "custom-toast",
+          });
+          refreshDirectors();
+        } else {
+          console.error("error delete");
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
   // Update filtered data when search term changes
   useEffect(() => {
     const filtered = data.filter(
@@ -140,7 +174,10 @@ function AdminDirectorList() {
                   />
                 </td>
                 <td>
-                  <DeleteIcon className="admin_tools_ico" />
+                  <DeleteIcon
+                    className="admin_tools_ico"
+                    onClick={() => handleDelete(DataItem.id)}
+                  />
                 </td>
               </tr>
             ))
