@@ -8,6 +8,7 @@ import "./adminLists.css";
 import PreviewIcon from "@mui/icons-material/Preview";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AdminItemsCard from "../AdminItemsCards/AdminItemsCard";
+import CreateItemCard from "../CreateItemCard/CreateItemCard";
 
 function AdminDirectorList() {
   const [data, setData] = useState([]);
@@ -16,6 +17,7 @@ function AdminDirectorList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [newDirector, SetNewDirector] = useState(false);
 
   const origin = "director";
 
@@ -25,6 +27,14 @@ function AdminDirectorList() {
 
   const closeModal = () => {
     setSelectedItem(null);
+  };
+
+  const openModalNewDirector = () => {
+    SetNewDirector(true);
+  };
+
+  const closeModalNewDirector = () => {
+    SetNewDirector(false);
   };
 
   // REQUEST ALL DIRECTORS sorted ID desc
@@ -103,10 +113,7 @@ function AdminDirectorList() {
               placeholder="recherche"
             />
           </div>
-          <Button
-            variant="contained"
-            onClick={() => console.info("Ajouter un réalisateur")}
-          >
+          <Button variant="contained" onClick={() => openModalNewDirector()}>
             ADD NEW DIRECTOR
           </Button>
         </div>
@@ -170,6 +177,32 @@ function AdminDirectorList() {
                 item={selectedItem}
                 origin={origin}
                 onUpdate={refreshDirectors}
+              />
+            </Container>
+          </Box>
+        </Modal>
+      )}
+      {newDirector && (
+        <Modal open onClose={closeModalNewDirector} className="Movie_Modal">
+          <Box>
+            <Container maxWidth="lg">
+              <div
+                onClick={closeModalNewDirector}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    closeModalNewDirector();
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                className="modal_closed_btn"
+              >
+                X Fermer
+              </div>
+              <CreateItemCard
+                origin={origin}
+                onUpdate={refreshDirectors}
+                closeModal={closeModalNewDirector}
               />
             </Container>
           </Box>
