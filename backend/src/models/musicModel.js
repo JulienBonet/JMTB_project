@@ -20,6 +20,15 @@ const findAllArtistDesc = () => {
   );
 };
 
+const findAllArtistIdDesc = () => {
+  return db.query(
+    `SELECT *
+    FROM music
+    order by id desc;`,
+    []
+  );
+};
+
 const findAllMoviesByArtistId = (id) => {
   return db.query(
     `SELECT m.*
@@ -92,10 +101,11 @@ const findAllByLetter = (letter) => {
 module.exports = {
   findAllArtistAsc,
   findAllArtistDesc,
+  findAllArtistIdDesc,
   findAllMoviesByArtistId,
   findAllMoviesByArtistIdAsc,
   findAllMoviesByArtistIdDesc,
   findAllMoviesByArtistIdYearAsc,
   findAllMoviesByArtistIdYearDesc,
-  findAllByLetter, // Exportez la fonction findAllByLetter
+  findAllByLetter,
 };

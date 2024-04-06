@@ -4,6 +4,10 @@ const screewritersController = require("../controllers/screenwritersControllers"
 
 router.get("/screenwriters", screewritersController.getAllArtistAsc);
 router.get("/screenwriters/sorted_z", screewritersController.getAllArtistDesc);
+router.get(
+  "/screenwriters/sorted_id",
+  screewritersController.getAllArtistIdDesc
+);
 router.get("/screenwriters/:id", screewritersController.getAllMoviesByArtistId);
 router.get("/screenwriters/:id/sorted/0", screewritersController.getAllSorted0);
 router.get("/screenwriters/:id/sorted/1", screewritersController.getAllSorted1);

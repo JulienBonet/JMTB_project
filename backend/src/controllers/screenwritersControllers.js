@@ -18,6 +18,15 @@ const getAllArtistDesc = async (req, res, next) => {
   }
 };
 
+const getAllArtistIdDesc = async (req, res, next) => {
+  try {
+    const [artist] = await screenwritersModel.findAllArtistIdDesc();
+    res.status(200).json(artist);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getAllMoviesByArtistId = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -85,6 +94,7 @@ const getAllByLetter = async (req, res, next) => {
 module.exports = {
   getAllArtistAsc,
   getAllArtistDesc,
+  getAllArtistIdDesc,
   getAllMoviesByArtistId,
   getAllSorted0,
   getAllSorted1,

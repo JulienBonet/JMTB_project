@@ -4,6 +4,7 @@ const studioController = require("../controllers/studioControllers");
 
 router.get("/studio", studioController.getAllArtistAsc);
 router.get("/studio/sorted_z", studioController.getAllArtistDesc);
+router.get("/studio/sorted_id", studioController.getAllArtistIdDesc);
 router.get("/studio/:id", studioController.getAllMoviesByArtistId);
 router.get("/studio/:id/sorted/0", studioController.getAllSorted0);
 router.get("/studio/:id/sorted/1", studioController.getAllSorted1);

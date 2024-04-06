@@ -9,6 +9,15 @@ const getAllKinds = async (req, res, next) => {
   }
 };
 
+const getAllKindsIdDesc = async (req, res, next) => {
+  try {
+    const [kinds] = await kindsModel.findAllKindsIdDesc();
+    res.status(200).json(kinds);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getAllMovieByKinds = async (req, res, next) => {
   try {
     const { genre } = req.params;
@@ -61,6 +70,7 @@ const getAllSorted3 = async (req, res, next) => {
 
 module.exports = {
   getAllKinds,
+  getAllKindsIdDesc,
   getAllMovieByKinds,
   getAllSorted0,
   getAllSorted1,

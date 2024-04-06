@@ -12,8 +12,11 @@ const kindsRouter = require("./routes/kindsRoute");
 const directorsRouter = require("./routes/directorsRoute");
 const castingRouter = require("./routes/castingRoute");
 const screenwriterRouter = require("./routes/screenwritersRoute");
-const music = require("./routes/musicRoute");
-const studio = require("./routes/studioRoute");
+const musicRouter = require("./routes/musicRoute");
+const studioRouter = require("./routes/studioRoute");
+const tagsRouter = require("./routes/tagsRoute");
+const languagesRouter = require("./routes/languagesRoutes");
+const editingRouter = require("./routes/editingRoute");
 
 // Apply routes
 router.use(moviesRouter);
@@ -21,8 +24,11 @@ router.use(kindsRouter);
 router.use(directorsRouter);
 router.use(castingRouter);
 router.use(screenwriterRouter);
-router.use(music);
-router.use(studio);
+router.use(musicRouter);
+router.use(studioRouter);
+router.use(tagsRouter);
+router.use(languagesRouter);
+router.use(editingRouter);
 
 /* ************************************************************************* */
 

@@ -50,6 +50,11 @@ export default function BasicButtons() {
               STUDIOS
             </Button>
           </Link>
+          <Link to="/admin_feat">
+            <Button variant="outlined" color="JmdbColorNav">
+              ADMIN
+            </Button>
+          </Link>
         </Stack>
       </ThemeProvider>
     </section>
