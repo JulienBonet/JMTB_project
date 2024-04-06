@@ -1,23 +1,7 @@
 const db = require("../../database/client");
 
-const findAll = () => {
-  return db.query(`SELECT * FROM movies`, []);
-};
-
-const findAllSortedAlpha = () => {
-  return db.query("SELECT * FROM movies ORDER BY title ASC", []);
-};
-
-const findAllSortedZeta = () => {
-  return db.query("SELECT * FROM movies ORDER BY title DESC", []);
-};
-
-const findAllSortedYear = () => {
-  return db.query("SELECT * FROM movies ORDER BY year ASC", []);
-};
-
-const findAllSortedYearDESC = () => {
-  return db.query("SELECT * FROM movies ORDER BY year DESC;", []);
+const findAll = (orderBy = "id", orderDir = "DESC") => {
+  return db.query(`SELECT * FROM movies ORDER BY ${orderBy} ${orderDir}`, []);
 };
 
 const findAllSortedNoX = () => {
@@ -132,14 +116,43 @@ const findByCountrySortedYearDesc = (id) => {
     [id]
   );
 };
+const findByCriteria = (criteria) => {
+  let sql = `SELECT m.* FROM movies m`;
+  const params = [];
+  const whereClauses = [];
+
+  if (criteria.genre) {
+    sql += ` LEFT JOIN movie_genre mg ON m.id = mg.movieId`;
+    whereClauses.push(`mg.genreId = ?`);
+    params.push(criteria.genre);
+  }
+
+  if (criteria.year) {
+    whereClauses.push(`m.year = ?`);
+    params.push(criteria.year);
+  }
+
+  if (criteria.country) {
+    sql += ` LEFT JOIN movie_country mc ON m.id = mc.movieId`;
+    whereClauses.push(`mc.countryId = ?`);
+    params.push(criteria.country);
+  }
+
+  if (whereClauses.length > 0) {
+    sql += ` WHERE ${whereClauses.join(" AND ")}`;
+  }
+  console.info("Generated SQL Query:", sql);
+  console.info("Query Params:", params);
+  return db.query(sql, params);
+};
 
 module.exports = {
   findAll,
   findById,
-  findAllSortedAlpha,
-  findAllSortedZeta,
-  findAllSortedYear,
-  findAllSortedYearDESC,
+  // findAllSortedAlpha,
+  // findAllSortedZeta,
+  // findAllSortedYear,
+  // findAllSortedYearDESC,
   findAllSortedNoX,
   findAllYears,
   findAllCountry,
@@ -152,4 +165,5 @@ module.exports = {
   findByYear,
   findByYearSortedA,
   findByYearSortedZ,
+  findByCriteria,
 };

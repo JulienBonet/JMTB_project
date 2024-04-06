@@ -36,5 +36,9 @@ router.get("/movies/year/sorted/1/:year", moviesController.getByYearSorted1);
 router.get("/years", moviesController.getAllYears);
 router.get("/country", moviesController.getAllCountry);
 router.get("/country/sorted_id", moviesController.getAllCountryIdDesc);
+router.get(
+  "/movies/filter/:genre/:year/:country",
+  moviesController.filterMovies
+);
 
 module.exports = router;
