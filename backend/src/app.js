@@ -76,7 +76,7 @@ app.get("*", (req, res) => {
 });
 */
 
-const publicFolderPath = path.join(__dirname, "../public");
+const publicFolderPath = path.join(__dirname, "../public/images");
 app.use(express.static(publicFolderPath));
 
 /* ************************************************************************* */

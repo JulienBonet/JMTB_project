@@ -87,14 +87,12 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
           return;
         }
         console.info("Item successfully updated");
-        onUpdate();
       }
 
       // 2. Mettre à jour l'image'
       if (fileInputRef.current.files[0]) {
         handleUpdateImage();
         console.info("Image successfully updated");
-        onUpdate();
       }
 
       // 3. Réinitialiser les états locaux
@@ -104,6 +102,7 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
       setIsModify(false);
       setIsEditing(false);
       setShowUploadButton(true);
+      onUpdate();
     } catch (error) {
       console.error("Request error:", error);
     }
