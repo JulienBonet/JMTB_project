@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useLoaderData } from "react-router-dom";
 import "./movieSearch.css";
 import "../../assets/css/scrollButton.css";
+import CachedIcon from "@mui/icons-material/Cached";
 import AlphabeticBtn from "../../components/AlphabeticBtn/AlphabeticBtn";
 import ChronologicBtn from "../../components/ChronologicBtn/ChronologicBtn";
 import YearDropdown from "../../components/YearOption/YearDropdown";
@@ -439,24 +440,10 @@ function MovieSearch() {
               search={search}
               selectedCountryData={selectedCountry}
             />
-            <svg
+            <CachedIcon
               className="reset_search_btn"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 48 48"
-              width="40px"
-              height="40px"
-              fill="white"
               onClick={handleResetSearch}
-              role="button"
-              aria-label="reset"
-              tabIndex="0"
-              cursor="pointer"
-            >
-              <path
-                d="M10,22v2c0,7.72,6.28,14,14,14s14-6.28,14-14s-6.28-14-14-14h-6.662l3.474-4.298l-3.11-2.515L10.577,12l7.125,8.813
-		l3.11-2.515L17.338,14H24c5.514,0,10,4.486,10,10s-4.486,10-10,10s-10-4.486-10-10v-2H10z"
-              />
-            </svg>
+            />
           </div>
         </section>
       </section>
