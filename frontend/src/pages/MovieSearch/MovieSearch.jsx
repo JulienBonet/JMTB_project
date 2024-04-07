@@ -365,7 +365,7 @@ function MovieSearch() {
     setSelectedItems(value);
   };
 
-  const searchfilteredMovies = data.filter((dataItem) =>
+  const searchfilteredMovies = initialData.filter((dataItem) =>
     dataItem.title
       .toString()
       .toLowerCase()
