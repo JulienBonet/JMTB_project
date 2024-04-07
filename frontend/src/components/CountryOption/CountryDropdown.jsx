@@ -39,7 +39,7 @@ function CountryDropdown({ onCountryChange, selectedCountryData, search }) {
       className="countryDropdown"
       value={selectedCountryData}
     >
-      <option value="">par pays</option>
+      <option value="">PAYS</option>
       {options}
     </select>
   );

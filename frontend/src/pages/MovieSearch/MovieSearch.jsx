@@ -20,11 +20,12 @@ function MovieSearch() {
   const [selectedKind, setSelectedKind] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
-  const [filteredMovies, setFilteredMovies] = useState([]);
+  const [filteredMovies, setFilteredMovies] = useState(data);
   const [isAscending, setIsAscending] = useState(true);
   const [isChronologicalAscending, setIsChronologicalAscending] =
     useState(true);
   const [isLoading, setIsLoading] = useState(true);
+  console.info(filteredMovies);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movies/search-filter`)
@@ -88,11 +89,11 @@ function MovieSearch() {
     };
 
     // Simuler une durée de chargement
-    const timeout = setTimeout(loadData, 1000);
+    const timeout = setTimeout(loadData, 500);
 
     // Nettoyage lors du démontage du composant
     return () => clearTimeout(timeout);
-  }, [search, selectedKind, selectedYear, selectedCountry]);
+  }, [data, search, selectedKind, selectedYear, selectedCountry]);
 
   const handleKindChange = (selectedKind) => {
     setSelectedKind(selectedKind);
@@ -209,38 +210,18 @@ function MovieSearch() {
         {isLoading && (
           <div className="MovieThumbnails_container">Loading...</div>
         )}
-        {/* Affichage lorsque aucun filtre n'est sélectionné */}
-        {search === "" &&
-          selectedKind === "" &&
-          selectedYear === "" &&
-          selectedCountry === "" &&
-          !isLoading && (
-            <div className="MovieThumbnails_container">
-              <div className="scroll_zone">
-                <div className="MovieThumbnails">
-                  {data.map((movieData) => (
-                    <MovieThumbnail key={movieData.id} data={movieData} />
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
         {/* Affichage lorsqu'un filtre est sélectionné */}
-        {(search !== "" ||
-          selectedKind !== "" ||
-          selectedYear !== "" ||
-          selectedCountry !== "") &&
-          !isLoading && (
-            <div className="MovieThumbnails_container">
-              <div className="scroll_zone">
-                <div className="MovieThumbnails">
-                  {filteredMovies.map((movieData) => (
-                    <MovieThumbnail key={movieData.id} data={movieData} />
-                  ))}
-                </div>
+        {!isLoading && (
+          <div className="MovieThumbnails_container">
+            <div className="scroll_zone">
+              <div className="MovieThumbnails">
+                {filteredMovies.map((movieData) => (
+                  <MovieThumbnail key={movieData.id} data={movieData} />
+                ))}
               </div>
             </div>
-          )}
+          </div>
+        )}
         <div className="btn_sort_container_search">
           <AlphabeticBtn onClick={handleAlphabeticBtnClick} />
 

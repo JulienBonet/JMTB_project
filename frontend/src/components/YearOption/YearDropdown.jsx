@@ -39,7 +39,7 @@ function YearDropdown({ onYearChange, selectedYearData, search }) {
       className="YearsDropdown"
       value={selectedYearData}
     >
-      <option value="">par années</option>
+      <option value="">ANNEE</option>
       {options}
     </select>
   );
