@@ -28,7 +28,7 @@ function CountryDropdown({ onCountryChange, selectedCountryData, search }) {
   };
 
   const options = countries.map((country) => (
-    <option key={country.id} value={country.id}>
+    <option key={country.id} value={country.name}>
       {country.name}
     </option>
   ));

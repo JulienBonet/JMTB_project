@@ -32,7 +32,9 @@ const router = createBrowserRouter([
         path: "/movie_search",
         element: <MovieSearch />,
         loader: () => {
-          return fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movies`);
+          return fetch(
+            `${import.meta.env.VITE_BACKEND_URL}/api/movies/search-filter`
+          );
         },
       },
       {

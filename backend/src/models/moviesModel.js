@@ -116,34 +116,17 @@ const findByCountrySortedYearDesc = (id) => {
     [id]
   );
 };
-const findByCriteria = (criteria) => {
-  let sql = `SELECT m.* FROM movies m`;
-  const params = [];
-  const whereClauses = [];
 
-  if (criteria.genre) {
-    sql += ` LEFT JOIN movie_genre mg ON m.id = mg.movieId`;
-    whereClauses.push(`mg.genreId = ?`);
-    params.push(criteria.genre);
-  }
+// const findAllForSearchFilter = () => {
+//   return db.query(
+//     "SELECT movies.*, GROUP_CONCAT(DISTINCT genre.name SEPARATOR ', ') AS genres, GROUP_CONCAT(DISTINCT country.name SEPARATOR ', ') AS countries FROM movies LEFT JOIN movie_genre ON movies.id = movie_genre.movieId LEFT JOIN genre ON movie_genre.genreId = genre.id LEFT JOIN movie_country ON movies.id = movie_country.movieId LEFT JOIN country ON movie_country.countryId = country.id GROUP BY movies.id; "
+//   );
+// };
 
-  if (criteria.year) {
-    whereClauses.push(`m.year = ?`);
-    params.push(criteria.year);
-  }
-
-  if (criteria.country) {
-    sql += ` LEFT JOIN movie_country mc ON m.id = mc.movieId`;
-    whereClauses.push(`mc.countryId = ?`);
-    params.push(criteria.country);
-  }
-
-  if (whereClauses.length > 0) {
-    sql += ` WHERE ${whereClauses.join(" AND ")}`;
-  }
-  console.info("Generated SQL Query:", sql);
-  console.info("Query Params:", params);
-  return db.query(sql, params);
+const findAllForSearchFilter = () => {
+  return db.query(
+    "SELECT movies.id, movies.title, movies.year, movies.cover, GROUP_CONCAT(DISTINCT genre.name SEPARATOR ', ') AS genres, GROUP_CONCAT(DISTINCT country.name SEPARATOR ', ') AS countries FROM movies LEFT JOIN movie_genre ON movies.id = movie_genre.movieId LEFT JOIN genre ON movie_genre.genreId = genre.id LEFT JOIN movie_country ON movies.id = movie_country.movieId LEFT JOIN country ON movie_country.countryId = country.id GROUP BY movies.id, movies.title, movies.year, movies.cover ORDER BY movies.id DESC;"
+  );
 };
 
 module.exports = {
@@ -165,5 +148,5 @@ module.exports = {
   findByYear,
   findByYearSortedA,
   findByYearSortedZ,
-  findByCriteria,
+  findAllForSearchFilter,
 };

@@ -237,29 +237,12 @@ const getAllYears = async (req, res, next) => {
     next(error);
   }
 };
-const filterMovies = async (req, res) => {
-  const { genre, year, country } = req.params;
-
-  const criteria = {};
-
-  if (genre && genre !== ":genre") {
-    criteria.genre = genre;
-  }
-
-  if (year && year !== ":year") {
-    criteria.year = year;
-  }
-
-  if (country && country !== ":country") {
-    criteria.country = country;
-  }
-
+const getAllForSearchFilter = async (req, res, next) => {
   try {
-    const [movies] = await moviesModel.findByCriteria(criteria);
-    res.json(movies);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Server error");
+    const [movies] = await moviesModel.findAllForSearchFilter();
+    res.status(200).json(movies);
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -284,5 +267,5 @@ module.exports = {
   getAllByCountrySorted1,
   getAllByCountrySorted2,
   getAllByCountrySorted3,
-  filterMovies,
+  getAllForSearchFilter,
 };

@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable no-undef */
 import { useState, useEffect } from "react";
@@ -11,13 +12,13 @@ import YearDropdown from "../../components/YearOption/YearDropdown";
 import CountryDropdown from "../../components/CountryOption/CountryDropdown";
 import KindsDropdown from "../../components/KindOption/KindsDropdown";
 import MovieThumbnail from "../../components/MovieThumbnail/MovieThumbnail";
-// import MovieCount from "../../components/MovieCount/MovieCount";
+import MovieCount from "../../components/MovieCount/MovieCount";
 import BearSearch from "../../assets/ico/search_Bear_02.jpeg";
 
 function MovieSearch() {
   const initialData = useLoaderData();
-  const [data, setData] = useState(initialData);
   const [search, setSearch] = useState("");
+
   // const [sortOrderA, setSortOrderA] = useState("asc");
   // const [sortOrderY, setSortOrderY] = useState("desc");
   // const [sortMovieByCountryOrderA, setSortMovieByCountryOrderA] =
@@ -27,9 +28,7 @@ function MovieSearch() {
   // const [sortMovieByYearOrderA, setSortMovieByYearOrderA] = useState("asc");
   // const [sortMovieByKindOrderA, setSortMovieByKindOrderA] = useState("asc");
   // const [sortMovieByKindOrderY, setSortMovieByKindOrderY] = useState("desc");
-  const [selectedKind, setSelectedKind] = useState("");
-  const [selectedYear, setSelectedYear] = useState("");
-  const [selectedCountry, setSelectedCountry] = useState("");
+
   // const [selectedMoviesByKind, SetMoviesByKind] = useState([]);
   // const [selectedMoviesByYear, SetMoviesByYear] = useState([]);
   // const [selectedMoviesByCountry, SetMoviesByCountry] = useState([]);
@@ -350,6 +349,12 @@ function MovieSearch() {
   //   setExpanded(value);
   // };
 
+  const [selectedKind, setSelectedKind] = useState("");
+  const [selectedYear, setSelectedYear] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [filteredData, setFilteredData] = useState("");
+  console.info("filteredData:", filteredData);
+
   // SEARCH BAR
   const handleTyping = (e) => {
     let { value } = e.target;
@@ -368,69 +373,50 @@ function MovieSearch() {
       .includes(search.toLowerCase())
   );
 
-  const [selectedFilters, setSelectedFilters] = useState({
-    genre: "",
-    year: "",
-    country: "",
-  });
-
-  const handleFilterChange = (filter, value) => {
-    setSelectedFilters((prevState) => ({
-      ...prevState,
-      [filter]: value,
-    }));
-  };
-
-  const fetchMoviesByFilters = async () => {
-    const { genre, year, country } = selectedFilters;
-    const params = new URLSearchParams();
-
-    if (genre) {
-      params.append("genre", genre.id);
-    }
-
-    if (year) {
-      params.append("year", year);
-    }
-
-    if (country) {
-      params.append("country", country);
-    }
-
-    const response = await fetch(
-      `${
-        import.meta.env.VITE_BACKEND_URL
-      }/api/movies/filters?${params.toString()}`
-    );
-
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-
-    const dataFilter = await response.json();
-    setData(dataFilter);
-  };
-
+  // FILTERS
   useEffect(() => {
-    fetchMoviesByFilters();
-  }, [selectedFilters]);
+    let filteredMovies = initialData;
 
-  const handleKindChange = (kind) => {
+    if (selectedKind) {
+      // Filtrer par genre en utilisant le nom
+      filteredMovies = filteredMovies.filter(
+        (movie) =>
+          movie.genres && movie.genres.split(", ").includes(selectedKind)
+      );
+    }
+
+    if (selectedYear) {
+      // Filtrer par année
+      filteredMovies = filteredMovies.filter(
+        (movie) => movie.year === selectedYear
+      );
+    }
+
+    if (selectedCountry) {
+      // Filtrer par pays en utilisant le nom
+      filteredMovies = filteredMovies.filter(
+        (movie) =>
+          movie.countries &&
+          movie.countries.split(", ").includes(selectedCountry)
+      );
+    }
+
+    setFilteredData(filteredMovies);
+  }, [selectedKind, selectedYear, selectedCountry]);
+
+  const handleKindChange = (selectedKind) => {
     setSearch("");
-    setSelectedKind(kind);
-    handleFilterChange("genre", kind);
+    setSelectedKind(selectedKind);
   };
 
-  const handleYearChange = (year) => {
+  const handleYearChange = (selectedYear) => {
     setSearch("");
-    setSelectedYear(year);
-    handleFilterChange("year", year);
+    setSelectedYear(selectedYear);
   };
 
-  const handleCountryChange = (country) => {
+  const handleCountryChange = (selectedCountry) => {
     setSearch("");
-    setSelectedCountry(country);
-    handleFilterChange("country", country);
+    setSelectedCountry(selectedCountry);
   };
 
   // RESET SEARCH
@@ -441,19 +427,12 @@ function MovieSearch() {
     setSelectedYear("");
     setExpanded(false);
     setSelectedItems("");
-    setSelectedFilters({
-      genre: "",
-      year: "",
-      country: "",
-    });
   };
 
   // MOVIE AMOUNT
-  // const movieAmount = searchfilteredMovies.length;
-  // const movieAmountSearchFilter = searchfilteredMovies.length;
-  // const movieAmountKindSorted = selectedMoviesByKind.length;
-  // const movieAmountYearSorted = selectedMoviesByYear.length;
-  // const movieAmountCountrySorted = selectedMoviesByCountry.length;
+  const movieAmount = initialData.length;
+  const movieAmountSearchFilter = searchfilteredMovies.length;
+  const movieAmountFiltered = filteredData.length;
 
   return (
     <main>
@@ -527,7 +506,7 @@ function MovieSearch() {
           <div className="MovieThumbnails_container">
             <div className="scroll_zone">
               <div className="MovieThumbnails">
-                {data.map((movieData) => (
+                {filteredData.map((movieData) => (
                   <MovieThumbnail key={movieData.id} data={movieData} />
                 ))}
               </div>
@@ -535,85 +514,23 @@ function MovieSearch() {
           </div>
         )}
         <div className="btn_sort_container_search">
-          {/* Votre contenu d'affichage existant */}
+          {search === "" &&
+            selectedKind === "" &&
+            selectedYear === "" &&
+            selectedCountry === "" && <MovieCount movieAmount={movieAmount} />}
+          {search !== "" && (
+            <MovieCount movieAmount={movieAmountSearchFilter} />
+          )}
+          {(selectedKind !== "" ||
+            selectedYear !== "" ||
+            selectedCountry !== "") && (
+            <MovieCount movieAmount={movieAmountFiltered} />
+          )}
         </div>
       </section>
 
       {/* <section className="search_bear_position">
-        {search === "" &&
-          selectedKind === "" &&
-          selectedYear === "" &&
-          selectedCountry === "" && (
-            <div className="search_bear_background_container">
-              <div className="Search_pitch_container">
-                <p className="Search_pitch">QUEL FILM CHERCHONS NOUS ?</p>
-              </div>
-              <img
-                src={BearSearch}
-                alt="Que cherchons-nous ?"
-                className="search_bear_background"
-              />
-            </div>
-          )}
-        {search !== "" &&
-          selectedKind === "" &&
-          selectedYear === "" &&
-          selectedCountry === "" && (
-            <div className="MovieThumbnails_container">
-              <div className="scroll_zone">
-                <div className="MovieThumbnails">
-                  {searchfilteredMovies.map((movieData) => (
-                    <MovieThumbnail key={movieData.id} data={movieData} />
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-        {selectedKind !== "" &&
-          selectedYear === "" &&
-          selectedCountry === "" && (
-            <div className="MovieThumbnails_container">
-              <div className="scroll_zone">
-                <div className="MovieThumbnails">
-                  {selectedMoviesByKind.map((movieByKindData) => (
-                    <MovieThumbnail
-                      key={movieByKindData.id}
-                      data={movieByKindData}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-        {selectedYear !== "" && selectedCountry === "" && (
-          <div className="MovieThumbnails_container">
-            <div className="scroll_zone">
-              <div className="MovieThumbnails">
-                {selectedMoviesByYear.map((movieByYearData) => (
-                  <MovieThumbnail
-                    key={movieByYearData.id}
-                    data={movieByYearData}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-        {selectedCountry !== "" && (
-          <div className="MovieThumbnails_container">
-            <div className="scroll_zone">
-              <div className="MovieThumbnails">
-                {selectedMoviesByCountry.map((movieByCountryData) => (
-                  <MovieThumbnail
-                    key={movieByCountryData.movieId}
-                    data={movieByCountryData}
-                    origin="country"
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
+   
         <div className="btn_sort_container_search">
           <AlphabeticBtn
             selectedItems={selectedItems}
