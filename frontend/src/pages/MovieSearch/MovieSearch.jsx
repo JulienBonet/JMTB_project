@@ -2,7 +2,6 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable no-undef */
 import { useState, useEffect } from "react";
-import { useLoaderData } from "react-router-dom";
 import "./movieSearch.css";
 import "../../assets/css/scrollButton.css";
 import CachedIcon from "@mui/icons-material/Cached";
@@ -13,10 +12,10 @@ import CountryDropdown from "../../components/CountryOption/CountryDropdown";
 import KindsDropdown from "../../components/KindOption/KindsDropdown";
 import MovieThumbnail from "../../components/MovieThumbnail/MovieThumbnail";
 import MovieCount from "../../components/MovieCount/MovieCount";
-import BearSearch from "../../assets/ico/search_Bear_02.jpeg";
+// import BearSearch from "../../assets/ico/search_Bear_02.jpeg";
 
 function MovieSearch() {
-  const initialData = useLoaderData();
+  const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [selectedKind, setSelectedKind] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
@@ -25,64 +24,86 @@ function MovieSearch() {
   const [isAscending, setIsAscending] = useState(true);
   const [isChronologicalAscending, setIsChronologicalAscending] =
     useState(true);
-  const [selectedItems, setSelectedItems] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movies/search-filter`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((moviesData) => {
+        setData(moviesData);
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  }, []);
 
   // SEARCH BAR
   const handleTyping = (e) => {
     let { value } = e.target;
     value = value.replace(/-/g, "").toLowerCase();
     setSearch(value);
-    setSelectedItems(value);
   };
 
   // FILTERS OPTIONS
-  const applyFilters = () => {
-    let filteredMovies = initialData.filter((movie) =>
-      movie.title
-        .toString()
-        .toLowerCase()
-        .replace(/-/g, "")
-        .includes(search.toLowerCase())
-    );
-
-    if (selectedKind) {
-      filteredMovies = filteredMovies.filter((movie) =>
-        movie.genres?.split(", ").includes(selectedKind)
-      );
-    }
-
-    if (selectedYear) {
-      filteredMovies = filteredMovies.filter(
-        (movie) => movie.year === selectedYear
-      );
-    }
-
-    if (selectedCountry) {
-      filteredMovies = filteredMovies.filter((movie) =>
-        movie.countries?.split(", ").includes(selectedCountry)
-      );
-    }
-
-    setFilteredMovies(filteredMovies);
-  };
-
   useEffect(() => {
-    applyFilters();
+    setIsLoading(true); // Définir isLoading à true au début du chargement
+
+    // Simuler une opération de chargement asynchrone
+    const loadData = () => {
+      // Appliquer les filtres aux données initialData
+      let filteredMovies = data.filter((movie) =>
+        movie.title
+          .toString()
+          .toLowerCase()
+          .replace(/-/g, "")
+          .includes(search.toLowerCase())
+      );
+
+      if (selectedKind) {
+        filteredMovies = filteredMovies.filter((movie) =>
+          movie.genres?.split(", ").includes(selectedKind)
+        );
+      }
+
+      if (selectedYear) {
+        filteredMovies = filteredMovies.filter(
+          (movie) => movie.year === selectedYear
+        );
+      }
+
+      if (selectedCountry) {
+        filteredMovies = filteredMovies.filter((movie) =>
+          movie.countries?.split(", ").includes(selectedCountry)
+        );
+      }
+
+      // Mettre à jour l'état des données filtrées
+      setFilteredMovies(filteredMovies);
+      setIsLoading(false); // Définir isLoading à false une fois les données chargées
+    };
+
+    // Simuler une durée de chargement
+    const timeout = setTimeout(loadData, 1000);
+
+    // Nettoyage lors du démontage du composant
+    return () => clearTimeout(timeout);
   }, [search, selectedKind, selectedYear, selectedCountry]);
 
   const handleKindChange = (selectedKind) => {
     setSelectedKind(selectedKind);
-    setSelectedItems(selectedKind);
   };
 
   const handleYearChange = (selectedYear) => {
     setSelectedYear(selectedYear);
-    setSelectedItems(selectedYear);
   };
 
   const handleCountryChange = (selectedCountry) => {
     setSelectedCountry(selectedCountry);
-    setSelectedItems(selectedCountry);
   };
 
   const handleResetSearch = () => {
@@ -90,11 +111,10 @@ function MovieSearch() {
     setSelectedKind("");
     setSelectedYear("");
     setSelectedCountry("");
-    setSelectedItems("");
   };
 
   // MOVIE AMOUNT
-  const movieAmount = initialData.length;
+  const movieAmount = data.length;
   const movieAmountFiltered = filteredMovies.length;
 
   // ALPHABETICAL SORT BTN
@@ -130,7 +150,7 @@ function MovieSearch() {
     });
     setFilteredMovies(sortedMovies);
   };
-
+  // reverse alphabtical sort
   const handleAlphabeticBtnClick = () => {
     sortAlphabetically();
     setIsAscending(!isAscending);
@@ -143,8 +163,7 @@ function MovieSearch() {
     });
     setFilteredMovies(sortedMovies);
   };
-
-  // Modifiez la fonction de tri pour inverser le sens de tri à chaque clic
+  // reverse Chronological sort
   const handleChronologicBtnClick = () => {
     sortChronologically();
     setIsChronologicalAscending(!isChronologicalAscending);
@@ -187,42 +206,45 @@ function MovieSearch() {
       </section>
       <div className="dashed_secondary_bar" />
       <section className="search_bear_position">
-        {/* Affichage lorsque la recherche est vide et aucun filtre n'est sélectionné */}
+        {isLoading && (
+          <div className="MovieThumbnails_container">Loading...</div>
+        )}
+        {/* Affichage lorsque aucun filtre n'est sélectionné */}
         {search === "" &&
           selectedKind === "" &&
           selectedYear === "" &&
-          selectedCountry === "" && (
-            <div className="search_bear_background_container">
-              <div className="Search_pitch_container">
-                <p className="Search_pitch">QUEL FILM CHERCHONS NOUS ?</p>
+          selectedCountry === "" &&
+          !isLoading && (
+            <div className="MovieThumbnails_container">
+              <div className="scroll_zone">
+                <div className="MovieThumbnails">
+                  {data.map((movieData) => (
+                    <MovieThumbnail key={movieData.id} data={movieData} />
+                  ))}
+                </div>
               </div>
-              <img
-                src={BearSearch}
-                alt="Que cherchons-nous ?"
-                className="search_bear_background"
-              />
             </div>
           )}
         {/* Affichage lorsqu'un filtre est sélectionné */}
         {(search !== "" ||
           selectedKind !== "" ||
           selectedYear !== "" ||
-          selectedCountry !== "") && (
-          <div className="MovieThumbnails_container">
-            <div className="scroll_zone">
-              <div className="MovieThumbnails">
-                {filteredMovies.map((movieData) => (
-                  <MovieThumbnail key={movieData.id} data={movieData} />
-                ))}
+          selectedCountry !== "") &&
+          !isLoading && (
+            <div className="MovieThumbnails_container">
+              <div className="scroll_zone">
+                <div className="MovieThumbnails">
+                  {filteredMovies.map((movieData) => (
+                    <MovieThumbnail key={movieData.id} data={movieData} />
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
         <div className="btn_sort_container_search">
-          <AlphabeticBtn
-            onClick={handleAlphabeticBtnClick}
-            selectedItems={selectedItems}
-          />
+          <AlphabeticBtn onClick={handleAlphabeticBtnClick} />
+
+          {/* -- counter -- */}
           {search === "" &&
             selectedKind === "" &&
             selectedYear === "" &&
@@ -233,10 +255,9 @@ function MovieSearch() {
             selectedCountry !== "") && (
             <MovieCount movieAmount={movieAmountFiltered} />
           )}
-          <ChronologicBtn
-            onClick={handleChronologicBtnClick}
-            selectedItems={selectedItems}
-          />
+          {/* -- counter -- */}
+
+          <ChronologicBtn onClick={handleChronologicBtnClick} />
         </div>
       </section>
     </main>
