@@ -237,6 +237,16 @@ const getAllYears = async (req, res, next) => {
     next(error);
   }
 };
+
+const getAllDecades = async (req, res, next) => {
+  try {
+    const [decades] = await moviesModel.findAllDecades();
+    res.status(200).json(decades);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getAllForSearchFilter = async (req, res, next) => {
   try {
     const [movies] = await moviesModel.findAllForSearchFilter();
@@ -267,5 +277,6 @@ module.exports = {
   getAllByCountrySorted1,
   getAllByCountrySorted2,
   getAllByCountrySorted3,
+  getAllDecades,
   getAllForSearchFilter,
 };

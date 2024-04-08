@@ -70,9 +70,11 @@ function MovieSearch() {
         );
       }
 
+      // Filtre par année (décennie)
       if (selectedYear) {
         filteredMovies = filteredMovies.filter(
-          (movie) => movie.year === selectedYear
+          (movie) =>
+            Math.floor(movie.year / 10) * 10 === parseInt(selectedYear, 10)
         );
       }
 

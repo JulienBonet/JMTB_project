@@ -35,6 +35,7 @@ router.get("/movies/year/sorted/:year", moviesController.getByYear);
 router.get("/movies/year/sorted/0/:year", moviesController.getByYearSorted0);
 router.get("/movies/year/sorted/1/:year", moviesController.getByYearSorted1);
 router.get("/years", moviesController.getAllYears);
+router.get("/decades", moviesController.getAllDecades);
 router.get("/country", moviesController.getAllCountry);
 router.get("/country/sorted_id", moviesController.getAllCountryIdDesc);
 
