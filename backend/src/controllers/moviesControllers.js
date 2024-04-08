@@ -11,7 +11,7 @@ const getAll = async (req, res, next) => {
 
 const getAllSorted0 = async (req, res, next) => {
   try {
-    const [movies] = await moviesModel.findAllSortedAlpha();
+    const [movies] = await moviesModel.findAll("title", "ASC");
     res.status(200).json(movies);
   } catch (error) {
     next(error);
@@ -20,7 +20,7 @@ const getAllSorted0 = async (req, res, next) => {
 
 const getAllSorted1 = async (req, res, next) => {
   try {
-    const [movies] = await moviesModel.findAllSortedZeta();
+    const [movies] = await moviesModel.findAll("title", "DESC");
     res.status(200).json(movies);
   } catch (error) {
     next(error);
@@ -29,7 +29,7 @@ const getAllSorted1 = async (req, res, next) => {
 
 const getAllSorted2 = async (req, res, next) => {
   try {
-    const [movies] = await moviesModel.findAllSortedYear();
+    const [movies] = await moviesModel.findAll("year", "ASC");
     res.status(200).json(movies);
   } catch (error) {
     next(error);
@@ -38,7 +38,7 @@ const getAllSorted2 = async (req, res, next) => {
 
 const getAllSorted3 = async (req, res, next) => {
   try {
-    const [movies] = await moviesModel.findAllSortedYearDESC();
+    const [movies] = await moviesModel.findAll("year", "DESC");
     res.status(200).json(movies);
   } catch (error) {
     next(error);
@@ -237,6 +237,14 @@ const getAllYears = async (req, res, next) => {
     next(error);
   }
 };
+const getAllForSearchFilter = async (req, res, next) => {
+  try {
+    const [movies] = await moviesModel.findAllForSearchFilter();
+    res.status(200).json(movies);
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = {
   getAll,
@@ -259,4 +267,5 @@ module.exports = {
   getAllByCountrySorted1,
   getAllByCountrySorted2,
   getAllByCountrySorted3,
+  getAllForSearchFilter,
 };

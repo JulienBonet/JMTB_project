@@ -27,8 +27,9 @@ function YearDropdown({ onYearChange, selectedYearData, search }) {
     onYearChange(selectedYear);
   };
 
+  // Mapping des années pour créer les options de sélection
   const options = years.map((year) => (
-    <option key={year.index} value={year.index}>
+    <option key={year.year} value={year.index}>
       {year.year}
     </option>
   ));
@@ -39,7 +40,7 @@ function YearDropdown({ onYearChange, selectedYearData, search }) {
       className="YearsDropdown"
       value={selectedYearData}
     >
-      <option value="">par années</option>
+      <option value="">ANNEE</option>
       {options}
     </select>
   );
