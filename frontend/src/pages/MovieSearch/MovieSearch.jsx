@@ -25,7 +25,6 @@ function MovieSearch() {
   const [isChronologicalAscending, setIsChronologicalAscending] =
     useState(true);
   const [isLoading, setIsLoading] = useState(true);
-  console.info(filteredMovies);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movies/search-filter`)
