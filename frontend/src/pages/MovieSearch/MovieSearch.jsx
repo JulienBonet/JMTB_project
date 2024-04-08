@@ -12,7 +12,7 @@ import CountryDropdown from "../../components/CountryOption/CountryDropdown";
 import KindsDropdown from "../../components/KindOption/KindsDropdown";
 import MovieThumbnail from "../../components/MovieThumbnail/MovieThumbnail";
 import MovieCount from "../../components/MovieCount/MovieCount";
-// import BearSearch from "../../assets/ico/search_Bear_02.jpeg";
+import LoaderCowardlySquid from "../../components/LoaderCowardlySquid/LoaderCowardlySquid";
 
 function MovieSearch() {
   const [data, setData] = useState([]);
@@ -115,8 +115,7 @@ function MovieSearch() {
   };
 
   // MOVIE AMOUNT
-  const movieAmount = data.length;
-  const movieAmountFiltered = filteredMovies.length;
+  const movieAmount = filteredMovies.length;
 
   // ALPHABETICAL SORT BTN
   const ignoreSuffixes = [
@@ -205,39 +204,40 @@ function MovieSearch() {
           </div>
         </section>
       </section>
+
       <div className="dashed_secondary_bar" />
+
       <section className="search_bear_position">
         {isLoading && (
-          <div className="MovieThumbnails_container">Loading...</div>
+          <div className="MovieThumbnails_container MovieThumbnails_Loader">
+            <LoaderCowardlySquid />
+          </div>
         )}
-        {/* Affichage lorsqu'un filtre est sélectionné */}
         {!isLoading && (
           <div className="MovieThumbnails_container">
             <div className="scroll_zone">
               <div className="MovieThumbnails">
-                {filteredMovies.map((movieData) => (
-                  <MovieThumbnail key={movieData.id} data={movieData} />
-                ))}
+                {filteredMovies.length > 0 ? (
+                  filteredMovies.map((movieData) => (
+                    <MovieThumbnail key={movieData.id} data={movieData} />
+                  ))
+                ) : (
+                  <div className="NoMovieMessageContainer">
+                    <p>NO MOVIE FOUND ...</p>
+                    <CachedIcon
+                      className="reset_search_btn_NoMovie"
+                      onClick={handleResetSearch}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </div>
         )}
+
         <div className="btn_sort_container_search">
           <AlphabeticBtn onClick={handleAlphabeticBtnClick} />
-
-          {/* -- counter -- */}
-          {search === "" &&
-            selectedKind === "" &&
-            selectedYear === "" &&
-            selectedCountry === "" && <MovieCount movieAmount={movieAmount} />}
-          {(search !== "" ||
-            selectedKind !== "" ||
-            selectedYear !== "" ||
-            selectedCountry !== "") && (
-            <MovieCount movieAmount={movieAmountFiltered} />
-          )}
-          {/* -- counter -- */}
-
+          <MovieCount movieAmount={movieAmount} />
           <ChronologicBtn onClick={handleChronologicBtnClick} />
         </div>
       </section>

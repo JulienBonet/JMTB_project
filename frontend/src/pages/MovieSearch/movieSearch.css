@@ -31,6 +31,9 @@
   color: white;
   cursor: pointer;
 }
+.reset_search_btn:hover {
+  transform: rotate(-0.25turn);
+}
 .material-symbols-outlined {
   font-variation-settings:
     "FILL" 0,
@@ -75,6 +78,9 @@
   justify-content: center;
   overflow: auto;
 }
+.MovieThumbnails_Loader {
+  align-items: center;
+}
 .Search_pitch_container {
   display: flex;
   align-items: center;
@@ -102,6 +108,29 @@
   flex-wrap: wrap;
   justify-content: flex-start;
   width: 90%;
+}
+.NoMovieMessageContainer {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+}
+.NoMovieMessageContainer p {
+  font-size: 3rem;
+  font-family: var(--font-02);
+  color: var(--color-03);
+}
+.reset_search_btn_NoMovie {
+  width: 3rem !important;
+  height: 3rem !important;
+  color: white;
+  cursor: pointer;
+}
+.reset_search_btn_NoMovie:hover {
+  transform: rotate(-0.25turn);
 }
 .btn_sort_container_search {
   width: 83%;
