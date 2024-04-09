@@ -3,6 +3,7 @@ const router = require("express").Router();
 const kindsController = require("../controllers/kindsControllers");
 
 router.get("/kinds", kindsController.getAllKinds);
+router.get("/kinds/sorted_id", kindsController.getAllKindsIdDesc);
 router.get("/kinds/:genre", kindsController.getAllMovieByKinds);
 router.get("/kinds/:genre/sorted/0", kindsController.getAllSorted0);
 router.get("/kinds/:genre/sorted/1", kindsController.getAllSorted1);

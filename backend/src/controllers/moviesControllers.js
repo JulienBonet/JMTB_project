@@ -11,7 +11,7 @@ const getAll = async (req, res, next) => {
 
 const getAllSorted0 = async (req, res, next) => {
   try {
-    const [movies] = await moviesModel.findAllSortedAlpha();
+    const [movies] = await moviesModel.findAll("title", "ASC");
     res.status(200).json(movies);
   } catch (error) {
     next(error);
@@ -20,7 +20,7 @@ const getAllSorted0 = async (req, res, next) => {
 
 const getAllSorted1 = async (req, res, next) => {
   try {
-    const [movies] = await moviesModel.findAllSortedZeta();
+    const [movies] = await moviesModel.findAll("title", "DESC");
     res.status(200).json(movies);
   } catch (error) {
     next(error);
@@ -29,7 +29,7 @@ const getAllSorted1 = async (req, res, next) => {
 
 const getAllSorted2 = async (req, res, next) => {
   try {
-    const [movies] = await moviesModel.findAllSortedYear();
+    const [movies] = await moviesModel.findAll("year", "ASC");
     res.status(200).json(movies);
   } catch (error) {
     next(error);
@@ -38,7 +38,7 @@ const getAllSorted2 = async (req, res, next) => {
 
 const getAllSorted3 = async (req, res, next) => {
   try {
-    const [movies] = await moviesModel.findAllSortedYearDESC();
+    const [movies] = await moviesModel.findAll("year", "DESC");
     res.status(200).json(movies);
   } catch (error) {
     next(error);
@@ -145,6 +145,15 @@ const getAllCountry = async (req, res, next) => {
   }
 };
 
+const getAllCountryIdDesc = async (req, res, next) => {
+  try {
+    const [years] = await moviesModel.findAllCountryIdDesc();
+    res.status(200).json(years);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getAllByCountry = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -229,6 +238,24 @@ const getAllYears = async (req, res, next) => {
   }
 };
 
+const getAllDecades = async (req, res, next) => {
+  try {
+    const [decades] = await moviesModel.findAllDecades();
+    res.status(200).json(decades);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getAllForSearchFilter = async (req, res, next) => {
+  try {
+    const [movies] = await moviesModel.findAllForSearchFilter();
+    res.status(200).json(movies);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAll,
   getById,
@@ -244,9 +271,12 @@ module.exports = {
   getByYearSorted1,
   getAllYears,
   getAllCountry,
+  getAllCountryIdDesc,
   getAllByCountry,
   getAllByCountrySorted0,
   getAllByCountrySorted1,
   getAllByCountrySorted2,
   getAllByCountrySorted3,
+  getAllDecades,
+  getAllForSearchFilter,
 };

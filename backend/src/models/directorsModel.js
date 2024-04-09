@@ -20,6 +20,15 @@ const findAllArtistDesc = () => {
   );
 };
 
+const findAllArtistIdDesc = () => {
+  return db.query(
+    `SELECT *
+    FROM director
+    order by id desc`,
+    []
+  );
+};
+
 const findAllMoviesByArtistId = (id) => {
   return db.query(
     `SELECT m.*
@@ -98,4 +107,5 @@ module.exports = {
   findAllMoviesByArtistIdYearAsc,
   findAllMoviesByArtistIdYearDesc,
   findAllByLetter,
+  findAllArtistIdDesc,
 };

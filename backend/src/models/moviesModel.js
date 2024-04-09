@@ -1,23 +1,7 @@
 const db = require("../../database/client");
 
-const findAll = () => {
-  return db.query(`SELECT * FROM movies`, []);
-};
-
-const findAllSortedAlpha = () => {
-  return db.query("SELECT * FROM movies ORDER BY title ASC", []);
-};
-
-const findAllSortedZeta = () => {
-  return db.query("SELECT * FROM movies ORDER BY title DESC", []);
-};
-
-const findAllSortedYear = () => {
-  return db.query("SELECT * FROM movies ORDER BY year ASC", []);
-};
-
-const findAllSortedYearDESC = () => {
-  return db.query("SELECT * FROM movies ORDER BY year DESC;", []);
+const findAll = (orderBy = "id", orderDir = "DESC") => {
+  return db.query(`SELECT * FROM movies ORDER BY ${orderBy} ${orderDir}`, []);
 };
 
 const findAllSortedNoX = () => {
@@ -94,6 +78,10 @@ const findAllCountry = () => {
   );
 };
 
+const findAllCountryIdDesc = () => {
+  return db.query("SELECT * FROM country order by id desc;");
+};
+
 const findByCountry = (id) => {
   return db.query(
     "SELECT * FROM movies AS m JOIN movie_country AS mc ON m.id = mc.movieId JOIN country AS c ON c.id = mc.countryId WHERE c.id = ?;",
@@ -129,16 +117,35 @@ const findByCountrySortedYearDesc = (id) => {
   );
 };
 
+const findAllDecades = () => {
+  return db.query(
+    "SELECT DISTINCT FLOOR(year / 10) * 10 AS decade FROM movies WHERE year IS NOT NULL ORDER BY decade DESC;"
+  );
+};
+
+const findMoviesByDecade = (decade) => {
+  return db.query("SELECT * FROM movies WHERE FLOOR(year / 10) * 10 = ?;", [
+    decade,
+  ]);
+};
+
+const findAllForSearchFilter = () => {
+  return db.query(
+    "SELECT movies.*, GROUP_CONCAT(DISTINCT genre.name SEPARATOR ', ') AS genres, GROUP_CONCAT(DISTINCT country.name SEPARATOR ', ') AS countries FROM movies LEFT JOIN movie_genre ON movies.id = movie_genre.movieId LEFT JOIN genre ON movie_genre.genreId = genre.id LEFT JOIN movie_country ON movies.id = movie_country.movieId LEFT JOIN country ON movie_country.countryId = country.id GROUP BY movies.id, movies.title, movies.altTitle, movies.year, movies.duration, movies.cover, movies.trailer, movies.pitch, movies.story, movies.location, movies.videoFormat, movies.comment, movies.videoSupport, movies.fileSize, movies.idTheMovieDb, movies.idIMDb ORDER BY movies.id DESC;"
+  );
+};
+
 module.exports = {
   findAll,
   findById,
-  findAllSortedAlpha,
-  findAllSortedZeta,
-  findAllSortedYear,
-  findAllSortedYearDESC,
+  // findAllSortedAlpha,
+  // findAllSortedZeta,
+  // findAllSortedYear,
+  // findAllSortedYearDESC,
   findAllSortedNoX,
   findAllYears,
   findAllCountry,
+  findAllCountryIdDesc,
   findByCountry,
   findByCountrySortedAlpha,
   findByCountrySortedZeta,
@@ -147,4 +154,7 @@ module.exports = {
   findByYear,
   findByYearSortedA,
   findByYearSortedZ,
+  findAllDecades,
+  findMoviesByDecade,
+  findAllForSearchFilter,
 };

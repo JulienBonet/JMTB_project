@@ -4,6 +4,7 @@ const directorsController = require("../controllers/directorsControllers");
 
 router.get("/directors", directorsController.getAllArtistAsc);
 router.get("/directors/sorted_z", directorsController.getAllArtistDesc);
+router.get("/directors/sorted_id", directorsController.getAllArtistIdDesc);
 router.get("/directors/:id", directorsController.getAllMoviesByArtistId);
 router.get("/directors/:id/sorted/0", directorsController.getAllSorted0);
 router.get("/directors/:id/sorted/1", directorsController.getAllSorted1);

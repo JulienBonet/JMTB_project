@@ -4,6 +4,7 @@ const musicController = require("../controllers/musicControllers");
 
 router.get("/music", musicController.getAllArtistAsc);
 router.get("/music/sorted_z", musicController.getAllArtistDesc);
+router.get("/music/sorted_id", musicController.getAllArtistIdDesc);
 router.get("/music/:id", musicController.getAllMoviesByArtistId);
 router.get("/music/:id/sorted/0", musicController.getAllSorted0);
 router.get("/music/:id/sorted/1", musicController.getAllSorted1);

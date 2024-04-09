@@ -3,6 +3,7 @@ const router = require("express").Router();
 const moviesController = require("../controllers/moviesControllers");
 
 router.get("/movies", moviesController.getAll);
+router.get("/movies/search-filter", moviesController.getAllForSearchFilter);
 router.get("/movies/:id", moviesController.getById);
 router.get("/movies/sorted/0", moviesController.getAllSorted0);
 router.get("/movies/sorted/1", moviesController.getAllSorted1);
@@ -34,6 +35,8 @@ router.get("/movies/year/sorted/:year", moviesController.getByYear);
 router.get("/movies/year/sorted/0/:year", moviesController.getByYearSorted0);
 router.get("/movies/year/sorted/1/:year", moviesController.getByYearSorted1);
 router.get("/years", moviesController.getAllYears);
+router.get("/decades", moviesController.getAllDecades);
 router.get("/country", moviesController.getAllCountry);
+router.get("/country/sorted_id", moviesController.getAllCountryIdDesc);
 
 module.exports = router;

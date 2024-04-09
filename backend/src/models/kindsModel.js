@@ -4,6 +4,10 @@ const findAllKinds = () => {
   return db.query(`SELECT * FROM genre WHERE name IS NOT NULL`, []);
 };
 
+const findAllKindsIdDesc = () => {
+  return db.query(`SELECT * FROM genre order by id desc`, []);
+};
+
 const findAllMoviesByKinds = (genre) => {
   return db.query(
     "SELECT m.* FROM movies m JOIN movie_genre mg ON m.id = mg.movieId JOIN genre g ON mg.genreId = g.id WHERE g.name = ?",
@@ -41,6 +45,7 @@ const findAllSortedYearDESC = (genre) => {
 
 module.exports = {
   findAllKinds,
+  findAllKindsIdDesc,
   findAllMoviesByKinds,
   findAllSortedAlpha,
   findAllSortedZeta,
