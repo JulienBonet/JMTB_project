@@ -3,19 +3,19 @@ import React, { useState, useEffect } from "react";
 import "./yearDropdown.css";
 
 function YearDropdown({ onYearChange, selectedYearData, search }) {
-  const [years, setYears] = useState([]);
+  const [decades, setDecades] = useState([]);
 
   // REQUEST ALL YEAR
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/years`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/decades`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
         return response.json();
       })
-      .then((yearsData) => {
-        setYears(yearsData);
+      .then((decadesData) => {
+        setDecades(decadesData);
       })
       .catch((error) => {
         console.error("Error fetching user data:", error);
@@ -23,14 +23,14 @@ function YearDropdown({ onYearChange, selectedYearData, search }) {
   }, [search]);
 
   const handleChange = (event) => {
-    const selectedYear = event.target.value;
-    onYearChange(selectedYear);
+    const selectedDecade = event.target.value;
+    onYearChange(selectedDecade);
   };
 
   // Mapping des années pour créer les options de sélection
-  const options = years.map((year) => (
-    <option key={year.year} value={year.index}>
-      {year.year}
+  const options = decades.map((decade) => (
+    <option key={decade.decade} value={decade.decade}>
+      Années {decade.decade}
     </option>
   ));
 
@@ -40,7 +40,7 @@ function YearDropdown({ onYearChange, selectedYearData, search }) {
       className="YearsDropdown"
       value={selectedYearData}
     >
-      <option value="">ANNEE</option>
+      <option value="">DECENNIE</option>
       {options}
     </select>
   );
