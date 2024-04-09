@@ -60,7 +60,7 @@ function AdminDirectorList() {
       });
   }, []);
 
-  // REQUEST DIRECTORS LIST
+  // REFRESH DIRECTORS LIST
   const refreshDirectors = () => {
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/directors/sorted_id`)
       .then((response) => {
@@ -109,7 +109,7 @@ function AdminDirectorList() {
     }
   };
 
-  // Update filtered data when search term changes
+  // SEARCH BAR
   useEffect(() => {
     const filtered = data.filter(
       (itemData) =>

@@ -13,4 +13,13 @@ router.put(
 );
 router.delete("/director/delete/:id", editingController.eraseDirector);
 
+router.post("/casting", editingController.addCasting);
+router.put("/casting/:id", editingController.editingCasting);
+router.put(
+  "/casting/:id/image",
+  fileUpload.single("image"),
+  editingController.uploadDCastingImage
+);
+router.delete("/casting/:id", editingController.eraseCasting);
+
 module.exports = router;
