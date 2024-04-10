@@ -65,30 +65,47 @@ const uploadDirectorImage = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Vérifier si un fichier a été téléchargé
     if (!req.file) {
       return res
         .status(400)
         .json({ message: "Aucun fichier n'a été téléchargé" });
     }
 
-    // Construire l'URL de l'image en utilisant le protocole, l'hôte et le nom du fichier téléchargé
+    const director = await editingModel.findDirectorById(id);
+    const currentImageUrl = director[0].image;
+    // effacer la précédente image
+    if (currentImageUrl !== "http://localhost:3310/00_item_default.png") {
+      try {
+        const pathname = new URL(currentImageUrl).pathname;
+        const fullPath = path.join(
+          __dirname,
+          "../../public/images",
+          path.basename(pathname)
+        );
+        if (fs.existsSync(fullPath)) {
+          fs.unlinkSync(fullPath);
+        } else {
+          console.info(`Le fichier n'existe pas : ${fullPath}`);
+        }
+      } catch (unlinkError) {
+        console.error(
+          "Erreur lors de la suppression du fichier :",
+          unlinkError
+        );
+      }
+    }
+    // mettre à jour la nouvelle image
     const imageUrl = `${req.protocol}://${req.get("host")}/${
       req.file.filename
     }`;
-
-    // Mettre à jour l'image du réalisateur dans la base de données
     const result = await editingModel.editDirectorImage(imageUrl, id);
 
     if (result.affectedRows > 0) {
-      // Logique de gestion de la mise à jour réussie
       return res.status(200).json({ message: "Image successfully updated" });
     }
-    // Logique de gestion de l'erreur de mise à jour
     console.error("Erreur lors de la mise à jour de l'image");
     return res.status(500).json({ message: "Error updating image" });
   } catch (error) {
-    // Gestion des erreurs
     console.error("Erreur lors du téléchargement de l'image :", error);
     return res.status(500).json({ message: "Error updating image" });
   }
@@ -97,8 +114,39 @@ const uploadDirectorImage = async (req, res) => {
 const eraseDirector = async (req, res, next) => {
   try {
     const directorId = req.params.id;
+
+    // Supprimer l'image
+    const directors = await editingModel.findDirectorById(directorId);
+    if (!directors || directors.length === 0) {
+      return res.status(404).json({ message: "director non trouvé" });
+    }
+
+    const director = directors[0];
+    const imageUrl = director.image;
+    if (imageUrl && imageUrl !== "http://localhost:3310/00_item_default.png") {
+      try {
+        const pathname = new URL(imageUrl).pathname;
+        const fullPath = path.join(
+          __dirname,
+          "../../public/images",
+          path.basename(pathname)
+        );
+        if (fs.existsSync(fullPath)) {
+          fs.unlinkSync(fullPath);
+        } else {
+          console.info(`Le fichier n'existe pas : ${fullPath}`);
+        }
+      } catch (unlinkError) {
+        console.error(
+          "Erreur lors de la suppression du fichier :",
+          unlinkError
+        );
+      }
+    }
+
+    // Supprimer le director de la base de données
     await editingModel.deleteDirector(directorId);
-    res.sendStatus(204).json({ message: "Director successfully deleted" });
+    res.sendStatus(204);
   } catch (error) {
     next(error);
   }
@@ -157,7 +205,7 @@ const editingCasting = async (req, res) => {
   }
 };
 
-const uploadDCastingImage = async (req, res) => {
+const uploadCastingImage = async (req, res) => {
   try {
     const { id } = req.params;
 
@@ -168,7 +216,36 @@ const uploadDCastingImage = async (req, res) => {
         .json({ message: "Aucun fichier n'a été téléchargé" });
     }
 
-    // Construire l'URL de l'image en utilisant le protocole, l'hôte et le nom du fichier téléchargé
+    // Récupérer l'URL de l'image actuelle à partir de la base de données
+    const casting = await editingModel.findCastingById(id);
+    const currentImageUrl = casting[0].image;
+    console.info(casting);
+    console.info(currentImageUrl);
+
+    // Vérifier si l'image actuelle est différente de l'image par défaut
+    if (currentImageUrl !== "http://localhost:3310/00_item_default.png") {
+      // Supprimer le fichier de l'image actuelle du système de fichiers
+      try {
+        const pathname = new URL(currentImageUrl).pathname;
+        const fullPath = path.join(
+          __dirname,
+          "../../public/images",
+          path.basename(pathname)
+        );
+        if (fs.existsSync(fullPath)) {
+          fs.unlinkSync(fullPath);
+        } else {
+          console.info(`Le fichier n'existe pas : ${fullPath}`);
+        }
+      } catch (unlinkError) {
+        console.error(
+          "Erreur lors de la suppression du fichier :",
+          unlinkError
+        );
+      }
+    }
+
+    // Construire l'URL de la nouvelle image en utilisant le protocole, l'hôte et le nom du fichier téléchargé
     const imageUrl = `${req.protocol}://${req.get("host")}/${
       req.file.filename
     }`;
@@ -177,14 +254,11 @@ const uploadDCastingImage = async (req, res) => {
     const result = await editingModel.editCastingImage(imageUrl, id);
 
     if (result.affectedRows > 0) {
-      // Logique de gestion de la mise à jour réussie
       return res.status(200).json({ message: "Image successfully updated" });
     }
-    // Logique de gestion de l'erreur de mise à jour
     console.error("Erreur lors de la mise à jour de l'image");
     return res.status(500).json({ message: "Error updating image" });
   } catch (error) {
-    // Gestion des erreurs
     console.error("Erreur lors du téléchargement de l'image :", error);
     return res.status(500).json({ message: "Error updating image" });
   }
@@ -231,6 +305,478 @@ const eraseCasting = async (req, res, next) => {
   }
 };
 
+// EDIT SCREENWRITER
+const addScreenwriter = async (req, res) => {
+  try {
+    const { name } = req.body;
+    if (!name) {
+      return res
+        .status(400)
+        .json({ message: "Screenwriter's name is required" });
+    }
+    await editingModel.insertScreenwriter(name);
+
+    return res
+      .status(201)
+      .json({ message: "Screenwriter successfully created" });
+  } catch (error) {
+    console.error("Error Screenwriter creation :", error);
+    return res.status(500).json({ message: "Error Screenwriter creation" });
+  }
+};
+
+const editingScreenwriter = async (req, res) => {
+  try {
+    const { name, pitch, wikilink, imdblink } = req.body;
+    const { id } = req.params;
+
+    // Vérifier si les nouvelles données sont différentes des données existantes
+    const existingScreenwriter = await editingModel.findScreenwriterById(id);
+    if (
+      existingScreenwriter[0].name === name &&
+      existingScreenwriter[0].pitch === pitch &&
+      existingScreenwriter[0].wikilink === wikilink &&
+      existingScreenwriter[0].imdblink === imdblink
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Error updating Screenwriter: no changes detected" });
+    }
+
+    // Mettre à jour le réalisateur avec les nouvelles informations
+    const result = await editingModel.editScreenwriter(
+      name,
+      pitch,
+      wikilink,
+      imdblink,
+      id
+    );
+
+    if (result.affectedRows !== 0) {
+      return res
+        .status(200)
+        .json({ message: "Screenwriter successfully updated" });
+    }
+    return res.status(400).json({ message: "Error updating Screenwriter" });
+  } catch (error) {
+    console.error("Stack trace :", error.stack);
+    return res.status(500).json({ message: "Error updating Screenwriter" });
+  }
+};
+
+const uploadScreenwriterImage = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Vérifier si un fichier a été téléchargé
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ message: "Aucun fichier n'a été téléchargé" });
+    }
+
+    // Récupérer l'URL de l'image actuelle à partir de la base de données
+    const screenwriter = await editingModel.findScreenwriterById(id);
+    const currentImageUrl = screenwriter[0].image;
+    console.info(screenwriter);
+    console.info(currentImageUrl);
+
+    // Vérifier si l'image actuelle est différente de l'image par défaut
+    if (currentImageUrl !== "http://localhost:3310/00_item_default.png") {
+      // Supprimer le fichier de l'image actuelle du système de fichiers
+      try {
+        const pathname = new URL(currentImageUrl).pathname;
+        const fullPath = path.join(
+          __dirname,
+          "../../public/images",
+          path.basename(pathname)
+        );
+        if (fs.existsSync(fullPath)) {
+          fs.unlinkSync(fullPath);
+        } else {
+          console.info(`Le fichier n'existe pas : ${fullPath}`);
+        }
+      } catch (unlinkError) {
+        console.error(
+          "Erreur lors de la suppression du fichier :",
+          unlinkError
+        );
+      }
+    }
+
+    // Construire l'URL de la nouvelle image en utilisant le protocole, l'hôte et le nom du fichier téléchargé
+    const imageUrl = `${req.protocol}://${req.get("host")}/${
+      req.file.filename
+    }`;
+
+    // Mettre à jour l'image du réalisateur dans la base de données
+    const result = await editingModel.editScreenwriterImage(imageUrl, id);
+
+    if (result.affectedRows > 0) {
+      return res.status(200).json({ message: "Image successfully updated" });
+    }
+    console.error("Erreur lors de la mise à jour de l'image");
+    return res.status(500).json({ message: "Error updating image" });
+  } catch (error) {
+    console.error("Erreur lors du téléchargement de l'image :", error);
+    return res.status(500).json({ message: "Error updating image" });
+  }
+};
+
+const eraseScreenwriter = async (req, res, next) => {
+  try {
+    const screenwriterId = req.params.id;
+
+    // Supprimer l'image
+    const screenwriters = await editingModel.findScreenwriterById(
+      screenwriterId
+    );
+    if (!screenwriters || screenwriters.length === 0) {
+      return res.status(404).json({ message: "Casting non trouvé" });
+    }
+
+    const screenwriter = screenwriters[0];
+    const imageUrl = screenwriter.image;
+    if (imageUrl && imageUrl !== "http://localhost:3310/00_item_default.png") {
+      try {
+        const pathname = new URL(imageUrl).pathname;
+        const fullPath = path.join(
+          __dirname,
+          "../../public/images",
+          path.basename(pathname)
+        );
+        if (fs.existsSync(fullPath)) {
+          fs.unlinkSync(fullPath);
+        } else {
+          console.info(`Le fichier n'existe pas : ${fullPath}`);
+        }
+      } catch (unlinkError) {
+        console.error(
+          "Erreur lors de la suppression du fichier :",
+          unlinkError
+        );
+      }
+    }
+
+    // Supprimer le casting de la base de données
+    await editingModel.deleteScreenwriter(screenwriterId);
+    res.sendStatus(204);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// EDIT COMPOSITOR
+const addCompositor = async (req, res) => {
+  try {
+    const { name } = req.body;
+    if (!name) {
+      return res.status(400).json({ message: "Compositor's name is required" });
+    }
+    await editingModel.insertCompositor(name);
+
+    return res.status(201).json({ message: "Compositor successfully created" });
+  } catch (error) {
+    console.error("Error Compositor creation :", error);
+    return res.status(500).json({ message: "Error Compositor creation" });
+  }
+};
+
+const editingCompositor = async (req, res) => {
+  try {
+    const { name, pitch, wikilink, imdblink } = req.body;
+    const { id } = req.params;
+
+    // Vérifier si les nouvelles données sont différentes des données existantes
+    const existingCompositor = await editingModel.findCompositorById(id);
+    if (
+      existingCompositor[0].name === name &&
+      existingCompositor[0].pitch === pitch &&
+      existingCompositor[0].wikilink === wikilink &&
+      existingCompositor[0].imdblink === imdblink
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Error updating Compositor: no changes detected" });
+    }
+
+    // Mettre à jour le réalisateur avec les nouvelles informations
+    const result = await editingModel.editCompositor(
+      name,
+      pitch,
+      wikilink,
+      imdblink,
+      id
+    );
+
+    if (result.affectedRows !== 0) {
+      return res
+        .status(200)
+        .json({ message: "Compositor successfully updated" });
+    }
+    return res.status(400).json({ message: "Error updating Compositor" });
+  } catch (error) {
+    console.error("Stack trace :", error.stack);
+    return res.status(500).json({ message: "Error updating Compositor" });
+  }
+};
+
+const uploadCompositorImage = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Vérifier si un fichier a été téléchargé
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ message: "Aucun fichier n'a été téléchargé" });
+    }
+
+    // Récupérer l'URL de l'image actuelle à partir de la base de données
+    const compositor = await editingModel.findCompositorById(id);
+    const currentImageUrl = compositor[0].image;
+    console.info(compositor);
+    console.info(currentImageUrl);
+
+    // Vérifier si l'image actuelle est différente de l'image par défaut
+    if (currentImageUrl !== "http://localhost:3310/00_item_default.png") {
+      // Supprimer le fichier de l'image actuelle du système de fichiers
+      try {
+        const pathname = new URL(currentImageUrl).pathname;
+        const fullPath = path.join(
+          __dirname,
+          "../../public/images",
+          path.basename(pathname)
+        );
+        if (fs.existsSync(fullPath)) {
+          fs.unlinkSync(fullPath);
+        } else {
+          console.info(`Le fichier n'existe pas : ${fullPath}`);
+        }
+      } catch (unlinkError) {
+        console.error(
+          "Erreur lors de la suppression du fichier :",
+          unlinkError
+        );
+      }
+    }
+
+    // Construire l'URL de la nouvelle image en utilisant le protocole, l'hôte et le nom du fichier téléchargé
+    const imageUrl = `${req.protocol}://${req.get("host")}/${
+      req.file.filename
+    }`;
+
+    // Mettre à jour l'image du réalisateur dans la base de données
+    const result = await editingModel.editCompositorImage(imageUrl, id);
+
+    if (result.affectedRows > 0) {
+      return res.status(200).json({ message: "Image successfully updated" });
+    }
+    console.error("Erreur lors de la mise à jour de l'image");
+    return res.status(500).json({ message: "Error updating image" });
+  } catch (error) {
+    console.error("Erreur lors du téléchargement de l'image :", error);
+    return res.status(500).json({ message: "Error updating image" });
+  }
+};
+
+const eraseCompositor = async (req, res, next) => {
+  try {
+    const compositorId = req.params.id;
+
+    // Supprimer l'image
+    const compositors = await editingModel.findCompositorById(compositorId);
+    if (!compositors || compositors.length === 0) {
+      return res.status(404).json({ message: "compositor non trouvé" });
+    }
+
+    const compositor = compositors[0];
+    const imageUrl = compositor.image;
+    if (imageUrl && imageUrl !== "http://localhost:3310/00_item_default.png") {
+      try {
+        const pathname = new URL(imageUrl).pathname;
+        const fullPath = path.join(
+          __dirname,
+          "../../public/images",
+          path.basename(pathname)
+        );
+        if (fs.existsSync(fullPath)) {
+          fs.unlinkSync(fullPath);
+        } else {
+          console.info(`Le fichier n'existe pas : ${fullPath}`);
+        }
+      } catch (unlinkError) {
+        console.error(
+          "Erreur lors de la suppression du fichier :",
+          unlinkError
+        );
+      }
+    }
+
+    // Supprimer le casting de la base de données
+    await editingModel.deleteCompositor(compositorId);
+    res.sendStatus(204);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// EDIT STUDIO
+const addStudio = async (req, res) => {
+  try {
+    const { name } = req.body;
+    if (!name) {
+      return res.status(400).json({ message: "Studio's name is required" });
+    }
+    await editingModel.insertStudio(name);
+
+    return res.status(201).json({ message: "Studio successfully created" });
+  } catch (error) {
+    console.error("Error Studio creation :", error);
+    return res.status(500).json({ message: "Error Studio creation" });
+  }
+};
+
+const editingStudio = async (req, res) => {
+  try {
+    const { name, pitch, wikilink, imdblink } = req.body;
+    const { id } = req.params;
+
+    // Vérifier si les nouvelles données sont différentes des données existantes
+    const existingStudio = await editingModel.findStudioById(id);
+    if (
+      existingStudio[0].name === name &&
+      existingStudio[0].pitch === pitch &&
+      existingStudio[0].wikilink === wikilink &&
+      existingStudio[0].imdblink === imdblink
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Error updating Studio: no changes detected" });
+    }
+
+    // Mettre à jour le réalisateur avec les nouvelles informations
+    const result = await editingModel.editStudio(
+      name,
+      pitch,
+      wikilink,
+      imdblink,
+      id
+    );
+
+    if (result.affectedRows !== 0) {
+      return res.status(200).json({ message: "Studio successfully updated" });
+    }
+    return res.status(400).json({ message: "Error updating Studio" });
+  } catch (error) {
+    console.error("Stack trace :", error.stack);
+    return res.status(500).json({ message: "Error updating Studio" });
+  }
+};
+
+const uploadStudioImage = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Vérifier si un fichier a été téléchargé
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ message: "Aucun fichier n'a été téléchargé" });
+    }
+
+    // Récupérer l'URL de l'image actuelle à partir de la base de données
+    const studio = await editingModel.findStudioById(id);
+    const currentImageUrl = studio[0].image;
+    console.info(studio);
+    console.info(currentImageUrl);
+
+    // Vérifier si l'image actuelle est différente de l'image par défaut
+    if (currentImageUrl !== "http://localhost:3310/00_jmtb_item_default.jpg") {
+      // Supprimer le fichier de l'image actuelle du système de fichiers
+      try {
+        const pathname = new URL(currentImageUrl).pathname;
+        const fullPath = path.join(
+          __dirname,
+          "../../public/images",
+          path.basename(pathname)
+        );
+        if (fs.existsSync(fullPath)) {
+          fs.unlinkSync(fullPath);
+        } else {
+          console.info(`Le fichier n'existe pas : ${fullPath}`);
+        }
+      } catch (unlinkError) {
+        console.error(
+          "Erreur lors de la suppression du fichier :",
+          unlinkError
+        );
+      }
+    }
+
+    // Construire l'URL de la nouvelle image en utilisant le protocole, l'hôte et le nom du fichier téléchargé
+    const imageUrl = `${req.protocol}://${req.get("host")}/${
+      req.file.filename
+    }`;
+
+    // Mettre à jour l'image du réalisateur dans la base de données
+    const result = await editingModel.editStudioImage(imageUrl, id);
+
+    if (result.affectedRows > 0) {
+      return res.status(200).json({ message: "Image successfully updated" });
+    }
+    console.error("Erreur lors de la mise à jour de l'image");
+    return res.status(500).json({ message: "Error updating image" });
+  } catch (error) {
+    console.error("Erreur lors du téléchargement de l'image :", error);
+    return res.status(500).json({ message: "Error updating image" });
+  }
+};
+
+const eraseStudio = async (req, res, next) => {
+  try {
+    const studioId = req.params.id;
+
+    // Supprimer l'image
+    const studios = await editingModel.findStudioById(studioId);
+    if (!studios || studios.length === 0) {
+      return res.status(404).json({ message: "Studio non trouvé" });
+    }
+
+    const studio = studios[0];
+    const imageUrl = studio.image;
+    if (
+      imageUrl &&
+      imageUrl !== "http://localhost:3310/00_jmtb_item_default.jpg"
+    ) {
+      try {
+        const pathname = new URL(imageUrl).pathname;
+        const fullPath = path.join(
+          __dirname,
+          "../../public/images",
+          path.basename(pathname)
+        );
+        if (fs.existsSync(fullPath)) {
+          fs.unlinkSync(fullPath);
+        } else {
+          console.info(`Le fichier n'existe pas : ${fullPath}`);
+        }
+      } catch (unlinkError) {
+        console.error(
+          "Erreur lors de la suppression du fichier :",
+          unlinkError
+        );
+      }
+    }
+
+    // Supprimer le casting de la base de données
+    await editingModel.deleteStudio(studioId);
+    res.sendStatus(204);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   addDirector,
   editingDirector,
@@ -238,6 +784,18 @@ module.exports = {
   eraseDirector,
   addCasting,
   editingCasting,
-  uploadDCastingImage,
+  uploadCastingImage,
   eraseCasting,
+  addScreenwriter,
+  editingScreenwriter,
+  uploadScreenwriterImage,
+  eraseScreenwriter,
+  addCompositor,
+  editingCompositor,
+  uploadCompositorImage,
+  eraseCompositor,
+  addStudio,
+  editingStudio,
+  uploadStudioImage,
+  eraseStudio,
 };
