@@ -21,6 +21,7 @@ router.post("/casting", editingController.addCasting);
 router.put("/casting/:id", editingController.editingCasting);
 router.put(
   "/casting/:id/image",
+  setType("casting"),
   fileUpload.single("image"),
   editingController.uploadCastingImage
 );
@@ -31,6 +32,7 @@ router.post("/screenwriter", editingController.addScreenwriter);
 router.put("/screenwriter/:id", editingController.editingScreenwriter);
 router.put(
   "/screenwriter/:id/image",
+  setType("screenwriter"),
   fileUpload.single("image"),
   editingController.uploadScreenwriterImage
 );
@@ -41,6 +43,7 @@ router.post("/compositor", editingController.addCompositor);
 router.put("/compositor/:id", editingController.editingCompositor);
 router.put(
   "/compositor/:id/image",
+  setType("compositor"),
   fileUpload.single("image"),
   editingController.uploadCompositorImage
 );
@@ -51,6 +54,7 @@ router.post("/studio", editingController.addStudio);
 router.put("/studio/:id", editingController.editingStudio);
 router.put(
   "/studio/:id/image",
+  setType("studio"),
   fileUpload.single("image"),
   editingController.uploadStudioImage
 );
