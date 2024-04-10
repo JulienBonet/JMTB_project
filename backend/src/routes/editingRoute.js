@@ -1,7 +1,8 @@
 const express = require("express");
 
 const router = express.Router();
-const fileUpload = require("../middlewares/fileUpload");
+// const fileUpload = require("../middlewares/fileUpload");
+const { fileUpload, setType } = require("../middlewares/fileUpload");
 const editingController = require("../controllers/editingControllers");
 
 // DIRECTORS ROUTE
@@ -9,6 +10,7 @@ router.post("/director", editingController.addDirector);
 router.put("/director/:id", editingController.editingDirector);
 router.put(
   "/director/:id/image",
+  setType("director"),
   fileUpload.single("image"),
   editingController.uploadDirectorImage
 );
