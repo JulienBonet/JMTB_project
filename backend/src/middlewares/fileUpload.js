@@ -1,15 +1,16 @@
 const multer = require("multer");
 const path = require("path");
+const { v4: uuidv4 } = require("uuid");
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, "../../public/images"));
   },
   filename: (req, file, cb) => {
-    const type = req.multerType || ""; // Obtenir le type à partir de req.multerType
+    const type = req.multerType || "";
     const extension = path.extname(file.originalname);
     const baseName = path.basename(file.originalname, extension);
-    const newName = `${Date.now()}-${type}-${baseName}${extension}`;
+    const newName = `${type}-${baseName}-${uuidv4()}${extension}`;
     cb(null, newName);
   },
 });
@@ -28,7 +29,7 @@ const fileUpload = multer({
   fileFilter,
 });
 
-// Middleware personnalisé pour définir le type
+// Middleware type
 const setType = (type) => (req, res, next) => {
   req.multerType = type;
   next();
