@@ -1,11 +1,17 @@
+/* eslint-disable no-alert */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useState, useEffect } from "react";
-import { Button } from "@mui/material";
+import { Button, Container } from "@mui/material";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Modal from "@mui/material/Modal";
+import Box from "@mui/material/Box";
+import Pagination from "@mui/material/Pagination";
 import "./adminLists.css";
 import PreviewIcon from "@mui/icons-material/Preview";
 import DeleteIcon from "@mui/icons-material/Delete";
-import Box from "@mui/material/Box";
-import Pagination from "@mui/material/Pagination";
+import AdminItemsCard from "../AdminItemsCards/AdminItemsCard";
+import CreateItemCard from "../CreateItemCard/CreateItemCard";
 
 function AdminCompositorList() {
   const [data, setData] = useState([]);
@@ -13,6 +19,26 @@ function AdminCompositorList() {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredData, setFilteredData] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [newCompositor, setNewCompositor] = useState(false);
+
+  const origin = "compositor";
+
+  const openModal = (DataItem) => {
+    setSelectedItem(DataItem);
+  };
+
+  const closeModal = () => {
+    setSelectedItem(null);
+  };
+
+  const openModalNewCompositor = () => {
+    setNewCompositor(true);
+  };
+
+  const closeModalNewCompositor = () => {
+    setNewCompositor(false);
+  };
 
   // REQUEST ALL COMPOSITORS sorted ID desc
   useEffect(() => {
@@ -34,7 +60,56 @@ function AdminCompositorList() {
       });
   }, []);
 
-  // Update filtered data when search term changes
+  // REFRESH COMPOSITORS LIST
+  const refreshCompositor = () => {
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/music/sorted_id`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((datas) => {
+        setData(datas);
+        setFilteredData(datas);
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  };
+
+  // DELETE COMPOSITOR
+  const handleDelete = async (id) => {
+    // Display confirmation dialog
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this work?"
+    );
+
+    // If user confirms deletion
+    if (confirmDelete) {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/compositor/${id}`,
+          {
+            method: "delete",
+          }
+        );
+        if (response.status === 204) {
+          console.info("delete ok");
+          toast.success("compositor deleted", {
+            className: "custom-toast",
+          });
+          refreshCompositor();
+        } else {
+          console.error("error delete");
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
+  // SEARCH BAR
   useEffect(() => {
     const filtered = data.filter(
       (itemData) =>
@@ -45,15 +120,17 @@ function AdminCompositorList() {
   }, [searchTerm, data]);
 
   // PAGINATION
-  const itemsPerPage = 50;
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const artistsPerPage = 50;
+  const indexOfLastArtist = currentPage * artistsPerPage;
+  const indexOfFirstArtist = indexOfLastArtist - artistsPerPage;
+  const currentArtists = filteredData.slice(
+    indexOfFirstArtist,
+    indexOfLastArtist
+  );
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
-
   return (
     <section className="AdminItemsSection">
       <section className="HeaderAdminItemsSection">
@@ -69,10 +146,7 @@ function AdminCompositorList() {
               placeholder="recherche"
             />
           </div>
-          <Button
-            variant="contained"
-            onClick={() => console.info("Ajouter un compositeur")}
-          >
+          <Button variant="contained" onClick={() => openModalNewCompositor()}>
             ADD NEW COMPOSITOR
           </Button>
         </div>
@@ -88,15 +162,21 @@ function AdminCompositorList() {
           {loading ? (
             <div className="LoaderTemp">LOADING...</div>
           ) : (
-            currentItems.map((item) => (
-              <tr key={item.id}>
-                <th scope="row">{item.id}</th>
-                <td>{item.name}</td>
+            currentArtists.map((DataItem) => (
+              <tr key={DataItem.id}>
+                <th scope="row">{DataItem.id}</th>
+                <td>{DataItem.name}</td>
                 <td>
-                  <PreviewIcon className="admin_tools_ico" />
+                  <PreviewIcon
+                    className="admin_tools_ico"
+                    onClick={() => openModal(DataItem)}
+                  />
                 </td>
                 <td>
-                  <DeleteIcon className="admin_tools_ico" />
+                  <DeleteIcon
+                    className="admin_tools_ico"
+                    onClick={() => handleDelete(DataItem.id)}
+                  />
                 </td>
               </tr>
             ))
@@ -107,11 +187,64 @@ function AdminCompositorList() {
         sx={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
       >
         <Pagination
-          count={Math.ceil(filteredData.length / itemsPerPage)}
+          count={Math.ceil(filteredData.length / artistsPerPage)}
           shape="rounded"
           onChange={handlePageChange}
         />
       </Box>
+      {selectedItem && (
+        <Modal open onClose={closeModal} className="Movie_Modal">
+          <Box>
+            <Container maxWidth="lg">
+              <div
+                onClick={closeModal}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    closeModal();
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                className="modal_closed_btn"
+              >
+                X Fermer
+              </div>
+              <AdminItemsCard
+                item={selectedItem}
+                origin={origin}
+                onUpdate={refreshCompositor}
+                closeModal={closeModal}
+              />
+            </Container>
+          </Box>
+        </Modal>
+      )}
+      {newCompositor && (
+        <Modal open onClose={closeModalNewCompositor} className="Movie_Modal">
+          <Box>
+            <Container maxWidth="sm">
+              <div
+                onClick={closeModalNewCompositor}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    closeModalNewCompositor();
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                className="modal_closed_btn"
+              >
+                X Fermer
+              </div>
+              <CreateItemCard
+                origin={origin}
+                onUpdate={refreshCompositor}
+                closeModal={closeModalNewCompositor}
+              />
+            </Container>
+          </Box>
+        </Modal>
+      )}
     </section>
   );
 }

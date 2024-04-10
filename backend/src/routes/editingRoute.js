@@ -1,11 +1,10 @@
 const express = require("express");
 
 const router = express.Router();
-// const fileUpload = require("../middlewares/fileUpload");
 const { fileUpload, setType } = require("../middlewares/fileUpload");
 const editingController = require("../controllers/editingControllers");
 
-// DIRECTORS ROUTE
+// DIRECTORS ROUTES
 router.post("/director", editingController.addDirector);
 router.put("/director/:id", editingController.editingDirector);
 router.put(
@@ -16,7 +15,7 @@ router.put(
 );
 router.delete("/director/delete/:id", editingController.eraseDirector);
 
-// CASTING ROUTE
+// CASTING ROUTES
 router.post("/casting", editingController.addCasting);
 router.put("/casting/:id", editingController.editingCasting);
 router.put(
@@ -27,7 +26,7 @@ router.put(
 );
 router.delete("/casting/:id", editingController.eraseCasting);
 
-// SCREENWRITER ROUTE
+// SCREENWRITER ROUTES
 router.post("/screenwriter", editingController.addScreenwriter);
 router.put("/screenwriter/:id", editingController.editingScreenwriter);
 router.put(
@@ -38,7 +37,7 @@ router.put(
 );
 router.delete("/screenwriter/:id", editingController.eraseScreenwriter);
 
-// COMPOSITOR ROUTE
+// COMPOSITOR ROUTES
 router.post("/compositor", editingController.addCompositor);
 router.put("/compositor/:id", editingController.editingCompositor);
 router.put(
@@ -49,7 +48,7 @@ router.put(
 );
 router.delete("/compositor/:id", editingController.eraseCompositor);
 
-// STUDIO ROUTE
+// STUDIO ROUTES
 router.post("/studio", editingController.addStudio);
 router.put("/studio/:id", editingController.editingStudio);
 router.put(

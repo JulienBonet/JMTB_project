@@ -33,13 +33,12 @@ const editingDirector = async (req, res) => {
       existingDirector[0].wikilink === wikilink &&
       existingDirector[0].imdblink === imdblink
     ) {
-      // Logique de gestion de l'erreur si les données sont identiques
       return res
         .status(400)
         .json({ message: "Error updating director: no changes detected" });
     }
 
-    // Mettre à jour le réalisateur avec les nouvelles informations
+    // Mettre à jour le réalisateur
     const result = await editingModel.editDirector(
       name,
       pitch,
@@ -49,13 +48,10 @@ const editingDirector = async (req, res) => {
     );
 
     if (result.affectedRows !== 0) {
-      // Logique de gestion de la mise à jour réussie
       return res.status(200).json({ message: "Director successfully updated" });
     }
-    // Logique de gestion de l'erreur de mise à jour
     return res.status(400).json({ message: "Error updating director" });
   } catch (error) {
-    // Gestion des erreurs
     console.error("Stack trace :", error.stack);
     return res.status(500).json({ message: "Error updating director" });
   }
@@ -173,7 +169,6 @@ const editingCasting = async (req, res) => {
     const { name, pitch, wikilink, imdblink } = req.body;
     const { id } = req.params;
 
-    // Vérifier si les nouvelles données sont différentes des données existantes
     const existingCasting = await editingModel.findCastingById(id);
     if (
       existingCasting[0].name === name &&
@@ -186,7 +181,6 @@ const editingCasting = async (req, res) => {
         .json({ message: "Error updating Casting: no changes detected" });
     }
 
-    // Mettre à jour le réalisateur avec les nouvelles informations
     const result = await editingModel.editCasting(
       name,
       pitch,
@@ -209,22 +203,16 @@ const uploadCastingImage = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Vérifier si un fichier a été téléchargé
     if (!req.file) {
       return res
         .status(400)
         .json({ message: "Aucun fichier n'a été téléchargé" });
     }
 
-    // Récupérer l'URL de l'image actuelle à partir de la base de données
     const casting = await editingModel.findCastingById(id);
     const currentImageUrl = casting[0].image;
-    console.info(casting);
-    console.info(currentImageUrl);
 
-    // Vérifier si l'image actuelle est différente de l'image par défaut
     if (currentImageUrl !== "http://localhost:3310/00_item_default.png") {
-      // Supprimer le fichier de l'image actuelle du système de fichiers
       try {
         const pathname = new URL(currentImageUrl).pathname;
         const fullPath = path.join(
@@ -245,12 +233,10 @@ const uploadCastingImage = async (req, res) => {
       }
     }
 
-    // Construire l'URL de la nouvelle image en utilisant le protocole, l'hôte et le nom du fichier téléchargé
     const imageUrl = `${req.protocol}://${req.get("host")}/${
       req.file.filename
     }`;
 
-    // Mettre à jour l'image du réalisateur dans la base de données
     const result = await editingModel.editCastingImage(imageUrl, id);
 
     if (result.affectedRows > 0) {
@@ -268,7 +254,6 @@ const eraseCasting = async (req, res, next) => {
   try {
     const castingId = req.params.id;
 
-    // Supprimer l'image
     const castings = await editingModel.findCastingById(castingId);
     if (!castings || castings.length === 0) {
       return res.status(404).json({ message: "Casting non trouvé" });
@@ -297,7 +282,6 @@ const eraseCasting = async (req, res, next) => {
       }
     }
 
-    // Supprimer le casting de la base de données
     await editingModel.deleteCasting(castingId);
     res.sendStatus(204);
   } catch (error) {
@@ -330,7 +314,6 @@ const editingScreenwriter = async (req, res) => {
     const { name, pitch, wikilink, imdblink } = req.body;
     const { id } = req.params;
 
-    // Vérifier si les nouvelles données sont différentes des données existantes
     const existingScreenwriter = await editingModel.findScreenwriterById(id);
     if (
       existingScreenwriter[0].name === name &&
@@ -343,7 +326,6 @@ const editingScreenwriter = async (req, res) => {
         .json({ message: "Error updating Screenwriter: no changes detected" });
     }
 
-    // Mettre à jour le réalisateur avec les nouvelles informations
     const result = await editingModel.editScreenwriter(
       name,
       pitch,
@@ -368,22 +350,16 @@ const uploadScreenwriterImage = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Vérifier si un fichier a été téléchargé
     if (!req.file) {
       return res
         .status(400)
         .json({ message: "Aucun fichier n'a été téléchargé" });
     }
 
-    // Récupérer l'URL de l'image actuelle à partir de la base de données
     const screenwriter = await editingModel.findScreenwriterById(id);
     const currentImageUrl = screenwriter[0].image;
-    console.info(screenwriter);
-    console.info(currentImageUrl);
 
-    // Vérifier si l'image actuelle est différente de l'image par défaut
     if (currentImageUrl !== "http://localhost:3310/00_item_default.png") {
-      // Supprimer le fichier de l'image actuelle du système de fichiers
       try {
         const pathname = new URL(currentImageUrl).pathname;
         const fullPath = path.join(
@@ -404,12 +380,10 @@ const uploadScreenwriterImage = async (req, res) => {
       }
     }
 
-    // Construire l'URL de la nouvelle image en utilisant le protocole, l'hôte et le nom du fichier téléchargé
     const imageUrl = `${req.protocol}://${req.get("host")}/${
       req.file.filename
     }`;
 
-    // Mettre à jour l'image du réalisateur dans la base de données
     const result = await editingModel.editScreenwriterImage(imageUrl, id);
 
     if (result.affectedRows > 0) {
@@ -427,7 +401,6 @@ const eraseScreenwriter = async (req, res, next) => {
   try {
     const screenwriterId = req.params.id;
 
-    // Supprimer l'image
     const screenwriters = await editingModel.findScreenwriterById(
       screenwriterId
     );
@@ -458,7 +431,6 @@ const eraseScreenwriter = async (req, res, next) => {
       }
     }
 
-    // Supprimer le casting de la base de données
     await editingModel.deleteScreenwriter(screenwriterId);
     res.sendStatus(204);
   } catch (error) {
@@ -487,7 +459,6 @@ const editingCompositor = async (req, res) => {
     const { name, pitch, wikilink, imdblink } = req.body;
     const { id } = req.params;
 
-    // Vérifier si les nouvelles données sont différentes des données existantes
     const existingCompositor = await editingModel.findCompositorById(id);
     if (
       existingCompositor[0].name === name &&
@@ -500,7 +471,6 @@ const editingCompositor = async (req, res) => {
         .json({ message: "Error updating Compositor: no changes detected" });
     }
 
-    // Mettre à jour le réalisateur avec les nouvelles informations
     const result = await editingModel.editCompositor(
       name,
       pitch,
@@ -525,22 +495,16 @@ const uploadCompositorImage = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Vérifier si un fichier a été téléchargé
     if (!req.file) {
       return res
         .status(400)
         .json({ message: "Aucun fichier n'a été téléchargé" });
     }
 
-    // Récupérer l'URL de l'image actuelle à partir de la base de données
     const compositor = await editingModel.findCompositorById(id);
     const currentImageUrl = compositor[0].image;
-    console.info(compositor);
-    console.info(currentImageUrl);
 
-    // Vérifier si l'image actuelle est différente de l'image par défaut
     if (currentImageUrl !== "http://localhost:3310/00_item_default.png") {
-      // Supprimer le fichier de l'image actuelle du système de fichiers
       try {
         const pathname = new URL(currentImageUrl).pathname;
         const fullPath = path.join(
@@ -561,12 +525,10 @@ const uploadCompositorImage = async (req, res) => {
       }
     }
 
-    // Construire l'URL de la nouvelle image en utilisant le protocole, l'hôte et le nom du fichier téléchargé
     const imageUrl = `${req.protocol}://${req.get("host")}/${
       req.file.filename
     }`;
 
-    // Mettre à jour l'image du réalisateur dans la base de données
     const result = await editingModel.editCompositorImage(imageUrl, id);
 
     if (result.affectedRows > 0) {
@@ -584,7 +546,6 @@ const eraseCompositor = async (req, res, next) => {
   try {
     const compositorId = req.params.id;
 
-    // Supprimer l'image
     const compositors = await editingModel.findCompositorById(compositorId);
     if (!compositors || compositors.length === 0) {
       return res.status(404).json({ message: "compositor non trouvé" });
@@ -613,7 +574,6 @@ const eraseCompositor = async (req, res, next) => {
       }
     }
 
-    // Supprimer le casting de la base de données
     await editingModel.deleteCompositor(compositorId);
     res.sendStatus(204);
   } catch (error) {
@@ -642,7 +602,6 @@ const editingStudio = async (req, res) => {
     const { name, pitch, wikilink, imdblink } = req.body;
     const { id } = req.params;
 
-    // Vérifier si les nouvelles données sont différentes des données existantes
     const existingStudio = await editingModel.findStudioById(id);
     if (
       existingStudio[0].name === name &&
@@ -655,7 +614,6 @@ const editingStudio = async (req, res) => {
         .json({ message: "Error updating Studio: no changes detected" });
     }
 
-    // Mettre à jour le réalisateur avec les nouvelles informations
     const result = await editingModel.editStudio(
       name,
       pitch,
@@ -678,22 +636,18 @@ const uploadStudioImage = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Vérifier si un fichier a été téléchargé
     if (!req.file) {
       return res
         .status(400)
         .json({ message: "Aucun fichier n'a été téléchargé" });
     }
 
-    // Récupérer l'URL de l'image actuelle à partir de la base de données
     const studio = await editingModel.findStudioById(id);
     const currentImageUrl = studio[0].image;
     console.info(studio);
     console.info(currentImageUrl);
 
-    // Vérifier si l'image actuelle est différente de l'image par défaut
     if (currentImageUrl !== "http://localhost:3310/00_jmtb_item_default.jpg") {
-      // Supprimer le fichier de l'image actuelle du système de fichiers
       try {
         const pathname = new URL(currentImageUrl).pathname;
         const fullPath = path.join(
@@ -714,12 +668,10 @@ const uploadStudioImage = async (req, res) => {
       }
     }
 
-    // Construire l'URL de la nouvelle image en utilisant le protocole, l'hôte et le nom du fichier téléchargé
     const imageUrl = `${req.protocol}://${req.get("host")}/${
       req.file.filename
     }`;
 
-    // Mettre à jour l'image du réalisateur dans la base de données
     const result = await editingModel.editStudioImage(imageUrl, id);
 
     if (result.affectedRows > 0) {
@@ -737,7 +689,6 @@ const eraseStudio = async (req, res, next) => {
   try {
     const studioId = req.params.id;
 
-    // Supprimer l'image
     const studios = await editingModel.findStudioById(studioId);
     if (!studios || studios.length === 0) {
       return res.status(404).json({ message: "Studio non trouvé" });
@@ -769,7 +720,6 @@ const eraseStudio = async (req, res, next) => {
       }
     }
 
-    // Supprimer le casting de la base de données
     await editingModel.deleteStudio(studioId);
     res.sendStatus(204);
   } catch (error) {
