@@ -90,7 +90,7 @@ function MovieSearch() {
     };
 
     // Simuler une durée de chargement
-    const timeout = setTimeout(loadData, 500);
+    const timeout = setTimeout(loadData, 1000);
 
     // Nettoyage lors du démontage du composant
     return () => clearTimeout(timeout);

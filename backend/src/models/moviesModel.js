@@ -20,7 +20,7 @@ const findById = (id) => {
     GROUP_CONCAT(DISTINCT CONCAT(casting.name, ', ') SEPARATOR '') AS cast,
     GROUP_CONCAT(DISTINCT CONCAT(genre.name, ', ') SEPARATOR '') AS genres,
     GROUP_CONCAT(DISTINCT CONCAT(country.name, ',') SEPARATOR '') AS countries,
-    GROUP_CONCAT(DISTINCT CONCAT(language.language, ', ') SEPARATOR '') AS languages,
+    GROUP_CONCAT(DISTINCT CONCAT(language.name, ', ') SEPARATOR '') AS languages,
     GROUP_CONCAT(DISTINCT CONCAT(music.name, ', ') SEPARATOR '') AS music,
     GROUP_CONCAT(DISTINCT CONCAT(screenwriter.name, ', ') SEPARATOR '') AS screenwriters,
     GROUP_CONCAT(DISTINCT CONCAT(studio.name, ', ') SEPARATOR '') AS studios
