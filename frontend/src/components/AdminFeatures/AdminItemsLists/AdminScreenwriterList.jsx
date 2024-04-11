@@ -218,6 +218,10 @@ function AdminScreenwriterList() {
                 origin={origin}
                 onUpdate={refreshScreenWriter}
                 closeModal={closeModal}
+                showImage
+                showPitch
+                showWikilink
+                showImdbLink
               />
             </Container>
           </Box>

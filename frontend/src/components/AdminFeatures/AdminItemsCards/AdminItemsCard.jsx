@@ -10,7 +10,16 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 import CachedIcon from "@mui/icons-material/Cached";
 import "./adminItemsCard.css";
 
-function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
+function AdminItemsCard({
+  item,
+  origin,
+  onUpdate,
+  closeModal,
+  showImage,
+  showPitch,
+  showWikilink,
+  showImdbLink,
+}) {
   const [isModify, setIsModify] = useState(false);
   const [name, setName] = useState(item.name);
   const [pitch, setPitch] = useState(item.pitch);
@@ -150,42 +159,48 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
             <p className="Items_info">{name}</p>
           )}
         </div>
-        <div className="Info_item_line">
-          <h2 className="ItemsCard_title">PITCH: </h2>
-          {isModify ? (
-            <input
-              type="text"
-              value={pitch}
-              onChange={(e) => setPitch(e.target.value)}
-            />
-          ) : (
-            <p className="Items_info">{pitch}</p>
-          )}
-        </div>
-        <div className="Info_item_line">
-          <h2 className="ItemsCard_title">WIKIPEDIA: </h2>
-          {isModify ? (
-            <input
-              type="text"
-              value={wikilink}
-              onChange={(e) => setWikilink(e.target.value)}
-            />
-          ) : (
-            <p className="Items_info">{wikilink}</p>
-          )}
-        </div>
-        <div className="Info_item_line">
-          <h2 className="ItemsCard_title">IMDB: </h2>
-          {isModify ? (
-            <input
-              type="text"
-              value={imdblink}
-              onChange={(e) => setImdblink(e.target.value)}
-            />
-          ) : (
-            <p className="Items_info">{imdblink}</p>
-          )}
-        </div>
+        {showPitch && (
+          <div className="Info_item_line">
+            <h2 className="ItemsCard_title">PITCH: </h2>
+            {isModify ? (
+              <input
+                type="text"
+                value={pitch}
+                onChange={(e) => setPitch(e.target.value)}
+              />
+            ) : (
+              <p className="Items_info">{pitch}</p>
+            )}
+          </div>
+        )}
+        {showWikilink && (
+          <div className="Info_item_line">
+            <h2 className="ItemsCard_title">WIKIPEDIA: </h2>
+            {isModify ? (
+              <input
+                type="text"
+                value={wikilink}
+                onChange={(e) => setWikilink(e.target.value)}
+              />
+            ) : (
+              <p className="Items_info">{wikilink}</p>
+            )}
+          </div>
+        )}
+        {showImdbLink && (
+          <div className="Info_item_line">
+            <h2 className="ItemsCard_title">IMDB: </h2>
+            {isModify ? (
+              <input
+                type="text"
+                value={imdblink}
+                onChange={(e) => setImdblink(e.target.value)}
+              />
+            ) : (
+              <p className="Items_info">{imdblink}</p>
+            )}
+          </div>
+        )}
         <div className="Info_Btn-Modify">
           {isEditing ? (
             <section className="Item_Editing_Buttons">
@@ -209,33 +224,35 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
           )}
         </div>
       </section>
-      <section className="ItemsCard_Col2">
-        {image && (
-          <img className="ItemImage" src={image} alt={`${item.name}`} />
-        )}
-        {isModify && (
-          <>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileUpload}
-              ref={fileInputRef}
-              style={{ display: "none" }}
-            />
-            {showUploadButton ? (
-              <FileUploadIcon
-                className="Item_uploadButton"
-                onClick={handleUploadClick}
+      {showImage && (
+        <section className="ItemsCard_Col2">
+          {image && (
+            <img className="ItemImage" src={image} alt={`${item.name}`} />
+          )}
+          {isModify && (
+            <>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileUpload}
+                ref={fileInputRef}
+                style={{ display: "none" }}
               />
-            ) : (
-              <CachedIcon
-                className="Item_reset_img_Button"
-                onClick={handleResetImage}
-              />
-            )}
-          </>
-        )}
-      </section>
+              {showUploadButton ? (
+                <FileUploadIcon
+                  className="Item_uploadButton"
+                  onClick={handleUploadClick}
+                />
+              ) : (
+                <CachedIcon
+                  className="Item_reset_img_Button"
+                  onClick={handleResetImage}
+                />
+              )}
+            </>
+          )}
+        </section>
+      )}
     </article>
   );
 }

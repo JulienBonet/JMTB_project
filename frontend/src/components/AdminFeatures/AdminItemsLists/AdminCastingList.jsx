@@ -215,6 +215,10 @@ function AdminCastingList() {
                 origin={origin}
                 onUpdate={refreshCasting}
                 closeModal={closeModal}
+                showImage
+                showPitch
+                showWikilink
+                showImdbLink
               />
             </Container>
           </Box>

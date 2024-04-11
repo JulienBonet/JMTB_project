@@ -214,6 +214,10 @@ function AdminCompositorList() {
                 origin={origin}
                 onUpdate={refreshCompositor}
                 closeModal={closeModal}
+                showImage
+                showPitch
+                showWikilink
+                showImdbLink
               />
             </Container>
           </Box>

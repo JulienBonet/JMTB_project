@@ -215,6 +215,10 @@ function AdminDirectorList() {
                 origin={origin}
                 onUpdate={refreshDirectors}
                 closeModal={closeModal}
+                showImage
+                showPitch
+                showWikilink
+                showImdbLink
               />
             </Container>
           </Box>

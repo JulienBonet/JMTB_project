@@ -215,6 +215,10 @@ function AdminStudioList() {
                 origin={origin}
                 onUpdate={refreshStudio}
                 closeModal={closeModal}
+                showImage
+                showPitch
+                showWikilink
+                showImdbLink
               />
             </Container>
           </Box>
