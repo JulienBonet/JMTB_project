@@ -114,7 +114,7 @@ const editCompositorImage = (imageUrl, id) =>
 const deleteCompositor = (id) =>
   db.query("DELETE FROM music WHERE id = ?;", [id]);
 
-// EDIT STDUIO
+// EDIT STUDIO
 
 const findStudioById = (id) =>
   db.query("SELECT * FROM studio WHERE id = ?", [id]).then(([rows]) => rows);
@@ -140,6 +140,98 @@ const editStudioImage = (imageUrl, id) =>
     .then(([result]) => result);
 
 const deleteStudio = (id) => db.query("DELETE FROM studio WHERE id = ?;", [id]);
+
+// EDIT COUNTRY
+
+const findCountryById = (id) =>
+  db.query("SELECT * FROM country WHERE id = ?", [id]).then(([rows]) => rows);
+
+const insertCountry = (name) =>
+  db.query("INSERT INTO country (name) VALUES (?);", [name]);
+
+const editCountry = async (name, id) => {
+  const query = `
+      UPDATE country SET name = ? WHERE id = ?
+    `;
+
+  const result = await db.query(query, [name, id]);
+
+  return result;
+};
+
+const editCountryImage = (imageUrl, id) =>
+  db
+    .query("UPDATE country SET image = ? WHERE id = ?", [imageUrl, id])
+    .then(([result]) => result);
+
+const deleteCountry = (id) =>
+  db.query("DELETE FROM country WHERE id = ?;", [id]);
+
+// EDIT GENRE
+
+const findGenreById = (id) =>
+  db.query("SELECT * FROM genre WHERE id = ?", [id]).then(([rows]) => rows);
+
+const insertGenre = (name) =>
+  db.query("INSERT INTO genre (name) VALUES (?);", [name]);
+
+const editGenre = async (name, id) => {
+  const query = `
+      UPDATE genre
+      SET name = ?
+      WHERE id = ?
+    `;
+
+  const result = await db.query(query, [name, id]);
+
+  return result;
+};
+
+const deleteGenre = (id) => db.query("DELETE FROM genre WHERE id = ?;", [id]);
+
+// EDIT LANGUAGE
+
+const findLanguageById = (id) =>
+  db.query("SELECT * FROM language WHERE id = ?", [id]).then(([rows]) => rows);
+
+const insertLanguage = (name) =>
+  db.query("INSERT INTO language (name) VALUES (?);", [name]);
+
+const editLanguage = async (name, id) => {
+  const query = `
+      UPDATE language
+      SET name = ?
+      WHERE id = ?
+    `;
+
+  const result = await db.query(query, [name, id]);
+
+  return result;
+};
+
+const deleteLanguage = (id) => db.query("DELETE FROM tag WHERE id = ?;", [id]);
+
+// EDIT TAG
+
+const findTagById = (id) =>
+  db.query("SELECT * FROM tag WHERE id = ?", [id]).then(([rows]) => rows);
+
+const insertTag = (name) =>
+  db.query("INSERT INTO tag (name) VALUES (?);", [name]);
+
+const editTag = async (name, id) => {
+  const query = `
+    UPDATE tag
+    SET name = ?
+    WHERE id = ?
+  `;
+
+  const result = await db.query(query, [name, id]);
+
+  return result;
+};
+
+const deleteTag = (id) => db.query("DELETE FROM tag WHERE id = ?;", [id]);
 
 module.exports = {
   findDirectorById,
@@ -167,4 +259,21 @@ module.exports = {
   editStudio,
   editStudioImage,
   deleteStudio,
+  findCountryById,
+  insertCountry,
+  editCountry,
+  editCountryImage,
+  deleteCountry,
+  findGenreById,
+  insertGenre,
+  editGenre,
+  deleteGenre,
+  findLanguageById,
+  insertLanguage,
+  editLanguage,
+  deleteLanguage,
+  findTagById,
+  insertTag,
+  editTag,
+  deleteTag,
 };

@@ -38,8 +38,8 @@ function AdminLanguagesList() {
   useEffect(() => {
     const filtered = data.filter(
       (itemData) =>
-        itemData.language &&
-        itemData.language.toLowerCase().includes(searchTerm.toLowerCase())
+        itemData.name &&
+        itemData.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setFilteredData(filtered);
   }, [searchTerm, data]);
@@ -91,7 +91,7 @@ function AdminLanguagesList() {
             currentItems.map((item) => (
               <tr key={item.id}>
                 <th scope="row">{item.id}</th>
-                <td>{item.language}</td>
+                <td>{item.name}</td>
                 <td>
                   <PreviewIcon className="admin_tools_ico" />
                 </td>

@@ -66,3 +66,29 @@ EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
 SELECT * FROM studio;
+
+DELETE FROM jmdb.genre WHERE id = 40;
+
+-- Récupérer le dernier ID utilisé dans la table director
+SET @maxId = (SELECT MAX(id) FROM genre);
+
+-- Ajuster l'incrémentation automatique pour commencer à partir du prochain ID après le dernier utilisé
+SET @alterStmt = CONCAT('ALTER TABLE genre AUTO_INCREMENT = ', @maxId + 1);
+PREPARE stmt FROM @alterStmt;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+SELECT * FROM genre;
+
+DELETE FROM jmdb.language WHERE id = 46;
+
+-- Récupérer le dernier ID utilisé dans la table director
+SET @maxId = (SELECT MAX(id) FROM language);
+
+-- Ajuster l'incrémentation automatique pour commencer à partir du prochain ID après le dernier utilisé
+SET @alterStmt = CONCAT('ALTER TABLE language AUTO_INCREMENT = ', @maxId + 1);
+PREPARE stmt FROM @alterStmt;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+SELECT * FROM language;

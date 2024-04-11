@@ -59,4 +59,30 @@ router.put(
 );
 router.delete("/studio/:id", editingController.eraseStudio);
 
+// COUNTRY ROUTES
+router.post("/country", editingController.addCountry);
+router.put("/country/:id", editingController.editingCountry);
+router.put(
+  "/country/:id/image",
+  setType("country"),
+  fileUpload.single("image"),
+  editingController.uploadCountryImage
+);
+router.delete("/country/:id", editingController.eraseCountry);
+
+// GENRE ROUTES
+router.post("/genre", editingController.addGenre);
+router.put("/genre/:id", editingController.editingGenre);
+router.delete("/genre/:id", editingController.eraseGenre);
+
+// LANGUAGE ROUTES
+router.post("/language", editingController.addLanguage);
+router.put("/language/:id", editingController.editingLanguage);
+router.delete("/language/:id", editingController.eraseLanguage);
+
+// TAG ROUTES
+router.post("/tag", editingController.addTag);
+router.put("/tag/:id", editingController.editingTag);
+router.delete("/tag/:id", editingController.eraseTag);
+
 module.exports = router;

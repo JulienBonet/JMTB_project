@@ -644,8 +644,6 @@ const uploadStudioImage = async (req, res) => {
 
     const studio = await editingModel.findStudioById(id);
     const currentImageUrl = studio[0].image;
-    console.info(studio);
-    console.info(currentImageUrl);
 
     if (currentImageUrl !== "http://localhost:3310/00_jmtb_item_default.jpg") {
       try {
@@ -727,6 +725,309 @@ const eraseStudio = async (req, res, next) => {
   }
 };
 
+// EDIT COUNTRY
+const addCountry = async (req, res) => {
+  try {
+    const { name } = req.body;
+    if (!name) {
+      return res.status(400).json({ message: "Country's name is required" });
+    }
+    await editingModel.insertCountry(name);
+
+    return res.status(201).json({ message: "Country successfully created" });
+  } catch (error) {
+    console.error("Error Country creation :", error);
+    return res.status(500).json({ message: "Error Country creation" });
+  }
+};
+
+const editingCountry = async (req, res) => {
+  try {
+    const { name } = req.body;
+    const { id } = req.params;
+
+    const existingcountry = await editingModel.findCountryById(id);
+    if (existingcountry[0].name === name) {
+      return res
+        .status(400)
+        .json({ message: "Error updating Country: no changes detected" });
+    }
+
+    const result = await editingModel.editCountry(name, id);
+
+    if (result.affectedRows !== 0) {
+      return res.status(200).json({ message: "Country successfully updated" });
+    }
+    return res.status(400).json({ message: "Error updating Country" });
+  } catch (error) {
+    console.error("Stack trace :", error.stack);
+    return res.status(500).json({ message: "Error updating Country" });
+  }
+};
+
+const uploadCountryImage = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ message: "Aucun fichier n'a été téléchargé" });
+    }
+
+    const [country] = await editingModel.findCountryById(id);
+    const currentImageUrl = country.image;
+
+    if (
+      currentImageUrl !== "http://localhost:3310/00_jmtb_flag_item_default.jpg"
+    ) {
+      try {
+        const pathname = new URL(currentImageUrl).pathname;
+        const fullPath = path.join(
+          __dirname,
+          "../../public/images",
+          path.basename(pathname)
+        );
+        if (fs.existsSync(fullPath)) {
+          fs.unlinkSync(fullPath);
+        } else {
+          console.info(`Le fichier n'existe pas : ${fullPath}`);
+        }
+      } catch (unlinkError) {
+        console.error(
+          "Erreur lors de la suppression du fichier :",
+          unlinkError
+        );
+      }
+    }
+
+    const imageUrl = `${req.protocol}://${req.get("host")}/${
+      req.file.filename
+    }`;
+
+    const result = await editingModel.editCountryImage(imageUrl, id);
+
+    if (result.affectedRows > 0) {
+      return res.status(200).json({ message: "Image successfully updated" });
+    }
+    console.error("Erreur lors de la mise à jour de l'image");
+    return res.status(500).json({ message: "Error updating image" });
+  } catch (error) {
+    console.error("Erreur lors du téléchargement de l'image :", error);
+    return res.status(500).json({ message: "Error updating image" });
+  }
+};
+
+const eraseCountry = async (req, res, next) => {
+  try {
+    const countryId = req.params.id;
+
+    const countries = await editingModel.findCountryById(countryId);
+    if (!countries || countries.length === 0) {
+      return res.status(404).json({ message: "Country non trouvé" });
+    }
+
+    const country = countries[0];
+    const imageUrl = country.image;
+    if (
+      imageUrl &&
+      imageUrl !== "http://localhost:3310/00_jmtb_flag_item_default.jpg"
+    ) {
+      try {
+        const pathname = new URL(imageUrl).pathname;
+        const fullPath = path.join(
+          __dirname,
+          "../../public/images",
+          path.basename(pathname)
+        );
+        if (fs.existsSync(fullPath)) {
+          fs.unlinkSync(fullPath);
+        } else {
+          console.info(`Le fichier n'existe pas : ${fullPath}`);
+        }
+      } catch (unlinkError) {
+        console.error(
+          "Erreur lors de la suppression du fichier :",
+          unlinkError
+        );
+      }
+    }
+
+    await editingModel.deleteCountry(countryId);
+    res.sendStatus(204);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// EDIT GENRE
+const addGenre = async (req, res) => {
+  try {
+    const { name } = req.body;
+    if (!name) {
+      return res.status(400).json({ message: "Genre's name is required" });
+    }
+    await editingModel.insertGenre(name);
+
+    return res.status(201).json({ message: "Genre successfully created" });
+  } catch (error) {
+    console.error("Error Genre creation :", error);
+    return res.status(500).json({ message: "Error Genre creation" });
+  }
+};
+
+const editingGenre = async (req, res) => {
+  try {
+    const { name } = req.body;
+    const { id } = req.params;
+
+    const existingGenre = await editingModel.findGenreById(id);
+    if (existingGenre[0].name === name) {
+      return res
+        .status(400)
+        .json({ message: "Error updating Genre: no changes detected" });
+    }
+
+    const result = await editingModel.editGenre(name, id);
+
+    if (result.affectedRows !== 0) {
+      return res.status(200).json({ message: "Genre successfully updated" });
+    }
+    return res.status(400).json({ message: "Error updating Genre" });
+  } catch (error) {
+    console.error("Stack trace :", error.stack);
+    return res.status(500).json({ message: "Error updating Genre" });
+  }
+};
+
+const eraseGenre = async (req, res, next) => {
+  try {
+    const genreId = req.params.id;
+
+    const genres = await editingModel.findGenreById(genreId);
+    if (!genres || genres.length === 0) {
+      return res.status(404).json({ message: "Genre non trouvé" });
+    }
+
+    await editingModel.deleteGenre(genreId);
+    res.sendStatus(204);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// EDIT LANGUAGE
+const addLanguage = async (req, res) => {
+  try {
+    const { name } = req.body;
+    if (!name) {
+      return res.status(400).json({ message: "Language's name is required" });
+    }
+    await editingModel.insertLanguage(name);
+
+    return res.status(201).json({ message: "Language successfully created" });
+  } catch (error) {
+    console.error("Error Language creation :", error);
+    return res.status(500).json({ message: "Error Language creation" });
+  }
+};
+
+const editingLanguage = async (req, res) => {
+  try {
+    const { name } = req.body;
+    const { id } = req.params;
+
+    const existingLanguage = await editingModel.findLanguageById(id);
+    if (existingLanguage[0].name === name) {
+      return res
+        .status(400)
+        .json({ message: "Error updating Language: no changes detected" });
+    }
+
+    const result = await editingModel.editLanguage(name, id);
+
+    if (result.affectedRows !== 0) {
+      return res.status(200).json({ message: "Language successfully updated" });
+    }
+    return res.status(400).json({ message: "Error updating Language" });
+  } catch (error) {
+    console.error("Stack trace :", error.stack);
+    return res.status(500).json({ message: "Error updating Language" });
+  }
+};
+
+const eraseLanguage = async (req, res, next) => {
+  try {
+    const languageId = req.params.id;
+
+    const languages = await editingModel.findLanguageById(languageId);
+    if (!languages || languages.length === 0) {
+      return res.status(404).json({ message: "Genre non trouvé" });
+    }
+
+    await editingModel.deleteLanguage(languageId);
+    res.sendStatus(204);
+  } catch (error) {
+    next(error);
+  }
+};
+
+// EDIT TAG
+const addTag = async (req, res) => {
+  try {
+    const { name } = req.body;
+    if (!name) {
+      return res.status(400).json({ message: "Tag's name is required" });
+    }
+    await editingModel.insertTag(name);
+
+    return res.status(201).json({ message: "Tag successfully created" });
+  } catch (error) {
+    console.error("Error Tag creation :", error);
+    return res.status(500).json({ message: "Error Tag creation" });
+  }
+};
+
+const editingTag = async (req, res) => {
+  try {
+    const { name } = req.body;
+    const { id } = req.params;
+
+    const existingTag = await editingModel.findTagById(id);
+    if (existingTag[0].name === name) {
+      return res
+        .status(400)
+        .json({ message: "Error updating Tag: no changes detected" });
+    }
+
+    const result = await editingModel.editTag(name, id);
+
+    if (result.affectedRows !== 0) {
+      return res.status(200).json({ message: "Tag successfully updated" });
+    }
+    return res.status(400).json({ message: "Error updating Tag" });
+  } catch (error) {
+    console.error("Stack trace :", error.stack);
+    return res.status(500).json({ message: "Error updating Tag" });
+  }
+};
+
+const eraseTag = async (req, res, next) => {
+  try {
+    const TagId = req.params.id;
+
+    const tags = await editingModel.findTagById(TagId);
+    if (!tags || tags.length === 0) {
+      return res.status(404).json({ message: "Tag non trouvé" });
+    }
+
+    await editingModel.deleteTag(TagId);
+    res.sendStatus(204);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   addDirector,
   editingDirector,
@@ -748,4 +1049,17 @@ module.exports = {
   editingStudio,
   uploadStudioImage,
   eraseStudio,
+  addCountry,
+  editingCountry,
+  uploadCountryImage,
+  eraseCountry,
+  addGenre,
+  editingGenre,
+  eraseGenre,
+  addLanguage,
+  editingLanguage,
+  eraseLanguage,
+  addTag,
+  editingTag,
+  eraseTag,
 };

@@ -36,7 +36,7 @@ ADD COLUMN imdblink TEXT;
 UPDATE music
 SET image = CONCAT('http://localhost:3310/', '00_item_default.png');
 
-SELECT * FROM music
+SELECT * FROM music;
 
 ALTER TABLE studio
 ADD COLUMN image VARCHAR(255) DEFAULT 'http://localhost:3310/00_jmtb_item_default.jpg',
@@ -47,4 +47,12 @@ ADD COLUMN imdblink TEXT;
 UPDATE studio
 SET image = CONCAT('http://localhost:3310/', '00_jmtb_item_default.jpg');
 
-SELECT * FROM studio
+SELECT * FROM studio;
+
+ALTER TABLE language
+ADD COLUMN image VARCHAR(255) DEFAULT 'http://localhost:3310/00_jmtb_flag_item_default.jpg';
+
+UPDATE language
+SET image = CONCAT('http://localhost:3310/', '00_jmtb_flag_item_default.jpg');
+
+SELECT * FROM language;
