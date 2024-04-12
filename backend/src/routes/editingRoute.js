@@ -59,6 +59,17 @@ router.put(
 );
 router.delete("/studio/:id", editingController.eraseStudio);
 
+// THEMA ROUTES
+router.post("/thema", editingController.addThema);
+router.put("/thema/:id", editingController.editingThema);
+router.put(
+  "/thema/:id/image",
+  setType("thema"),
+  fileUpload.single("image"),
+  editingController.uploadThemaImage
+);
+router.delete("/thema/:id", editingController.eraseThema);
+
 // COUNTRY ROUTES
 router.post("/country", editingController.addCountry);
 router.put("/country/:id", editingController.editingCountry);

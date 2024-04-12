@@ -49,10 +49,27 @@ SET image = CONCAT('http://localhost:3310/', '00_jmtb_item_default.jpg');
 
 SELECT * FROM studio;
 
-ALTER TABLE language
+ALTER TABLE country
 ADD COLUMN image VARCHAR(255) DEFAULT 'http://localhost:3310/00_jmtb_flag_item_default.jpg';
 
-UPDATE language
+UPDATE country
 SET image = CONCAT('http://localhost:3310/', '00_jmtb_flag_item_default.jpg');
 
-SELECT * FROM language;
+SELECT * FROM country;
+
+CREATE TABLE thema (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name TEXT NULL DEFAULT NULL,
+  pitch TEXT NULL DEFAULT NULL,
+  image VARCHAR(255) DEFAULT 'http://localhost:3310/00_jmtb_item_default.jpg'
+);
+
+CREATE TABLE movie_thema (
+  thema_id INT,
+  movie_id INT,
+  PRIMARY KEY (thema_id, movie_id),
+  FOREIGN KEY (thema_id) REFERENCES thema(id),
+  FOREIGN KEY (movie_id) REFERENCES movies(id)
+);
+
+SELECT * FROM thema;

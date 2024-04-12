@@ -725,6 +725,139 @@ const eraseStudio = async (req, res, next) => {
   }
 };
 
+// EDIT THEMA
+const addThema = async (req, res) => {
+  try {
+    const { name } = req.body;
+    if (!name) {
+      return res.status(400).json({ message: "Thema's name is required" });
+    }
+    await editingModel.insertThema(name);
+
+    return res.status(201).json({ message: "Thema successfully created" });
+  } catch (error) {
+    console.error("Error Thema creation :", error);
+    return res.status(500).json({ message: "Error Thema creation" });
+  }
+};
+
+const editingThema = async (req, res) => {
+  try {
+    const { name, pitch } = req.body;
+    const { id } = req.params;
+
+    const existingThema = await editingModel.findThemaById(id);
+    if (existingThema[0].name === name && existingThema[0].pitch === pitch) {
+      return res
+        .status(400)
+        .json({ message: "Error updating Thema: no changes detected" });
+    }
+
+    const result = await editingModel.editThema(name, pitch, id);
+
+    if (result.affectedRows !== 0) {
+      return res.status(200).json({ message: "Thema successfully updated" });
+    }
+    return res.status(400).json({ message: "Error updating Thema" });
+  } catch (error) {
+    console.error("Stack trace :", error.stack);
+    return res.status(500).json({ message: "Error updating Thema" });
+  }
+};
+
+const uploadThemaImage = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ message: "Aucun fichier n'a été téléchargé" });
+    }
+
+    const thema = await editingModel.findThemaById(id);
+    const currentImageUrl = thema[0].image;
+
+    if (currentImageUrl !== "http://localhost:3310/00_jmtb_item_default.jpg") {
+      try {
+        const pathname = new URL(currentImageUrl).pathname;
+        const fullPath = path.join(
+          __dirname,
+          "../../public/images",
+          path.basename(pathname)
+        );
+        if (fs.existsSync(fullPath)) {
+          fs.unlinkSync(fullPath);
+        } else {
+          console.info(`Le fichier n'existe pas : ${fullPath}`);
+        }
+      } catch (unlinkError) {
+        console.error(
+          "Erreur lors de la suppression du fichier :",
+          unlinkError
+        );
+      }
+    }
+
+    const imageUrl = `${req.protocol}://${req.get("host")}/${
+      req.file.filename
+    }`;
+
+    const result = await editingModel.editThemaImage(imageUrl, id);
+
+    if (result.affectedRows > 0) {
+      return res.status(200).json({ message: "Image successfully updated" });
+    }
+    console.error("Erreur lors de la mise à jour de l'image");
+    return res.status(500).json({ message: "Error updating image" });
+  } catch (error) {
+    console.error("Erreur lors du téléchargement de l'image :", error);
+    return res.status(500).json({ message: "Error updating image" });
+  }
+};
+
+const eraseThema = async (req, res, next) => {
+  try {
+    const themaId = req.params.id;
+
+    const themas = await editingModel.findThemaById(themaId);
+    if (!themas || themas.length === 0) {
+      return res.status(404).json({ message: "thema non trouvé" });
+    }
+
+    const thema = themas[0];
+    const imageUrl = thema.image;
+    if (
+      imageUrl &&
+      imageUrl !== "http://localhost:3310/00_jmtb_item_default.jpg"
+    ) {
+      try {
+        const pathname = new URL(imageUrl).pathname;
+        const fullPath = path.join(
+          __dirname,
+          "../../public/images",
+          path.basename(pathname)
+        );
+        if (fs.existsSync(fullPath)) {
+          fs.unlinkSync(fullPath);
+        } else {
+          console.info(`Le fichier n'existe pas : ${fullPath}`);
+        }
+      } catch (unlinkError) {
+        console.error(
+          "Erreur lors de la suppression du fichier :",
+          unlinkError
+        );
+      }
+    }
+
+    await editingModel.deleteThema(themaId);
+    res.sendStatus(204);
+  } catch (error) {
+    next(error);
+  }
+};
+
 // EDIT COUNTRY
 const addCountry = async (req, res) => {
   try {
@@ -1049,6 +1182,10 @@ module.exports = {
   editingStudio,
   uploadStudioImage,
   eraseStudio,
+  addThema,
+  editingThema,
+  uploadThemaImage,
+  eraseThema,
   addCountry,
   editingCountry,
   uploadCountryImage,

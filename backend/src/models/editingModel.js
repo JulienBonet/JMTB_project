@@ -141,6 +141,33 @@ const editStudioImage = (imageUrl, id) =>
 
 const deleteStudio = (id) => db.query("DELETE FROM studio WHERE id = ?;", [id]);
 
+// EDIT THEMA
+
+const findThemaById = (id) =>
+  db.query("SELECT * FROM thema WHERE id = ?", [id]).then(([rows]) => rows);
+
+const insertThema = (name) =>
+  db.query("INSERT INTO thema (name) VALUES (?);", [name]);
+
+const editThema = async (name, pitch, id) => {
+  const query = `
+        UPDATE thema
+        SET name = ?, pitch = ?
+        WHERE id = ?
+      `;
+
+  const result = await db.query(query, [name, pitch, id]);
+
+  return result;
+};
+
+const editThemaImage = (imageUrl, id) =>
+  db
+    .query("UPDATE thema SET image = ? WHERE id = ?", [imageUrl, id])
+    .then(([result]) => result);
+
+const deleteThema = (id) => db.query("DELETE FROM thema WHERE id = ?;", [id]);
+
 // EDIT COUNTRY
 
 const findCountryById = (id) =>
@@ -259,6 +286,11 @@ module.exports = {
   editStudio,
   editStudioImage,
   deleteStudio,
+  findThemaById,
+  insertThema,
+  editThema,
+  editThemaImage,
+  deleteThema,
   findCountryById,
   insertCountry,
   editCountry,
