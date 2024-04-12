@@ -75,7 +75,7 @@ SELECT * FROM jmdb.movie_director;
 
 
 ALTER TABLE jmdb.language
-CHANGE COLUMN `Langues` language TEXT NULL DEFAULT NULL;
+CHANGE COLUMN `Langues` name TEXT NULL DEFAULT NULL;
 
 SELECT * FROM jmdb.language;
 

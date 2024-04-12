@@ -10,19 +10,19 @@ import Pagination from "@mui/material/Pagination";
 import "./adminLists.css";
 import PreviewIcon from "@mui/icons-material/Preview";
 import DeleteIcon from "@mui/icons-material/Delete";
-import AdminItemsCard from "../AdminItemsCards/AdminItemsCard";
+import AdminItemsCard from "../AdminItemsCards/AdminItemsCard4";
 import CreateItemCard from "../CreateItemCard/CreateItemCard";
 
-function AdminCastingList() {
+function AdminThemaList() {
   const [data, setData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [newCasting, SetNewCasting] = useState(false);
+  const [newThema, setNewThema] = useState(false);
 
-  const origin = "casting";
+  const origin = "thema";
 
   const openModal = (DataItem) => {
     setSelectedItem(DataItem);
@@ -32,17 +32,17 @@ function AdminCastingList() {
     setSelectedItem(null);
   };
 
-  const openModalNewCasting = () => {
-    SetNewCasting(true);
+  const openModalNewThema = () => {
+    setNewThema(true);
   };
 
-  const closeModalNewCasting = () => {
-    SetNewCasting(false);
+  const closeModalNewThema = () => {
+    setNewThema(false);
   };
 
-  // REQUEST ALL CASTING sorted ID desc
+  // REQUEST ALL THEMA sorted ID desc
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/casting/sorted_id`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/themas/sorted_id`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -51,7 +51,7 @@ function AdminCastingList() {
       })
       .then((datas) => {
         setData(datas);
-        setFilteredData(datas); // Set filtered data initially to all data
+        setFilteredData(datas);
         setLoading(false);
       })
       .catch((error) => {
@@ -60,9 +60,9 @@ function AdminCastingList() {
       });
   }, []);
 
-  // REFRESH CASTING LIST
-  const refreshCasting = () => {
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/casting/sorted_id`)
+  // REFRESH THEMA LIST
+  const refreshThema = () => {
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/themas/sorted_id`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -78,7 +78,7 @@ function AdminCastingList() {
       });
   };
 
-  // DELETE CASTING
+  // DELETE STUDIO
   const handleDelete = async (id) => {
     // Display confirmation dialog
     const confirmDelete = window.confirm(
@@ -89,17 +89,17 @@ function AdminCastingList() {
     if (confirmDelete) {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/casting/${id}`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/thema/${id}`,
           {
             method: "delete",
           }
         );
         if (response.status === 204) {
           console.info("delete ok");
-          toast.success("casting deleted", {
+          toast.success("thema deleted", {
             className: "custom-toast",
           });
-          refreshCasting();
+          refreshThema();
         } else {
           console.error("error delete");
         }
@@ -120,13 +120,10 @@ function AdminCastingList() {
   }, [searchTerm, data]);
 
   // PAGINATION
-  const artistsPerPage = 50;
-  const indexOfLastArtist = currentPage * artistsPerPage;
-  const indexOfFirstArtist = indexOfLastArtist - artistsPerPage;
-  const currentArtists = filteredData.slice(
-    indexOfFirstArtist,
-    indexOfLastArtist
-  );
+  const itemsPerPage = 50;
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
@@ -136,7 +133,7 @@ function AdminCastingList() {
     <section className="AdminItemsSection">
       <section className="HeaderAdminItemsSection">
         <div className="admin_Title_feat_container">
-          <h1 className="admin_Title_feat">CASTING LIST</h1>
+          <h1 className="admin_Title_feat">STUDIOS LIST</h1>
         </div>
         <div className="admin_feat_tools_line">
           <div className="Admin_search_bar_container">
@@ -147,8 +144,8 @@ function AdminCastingList() {
               placeholder="recherche"
             />
           </div>
-          <Button variant="contained" onClick={() => openModalNewCasting()}>
-            ADD NEW CASTING
+          <Button variant="contained" onClick={() => openModalNewThema()}>
+            ADD NEW THEMA
           </Button>
         </div>
       </section>
@@ -156,14 +153,14 @@ function AdminCastingList() {
         <thead>
           <tr>
             <th scope="col">ID</th>
-            <th scope="col">CASTING</th>
+            <th scope="col">THEMA</th>
           </tr>
         </thead>
         <tbody>
           {loading ? (
             <div className="LoaderTemp">LOADING...</div>
           ) : (
-            currentArtists.map((DataItem) => (
+            currentItems.map((DataItem) => (
               <tr key={DataItem.id}>
                 <th scope="row">{DataItem.id}</th>
                 <td>{DataItem.name}</td>
@@ -188,7 +185,7 @@ function AdminCastingList() {
         sx={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
       >
         <Pagination
-          count={Math.ceil(filteredData.length / artistsPerPage)}
+          count={Math.ceil(filteredData.length / itemsPerPage)}
           shape="rounded"
           onChange={handlePageChange}
         />
@@ -213,26 +210,22 @@ function AdminCastingList() {
               <AdminItemsCard
                 item={selectedItem}
                 origin={origin}
-                onUpdate={refreshCasting}
+                onUpdate={refreshThema}
                 closeModal={closeModal}
-                showImage
-                showPitch
-                showWikilink
-                showImdbLink
               />
             </Container>
           </Box>
         </Modal>
       )}
-      {newCasting && (
-        <Modal open onClose={closeModalNewCasting} className="Movie_Modal">
+      {newThema && (
+        <Modal open onClose={closeModalNewThema} className="Movie_Modal">
           <Box>
             <Container maxWidth="sm">
               <div
-                onClick={closeModalNewCasting}
+                onClick={closeModalNewThema}
                 onKeyDown={(event) => {
                   if (event.key === "Enter" || event.key === " ") {
-                    closeModalNewCasting();
+                    closeModalNewThema();
                   }
                 }}
                 role="button"
@@ -243,8 +236,8 @@ function AdminCastingList() {
               </div>
               <CreateItemCard
                 origin={origin}
-                onUpdate={refreshCasting}
-                closeModal={closeModalNewCasting}
+                onUpdate={refreshThema}
+                closeModal={closeModalNewThema}
               />
             </Container>
           </Box>
@@ -254,4 +247,4 @@ function AdminCastingList() {
   );
 }
 
-export default AdminCastingList;
+export default AdminThemaList;

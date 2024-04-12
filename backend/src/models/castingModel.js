@@ -107,5 +107,5 @@ module.exports = {
   findAllMoviesByArtistIdDesc,
   findAllMoviesByArtistIdYearAsc,
   findAllMoviesByArtistIdYearDesc,
-  findAllByLetter, // Exportez la fonction findAllByLetter
+  findAllByLetter,
 };
