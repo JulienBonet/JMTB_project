@@ -10,19 +10,19 @@ import Pagination from "@mui/material/Pagination";
 import "./adminLists.css";
 import PreviewIcon from "@mui/icons-material/Preview";
 import DeleteIcon from "@mui/icons-material/Delete";
-import AdminItemsCard from "../AdminItemsCards/AdminItemsCard";
+import AdminItemsCard from "../AdminItemsCards/AdminItemsCard4";
 import CreateItemCard from "../CreateItemCard/CreateItemCard";
 
-function AdminStudioList() {
+function AdminThemaList() {
   const [data, setData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [newStudio, setNewStudio] = useState(false);
+  const [newThema, setNewThema] = useState(false);
 
-  const origin = "studio";
+  const origin = "thema";
 
   const openModal = (DataItem) => {
     setSelectedItem(DataItem);
@@ -32,17 +32,17 @@ function AdminStudioList() {
     setSelectedItem(null);
   };
 
-  const openModalNewStudio = () => {
-    setNewStudio(true);
+  const openModalNewThema = () => {
+    setNewThema(true);
   };
 
-  const closeModalNewStudio = () => {
-    setNewStudio(false);
+  const closeModalNewThema = () => {
+    setNewThema(false);
   };
 
-  // REQUEST ALL STUDIOS sorted ID desc
+  // REQUEST ALL THEMA sorted ID desc
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/studio/sorted_id`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/themas/sorted_id`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -60,9 +60,9 @@ function AdminStudioList() {
       });
   }, []);
 
-  // REFRESH STUDIOS LIST
-  const refreshStudio = () => {
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/studio/sorted_id`)
+  // REFRESH THEMA LIST
+  const refreshThema = () => {
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/themas/sorted_id`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -89,17 +89,17 @@ function AdminStudioList() {
     if (confirmDelete) {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/studio/${id}`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/thema/${id}`,
           {
             method: "delete",
           }
         );
         if (response.status === 204) {
           console.info("delete ok");
-          toast.success("studio deleted", {
+          toast.success("thema deleted", {
             className: "custom-toast",
           });
-          refreshStudio();
+          refreshThema();
         } else {
           console.error("error delete");
         }
@@ -120,13 +120,10 @@ function AdminStudioList() {
   }, [searchTerm, data]);
 
   // PAGINATION
-  const artistsPerPage = 50;
-  const indexOfLastArtist = currentPage * artistsPerPage;
-  const indexOfFirstArtist = indexOfLastArtist - artistsPerPage;
-  const currentArtists = filteredData.slice(
-    indexOfFirstArtist,
-    indexOfLastArtist
-  );
+  const itemsPerPage = 50;
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
@@ -147,8 +144,8 @@ function AdminStudioList() {
               placeholder="recherche"
             />
           </div>
-          <Button variant="contained" onClick={() => openModalNewStudio()}>
-            ADD NEW STUDIO
+          <Button variant="contained" onClick={() => openModalNewThema()}>
+            ADD NEW THEMA
           </Button>
         </div>
       </section>
@@ -156,14 +153,14 @@ function AdminStudioList() {
         <thead>
           <tr>
             <th scope="col">ID</th>
-            <th scope="col">STUDIO</th>
+            <th scope="col">THEMA</th>
           </tr>
         </thead>
         <tbody>
           {loading ? (
             <div className="LoaderTemp">LOADING...</div>
           ) : (
-            currentArtists.map((DataItem) => (
+            currentItems.map((DataItem) => (
               <tr key={DataItem.id}>
                 <th scope="row">{DataItem.id}</th>
                 <td>{DataItem.name}</td>
@@ -188,7 +185,7 @@ function AdminStudioList() {
         sx={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
       >
         <Pagination
-          count={Math.ceil(filteredData.length / artistsPerPage)}
+          count={Math.ceil(filteredData.length / itemsPerPage)}
           shape="rounded"
           onChange={handlePageChange}
         />
@@ -213,22 +210,22 @@ function AdminStudioList() {
               <AdminItemsCard
                 item={selectedItem}
                 origin={origin}
-                onUpdate={refreshStudio}
+                onUpdate={refreshThema}
                 closeModal={closeModal}
               />
             </Container>
           </Box>
         </Modal>
       )}
-      {newStudio && (
-        <Modal open onClose={closeModalNewStudio} className="Movie_Modal">
+      {newThema && (
+        <Modal open onClose={closeModalNewThema} className="Movie_Modal">
           <Box>
             <Container maxWidth="sm">
               <div
-                onClick={closeModalNewStudio}
+                onClick={closeModalNewThema}
                 onKeyDown={(event) => {
                   if (event.key === "Enter" || event.key === " ") {
-                    closeModalNewStudio();
+                    closeModalNewThema();
                   }
                 }}
                 role="button"
@@ -239,8 +236,8 @@ function AdminStudioList() {
               </div>
               <CreateItemCard
                 origin={origin}
-                onUpdate={refreshStudio}
-                closeModal={closeModalNewStudio}
+                onUpdate={refreshThema}
+                closeModal={closeModalNewThema}
               />
             </Container>
           </Box>
@@ -250,4 +247,4 @@ function AdminStudioList() {
   );
 }
 
-export default AdminStudioList;
+export default AdminThemaList;

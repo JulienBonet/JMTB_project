@@ -10,12 +10,10 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 import CachedIcon from "@mui/icons-material/Cached";
 import "./adminItemsCard.css";
 
-function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
+function AdminItemsCard4({ item, origin, onUpdate, closeModal }) {
   const [isModify, setIsModify] = useState(false);
   const [name, setName] = useState(item.name);
   const [pitch, setPitch] = useState(item.pitch);
-  const [wikilink, setWikilink] = useState(item.wikilink);
-  const [imdblink, setImdblink] = useState(item.imdblink);
   const [isEditing, setIsEditing] = useState(false);
   const [image, setImage] = useState(item.image);
   const [showUploadButton, setShowUploadButton] = useState(true);
@@ -56,18 +54,12 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
 
   const handleValidate = async () => {
     try {
-      const hasChanges =
-        name !== item.name ||
-        pitch !== item.pitch ||
-        wikilink !== item.wikilink ||
-        imdblink !== item.imdblink;
+      const hasChanges = name !== item.name || pitch !== item.pitch;
 
       if (hasChanges) {
         const data = {
           name,
           pitch,
-          wikilink,
-          imdblink,
         };
 
         // 1. Mettre à jour les infos
@@ -164,32 +156,6 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
           )}
         </div>
 
-        <div className="Info_item_line">
-          <h2 className="ItemsCard_title">WIKIPEDIA: </h2>
-          {isModify ? (
-            <input
-              type="text"
-              value={wikilink}
-              onChange={(e) => setWikilink(e.target.value)}
-            />
-          ) : (
-            <p className="Items_info">{wikilink}</p>
-          )}
-        </div>
-
-        <div className="Info_item_line">
-          <h2 className="ItemsCard_title">IMDB: </h2>
-          {isModify ? (
-            <input
-              type="text"
-              value={imdblink}
-              onChange={(e) => setImdblink(e.target.value)}
-            />
-          ) : (
-            <p className="Items_info">{imdblink}</p>
-          )}
-        </div>
-
         <div className="Info_Btn-Modify">
           {isEditing ? (
             <section className="Item_Editing_Buttons">
@@ -245,4 +211,4 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
   );
 }
 
-export default AdminItemsCard;
+export default AdminItemsCard4;

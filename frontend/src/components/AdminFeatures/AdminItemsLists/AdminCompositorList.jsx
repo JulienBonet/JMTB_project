@@ -214,6 +214,12 @@ function AdminCompositorList() {
                 origin={origin}
                 onUpdate={refreshCompositor}
                 closeModal={closeModal}
+                fields={{
+                  name: true,
+                  pitch: true,
+                  wikilink: true,
+                  imdblink: true,
+                }}
                 showImage
                 showPitch
                 showWikilink

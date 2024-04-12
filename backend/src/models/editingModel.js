@@ -236,7 +236,8 @@ const editLanguage = async (name, id) => {
   return result;
 };
 
-const deleteLanguage = (id) => db.query("DELETE FROM tag WHERE id = ?;", [id]);
+const deleteLanguage = (id) =>
+  db.query("DELETE FROM language WHERE id = ?;", [id]);
 
 // EDIT TAG
 

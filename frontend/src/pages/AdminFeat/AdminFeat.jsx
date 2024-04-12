@@ -15,6 +15,7 @@ import AdminGenreList from "../../components/AdminFeatures/AdminItemsLists/Admin
 import AdminCountryList from "../../components/AdminFeatures/AdminItemsLists/AdminCountryList";
 import AdminTagsList from "../../components/AdminFeatures/AdminItemsLists/AdminTagsList";
 import AdminLanguagesList from "../../components/AdminFeatures/AdminItemsLists/AdminLanguagesList";
+import AdminThemaList from "../../components/AdminFeatures/AdminItemsLists/AdminThemaList";
 
 function AdminFeat() {
   const theme = createTheme({
@@ -56,11 +57,10 @@ function AdminFeat() {
         return <AdminCountryList />;
       case "LANGUES":
         return <AdminLanguagesList />;
-      case "THEMAS":
-        // WORK IN PROGRESS
-        return <AdminTagsList />;
       case "TAGS":
         return <AdminTagsList />;
+      case "THEMAS":
+        return <AdminThemaList />;
       default:
         return null;
     }
@@ -104,8 +104,8 @@ function AdminFeat() {
               <Button onClick={() => handleItemClick("LANGUES")}>
                 LANGUES
               </Button>
-              <Button onClick={() => handleItemClick("THEMAS")}>THEMAS</Button>
               <Button onClick={() => handleItemClick("TAGS")}>TAGS</Button>
+              <Button onClick={() => handleItemClick("THEMAS")}>THEMAS</Button>
             </ButtonGroup>
           </Box>
         </ThemeProvider>
