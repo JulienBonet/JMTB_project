@@ -24,13 +24,75 @@ export default function TransferList({
   items,
   selectedKinds,
   onSelectedKindsUpdate,
+  selectedDirectors,
+  onSelectedDirectorsUpdate,
+  selectedScreenwriters,
+  onSelectedScreenwritersUpdate,
+  selectedMusic,
+  onSelectedMusicUpdate,
+  selectedCasting,
+  onSelectedCastingUpdate,
+  selectedStudios,
+  onSelectedStudiosUpdate,
+  selectedCountries,
+  onSelectedCountriesUpdate,
+  selectedLanguages,
+  onSelectedLanguagesUpdate,
+  selectedTags,
+  onSelectedTagsUpdate,
   dataType,
 }) {
+  let selectedItems;
+  let onSelectedItemsUpdate;
+
+  switch (dataType) {
+    case "kinds":
+      selectedItems = selectedKinds;
+      onSelectedItemsUpdate = onSelectedKindsUpdate;
+      break;
+    case "directors":
+      selectedItems = selectedDirectors;
+      onSelectedItemsUpdate = onSelectedDirectorsUpdate;
+      break;
+    case "screenwriters":
+      selectedItems = selectedScreenwriters;
+      onSelectedItemsUpdate = onSelectedScreenwritersUpdate;
+      break;
+    case "music":
+      selectedItems = selectedMusic;
+      onSelectedItemsUpdate = onSelectedMusicUpdate;
+      break;
+    case "casting":
+      selectedItems = selectedCasting;
+      onSelectedItemsUpdate = onSelectedCastingUpdate;
+      break;
+    case "studio":
+      selectedItems = selectedStudios;
+      onSelectedItemsUpdate = onSelectedStudiosUpdate;
+      break;
+    case "country":
+      selectedItems = selectedCountries;
+      onSelectedItemsUpdate = onSelectedCountriesUpdate;
+      break;
+    case "languages/sorted_id":
+      selectedItems = selectedLanguages;
+      onSelectedItemsUpdate = onSelectedLanguagesUpdate;
+      break;
+    case "tags/sorted_id":
+      selectedItems = selectedTags;
+      onSelectedItemsUpdate = onSelectedTagsUpdate;
+      break;
+    default:
+      selectedItems = [];
+      onSelectedItemsUpdate = () => {};
+      break;
+  }
+
   const [checked, setChecked] = useState([]);
 
-  const [left, setLeft] = useState(selectedKinds);
+  const [left, setLeft] = useState(selectedItems);
   const [right, setRight] = useState(
-    items.filter((item) => !selectedKinds.some((kind) => kind.id === item.id))
+    items.filter((item) => !selectedItems.some((kind) => kind.id === item.id))
   );
 
   const leftChecked = intersection(checked, left);
@@ -54,26 +116,26 @@ export default function TransferList({
     setLeft(not(left, leftChecked));
     setChecked(not(checked, leftChecked));
 
-    // Filtrer les éléments déplacés du tableau selectedKinds
-    const updatedSelectedKinds = selectedKinds.filter(
-      (kind) => !leftChecked.some((checkedKind) => checkedKind.id === kind.id)
+    const updatedSelectedItems = selectedItems.filter(
+      (item) => !leftChecked.some((checkedItem) => checkedItem.id === item.id)
     );
-    onSelectedKindsUpdate(updatedSelectedKinds);
+    onSelectedItemsUpdate(updatedSelectedItems);
   };
 
   const handleCheckedLeft = () => {
     setLeft(left.concat(rightChecked));
     setRight(
       not(right, rightChecked).filter(
-        (item) => !selectedKinds.some((kind) => kind.id === item.id)
+        (item) =>
+          !selectedItems.some((selectedItem) => selectedItem.id === item.id)
       )
     );
     setChecked(not(checked, rightChecked));
-    onSelectedKindsUpdate(left.concat(rightChecked)); // Mettre à jour selectedKinds dans le composant parent
+    onSelectedItemsUpdate(left.concat(rightChecked));
   };
 
   const customList = (items) => (
-    <Paper sx={{ width: 200, height: 230, overflow: "auto" }}>
+    <Paper sx={{ width: 350, height: 500, overflow: "auto" }}>
       <List dense component="div" role="list">
         {items.map((value) => {
           const labelId = `transfer-list-item-${value}-label`;

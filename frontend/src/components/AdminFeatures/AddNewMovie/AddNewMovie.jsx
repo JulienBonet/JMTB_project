@@ -29,16 +29,23 @@ function AddNewMovie() {
   );
   const [openModal, setOpenModal] = useState(false);
   const [selectedKinds, setSelectedKinds] = useState([]);
-  console.info("selectedKinds:", selectedKinds);
+  const [selectedDirectors, setSelectedDirectors] = useState([]);
+  const [selectedScreenwriters, setSelectedScreenwriters] = useState([]);
+  const [selectedMusic, setSelectedMusic] = useState([]);
+  const [selectedCasting, setSelectedCasting] = useState([]);
+  const [selectedStudios, setSelectedStudios] = useState([]);
+  const [selectedCountries, setSelectedCountries] = useState([]);
+  const [selectedLanguages, setSelectedLanguages] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
 
   // options source
   const handleChangeSource = (event) => {
     SetSource(event.target.value);
   };
 
-  // MODAL artists
+  // MODAL ITEMS
   const fetchData = (route) => {
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/${route}/`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/${route}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -47,7 +54,6 @@ function AddNewMovie() {
       })
       .then((datas) => {
         setData(datas);
-        console.info("datas:", datas);
       })
       .catch((error) => {
         console.error(`Error fetching ${route}:`, error);
@@ -65,15 +71,82 @@ function AddNewMovie() {
     setDataType("");
   };
 
-  const getSelectedKindsNames = (selectedKinds) => {
-    return selectedKinds.map((kind) => kind.name).join(", ");
-  };
-
   const handleSelectedKindsUpdate = (updatedSelectedKinds) => {
     setSelectedKinds(updatedSelectedKinds);
   };
 
-  // Input FILE
+  const handleSelectedDirectorsUpdate = (updatedSelectedDirectors) => {
+    setSelectedDirectors(updatedSelectedDirectors);
+  };
+
+  const handleSelectedScreenwritersUpdate = (updatedSelectedScreenwriters) => {
+    setSelectedScreenwriters(updatedSelectedScreenwriters);
+  };
+
+  const handleSelectedMusicUpdate = (updatedSelectedMusic) => {
+    setSelectedMusic(updatedSelectedMusic);
+  };
+
+  const handleSelectedStudiosUpdate = (updatedSelectedStudios) => {
+    setSelectedStudios(updatedSelectedStudios);
+  };
+
+  const handleSelectedCastingUpdate = (updatedSelectedCasting) => {
+    setSelectedCasting(updatedSelectedCasting);
+  };
+
+  const handleSelectedCountriesUpdate = (updatedSelectedCountries) => {
+    setSelectedCountries(updatedSelectedCountries);
+  };
+
+  const handleSelectedLanguagesUpdate = (updatedSelectedLanguages) => {
+    setSelectedLanguages(updatedSelectedLanguages);
+  };
+
+  const handleSelectedTagsUpdate = (updatedSelectedTags) => {
+    setSelectedTags(updatedSelectedTags);
+  };
+
+  // extract names from objects
+  const getSelectedKindsNames = (selectedKinds) => {
+    return selectedKinds.map((kind) => kind.name).join(", ");
+  };
+
+  const getSelectedDirectorsNames = (selectedDirectors) => {
+    return selectedDirectors.map((director) => director.name).join(", ");
+  };
+
+  const getSelectedScreenwritersNames = (selectedScreenwriters) => {
+    return selectedScreenwriters
+      .map((screenwriter) => screenwriter.name)
+      .join(", ");
+  };
+
+  const getSelectedMusicNames = (selectedMusic) => {
+    return selectedMusic.map((compositor) => compositor.name).join(", ");
+  };
+
+  const getSelectedCastingNames = (selectedCasting) => {
+    return selectedCasting.map((casting) => casting.name).join(", ");
+  };
+
+  const getSelectedStudiosNames = (selectedStudios) => {
+    return selectedStudios.map((studio) => studio.name).join(", ");
+  };
+
+  const getSelectedCountriesNames = (selectedCountries) => {
+    return selectedCountries.map((country) => country.name).join(", ");
+  };
+
+  const getSelectedLanguagesNames = (selectedLanguages) => {
+    return selectedLanguages.map((language) => language.name).join(", ");
+  };
+
+  const getSelectedTagsNames = (selectedTags) => {
+    return selectedTags.map((tag) => tag.name).join(", ");
+  };
+
+  // INPUT FILE
   const fileInputRef = useRef(null);
 
   const handleFileChange = (event) => {
@@ -310,13 +383,16 @@ function AddNewMovie() {
                 <TextField
                   id="outlined-read-only-input"
                   label="Tags"
-                  defaultValue="..."
+                  value={getSelectedTagsNames(selectedTags)}
                   InputProps={{
                     readOnly: true,
                   }}
                 />
               </Box>
-              <AddCircleOutlineIcon onClick={handleOpenModal} />
+              <AddCircleOutlineIcon
+                className="Btn_Add_itemsPopUp"
+                onClick={() => handleOpenModal("tags/sorted_id")}
+              />
             </div>
           </div>
 
@@ -340,7 +416,10 @@ function AddNewMovie() {
                   InputProps={{ readOnly: true }}
                 />
               </Box>
-              <AddCircleOutlineIcon onClick={() => handleOpenModal("kinds")} />
+              <AddCircleOutlineIcon
+                className="Btn_Add_itemsPopUp"
+                onClick={() => handleOpenModal("kinds")}
+              />
             </div>
             {/* movie DIRECTOR */}
             <div className="adm-l1_item">
@@ -357,13 +436,14 @@ function AddNewMovie() {
                 <TextField
                   id="outlined-read-only-input"
                   label="Réalisateur(s)"
-                  defaultValue="..."
+                  value={getSelectedDirectorsNames(selectedDirectors)}
                   InputProps={{
                     readOnly: true,
                   }}
                 />
               </Box>
               <AddCircleOutlineIcon
+                className="Btn_Add_itemsPopUp"
                 onClick={() => handleOpenModal("directors")}
               />
             </div>
@@ -382,13 +462,14 @@ function AddNewMovie() {
                 <TextField
                   id="outlined-read-only-input"
                   label="Scénariste(s)"
-                  defaultValue="..."
+                  value={getSelectedScreenwritersNames(selectedScreenwriters)}
                   InputProps={{
                     readOnly: true,
                   }}
                 />
               </Box>
               <AddCircleOutlineIcon
+                className="Btn_Add_itemsPopUp"
                 onClick={() => handleOpenModal("screenwriters")}
               />
             </div>
@@ -407,13 +488,16 @@ function AddNewMovie() {
                 <TextField
                   id="outlined-read-only-input"
                   label="Compositeur(s)"
-                  defaultValue="..."
+                  value={getSelectedMusicNames(selectedMusic)}
                   InputProps={{
                     readOnly: true,
                   }}
                 />
               </Box>
-              <AddCircleOutlineIcon onClick={() => handleOpenModal("music")} />
+              <AddCircleOutlineIcon
+                className="Btn_Add_itemsPopUp"
+                onClick={() => handleOpenModal("music")}
+              />
             </div>
             {/* movie CASTING */}
             <div className="adm-l1_item">
@@ -430,13 +514,14 @@ function AddNewMovie() {
                 <TextField
                   id="outlined-read-only-input"
                   label="Casting"
-                  defaultValue="..."
+                  value={getSelectedCastingNames(selectedCasting)}
                   InputProps={{
                     readOnly: true,
                   }}
                 />
               </Box>
               <AddCircleOutlineIcon
+                className="Btn_Add_itemsPopUp"
                 onClick={() => handleOpenModal("casting")}
               />
             </div>
@@ -455,13 +540,16 @@ function AddNewMovie() {
                 <TextField
                   id="outlined-read-only-input"
                   label="Studio"
-                  defaultValue="..."
+                  value={getSelectedStudiosNames(selectedStudios)}
                   InputProps={{
                     readOnly: true,
                   }}
                 />
               </Box>
-              <AddCircleOutlineIcon onClick={() => handleOpenModal("studio")} />
+              <AddCircleOutlineIcon
+                className="Btn_Add_itemsPopUp"
+                onClick={() => handleOpenModal("studio")}
+              />
             </div>
             {/* movie COUNTRY */}
             <div className="adm-l1_item">
@@ -478,13 +566,16 @@ function AddNewMovie() {
                 <TextField
                   id="outlined-read-only-input"
                   label="Pays"
-                  defaultValue="..."
+                  value={getSelectedCountriesNames(selectedCountries)}
                   InputProps={{
                     readOnly: true,
                   }}
                 />
               </Box>
-              <AddCircleOutlineIcon onClick={handleOpenModal} />
+              <AddCircleOutlineIcon
+                className="Btn_Add_itemsPopUp"
+                onClick={() => handleOpenModal("country")}
+              />
             </div>
             {/* movie LANGUAGES */}
             <div className="adm-l1_item">
@@ -501,13 +592,16 @@ function AddNewMovie() {
                 <TextField
                   id="outlined-read-only-input"
                   label="Langues"
-                  defaultValue="..."
+                  value={getSelectedLanguagesNames(selectedLanguages)}
                   InputProps={{
                     readOnly: true,
                   }}
                 />
               </Box>
-              <AddCircleOutlineIcon onClick={handleOpenModal} />
+              <AddCircleOutlineIcon
+                className="Btn_Add_itemsPopUp"
+                onClick={() => handleOpenModal("languages/sorted_id")}
+              />
             </div>
           </div>
         </section>
@@ -631,6 +725,7 @@ function AddNewMovie() {
 
         <div className="dashed_secondary_bar" />
         <section className="Adm_l3">
+          {/* VALIDATION */}
           <ThemeProvider theme={theme}>
             <Stack spacing={2} direction="row">
               <Button size="large" variant="outlined" color="primary">
@@ -648,14 +743,28 @@ function AddNewMovie() {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          {dataType === "kinds" && (
-            <TransferList
-              dataType={dataType}
-              items={data}
-              selectedKinds={selectedKinds}
-              onSelectedKindsUpdate={handleSelectedKindsUpdate}
-            />
-          )}
+          <TransferList
+            dataType={dataType}
+            items={data}
+            selectedKinds={selectedKinds}
+            onSelectedKindsUpdate={handleSelectedKindsUpdate}
+            selectedDirectors={selectedDirectors}
+            onSelectedDirectorsUpdate={handleSelectedDirectorsUpdate}
+            selectedScreenwriters={selectedScreenwriters}
+            onSelectedScreenwritersUpdate={handleSelectedScreenwritersUpdate}
+            selectedMusic={selectedMusic}
+            onSelectedMusicUpdate={handleSelectedMusicUpdate}
+            selectedCasting={selectedCasting}
+            onSelectedCastingUpdate={handleSelectedCastingUpdate}
+            selectedStudios={selectedStudios}
+            onSelectedStudiosUpdate={handleSelectedStudiosUpdate}
+            selectedCountries={selectedCountries}
+            onSelectedCountriesUpdate={handleSelectedCountriesUpdate}
+            selectedLanguages={selectedLanguages}
+            onSelectedLanguagesUpdate={handleSelectedLanguagesUpdate}
+            selectedTags={selectedTags}
+            onSelectedTagsUpdate={handleSelectedTagsUpdate}
+          />
         </Box>
       </Modal>
     </main>
