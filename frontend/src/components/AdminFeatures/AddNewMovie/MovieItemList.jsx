@@ -30,7 +30,7 @@ export default function TransferList({
 
   const [left, setLeft] = useState(selectedKinds);
   const [right, setRight] = useState(
-    items.filter((item) => !selectedKinds.includes(item))
+    items.filter((item) => !selectedKinds.some((kind) => kind.id === item.id))
   );
 
   const leftChecked = intersection(checked, left);
@@ -49,11 +49,6 @@ export default function TransferList({
     setChecked(newChecked);
   };
 
-  const handleAllRight = () => {
-    setRight(right.concat(left));
-    setLeft([]);
-  };
-
   const handleCheckedRight = () => {
     setRight(right.concat(leftChecked));
     setLeft(not(left, leftChecked));
@@ -62,14 +57,13 @@ export default function TransferList({
 
   const handleCheckedLeft = () => {
     setLeft(left.concat(rightChecked));
-    setRight(not(right, rightChecked));
+    setRight(
+      not(right, rightChecked).filter(
+        (item) => !selectedKinds.some((kind) => kind.id === item.id)
+      )
+    );
     setChecked(not(checked, rightChecked));
-    setSelectedKinds(left.concat(rightChecked)); // Mettre à jour selectedKinds
-  };
-
-  const handleAllLeft = () => {
-    setLeft(left.concat(right));
-    setRight([]);
+    setSelectedKinds(left.concat(rightChecked));
   };
 
   const customList = (items) => (
@@ -111,16 +105,6 @@ export default function TransferList({
             sx={{ my: 0.5 }}
             variant="outlined"
             size="small"
-            onClick={handleAllRight}
-            disabled={left.length === 0}
-            aria-label="move all right"
-          >
-            ≫
-          </Button>
-          <Button
-            sx={{ my: 0.5 }}
-            variant="outlined"
-            size="small"
             onClick={handleCheckedRight}
             disabled={leftChecked.length === 0}
             aria-label="move selected right"
@@ -136,16 +120,6 @@ export default function TransferList({
             aria-label="move selected left"
           >
             &lt;
-          </Button>
-          <Button
-            sx={{ my: 0.5 }}
-            variant="outlined"
-            size="small"
-            onClick={handleAllLeft}
-            disabled={right.length === 0}
-            aria-label="move all left"
-          >
-            ≪
           </Button>
         </Grid>
       </Grid>
