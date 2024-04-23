@@ -23,7 +23,7 @@ function intersection(a, b) {
 export default function TransferList({
   items,
   selectedKinds,
-  setSelectedKinds,
+  onSelectedKindsUpdate,
   dataType,
 }) {
   const [checked, setChecked] = useState([]);
@@ -53,6 +53,12 @@ export default function TransferList({
     setRight(right.concat(leftChecked));
     setLeft(not(left, leftChecked));
     setChecked(not(checked, leftChecked));
+
+    // Filtrer les éléments déplacés du tableau selectedKinds
+    const updatedSelectedKinds = selectedKinds.filter(
+      (kind) => !leftChecked.some((checkedKind) => checkedKind.id === kind.id)
+    );
+    onSelectedKindsUpdate(updatedSelectedKinds);
   };
 
   const handleCheckedLeft = () => {
@@ -63,7 +69,7 @@ export default function TransferList({
       )
     );
     setChecked(not(checked, rightChecked));
-    setSelectedKinds(left.concat(rightChecked));
+    onSelectedKindsUpdate(left.concat(rightChecked)); // Mettre à jour selectedKinds dans le composant parent
   };
 
   const customList = (items) => (

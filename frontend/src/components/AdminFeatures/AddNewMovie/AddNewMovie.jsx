@@ -69,6 +69,10 @@ function AddNewMovie() {
     return selectedKinds.map((kind) => kind.name).join(", ");
   };
 
+  const handleSelectedKindsUpdate = (updatedSelectedKinds) => {
+    setSelectedKinds(updatedSelectedKinds);
+  };
+
   // Input FILE
   const fileInputRef = useRef(null);
 
@@ -649,7 +653,7 @@ function AddNewMovie() {
               dataType={dataType}
               items={data}
               selectedKinds={selectedKinds}
-              setSelectedKinds={setSelectedKinds}
+              onSelectedKindsUpdate={handleSelectedKindsUpdate}
             />
           )}
         </Box>
