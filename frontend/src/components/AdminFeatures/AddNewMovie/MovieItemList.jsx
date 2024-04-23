@@ -2,7 +2,7 @@
 /* eslint-disable no-shadow */
 /* eslint-disable react/prop-types */
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -94,6 +94,15 @@ export default function TransferList({
   const [right, setRight] = useState(
     items.filter((item) => !selectedItems.some((kind) => kind.id === item.id))
   );
+
+  useEffect(() => {
+    setRight(
+      items.filter(
+        (item) =>
+          !selectedItems.some((selectedItem) => selectedItem.id === item.id)
+      )
+    );
+  }, [items, selectedItems]);
 
   const leftChecked = intersection(checked, left);
   const rightChecked = intersection(checked, right);

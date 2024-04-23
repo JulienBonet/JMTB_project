@@ -66,9 +66,18 @@ function AddNewMovie() {
     fetchData(type);
   };
 
+  // const handleOpenModal = (type) => {
+  //   setDataType(type);
+  //   setOpenModal(true);
+  //   if (openModal) {
+  //     fetchData(type);
+  //   }
+  // };
+
   const handleCloseModal = () => {
     setOpenModal(false);
     setDataType("");
+    setData([]);
   };
 
   const handleSelectedKindsUpdate = (updatedSelectedKinds) => {
