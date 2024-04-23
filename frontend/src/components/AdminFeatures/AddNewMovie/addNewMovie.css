@@ -1,0 +1,70 @@
+.Adm_form_box {
+  background-color: beige;
+  margin: 1rem;
+  padding: 1rem;
+  border-radius: 10px;
+}
+
+.AdM_main_title {
+  font-family: var(--font-01);
+  font-size: 25px;
+  color: var(--color-04);
+  display: flex;
+  padding: 1rem;
+}
+.SourceResearchItems {
+  display: flex;
+  align-items: center;
+  padding: 0 1rem;
+}
+
+.Adm_l1,
+.Adm_l2 {
+  display: flex;
+  justify-content: space-evenly;
+  padding: 1rem 0;
+}
+.Adm_l1a,
+.Adm_l1b,
+.Adm_l2a,
+.Adm_l2b {
+  width: 40%;
+}
+
+.Adm_l3 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 0;
+  padding-bottom: 1rem;
+}
+
+.adm-l1_item,
+.adm-l1_item {
+  display: flex;
+  align-items: center;
+}
+
+.Adm_l2b {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px dotted black;
+  padding: 1rem;
+  gap: 1rem;
+}
+.preview_cover {
+  width: 20%;
+}
+
+.input_file_btn {
+  width: 35% !important;
+  padding: 5px;
+}
+
+.upload-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+}

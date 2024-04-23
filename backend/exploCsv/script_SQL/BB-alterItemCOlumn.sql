@@ -1,5 +1,8 @@
 use jmdb;
 
+ALTER TABLE jmdb.movies
+MODIFY COLUMN cover VARCHAR(255) NOT NULL DEFAULT 'http://localhost:3310/00_cover_default.jpg';
+
 ALTER TABLE director
 ADD COLUMN image VARCHAR(255) DEFAULT 'http://localhost:3310/00_item_default.png',
 ADD COLUMN pitch TEXT,
@@ -8,6 +11,8 @@ ADD COLUMN imdblink TEXT;
 
 UPDATE director
 SET image = CONCAT('http://localhost:3310/', '00_item_default.png');
+
+SELECT * FROM director;
 
 ALTER TABLE casting
 ADD COLUMN image VARCHAR(255) DEFAULT 'http://localhost:3310/00_item_default.png',
@@ -18,6 +23,8 @@ ADD COLUMN imdblink TEXT;
 UPDATE casting
 SET image = CONCAT('http://localhost:3310/', '00_item_default.png');
 
+SELECT * FROM casting;
+
 ALTER TABLE screenwriter
 ADD COLUMN image VARCHAR(255) DEFAULT 'http://localhost:3310/00_item_default.png',
 ADD COLUMN pitch TEXT,
@@ -26,6 +33,8 @@ ADD COLUMN imdblink TEXT;
 
 UPDATE screenwriter
 SET image = CONCAT('http://localhost:3310/', '00_item_default.png');
+
+SELECT * FROM screenwriter;
 
 ALTER TABLE music
 ADD COLUMN image VARCHAR(255) DEFAULT 'http://localhost:3310/00_item_default.png',

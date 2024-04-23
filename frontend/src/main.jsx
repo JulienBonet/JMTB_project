@@ -13,6 +13,7 @@ import MovieScreenwriters from "./pages/MovieArtist/MovieScreenwriters.jsx";
 import MovieMusic from "./pages/MovieArtist/MovieMusic.jsx";
 import MovieStudio from "./pages/MovieArtist/Moviestudio.jsx";
 import AdminFeat from "./pages/AdminFeat/AdminFeat.jsx";
+import AddNewMovie from "./components/AdminFeatures/AddNewMovie/AddNewMovie.jsx";
 
 const router = createBrowserRouter([
   {
@@ -70,6 +71,10 @@ const router = createBrowserRouter([
       {
         path: "/admin_feat",
         element: <AdminFeat />,
+      },
+      {
+        path: "/new_movie",
+        element: <AddNewMovie />,
       },
     ],
   },
