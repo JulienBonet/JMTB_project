@@ -3,6 +3,7 @@
 /* eslint-disable react/prop-types */
 import * as React from "react";
 import { useState, useEffect } from "react";
+import { FixedSizeList } from "react-window";
 import Grid from "@mui/material/Grid";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -145,31 +146,30 @@ export default function TransferList({
 
   const customList = (items) => (
     <Paper sx={{ width: 350, height: 500, overflow: "auto" }}>
-      <List dense component="div" role="list">
-        {items.map((value) => {
-          const labelId = `transfer-list-item-${value}-label`;
-
-          return (
-            <ListItemButton
-              key={value}
-              role="listitem"
-              onClick={handleToggle(value)}
-            >
-              <ListItemIcon>
-                <Checkbox
-                  checked={checked.indexOf(value) !== -1}
-                  tabIndex={-1}
-                  disableRipple
-                  inputProps={{
-                    "aria-labelledby": labelId,
-                  }}
-                />
-              </ListItemIcon>
-              <ListItemText id={labelId} primary={value.name} />{" "}
-            </ListItemButton>
-          );
-        })}
-      </List>
+      <FixedSizeList
+        height={500}
+        width={350}
+        itemCount={items.length}
+        itemSize={50} // Hauteur de chaque élément
+      >
+        {({ index, style }) => (
+          <ListItemButton
+            key={index}
+            role="listitem"
+            onClick={handleToggle(items[index])}
+            style={style}
+          >
+            <ListItemIcon>
+              <Checkbox
+                checked={checked.indexOf(items[index]) !== -1}
+                tabIndex={-1}
+                disableRipple
+              />
+            </ListItemIcon>
+            <ListItemText primary={items[index].name} />
+          </ListItemButton>
+        )}
+      </FixedSizeList>
     </Paper>
   );
 
