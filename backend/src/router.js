@@ -18,6 +18,7 @@ const tagsRouter = require("./routes/tagsRoute");
 const languagesRouter = require("./routes/languagesRoutes");
 const themaRouter = require("./routes/themas.route");
 const editingRouter = require("./routes/editingRoute");
+const editingMovieRouter = require("./routes/editingMovieRoute");
 
 // Apply routes
 router.use(moviesRouter);
@@ -31,6 +32,7 @@ router.use(tagsRouter);
 router.use(languagesRouter);
 router.use(themaRouter);
 router.use(editingRouter);
+router.use(editingMovieRouter);
 
 /* ************************************************************************* */
 

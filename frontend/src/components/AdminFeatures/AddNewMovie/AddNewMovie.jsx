@@ -19,8 +19,8 @@ import "./addNewMovie.css";
 function AddNewMovie() {
   const [data, setData] = useState([]);
   const [dataType, setDataType] = useState("");
-  const [source, SetSource] = useState("MovieDb");
-  const [support, setSupport] = useState("");
+  const [source, setSource] = useState("MovieDb");
+  const [videoSupport, setvideoSupport] = useState("");
   const [format, setFormat] = useState("");
   const [fileSize, setFileSize] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -37,10 +37,43 @@ function AddNewMovie() {
   const [selectedCountries, setSelectedCountries] = useState([]);
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
+  const [movie, setMovie] = useState({
+    title: "",
+    altTitle: "",
+    year: "",
+    duration: "",
+    pitch: "",
+    story: "",
+    trailer: "",
+    location: "",
+    videoFormat: "",
+    videoSupport: "",
+    fileSize: "",
+    idTheMovieDb: "",
+    idIMDb: null,
+  });
 
   // options source
   const handleChangeSource = (event) => {
-    SetSource(event.target.value);
+    setSource(event.target.value);
+    if (event.target.value === "MovieDb") {
+      setMovie((prevMovie) => ({ ...prevMovie, idTheMovieDb: "" }));
+      setMovie((prevMovie) => ({ ...prevMovie, idIMDb: null }));
+    } else if (event.target.value === "ImDB") {
+      setMovie((prevMovie) => ({ ...prevMovie, idTheMovieDb: null }));
+      setMovie((prevMovie) => ({ ...prevMovie, idIMDb: "" }));
+    }
+  };
+
+  const handleChangeMovieDb = (event) => {
+    setMovie((prevMovie) => ({
+      ...prevMovie,
+      idTheMovieDb: event.target.value,
+    }));
+  };
+
+  const handleChangeImDb = (event) => {
+    setMovie((prevMovie) => ({ ...prevMovie, idIMDb: event.target.value }));
   };
 
   // MODAL ITEMS
@@ -65,14 +98,6 @@ function AddNewMovie() {
     setOpenModal(true);
     fetchData(type);
   };
-
-  // const handleOpenModal = (type) => {
-  //   setDataType(type);
-  //   setOpenModal(true);
-  //   if (openModal) {
-  //     fetchData(type);
-  //   }
-  // };
 
   const handleCloseModal = () => {
     setOpenModal(false);
@@ -168,20 +193,39 @@ function AddNewMovie() {
       const fileSizeInBytes = file.size;
       const fileSizeInGigabytes = fileSizeInBytes / (1024 * 1024 * 1024);
       setFileSize(fileSizeInGigabytes.toFixed(2));
-      setFileSize(fileSizeInGigabytes.toFixed(2));
       setFormat(fileExtension);
-      setSupport("FICHIER MULTIMEDIA");
+      setvideoSupport("FICHIER MULTIMEDIA");
+      setMovie((prevMovie) => ({
+        ...prevMovie,
+        location: event.target.value,
+        videoFormat: fileExtension,
+        videoSupport: "FICHIER MULTIMEDIA",
+        fileSize: fileSizeInGigabytes.toFixed(2),
+      }));
     } else {
       alert("Veuillez sélectionner un fichier vidéo valide.");
     }
   };
 
   const supportsHandleChange = (event) => {
-    setSupport(event.target.value);
+    setvideoSupport(event.target.value);
+    setMovie((prevMovie) => ({
+      ...prevMovie,
+      videoSupport: event.target.value,
+    }));
   };
 
   const formatsHandleChange = (event) => {
     setFormat(event.target.value);
+    setMovie((prevMovie) => ({
+      ...prevMovie,
+      videoFormat: event.target.value,
+    }));
+  };
+
+  const handleFormatSupportChange = (event) => {
+    setMovie({ ...movie, videoSupport: event.target.value });
+    supportsHandleChange(event);
   };
 
   // INPUT COVER
@@ -201,6 +245,70 @@ function AddNewMovie() {
     } else {
       alert("Veuillez sélectionner un fichier image valide.");
     }
+  };
+
+  // POST NEW MOVIE
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    if (name === "idIMDb") {
+      setMovie((prevMovie) => ({ ...prevMovie, [name]: parseInt(value, 10) }));
+    } else if (name === "location") {
+      setMovie((prevMovie) => ({
+        ...prevMovie,
+        [name]: event.target.files[0],
+      }));
+    } else {
+      setMovie((prevMovie) => ({ ...prevMovie, [name]: value }));
+    }
+  };
+
+  const handleFormSubmit = (event) => {
+    event.preventDefault();
+
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movie`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(movie),
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then((data) => {
+        console.info(data);
+        alert("Le film a été ajouté avec succès !");
+        // Vider le formulaire
+        setMovie({
+          title: "",
+          altTitle: "",
+          year: "",
+          duration: "",
+          pitch: "",
+          story: "",
+          trailer: "",
+          location: null,
+          videoFormat: "",
+          videoSupport: "",
+          fileSize: null,
+          idTheMovieDb: "",
+          idIMDb: null,
+        });
+        // Réinitialiser les champs à leur valeur par défaut
+        setSource("MovieDb");
+        setFormat("");
+        setvideoSupport("");
+        setFileSize(null);
+        setSelectedFile(null);
+      })
+      .catch((error) => {
+        console.error(error);
+        alert("Erreur lors de l'ajout du film. Veuillez réessayer.");
+      });
   };
 
   // BUTTON STYLE
@@ -268,6 +376,8 @@ function AddNewMovie() {
                     id="filled-basic"
                     label="Id MovieDb"
                     variant="outlined"
+                    value={movie.idTheMovieDb}
+                    onChange={handleChangeMovieDb}
                   />
                 )}
                 {source === "ImDB" && (
@@ -275,6 +385,8 @@ function AddNewMovie() {
                     id="filled-basic"
                     label="Id ImDB"
                     variant="outlined"
+                    value={movie.idIMDb}
+                    onChange={handleChangeImDb}
                   />
                 )}
               </Box>
@@ -296,6 +408,9 @@ function AddNewMovie() {
               p={2}
             >
               <TextField
+                name="title"
+                value={movie.title}
+                onChange={handleInputChange}
                 id="filled-basic"
                 label="Titre du film"
                 variant="outlined"
@@ -313,6 +428,9 @@ function AddNewMovie() {
               p={2}
             >
               <TextField
+                name="altTitle"
+                value={movie.altTitle}
+                onChange={handleInputChange}
                 id="filled-basic"
                 label="Titre alternatif"
                 variant="outlined"
@@ -329,8 +447,22 @@ function AddNewMovie() {
               gap={4}
               p={2}
             >
-              <TextField id="filled-basic" label="Année" variant="outlined" />
-              <TextField id="filled-basic" label="Durée" variant="outlined" />
+              <TextField
+                name="year"
+                value={movie.year}
+                onChange={handleInputChange}
+                id="filled-basic"
+                label="Année"
+                variant="outlined"
+              />
+              <TextField
+                name="duration"
+                value={movie.duration}
+                onChange={handleInputChange}
+                id="filled-basic"
+                label="Durée"
+                variant="outlined"
+              />
             </Box>
             {/* movie PITCH */}
             <Box
@@ -343,7 +475,14 @@ function AddNewMovie() {
               gap={4}
               p={2}
             >
-              <TextField id="filled-basic" label="pitch" variant="outlined" />
+              <TextField
+                name="pitch"
+                value={movie.pitch}
+                onChange={handleInputChange}
+                id="filled-basic"
+                label="pitch"
+                variant="outlined"
+              />
             </Box>
             {/* movie STORY */}
             <Box
@@ -357,11 +496,13 @@ function AddNewMovie() {
               p={2}
             >
               <TextField
+                name="story"
+                value={movie.story}
+                onChange={handleInputChange}
                 id="outlined-multiline-static"
                 label="story"
                 multiline
                 rows={4}
-                defaultValue=""
               />
             </Box>
             {/* movie TRAILER */}
@@ -375,7 +516,14 @@ function AddNewMovie() {
               gap={4}
               p={2}
             >
-              <TextField id="filled-basic" label="trailer" variant="outlined" />
+              <TextField
+                name="trailer"
+                value={movie.trailer}
+                onChange={handleInputChange}
+                id="filled-basic"
+                label="trailer"
+                variant="outlined"
+              />
             </Box>
             {/* movie TAG */}
             <div className="adm-l1_item">
@@ -624,14 +772,14 @@ function AddNewMovie() {
               <Select
                 labelId="demo-select-small-label"
                 id="demo-select-small"
-                value={support}
+                value={videoSupport}
                 label="Support"
-                onChange={supportsHandleChange}
+                onChange={handleFormatSupportChange}
               >
                 <MenuItem value="">
                   <em>choisir un support</em>
                 </MenuItem>
-                <MenuItem value="DVD R/RW">DVD</MenuItem>
+                <MenuItem value="DVD">DVD</MenuItem>
                 <MenuItem value="DVD R/RW">DVD R/RW</MenuItem>
                 <MenuItem value="FICHIER MULTIMEDIA">
                   FICHIER MULTIMEDIA
@@ -655,7 +803,7 @@ function AddNewMovie() {
                     labelId="demo-select-small-label"
                     id="demo-select-small"
                     value={format}
-                    label="Support"
+                    label="format"
                     onChange={formatsHandleChange}
                   >
                     <MenuItem value="">
@@ -668,14 +816,15 @@ function AddNewMovie() {
                 </FormControl>
                 {/* movie FILESIZE */}
                 <TextField
-                  label="fileSize"
+                  label="File Size"
                   id="outlined-start-adornment"
                   sx={{ m: 1, width: "25ch" }}
+                  value={fileSize || ""}
+                  onChange={(event) => setFileSize(event.target.value)}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">Go</InputAdornment>
                     ),
-                    value: fileSize,
                   }}
                 />
               </Box>
@@ -737,7 +886,12 @@ function AddNewMovie() {
           {/* VALIDATION */}
           <ThemeProvider theme={theme}>
             <Stack spacing={2} direction="row">
-              <Button size="large" variant="outlined" color="primary">
+              <Button
+                onClick={handleFormSubmit}
+                size="large"
+                variant="outlined"
+                color="primary"
+              >
                 VALIDER
               </Button>
             </Stack>

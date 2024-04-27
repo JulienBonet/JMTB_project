@@ -1,7 +1,8 @@
 use jmdb;
 
 ALTER TABLE jmdb.movies
-MODIFY COLUMN cover VARCHAR(255) NOT NULL DEFAULT 'http://localhost:3310/00_cover_default.jpg';
+MODIFY COLUMN cover VARCHAR(255) NOT NULL DEFAULT 'http://localhost:3310/00_cover_default.jpg',
+CHANGE COLUMN `idIMDb` `idIMDb` BIGINT NULL DEFAULT NULL;
 
 ALTER TABLE director
 ADD COLUMN image VARCHAR(255) DEFAULT 'http://localhost:3310/00_item_default.png',
