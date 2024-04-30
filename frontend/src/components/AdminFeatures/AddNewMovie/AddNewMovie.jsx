@@ -265,13 +265,23 @@ function AddNewMovie() {
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
+    const selectedGenreIds = selectedKinds.map((kind) => kind.id);
+    const selectedDirectorIds = selectedDirectors.map(
+      (director) => director.id
+    );
+
+    const requestBody = {
+      ...movie,
+      genres: selectedGenreIds,
+      directors: selectedDirectorIds,
+    };
 
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movie`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(movie),
+      body: JSON.stringify(requestBody),
     })
       .then((response) => {
         if (!response.ok) {
@@ -280,7 +290,8 @@ function AddNewMovie() {
         return response.json();
       })
       .then((data) => {
-        console.info(data);
+        console.info("data:", data);
+
         alert("Le film a été ajouté avec succès !");
         // Vider le formulaire
         setMovie({
@@ -304,6 +315,8 @@ function AddNewMovie() {
         setvideoSupport("");
         setFileSize(null);
         setSelectedFile(null);
+        setSelectedKinds([]);
+        setSelectedDirectors([]);
       })
       .catch((error) => {
         console.error(error);
