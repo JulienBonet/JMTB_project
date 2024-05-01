@@ -63,7 +63,7 @@ const findMoviedirector = (movieId, directorId) =>
 
 const addMoviedirector = (movieId, directorId) =>
   db.query(
-    "INSERT INTO `movie_genre` (`movieId`, `directorId`) VALUES (? , ?);",
+    "INSERT INTO `movie_director` (`movieId`, `directorId`) VALUES (? , ?);",
     [movieId, directorId]
   );
 

@@ -266,14 +266,15 @@ function AddNewMovie() {
   const handleFormSubmit = (event) => {
     event.preventDefault();
     const selectedGenreIds = selectedKinds.map((kind) => kind.id);
-    const selectedDirectorIds = selectedDirectors.map(
-      (director) => director.id
+    const selectedDirectorsName = selectedDirectors.map(
+      (director) => director.name
     );
+    console.info("selectedDirectorsName:", selectedDirectorsName);
 
     const requestBody = {
       ...movie,
       genres: selectedGenreIds,
-      directors: selectedDirectorIds,
+      directors: selectedDirectorsName,
     };
 
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movie`, {

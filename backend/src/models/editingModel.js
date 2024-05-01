@@ -5,6 +5,9 @@ const db = require("../../database/client");
 const findDirectorById = (id) =>
   db.query("SELECT * FROM director WHERE id = ?", [id]).then(([rows]) => rows);
 
+const findDirectorByName = (name) =>
+  db.query("SELECT * FROM director WHERE name = ?", [name]);
+
 const insertDirector = (name) =>
   db.query("INSERT INTO director (name) VALUES (?);", [name]);
 
@@ -263,6 +266,7 @@ const deleteTag = (id) => db.query("DELETE FROM tag WHERE id = ?;", [id]);
 
 module.exports = {
   findDirectorById,
+  findDirectorByName,
   insertDirector,
   editDirector,
   editDirectorImage,

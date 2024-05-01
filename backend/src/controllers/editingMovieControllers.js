@@ -1,8 +1,10 @@
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-plusplus */
 /* eslint-disable consistent-return */
 /* eslint-disable prefer-destructuring */
 // const fs = require("fs");
 // const path = require("path");
-// const editingModel = require("../models/editingModel");
+const editingModel = require("../models/editingModel");
 const editingMovieModel = require("../models/editingMovieModel");
 
 const addMovie = async (req, res) => {
@@ -22,7 +24,10 @@ const addMovie = async (req, res) => {
       idTheMovieDb,
       idIMDb,
       genres,
+      directors,
     } = req.body;
+
+    console.info("body - directors :", directors);
 
     if (!title) {
       return res.status(400).json({ message: "Movie's title is required" });
@@ -46,6 +51,7 @@ const addMovie = async (req, res) => {
 
     const [[{ movieId }]] = await editingMovieModel.getLastInsertedMovieId();
 
+    // INSERT KINDS
     // Vérifier si des genres ont été sélectionnés
     if (genres.length > 0) {
       // Créer un tableau de promesses pour insérer les genres associés au film
@@ -55,6 +61,52 @@ const addMovie = async (req, res) => {
 
       // Attendre que toutes les promesses soient résolues
       await Promise.all(genrePromises);
+    }
+
+    // INSERT DIRECTORS
+    // Vérifier si des réalisateurs ont été sélectionnés
+    if (directors && directors.length > 0) {
+      // Vérifier si chaque réalisateur existe en base de données
+      const directorsPromises = directors.map((directorName) =>
+        editingModel.findDirectorByName(directorName)
+      );
+
+      // Attendre que toutes les promesses soient résolues
+      const directorsExist = await Promise.all(directorsPromises);
+
+      // Créer un tableau pour stocker les ID des réalisateurs
+      const directorIds = [];
+
+      // Vérifier si chaque réalisateur existe en base de données
+      for (let i = 0; i < directorsExist.length; i++) {
+        const director = directorsExist[i][0];
+
+        // Si le réalisateur n'existe pas, le créer et récupérer son ID
+        if (!director) {
+          try {
+            const result = await editingModel.insertDirector(directors[i]);
+            directorIds.push(result.insertId);
+          } catch (error) {
+            console.error("Error inserting director:", error);
+          }
+        } else {
+          // Si le réalisateur existe, récupérer son ID
+          directorIds.push(director[0].id); // Accéder à l'élément du tableau
+        }
+      }
+
+      // Créer les relations entre le film et les réalisateurs
+      const directorPromises = directorIds.map((directorId) =>
+        editingMovieModel.addMoviedirector(movieId, directorId)
+      );
+
+      // Attendre que toutes les promesses soient résolues
+      try {
+        await Promise.all(directorPromises);
+      } catch (error) {
+        console.error("Error creating movie-director relationships:", error);
+        // Gérer l'erreur ici, par exemple en renvoyant un message d'erreur à l'utilisateur
+      }
     }
 
     return res

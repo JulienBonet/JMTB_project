@@ -22,15 +22,8 @@ function MovieCard({ movie, origin }) {
     fileSize,
   } = movie;
 
-  const {
-    genres,
-    countries,
-    director_name,
-    screenwriters,
-    music,
-    studios,
-    cast,
-  } = movieData;
+  const { genres, countries, directors, screenwriters, music, studios, cast } =
+    movieData;
 
   if (origin === "country") {
     useEffect(() => {
@@ -109,12 +102,12 @@ function MovieCard({ movie, origin }) {
                 </p>
                 <div className="divider_dashed" />
                 {/* Autres détails du film */}
-                {director_name && (
+                {directors && (
                   <p className="MovieCard_info">
                     <span className="paraph_bolder paraph_color_2">
                       Réalisateur:
                     </span>{" "}
-                    {director_name}
+                    {directors}
                   </p>
                 )}
                 {screenwriters && (
