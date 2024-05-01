@@ -69,6 +69,9 @@ const findScreenwriterById = (id) =>
     .query("SELECT * FROM screenwriter WHERE id = ?", [id])
     .then(([rows]) => rows);
 
+const findScreenwriterByName = (name) =>
+  db.query("SELECT * FROM screenwriter WHERE name = ?", [name]);
+
 const insertScreenwriter = (name) =>
   db.query("INSERT INTO screenwriter (name) VALUES (?);", [name]);
 
@@ -97,6 +100,9 @@ const deleteScreenwriter = (id) =>
 const findCompositorById = (id) =>
   db.query("SELECT * FROM music WHERE id = ?", [id]).then(([rows]) => rows);
 
+const findCompositorByName = (name) =>
+  db.query("SELECT * FROM music WHERE name = ?", [name]);
+
 const insertCompositor = (name) =>
   db.query("INSERT INTO music (name) VALUES (?);", [name]);
 
@@ -124,6 +130,9 @@ const deleteCompositor = (id) =>
 
 const findStudioById = (id) =>
   db.query("SELECT * FROM studio WHERE id = ?", [id]).then(([rows]) => rows);
+
+const findStudioByName = (name) =>
+  db.query("SELECT * FROM studio WHERE name = ?", [name]);
 
 const insertStudio = (name) =>
   db.query("INSERT INTO studio (name) VALUES (?);", [name]);
@@ -179,6 +188,9 @@ const deleteThema = (id) => db.query("DELETE FROM thema WHERE id = ?;", [id]);
 const findCountryById = (id) =>
   db.query("SELECT * FROM country WHERE id = ?", [id]).then(([rows]) => rows);
 
+const findCountryByName = (name) =>
+  db.query("SELECT * FROM country WHERE name = ?", [name]);
+
 const insertCountry = (name) =>
   db.query("INSERT INTO country (name) VALUES (?);", [name]);
 
@@ -226,6 +238,9 @@ const deleteGenre = (id) => db.query("DELETE FROM genre WHERE id = ?;", [id]);
 
 const findLanguageById = (id) =>
   db.query("SELECT * FROM language WHERE id = ?", [id]).then(([rows]) => rows);
+
+const findLanguageByName = (name) =>
+  db.query("SELECT * FROM language WHERE name = ?", [name]);
 
 const insertLanguage = (name) =>
   db.query("INSERT INTO language (name) VALUES (?);", [name]);
@@ -281,16 +296,19 @@ module.exports = {
   editCastingImage,
   deleteCasting,
   findScreenwriterById,
+  findScreenwriterByName,
   insertScreenwriter,
   editScreenwriter,
   editScreenwriterImage,
   deleteScreenwriter,
   findCompositorById,
+  findCompositorByName,
   insertCompositor,
   editCompositor,
   editCompositorImage,
   deleteCompositor,
   findStudioById,
+  findStudioByName,
   insertStudio,
   editStudio,
   editStudioImage,
@@ -301,6 +319,7 @@ module.exports = {
   editThemaImage,
   deleteThema,
   findCountryById,
+  findCountryByName,
   insertCountry,
   editCountry,
   editCountryImage,
@@ -310,6 +329,7 @@ module.exports = {
   editGenre,
   deleteGenre,
   findLanguageById,
+  findLanguageByName,
   insertLanguage,
   editLanguage,
   deleteLanguage,

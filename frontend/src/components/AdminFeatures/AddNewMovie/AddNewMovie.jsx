@@ -270,12 +270,30 @@ function AddNewMovie() {
       (director) => director.name
     );
     const selectedCastingName = selectedCasting.map((casting) => casting.name);
+    const selectedScreenwritersName = selectedScreenwriters.map(
+      (screenwriter) => screenwriter.name
+    );
+    const selectedMusicName = selectedMusic.map((music) => music.name);
+    const selectedStudiosName = selectedStudios.map((studio) => studio.name);
+    const selectedCountriesName = selectedCountries.map(
+      (country) => country.name
+    );
+    const selectedLanguagesName = selectedLanguages.map(
+      (language) => language.name
+    );
+    const selectedTagsId = selectedTags.map((tag) => tag.id);
 
     const requestBody = {
       ...movie,
       genres: selectedGenreIds,
       directors: selectedDirectorsName,
       castings: selectedCastingName,
+      screenwriters: selectedScreenwritersName,
+      compositors: selectedMusicName,
+      studios: selectedStudiosName,
+      countries: selectedCountriesName,
+      languages: selectedLanguagesName,
+      tags: selectedTagsId,
     };
 
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movie`, {
@@ -311,7 +329,7 @@ function AddNewMovie() {
           idTheMovieDb: "",
           idIMDb: null,
         });
-        // Réinitialiser les champs à leur valeur par défaut
+        // Réinitialiser valeur par défaut
         setSource("MovieDb");
         setFormat("");
         setvideoSupport("");
@@ -320,6 +338,12 @@ function AddNewMovie() {
         setSelectedKinds([]);
         setSelectedDirectors([]);
         setSelectedCasting([]);
+        setSelectedScreenwriters([]);
+        setSelectedMusic([]);
+        setSelectedStudios([]);
+        setSelectedCountries([]);
+        setSelectedLanguages([]);
+        setSelectedTags([]);
       })
       .catch((error) => {
         console.error(error);

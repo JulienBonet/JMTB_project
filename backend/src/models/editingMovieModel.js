@@ -81,6 +81,90 @@ const addMovieCasting = (movieId, castingId) =>
     [movieId, castingId]
   );
 
+// EDIT MOVIE_SCREENWRITER
+
+const findMovieScreenwriter = (movieId, screenwriterId) =>
+  db.query(
+    "SELECT * FROM `movie_screenwriter` WHERE `movieId` = ? AND `screenwriterId` = ?",
+    [movieId, screenwriterId]
+  );
+
+const addMovieScreenwriter = (movieId, screenwriterId) =>
+  db.query(
+    "INSERT INTO `movie_screenwriter` (`movieId`, `screenwriterId`) VALUES (? , ?);",
+    [movieId, screenwriterId]
+  );
+
+// EDIT MOVIE_MUSIC
+
+const findMovieMusic = (movieId, musicId) =>
+  db.query(
+    "SELECT * FROM `movie_music` WHERE `movieId` = ? AND `musicId` = ?",
+    [movieId, musicId]
+  );
+
+const addMovieMusic = (movieId, musicId) =>
+  db.query("INSERT INTO `movie_music` (`movieId`, `musicId`) VALUES (? , ?);", [
+    movieId,
+    musicId,
+  ]);
+
+// EDIT MOVIE_STUDIO
+
+const findMovieStudio = (movieId, studioId) =>
+  db.query(
+    "SELECT * FROM `movie_studio` WHERE `movieId` = ? AND `studioId` = ?",
+    [movieId, studioId]
+  );
+
+const addMovieStudio = (movieId, studioId) =>
+  db.query(
+    "INSERT INTO `movie_studio` (`movieId`, `studioId`) VALUES (? , ?);",
+    [movieId, studioId]
+  );
+
+// EDIT MOVIE_COUNTRY
+
+const findMovieCountry = (movieId, countryId) =>
+  db.query(
+    "SELECT * FROM `movie_country` WHERE `movieId` = ? AND `countryId` = ?",
+    [movieId, countryId]
+  );
+
+const addMovieCountry = (movieId, countryId) =>
+  db.query(
+    "INSERT INTO `movie_country` (`movieId`, `countryId`) VALUES (? , ?);",
+    [movieId, countryId]
+  );
+
+// EDIT MOVIE_LANGUAGE
+
+const findMovieLanguage = (movieId, languageId) =>
+  db.query(
+    "SELECT * FROM `movie_language` WHERE `movieId` = ? AND `languageId` = ?",
+    [movieId, languageId]
+  );
+
+const addMovieLanguage = (movieId, languageId) =>
+  db.query(
+    "INSERT INTO `movie_language` (`movieId`, `languageId`) VALUES (? , ?);",
+    [movieId, languageId]
+  );
+
+// EDIT MOVIE_TAG
+
+const findMovieTag = (movieId, tagId) =>
+  db.query("SELECT * FROM `movie_tag` WHERE `movieId` = ? AND `tagId` = ?", [
+    movieId,
+    tagId,
+  ]);
+
+const addMovieTag = (movieId, tagId) =>
+  db.query("INSERT INTO `movie_tag` (`movieId`, `tagId`) VALUES (? , ?);", [
+    movieId,
+    tagId,
+  ]);
+
 module.exports = {
   insertMovie,
   getLastInsertedMovieId,
@@ -91,4 +175,16 @@ module.exports = {
   addMovieDirector,
   findMovieCasting,
   addMovieCasting,
+  findMovieScreenwriter,
+  addMovieScreenwriter,
+  findMovieMusic,
+  addMovieMusic,
+  findMovieStudio,
+  addMovieStudio,
+  findMovieCountry,
+  addMovieCountry,
+  findMovieLanguage,
+  addMovieLanguage,
+  findMovieTag,
+  addMovieTag,
 };
