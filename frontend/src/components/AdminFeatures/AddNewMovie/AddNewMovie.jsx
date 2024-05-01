@@ -269,12 +269,13 @@ function AddNewMovie() {
     const selectedDirectorsName = selectedDirectors.map(
       (director) => director.name
     );
-    console.info("selectedDirectorsName:", selectedDirectorsName);
+    const selectedCastingName = selectedCasting.map((casting) => casting.name);
 
     const requestBody = {
       ...movie,
       genres: selectedGenreIds,
       directors: selectedDirectorsName,
+      castings: selectedCastingName,
     };
 
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movie`, {
@@ -318,6 +319,7 @@ function AddNewMovie() {
         setSelectedFile(null);
         setSelectedKinds([]);
         setSelectedDirectors([]);
+        setSelectedCasting([]);
       })
       .catch((error) => {
         console.error(error);

@@ -55,16 +55,30 @@ const addMovieKind = (movieId, genreId) =>
 
 // EDIT MOVIE_DIRECTOR
 
-const findMoviedirector = (movieId, directorId) =>
+const findMovieDirector = (movieId, directorId) =>
   db.query(
     "SELECT * FROM `movie_director` WHERE `movieId` = ? AND `directorId` = ?",
     [movieId, directorId]
   );
 
-const addMoviedirector = (movieId, directorId) =>
+const addMovieDirector = (movieId, directorId) =>
   db.query(
     "INSERT INTO `movie_director` (`movieId`, `directorId`) VALUES (? , ?);",
     [movieId, directorId]
+  );
+
+// EDIT MOVIE_CASTING
+
+const findMovieCasting = (movieId, castingId) =>
+  db.query(
+    "SELECT * FROM `movie_casting` WHERE `movieId` = ? AND `castingId` = ?",
+    [movieId, castingId]
+  );
+
+const addMovieCasting = (movieId, castingId) =>
+  db.query(
+    "INSERT INTO `movie_casting` (`movieId`, `castingId`) VALUES (? , ?);",
+    [movieId, castingId]
   );
 
 module.exports = {
@@ -73,6 +87,8 @@ module.exports = {
   eraseMovie,
   findMovieKind,
   addMovieKind,
-  findMoviedirector,
-  addMoviedirector,
+  findMovieDirector,
+  addMovieDirector,
+  findMovieCasting,
+  addMovieCasting,
 };

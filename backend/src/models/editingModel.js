@@ -36,6 +36,9 @@ const deleteDirector = (id) =>
 const findCastingById = (id) =>
   db.query("SELECT * FROM casting WHERE id = ?", [id]).then(([rows]) => rows);
 
+const findCastingByName = (name) =>
+  db.query("SELECT * FROM casting WHERE name = ?", [name]);
+
 const insertCasting = (name) =>
   db.query("INSERT INTO casting (name) VALUES (?);", [name]);
 
@@ -272,6 +275,7 @@ module.exports = {
   editDirectorImage,
   deleteDirector,
   findCastingById,
+  findCastingByName,
   insertCasting,
   editCasting,
   editCastingImage,

@@ -77,7 +77,7 @@ LEFT JOIN screenwriter ON movie_screenwriter.screenwriterId = screenwriter.id
 LEFT JOIN movie_studio ON movies.id = movie_studio.movieId
 LEFT JOIN studio ON movie_studio.studioId = studio.id
 WHERE movies.id = ?
-GROUP BY movies.id, movies.title, movies.altTitle, movies.year, movies.duration, movies.cover, movies.trailer, movies.pitch, movies.story, movies.location, movies.videoFormat, movies.comment, movies.videoSupport, movies.fileSize, movies.idTheMovieDb, movies.idIMDb, casting.name;
+GROUP BY movies.id, movies.title, movies.altTitle, movies.year, movies.duration, movies.cover, movies.trailer, movies.pitch, movies.story, movies.location, movies.videoFormat, movies.comment, movies.videoSupport, movies.fileSize, movies.idTheMovieDb, movies.idIMDb;
   `,
     [id]
   );

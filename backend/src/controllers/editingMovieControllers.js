@@ -25,6 +25,7 @@ const addMovie = async (req, res) => {
       idIMDb,
       genres,
       directors,
+      castings,
     } = req.body;
 
     console.info("body - directors :", directors);
@@ -97,7 +98,7 @@ const addMovie = async (req, res) => {
 
       // Créer les relations entre le film et les réalisateurs
       const directorPromises = directorIds.map((directorId) =>
-        editingMovieModel.addMoviedirector(movieId, directorId)
+        editingMovieModel.addMovieDirector(movieId, directorId)
       );
 
       // Attendre que toutes les promesses soient résolues
@@ -106,6 +107,41 @@ const addMovie = async (req, res) => {
       } catch (error) {
         console.error("Error creating movie-director relationships:", error);
         // Gérer l'erreur ici, par exemple en renvoyant un message d'erreur à l'utilisateur
+      }
+    }
+
+    // INSERT CASTING
+    if (castings && castings.length > 0) {
+      const castingsPromises = castings.map((castingName) =>
+        editingModel.findCastingByName(castingName)
+      );
+
+      const castingExist = await Promise.all(castingsPromises);
+
+      const castingIds = [];
+
+      for (let i = 0; i < castingExist.length; i++) {
+        const casting = castingExist[i][0];
+        if (!casting) {
+          try {
+            const result = await editingModel.insertCasting(castings[i]);
+            castingIds.push(result.insertId);
+          } catch (error) {
+            console.error("Error inserting casting:", error);
+          }
+        } else {
+          castingIds.push(casting[0].id);
+        }
+      }
+
+      const castingPromises = castingIds.map((castingId) =>
+        editingMovieModel.addMovieCasting(movieId, castingId)
+      );
+
+      try {
+        await Promise.all(castingPromises);
+      } catch (error) {
+        console.error("Error creating movie-casting relationships:", error);
       }
     }
 
