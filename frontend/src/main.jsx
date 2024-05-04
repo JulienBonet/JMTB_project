@@ -14,6 +14,7 @@ import MovieMusic from "./pages/MovieArtist/MovieMusic.jsx";
 import MovieStudio from "./pages/MovieArtist/Moviestudio.jsx";
 import AdminFeat from "./pages/AdminFeat/AdminFeat.jsx";
 import AddNewMovie from "./components/AdminFeatures/AddNewMovie/AddNewMovie.jsx";
+import MovieInfosEntrance from "./components/AdminFeatures/AddNewMovie/MovieInfosEntrance.jsx";
 
 const router = createBrowserRouter([
   {
@@ -75,6 +76,10 @@ const router = createBrowserRouter([
       {
         path: "/new_movie",
         element: <AddNewMovie />,
+      },
+      {
+        path: "/movie_entrance",
+        element: <MovieInfosEntrance />,
       },
     ],
   },
