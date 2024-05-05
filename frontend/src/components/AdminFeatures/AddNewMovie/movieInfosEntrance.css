@@ -2,12 +2,13 @@
   background-color: azure;
   display: flex;
   justify-content: center;
-  align-items: center;
+  overflow-y: auto;
+  height: 90vh;
 }
 
 .MIE_contents {
-  width: 80%;
-  margin: 3rem;
+  width: 98%;
+  margin: 2rem 0;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -22,6 +23,10 @@
   font-family: var(--font-02);
   font-size: large;
   text-align: center;
+}
+.adult_switch {
+  display: flex;
+  justify-content: center;
 }
 .MIE_movie_bloc {
   display: flex;
@@ -54,8 +59,12 @@
 .MIE_adult,
 .MIE_movie_genre,
 .MIE_movie_release,
-.MIE_movie_synopsis {
+.MIE_movie_synopsis,
+.MIE_PagesCounter {
   font-family: var(--font-02);
+}
+.MIE_movie_synopsis {
+  line-height: 1.5;
 }
 .MIE_adult {
   color: red;
@@ -72,4 +81,16 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+.MIE_NavBtn_Block {
+  display: flex;
+  justify-content: center;
+  column-gap: 1rem;
+}
+.MIE_NavBtn_Block_bottom {
+  padding-bottom: 2rem;
+}
+
+.MIE_PagesCounter {
+  text-align: center;
 }

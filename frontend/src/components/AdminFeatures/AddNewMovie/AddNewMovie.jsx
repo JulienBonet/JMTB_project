@@ -1,6 +1,7 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-alert */
 import { useState, useRef } from "react";
+// import axios from "axios";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Button } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -14,6 +15,7 @@ import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import TransferList from "./MovieItemList";
+import MovieInfosEntrance from "./MovieInfosEntrance";
 import "./addNewMovie.css";
 
 function AddNewMovie() {
@@ -28,6 +30,7 @@ function AddNewMovie() {
     "http://localhost:3310/00_cover_default.jpg"
   );
   const [openModal, setOpenModal] = useState(false);
+  const [openModalMIE, setOpenModalMIE] = useState(false);
   const [selectedKinds, setSelectedKinds] = useState([]);
   const [selectedDirectors, setSelectedDirectors] = useState([]);
   const [selectedScreenwriters, setSelectedScreenwriters] = useState([]);
@@ -76,7 +79,16 @@ function AddNewMovie() {
     setMovie((prevMovie) => ({ ...prevMovie, idIMDb: event.target.value }));
   };
 
-  // MODAL ITEMS
+  // MODAL MOVIE INFOENTRANCE
+  const handleOpenModalMIE = () => {
+    setOpenModalMIE(true);
+  };
+
+  const handleCloseModalMIE = () => {
+    setOpenModalMIE(false);
+  };
+
+  // MODAL FETCH ITEMS
   const fetchData = (route) => {
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/${route}`)
       .then((response) => {
@@ -376,6 +388,19 @@ function AddNewMovie() {
     p: 4,
   };
 
+  const styleMIEmodal = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "70%",
+    bgcolor: "background.paper",
+    border: "2px solid #000",
+    boxShadow: 24,
+    p: 4,
+    padding: 0,
+  };
+
   return (
     <main>
       <section className="Adm_form_box">
@@ -431,7 +456,11 @@ function AddNewMovie() {
                 )}
               </Box>
               <Stack spacing={2} direction="row">
-                <Button variant="contained" size="large">
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={() => handleOpenModalMIE()}
+                >
                   RECHERCHE
                 </Button>
               </Stack>
@@ -968,6 +997,16 @@ function AddNewMovie() {
             selectedTags={selectedTags}
             onSelectedTagsUpdate={handleSelectedTagsUpdate}
           />
+        </Box>
+      </Modal>
+      <Modal
+        open={openModalMIE}
+        onClose={handleCloseModalMIE}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={styleMIEmodal}>
+          <MovieInfosEntrance title={movie.title} />
         </Box>
       </Modal>
     </main>
