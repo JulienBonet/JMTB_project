@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-alert */
 import { useState, useRef } from "react";
-// import axios from "axios";
+import axios from "axios";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Button } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -40,6 +40,7 @@ function AddNewMovie() {
   const [selectedCountries, setSelectedCountries] = useState([]);
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
+  const [movieDetails, setMovieDetails] = useState([]);
   const [movie, setMovie] = useState({
     title: "",
     altTitle: "",
@@ -56,6 +57,8 @@ function AddNewMovie() {
     idIMDb: null,
   });
 
+  console.info(movieDetails);
+  console.info(selectedKinds);
   // options source
   const handleChangeSource = (event) => {
     setSource(event.target.value);
@@ -79,13 +82,49 @@ function AddNewMovie() {
     setMovie((prevMovie) => ({ ...prevMovie, idIMDb: event.target.value }));
   };
 
-  // MODAL MOVIE INFOENTRANCE
+  // MODAL MOVIE INFO ENTRANCE
   const handleOpenModalMIE = () => {
     setOpenModalMIE(true);
   };
 
   const handleCloseModalMIE = () => {
     setOpenModalMIE(false);
+  };
+
+  // DATA FETCH
+  const handleMovieClick = (movieId) => {
+    const options = {
+      method: "GET",
+      url: `https://api.themoviedb.org/3/movie/${movieId}?language=fr-FR`,
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
+      },
+    };
+
+    axios(options)
+      .then((response) => {
+        setMovieDetails(response.data);
+        const genres = response.data.genres.map((genre) => genre.name);
+        setSelectedKinds(genres);
+        setMovie({
+          ...movie,
+          title: response.data.title,
+          altTitle: response.data.original_title
+            ? response.data.original_title
+            : "",
+          year: response.data.release_date.substring(0, 4),
+          duration: response.data.runtime,
+          pitch: response.data.tagline ? response.data.tagline : "",
+          story: response.data.overview,
+          idTheMovieDb: response.data.id,
+          idIMDb: response.data.imdb_id,
+        });
+        console.info(response.data);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
   };
 
   // MODAL FETCH ITEMS
@@ -1006,7 +1045,11 @@ function AddNewMovie() {
         aria-describedby="modal-modal-description"
       >
         <Box sx={styleMIEmodal}>
-          <MovieInfosEntrance title={movie.title} />
+          <MovieInfosEntrance
+            title={movie.title}
+            onMovieClick={handleMovieClick}
+            handleCloseModalMIE={handleCloseModalMIE}
+          />
         </Box>
       </Modal>
     </main>

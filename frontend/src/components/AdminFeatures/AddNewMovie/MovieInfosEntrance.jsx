@@ -10,7 +10,7 @@ import { pink } from "@mui/material/colors";
 import Switch from "@mui/material/Switch";
 import "./movieInfosEntrance.css";
 
-function MovieInfosEntrance({ title }) {
+function MovieInfosEntrance({ title, onMovieClick, handleCloseModalMIE }) {
   const [data, setData] = useState([]);
   const [fullData, setFullData] = useState(null);
   const [genres, setGenres] = useState([]);
@@ -203,7 +203,14 @@ function MovieInfosEntrance({ title }) {
                 </p>
               </div>
               <div className="MIE_movie_bloc_A3">
-                <button>OK</button>
+                <button
+                  onClick={() => {
+                    onMovieClick(movie.id);
+                    handleCloseModalMIE();
+                  }}
+                >
+                  OK
+                </button>
               </div>
             </li>
           ))}
