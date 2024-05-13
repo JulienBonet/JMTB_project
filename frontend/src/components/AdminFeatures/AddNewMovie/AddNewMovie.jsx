@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 /* eslint-disable no-shadow */
 /* eslint-disable no-alert */
 import { useState, useRef } from "react";
@@ -57,8 +58,9 @@ function AddNewMovie() {
     idIMDb: null,
   });
 
-  console.info(movieDetails);
-  console.info(selectedKinds);
+  console.info("movieDetails:", movieDetails);
+  console.info("selectedKinds:", selectedKinds);
+
   // options source
   const handleChangeSource = (event) => {
     setSource(event.target.value);
@@ -91,6 +93,50 @@ function AddNewMovie() {
     setOpenModalMIE(false);
   };
 
+  // Fonction pour rechercher un genre en base de données en utilisant Axios
+  const searchGenreInDatabase = async (genreName) => {
+    try {
+      // Faites une requête GET à votre route API pour rechercher le genre par son nom
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/api/genres/${encodeURIComponent(
+          genreName
+        )}`
+      );
+
+      // Vérifiez si la requête a réussi et si elle a renvoyé des données de genre
+      if (response.status === 200 && response.data) {
+        // Retournez les données du genre
+        return response.data;
+      }
+      // Si la recherche ne renvoie pas de résultat, retournez null
+      return null;
+    } catch (error) {
+      throw new Error(
+        `Error searching for genre in database: ${error.message}`
+      );
+    }
+  };
+
+  const createGenreInDatabase = async (genreName) => {
+    try {
+      // Faites une requête POST à votre route API pour créer le genre dans la base de données
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/genres`,
+        { name: genreName }
+      );
+
+      // Vérifiez si la requête a réussi et si elle a renvoyé des données de genre
+      if (response.status === 200 && response.data) {
+        // Retournez les données du genre créé
+        return response.data;
+      }
+      // Si la création du genre échoue, lancez une erreur
+      throw new Error("Failed to create genre in database");
+    } catch (error) {
+      throw new Error(`Error creating genre in database: ${error.message}`);
+    }
+  };
+
   // DATA FETCH
   const handleMovieClick = (movieId) => {
     const options = {
@@ -103,10 +149,38 @@ function AddNewMovie() {
     };
 
     axios(options)
-      .then((response) => {
+      .then(async (response) => {
         setMovieDetails(response.data);
-        const genres = response.data.genres.map((genre) => genre.name);
-        setSelectedKinds(genres);
+
+        const { genres } = response.data;
+        console.info("axios genre:", genres);
+
+        // Pour stocker les ID et noms des genres
+        const genresData = [];
+
+        // Parcourir tous les genres
+        for (const genre of genres) {
+          let genreId;
+          let genreData;
+
+          // Requête pour rechercher le genre
+          genreData = await searchGenreInDatabase(genre.name);
+
+          if (genreData) {
+            // Si le genre existe, récupérer son ID et son nom
+            const existingGenreName = genreData.name;
+            genreId = genreData.id;
+            genresData.push({ id: genreId, name: existingGenreName });
+          } else {
+            // Si le genre n'existe pas, le créer
+            genreData = await createGenreInDatabase(genre.name);
+            genreId = genreData.id;
+            genresData.push({ id: genreId, name: genre.name });
+          }
+        }
+
+        setSelectedKinds(genresData.map((genre) => genre));
+
         setMovie({
           ...movie,
           title: response.data.title,
@@ -118,9 +192,7 @@ function AddNewMovie() {
           pitch: response.data.tagline ? response.data.tagline : "",
           story: response.data.overview,
           idTheMovieDb: response.data.id,
-          idIMDb: response.data.imdb_id,
         });
-        console.info(response.data);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -316,7 +388,8 @@ function AddNewMovie() {
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
-    const selectedGenreIds = selectedKinds.map((kind) => kind.id);
+    const selectedGenreName = selectedKinds.map((kind) => kind);
+    console.info("selectedGenreName:", selectedGenreName);
     const selectedDirectorsName = selectedDirectors.map(
       (director) => director.name
     );
@@ -336,7 +409,7 @@ function AddNewMovie() {
 
     const requestBody = {
       ...movie,
-      genres: selectedGenreIds,
+      genres: selectedGenreName,
       directors: selectedDirectorsName,
       castings: selectedCastingName,
       screenwriters: selectedScreenwritersName,

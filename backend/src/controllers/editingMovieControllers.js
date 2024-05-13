@@ -33,7 +33,7 @@ const addMovie = async (req, res) => {
       languages,
       tags,
     } = req.body;
-
+    console.info("req body genres:", genres);
     if (!title) {
       return res.status(400).json({ message: "Movie's title is required" });
     }
@@ -59,13 +59,35 @@ const addMovie = async (req, res) => {
     // INSERT KINDS
     if (genres.length > 0) {
       // Créer un tableau de promesses pour insérer les genres associés au film
-      const genrePromises = genres.map((genreId) =>
-        editingMovieModel.addMovieKind(movieId, genreId)
+      const genrePromises = genres.map((genre) =>
+        editingMovieModel.addMovieKind(movieId, genre.id)
       );
 
       // Attendre que toutes les promesses soient résolues
       await Promise.all(genrePromises);
     }
+
+    // if (genres.length > 0) {
+    //   // Créer un tableau de promesses pour rechercher les identifiants des genres
+    //   const genrePromises = genres.map(({ name: genreName }) =>
+    //     editingModel.findGenreIdByName(genreName)
+    //   );
+
+    //   // Attendre que toutes les promesses soient résolues
+    //   const genreResults = await Promise.all(genrePromises);
+    //   console.info("Genre results:", genreResults); // Ajouter une instruction de journalisation pour afficher les résultats de la requête
+
+    //   // Extraire les identifiants des genres à partir des résultats de la requête
+    //   const genreIds = genreResults.map((result) => result.id);
+
+    //   // Créer un tableau de promesses pour insérer les genres associés au film
+    //   const genreInsertPromises = genreIds.map((genreId) =>
+    //     editingMovieModel.addMovieKind(movieId, genreId)
+    //   );
+
+    //   // Attendre que toutes les promesses soient résolues
+    //   await Promise.all(genreInsertPromises);
+    // }
 
     // INSERT DIRECTORS
     if (directors && directors.length > 0) {
