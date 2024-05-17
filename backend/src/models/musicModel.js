@@ -98,6 +98,14 @@ const findAllByLetter = (letter) => {
   return db.query(query, [`${letter}%`]);
 };
 
+const findCompositorByName = (name) => {
+  return db.query("SELECT * FROM music WHERE name = ?", [name]);
+};
+
+const findCompositorById = (id) => {
+  return db.query("SELECT * FROM music WHERE id = ?", [id]);
+};
+
 module.exports = {
   findAllArtistAsc,
   findAllArtistDesc,
@@ -108,4 +116,6 @@ module.exports = {
   findAllMoviesByArtistIdYearAsc,
   findAllMoviesByArtistIdYearDesc,
   findAllByLetter,
+  findCompositorByName,
+  findCompositorById,
 };

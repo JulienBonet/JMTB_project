@@ -57,10 +57,7 @@ function AddNewMovie() {
     idTheMovieDb: "",
     idIMDb: null,
   });
-
   console.info("movieDetails:", movieDetails);
-  console.info("selectedKinds:", selectedKinds);
-
   // options source
   const handleChangeSource = (event) => {
     setSource(event.target.value);
@@ -93,22 +90,18 @@ function AddNewMovie() {
     setOpenModalMIE(false);
   };
 
-  // Fonction pour rechercher un genre en base de données en utilisant Axios
+  // GENRES SEARCH BY NAME METHOD
   const searchGenreInDatabase = async (genreName) => {
     try {
-      // Faites une requête GET à votre route API pour rechercher le genre par son nom
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/api/genres/${encodeURIComponent(
           genreName
         )}`
       );
 
-      // Vérifiez si la requête a réussi et si elle a renvoyé des données de genre
       if (response.status === 200 && response.data) {
-        // Retournez les données du genre
         return response.data;
       }
-      // Si la recherche ne renvoie pas de résultat, retournez null
       return null;
     } catch (error) {
       throw new Error(
@@ -117,86 +110,519 @@ function AddNewMovie() {
     }
   };
 
+  // GENRES NEW INSERT METHOD
   const createGenreInDatabase = async (genreName) => {
     try {
-      // Faites une requête POST à votre route API pour créer le genre dans la base de données
       const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/genres`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/genre`,
         { name: genreName }
       );
 
-      // Vérifiez si la requête a réussi et si elle a renvoyé des données de genre
       if (response.status === 200 && response.data) {
-        // Retournez les données du genre créé
         return response.data;
       }
-      // Si la création du genre échoue, lancez une erreur
       throw new Error("Failed to create genre in database");
     } catch (error) {
       throw new Error(`Error creating genre in database: ${error.message}`);
     }
   };
 
+  // STUDIO SEARCH BY NAME METHOD
+  const searchStudioInDatabase = async (studioName) => {
+    try {
+      const url = `${
+        import.meta.env.VITE_BACKEND_URL
+      }/api/studio/byname/${encodeURIComponent(studioName)}`;
+      console.info("url:", url);
+      const response = await axios.get(url);
+      console.info("url response:", response);
+
+      if (response.status === 200 && response.data) {
+        return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw new Error(
+        `Error searching for studio in database: ${error.message}`
+      );
+    }
+  };
+
+  // STUDIO NEW INSERT METHOD
+  // const createStudioInDatabase = async (studioName) => {
+  //   try {
+  //     console.info("Creating studio in database:", studioName);
+  //     const response = await axios.post(
+  //       `${import.meta.env.VITE_BACKEND_URL}/api/studio`,
+  //       { name: studioName }
+  //     );
+
+  //     console.info("Response from server:", response);
+
+  //     if (response.status === 200 && response.data) {
+  //       console.info("Studio created:", response.data);
+  //       return response.data;
+  //     }
+  //     throw new Error("Failed to create studio in database");
+  //   } catch (error) {
+  //     console.error("Error creating studio in database:", error.message);
+  //     throw error;
+  //   }
+  // };
+
+  // console.info("Selected studios:", selectedStudios);
+
+  const createStudioInDatabase = async (studioName) => {
+    console.info("Creating studio in database:", studioName);
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/studio`,
+        { name: studioName }
+      );
+      console.info("studio created:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error creating studio:", error);
+      throw error;
+    }
+  };
+
+  // DIRECTOR SEARCH BY NAME METHOD
+  const searchDirectorInDatabase = async (directorsNames) => {
+    try {
+      const url = `${
+        import.meta.env.VITE_BACKEND_URL
+      }/api/director/byname/${encodeURIComponent(directorsNames)}`;
+
+      const response = await axios.get(url);
+
+      if (response.status === 200 && response.data) {
+        return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw new Error(
+        `Error searching for director in database: ${error.message}`
+      );
+    }
+  };
+
+  // DIRECTORS NEW INSERT METHOD
+  const createDirectorInDatabase = async (directorName) => {
+    console.info("Creating director in database:", directorName);
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/director`,
+        { name: directorName }
+      );
+      console.info("Director created:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error creating director:", error);
+      throw error;
+    }
+  };
+
+  // SCREENWRITER SEARCH BY NAME METHOD
+  const searchScreenwriterInDatabase = async (screenwritersNames) => {
+    try {
+      const response = await axios.get(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/screenwriter/byname/${encodeURIComponent(screenwritersNames)}`
+      );
+
+      if (response.status === 200 && response.data) {
+        return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw new Error(
+        `Error searching for screenwriter in database: ${error.message}`
+      );
+    }
+  };
+
+  // SCREENWRITER NEW INSERT METHOD
+  const createScreenwriterInDatabase = async (screenwriterName) => {
+    console.info("Creating screenwriter in database:", screenwriterName);
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/screenwriter`,
+        { name: screenwriterName }
+      );
+      console.info("screenwriter created:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error creating screenwriter:", error);
+      throw error;
+    }
+  };
+
+  // COMPOSITOR SEARCH BY NAME METHOD
+  const searchCompositorInDatabase = async (compositorsNames) => {
+    try {
+      const response = await axios.get(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/music/byname/${encodeURIComponent(compositorsNames)}`
+      );
+
+      if (response.status === 200 && response.data) {
+        return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw new Error(
+        `Error searching for compositor in database: ${error.message}`
+      );
+    }
+  };
+
+  // COMPOSITOR NEW INSERT METHOD
+  const createCompositorInDatabase = async (compositorName) => {
+    console.info("Creating compositor in database:", compositorName);
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/compositor`,
+        { name: compositorName }
+      );
+      console.info("compositor created:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error creating compositor:", error);
+      throw error;
+    }
+  };
+
+  // CASTING SEARCH BY NAME METHOD
+  const searchCastingInDatabase = async (castingsNames) => {
+    try {
+      const response = await axios.get(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/casting/byname/${encodeURIComponent(castingsNames)}`
+      );
+
+      if (response.status === 200 && response.data) {
+        return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw new Error(
+        `Error searching for compositor in database: ${error.message}`
+      );
+    }
+  };
+
+  // CASTINGG NEW INSERT METHOD
+  const createCastingInDatabase = async (castingName) => {
+    console.info("Creating casting in database:", castingName);
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/casting`,
+        { name: castingName }
+      );
+      console.info("casting created:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error creating casting:", error);
+      throw error;
+    }
+  };
+
   // DATA FETCH
-  const handleMovieClick = (movieId) => {
-    const options = {
-      method: "GET",
-      url: `https://api.themoviedb.org/3/movie/${movieId}?language=fr-FR`,
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
-      },
-    };
+  // const handleMovieClick = async (movieId) => {
+  //   try {
+  //     const options = {
+  //       method: "GET",
+  //       url: `https://api.themoviedb.org/3/movie/${movieId}?language=fr-FR`,
+  //       headers: {
+  //         accept: "application/json",
+  //         Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
+  //       },
+  //     };
 
-    axios(options)
-      .then(async (response) => {
-        setMovieDetails(response.data);
+  //     const response = await axios(options);
+  //     const movieData = response.data;
 
-        const { genres } = response.data;
-        console.info("axios genre:", genres);
+  //     setMovieDetails(movieData);
 
-        // Pour stocker les ID et noms des genres
-        const genresData = [];
+  //     setMovie({
+  //       ...movie,
+  //       title: movieData.title,
+  //       altTitle: movieData.original_title ? movieData.original_title : "",
+  //       year: movieData.release_date.substring(0, 4),
+  //       duration: movieData.runtime,
+  //       pitch: movieData.tagline ? movieData.tagline : "",
+  //       story: movieData.overview,
+  //       idTheMovieDb: movieData.id,
+  //     });
 
-        // Parcourir tous les genres
-        for (const genre of genres) {
-          let genreId;
-          let genreData;
+  //     // fetch GENRES
+  //     const { genres } = movieData;
+  //     const genresData = await Promise.all(
+  //       genres.map(async (genre) => {
+  //         const genreData = await searchGenreInDatabase(genre.name);
+  //         if (genreData) {
+  //           return { id: genreData.id, name: genreData.name };
+  //         }
+  //         const newGenreData = await createGenreInDatabase(genre.name);
+  //         return { id: newGenreData.id, name: genre.name };
+  //       })
+  //     );
 
-          // Requête pour rechercher le genre
-          genreData = await searchGenreInDatabase(genre.name);
+  //     setSelectedKinds(genresData);
 
-          if (genreData) {
-            // Si le genre existe, récupérer son ID et son nom
-            const existingGenreName = genreData.name;
-            genreId = genreData.id;
-            genresData.push({ id: genreId, name: existingGenreName });
-          } else {
-            // Si le genre n'existe pas, le créer
-            genreData = await createGenreInDatabase(genre.name);
-            genreId = genreData.id;
-            genresData.push({ id: genreId, name: genre.name });
-          }
-        }
+  //     // fetch STUDIO
+  //     const { productionCompanies } = movieData;
+  //     const studiosData = await Promise.all(
+  //       productionCompanies.map(async (studio) => {
+  //         const studioData = await searchStudioInDatabase(
+  //           productionCompanies.name
+  //         );
+  //         if (studioData) {
+  //           return { id: studioData.id, name: studioData.name };
+  //         }
+  //         const newStudioData = await createStudioInDatabase(
+  //           productionCompanies.name
+  //         );
+  //         return { id: newStudioData.id, name: studio.name };
+  //       })
+  //     );
 
-        setSelectedKinds(genresData.map((genre) => genre));
+  //     setSelectedStudios(studiosData);
 
-        setMovie({
-          ...movie,
-          title: response.data.title,
-          altTitle: response.data.original_title
-            ? response.data.original_title
-            : "",
-          year: response.data.release_date.substring(0, 4),
-          duration: response.data.runtime,
-          pitch: response.data.tagline ? response.data.tagline : "",
-          story: response.data.overview,
-          idTheMovieDb: response.data.id,
-        });
-      })
-      .catch((error) => {
-        console.error("Error:", error);
+  //     // Deuxième fetch pour les crédits (cast et crew)
+  //     const options2 = {
+  //       method: "GET",
+  //       url: `https://api.themoviedb.org/3/movie/${movieId}/credits?language=fr-FR`,
+  //       headers: {
+  //         accept: "application/json",
+  //         Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
+  //       },
+  //     };
+
+  //     const response2 = await axios(options2);
+  //     const crewData = response2.data.crew;
+  //     const castData = response2.data.cast;
+
+  //     // fetch DIRECTORS
+  //     const directors = crewData.filter(
+  //       (crewMember) => crewMember.job === "Director"
+  //     );
+
+  //     const directorsData = await Promise.all(
+  //       directors.map(async (director) => {
+  //         let directorData = await searchDirectorInDatabase(director.name);
+  //         if (!directorData) {
+  //           directorData = await createDirectorInDatabase(director.name);
+  //         }
+  //         return { id: directorData.id, name: director.name };
+  //       })
+  //     );
+
+  //     setSelectedDirectors(directorsData);
+
+  //     // fetch SCREENWRITERS
+  //     const screenwriters = crewData.filter(
+  //       (crewMember) =>
+  //         crewMember.job === "Screenplay" || crewMember.job === "Writer"
+  //     );
+
+  //     const screenwritersData = await Promise.all(
+  //       screenwriters.map(async (screenwriter) => {
+  //         let screenwriterData = await searchScreenwriterInDatabase(
+  //           screenwriter.name
+  //         );
+  //         if (!screenwriterData) {
+  //           screenwriterData = await createScreenwriterInDatabase(
+  //             screenwriter.name
+  //           );
+  //         }
+  //         return { id: screenwriterData.id, name: screenwriter.name };
+  //       })
+  //     );
+
+  //     setSelectedScreenwriters(screenwritersData);
+
+  //     // fetch COMPOSITORS
+  //     const compositors = crewData.filter(
+  //       (crewMember) => crewMember.job === "Original Music Composer"
+  //     );
+
+  //     const compositorsData = await Promise.all(
+  //       compositors.map(async (compositor) => {
+  //         let compositorData = await searchCompositorInDatabase(
+  //           compositor.name
+  //         );
+  //         if (!compositorData) {
+  //           compositorData = await createCompositorInDatabase(compositor.name);
+  //         }
+  //         return { id: compositorData.id, name: compositor.name };
+  //       })
+  //     );
+
+  //     setSelectedMusic(compositorsData);
+
+  //     // fetch CASTING
+  //     const castings = castData.filter((castMember) => castMember.order <= 5);
+
+  //     const castingsData = await Promise.all(
+  //       castings.map(async (casting) => {
+  //         let castingData = await searchCastingInDatabase(casting.name);
+  //         if (!castingData) {
+  //           castingData = await createCastingInDatabase(casting.name);
+  //         }
+  //         return { id: castingData.id, name: casting.name };
+  //       })
+  //     );
+
+  //     setSelectedCasting(castingsData);
+  //   } catch (error) {
+  //     console.error("Error:", error);
+  //   }
+  // };
+
+  const handleMovieClick = async (movieId) => {
+    try {
+      const options = {
+        method: "GET",
+        url: `https://api.themoviedb.org/3/movie/${movieId}?language=fr-FR`,
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
+        },
+      };
+
+      const response = await axios(options);
+      const movieData = response.data;
+
+      setMovieDetails(movieData);
+
+      setMovie({
+        ...movie,
+        title: movieData.title,
+        altTitle: movieData.original_title || "",
+        year: movieData.release_date.substring(0, 4),
+        duration: movieData.runtime,
+        pitch: movieData.tagline || "",
+        story: movieData.overview,
+        idTheMovieDb: movieData.id,
       });
+
+      // Fetch GENRES
+      const fetchGenre = async (genre) => {
+        const genreData = await searchGenreInDatabase(genre.name);
+        if (genreData) {
+          return { id: genreData.id, name: genreData.name };
+        }
+        const newGenreData = await createGenreInDatabase(genre.name);
+        return { id: newGenreData.id, name: genre.name };
+      };
+
+      const genresData = await Promise.all(movieData.genres.map(fetchGenre));
+      setSelectedKinds(genresData);
+
+      // Fetch STUDIO
+      const fetchStudio = async (studio) => {
+        const studioData = await searchStudioInDatabase(studio.name);
+        if (studioData) {
+          return { id: studioData.id, name: studioData.name };
+        }
+        const newStudioData = await createStudioInDatabase(studio.name);
+        return { id: newStudioData.id, name: studio.name };
+      };
+
+      const studiosData = await Promise.all(
+        movieData.production_companies.map(fetchStudio)
+      );
+      setSelectedStudios(studiosData);
+
+      // Deuxième fetch pour les crédits (cast et crew)
+      const options2 = {
+        method: "GET",
+        url: `https://api.themoviedb.org/3/movie/${movieId}/credits?language=fr-FR`,
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
+        },
+      };
+
+      const response2 = await axios(options2);
+      const crewData = response2.data.crew;
+      const castData = response2.data.cast;
+
+      // Utility function to fetch or create entity in database
+      const fetchOrCreateEntity = async (entity, searchFunc, createFunc) => {
+        let entityData = await searchFunc(entity.name);
+        if (!entityData) {
+          entityData = await createFunc(entity.name);
+        }
+        return { id: entityData.id, name: entity.name };
+      };
+
+      // Fetch DIRECTORS
+      const directorsData = await Promise.all(
+        crewData
+          .filter((crewMember) => crewMember.job === "Director")
+          .map((director) =>
+            fetchOrCreateEntity(
+              director,
+              searchDirectorInDatabase,
+              createDirectorInDatabase
+            )
+          )
+      );
+      setSelectedDirectors(directorsData);
+
+      // Fetch SCREENWRITERS
+      const screenwritersData = await Promise.all(
+        crewData
+          .filter(
+            (crewMember) =>
+              crewMember.job === "Screenplay" || crewMember.job === "Writer"
+          )
+          .map((screenwriter) =>
+            fetchOrCreateEntity(
+              screenwriter,
+              searchScreenwriterInDatabase,
+              createScreenwriterInDatabase
+            )
+          )
+      );
+      setSelectedScreenwriters(screenwritersData);
+
+      // Fetch COMPOSITORS
+      const compositorsData = await Promise.all(
+        crewData
+          .filter((crewMember) => crewMember.job === "Original Music Composer")
+          .map((compositor) =>
+            fetchOrCreateEntity(
+              compositor,
+              searchCompositorInDatabase,
+              createCompositorInDatabase
+            )
+          )
+      );
+      setSelectedMusic(compositorsData);
+
+      // Fetch CASTING
+      const castingsData = await Promise.all(
+        castData
+          .filter((castMember) => castMember.order <= 5)
+          .map((casting) =>
+            fetchOrCreateEntity(
+              casting,
+              searchCastingInDatabase,
+              createCastingInDatabase
+            )
+          )
+      );
+      setSelectedCasting(castingsData);
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   // MODAL FETCH ITEMS
@@ -388,11 +814,11 @@ function AddNewMovie() {
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
-    const selectedGenreName = selectedKinds.map((kind) => kind);
-    console.info("selectedGenreName:", selectedGenreName);
+    const selectedGenre = selectedKinds.map((kind) => kind);
     const selectedDirectorsName = selectedDirectors.map(
       (director) => director.name
     );
+    console.info("selectedDirectorsName:", selectedDirectorsName);
     const selectedCastingName = selectedCasting.map((casting) => casting.name);
     const selectedScreenwritersName = selectedScreenwriters.map(
       (screenwriter) => screenwriter.name
@@ -409,7 +835,7 @@ function AddNewMovie() {
 
     const requestBody = {
       ...movie,
-      genres: selectedGenreName,
+      genres: selectedGenre,
       directors: selectedDirectorsName,
       castings: selectedCastingName,
       screenwriters: selectedScreenwritersName,

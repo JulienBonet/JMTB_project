@@ -17,5 +17,7 @@ router.get(
   "/screenwriters/sorted/:letter",
   screewritersController.getAllByLetter
 );
+router.get("/screenwriter/byname/:name", screewritersController.getAllByName);
+router.get("/screenwriter/byid/:id", screewritersController.getAllById);
 
 module.exports = router;

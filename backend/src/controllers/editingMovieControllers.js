@@ -33,7 +33,7 @@ const addMovie = async (req, res) => {
       languages,
       tags,
     } = req.body;
-    console.info("req body genres:", genres);
+
     if (!title) {
       return res.status(400).json({ message: "Movie's title is required" });
     }
@@ -67,28 +67,6 @@ const addMovie = async (req, res) => {
       await Promise.all(genrePromises);
     }
 
-    // if (genres.length > 0) {
-    //   // Créer un tableau de promesses pour rechercher les identifiants des genres
-    //   const genrePromises = genres.map(({ name: genreName }) =>
-    //     editingModel.findGenreIdByName(genreName)
-    //   );
-
-    //   // Attendre que toutes les promesses soient résolues
-    //   const genreResults = await Promise.all(genrePromises);
-    //   console.info("Genre results:", genreResults); // Ajouter une instruction de journalisation pour afficher les résultats de la requête
-
-    //   // Extraire les identifiants des genres à partir des résultats de la requête
-    //   const genreIds = genreResults.map((result) => result.id);
-
-    //   // Créer un tableau de promesses pour insérer les genres associés au film
-    //   const genreInsertPromises = genreIds.map((genreId) =>
-    //     editingMovieModel.addMovieKind(movieId, genreId)
-    //   );
-
-    //   // Attendre que toutes les promesses soient résolues
-    //   await Promise.all(genreInsertPromises);
-    // }
-
     // INSERT DIRECTORS
     if (directors && directors.length > 0) {
       // Vérifier si chaque réalisateur existe en base de données
@@ -105,19 +83,7 @@ const addMovie = async (req, res) => {
       // Vérifier si chaque réalisateur existe en base de données
       for (let i = 0; i < directorsExist.length; i++) {
         const director = directorsExist[i][0];
-
-        // Si le réalisateur n'existe pas, le créer et récupérer son ID
-        if (!director) {
-          try {
-            const result = await editingModel.insertDirector(directors[i]);
-            directorIds.push(result.insertId);
-          } catch (error) {
-            console.error("Error inserting director:", error);
-          }
-        } else {
-          // Si le réalisateur existe, récupérer son ID
-          directorIds.push(director[0].id); // Accéder à l'élément du tableau
-        }
+        directorIds.push(director[0].id); // Accéder à l'élément du tableau
       }
 
       // Créer les relations entre le film et les réalisateurs
@@ -181,18 +147,7 @@ const addMovie = async (req, res) => {
 
       for (let i = 0; i < screenwriterExist.length; i++) {
         const screenwriter = screenwriterExist[i][0];
-        if (!screenwriter) {
-          try {
-            const result = await editingModel.insertScreenwriter(
-              screenwriters[i]
-            );
-            screenwriterIds.push(result.insertId);
-          } catch (error) {
-            console.error("Error inserting screenwriter:", error);
-          }
-        } else {
-          screenwriterIds.push(screenwriter[0].id);
-        }
+        screenwriterIds.push(screenwriter[0].id);
       }
 
       const screenwriterPromises = screenwriterIds.map((screenwriterId) =>
@@ -221,16 +176,7 @@ const addMovie = async (req, res) => {
 
       for (let i = 0; i < compositorExist.length; i++) {
         const compositor = compositorExist[i][0];
-        if (!compositor) {
-          try {
-            const result = await editingModel.insertCompositor(compositors[i]);
-            compositorIds.push(result.insertId);
-          } catch (error) {
-            console.error("Error inserting compositor:", error);
-          }
-        } else {
-          compositorIds.push(compositor[0].id);
-        }
+        compositorIds.push(compositor[0].id);
       }
 
       const compositorPromises = compositorIds.map((compositorId) =>
@@ -246,25 +192,14 @@ const addMovie = async (req, res) => {
 
     // INSERT STUDIO
     if (studios && studios.length > 0) {
-      const studiosPromises = studios.map((studioName) =>
-        editingModel.findStudioByName(studioName)
-      );
-
-      const studioExist = await Promise.all(studiosPromises);
-
       const studioIds = [];
 
-      for (let i = 0; i < studioExist.length; i++) {
-        const studio = studioExist[i][0];
-        if (!studio) {
-          try {
-            const result = await editingModel.insertStudio(studios[i]);
-            studioIds.push(result.insertId);
-          } catch (error) {
-            console.error("Error inserting studio:", error);
-          }
-        } else {
-          studioIds.push(studio[0].id);
+      for (let i = 0; i < studios.length; i++) {
+        try {
+          const result = await editingModel.insertStudio(studios[i]);
+          studioIds.push(result.insertId);
+        } catch (error) {
+          console.error("Error inserting studio:", error);
         }
       }
 

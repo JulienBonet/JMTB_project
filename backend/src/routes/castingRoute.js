@@ -11,5 +11,7 @@ router.get("/casting/:id/sorted/1", castingController.getAllSorted1);
 router.get("/casting/:id/sorted/2", castingController.getAllSorted2);
 router.get("/casting/:id/sorted/3", castingController.getAllSorted3);
 router.get("/casting/sorted/:letter", castingController.getAllByLetter);
+router.get("/casting/byname/:name", castingController.getAllByName);
+router.get("/casting/byid/:id", castingController.getAllById);
 
 module.exports = router;

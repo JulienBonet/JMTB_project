@@ -11,5 +11,7 @@ router.get("/studio/:id/sorted/1", studioController.getAllSorted1);
 router.get("/studio/:id/sorted/2", studioController.getAllSorted2);
 router.get("/studio/:id/sorted/3", studioController.getAllSorted3);
 router.get("/studio/sorted/:letter", studioController.getAllByLetter);
+router.get("/studio/byname/:name", studioController.getAllByName);
+router.get("/studio/byid/:id", studioController.getAllById);
 
 module.exports = router;

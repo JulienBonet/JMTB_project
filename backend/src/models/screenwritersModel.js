@@ -98,6 +98,14 @@ const findAllByLetter = (letter) => {
   return db.query(query, [`${letter}%`]);
 };
 
+const findScreenwriterByName = (name) => {
+  return db.query("SELECT * FROM screenwriter WHERE name = ?", [name]);
+};
+
+const findScreenwriterById = (id) => {
+  return db.query("SELECT * FROM screenwriter WHERE id = ?", [id]);
+};
+
 module.exports = {
   findAllArtistAsc,
   findAllArtistDesc,
@@ -108,4 +116,6 @@ module.exports = {
   findAllMoviesByArtistIdYearAsc,
   findAllMoviesByArtistIdYearDesc,
   findAllByLetter,
+  findScreenwriterByName,
+  findScreenwriterById,
 };

@@ -226,30 +226,6 @@ const findGenreByName = (name) => {
     });
 };
 
-const findGenreIdByName = (genreName) => {
-  console.info(`Searching for genre with name: ${genreName}`); // Ajouter une instruction de journalisation pour afficher le nom du genre recherché
-  return new Promise((resolve, reject) => {
-    db.query(
-      `SELECT id FROM genre WHERE name = ?`,
-      [genreName],
-      (err, results) => {
-        if (err) {
-          console.error(
-            `Error searching for genre with name: ${genreName}`,
-            err
-          ); // Ajouter une instruction de journalisation pour afficher l'erreur
-          reject(err);
-        } else {
-          console.info(
-            `Found genre with name: ${genreName} and ID: ${results[0].id}`
-          ); // Ajouter une instruction de journalisation pour afficher le résultat de la requête
-          resolve(results[0]);
-        }
-      }
-    );
-  });
-};
-
 const findGenreById = (id) =>
   db.query("SELECT * FROM genre WHERE id = ?", [id]).then(([rows]) => rows);
 
@@ -365,7 +341,6 @@ module.exports = {
   editCountry,
   editCountryImage,
   deleteCountry,
-  findGenreIdByName,
   findGenreByName,
   findGenreById,
   insertGenre,
