@@ -22,7 +22,6 @@ import "./addNewMovie.css";
 function AddNewMovie() {
   const [data, setData] = useState([]);
   const [dataType, setDataType] = useState("");
-  const [source, setSource] = useState("MovieDb");
   const [videoSupport, setvideoSupport] = useState("");
   const [format, setFormat] = useState("");
   const [fileSize, setFileSize] = useState(null);
@@ -58,17 +57,8 @@ function AddNewMovie() {
     idIMDb: null,
   });
   console.info("movieDetails:", movieDetails);
-  // options source
-  const handleChangeSource = (event) => {
-    setSource(event.target.value);
-    if (event.target.value === "MovieDb") {
-      setMovie((prevMovie) => ({ ...prevMovie, idTheMovieDb: "" }));
-      setMovie((prevMovie) => ({ ...prevMovie, idIMDb: null }));
-    } else if (event.target.value === "ImDB") {
-      setMovie((prevMovie) => ({ ...prevMovie, idTheMovieDb: null }));
-      setMovie((prevMovie) => ({ ...prevMovie, idIMDb: "" }));
-    }
-  };
+
+  // -----------------/ SOURCE /----------------- //
 
   const handleChangeMovieDb = (event) => {
     setMovie((prevMovie) => ({
@@ -77,11 +67,42 @@ function AddNewMovie() {
     }));
   };
 
-  const handleChangeImDb = (event) => {
-    setMovie((prevMovie) => ({ ...prevMovie, idIMDb: event.target.value }));
+  // -----------------/ RESET FORM /----------------- //
+  const resetStates = () => {
+    // Vider le formulaire
+    setMovie({
+      title: "",
+      altTitle: "",
+      year: "",
+      duration: "",
+      pitch: "",
+      story: "",
+      trailer: "",
+      location: null,
+      videoFormat: "",
+      videoSupport: "",
+      fileSize: null,
+      idTheMovieDb: "",
+      idIMDb: null,
+    });
+    // Réinitialiser valeur par défaut
+    setFormat("");
+    setvideoSupport("");
+    setFileSize(null);
+    setSelectedFile(null);
+    setSelectedKinds([]);
+    setSelectedDirectors([]);
+    setSelectedCasting([]);
+    setSelectedScreenwriters([]);
+    setSelectedMusic([]);
+    setSelectedStudios([]);
+    setSelectedCountries([]);
+    setSelectedLanguages([]);
+    setSelectedTags([]);
   };
 
-  // MODAL MOVIE INFO ENTRANCE
+  // -----------------/ MOVIE INFO ENTRANCE MODAL /----------------- //
+
   const handleOpenModalMIE = () => {
     setOpenModalMIE(true);
   };
@@ -89,6 +110,8 @@ function AddNewMovie() {
   const handleCloseModalMIE = () => {
     setOpenModalMIE(false);
   };
+
+  // -----------------/ MOVIE ENTRANCE SEARCH & INSERT FUNC /----------------- //
 
   // GENRES SEARCH BY NAME METHOD
   const searchGenreInDatabase = async (genreName) => {
@@ -133,7 +156,6 @@ function AddNewMovie() {
       const url = `${
         import.meta.env.VITE_BACKEND_URL
       }/api/studio/byname/${encodeURIComponent(studioName)}`;
-      console.info("url:", url);
       const response = await axios.get(url);
       console.info("url response:", response);
 
@@ -170,10 +192,7 @@ function AddNewMovie() {
       const url = `${
         import.meta.env.VITE_BACKEND_URL
       }/api/country/byname/${encodeURIComponent(countryName)}`;
-      console.info("url:", url);
       const response = await axios.get(url);
-      console.info("url response:", response);
-
       if (response.status === 200 && response.data) {
         return response.data;
       }
@@ -207,9 +226,7 @@ function AddNewMovie() {
       const url = `${
         import.meta.env.VITE_BACKEND_URL
       }/api/language/byname/${encodeURIComponent(languageName)}`;
-      console.info("url:", url);
       const response = await axios.get(url);
-      console.info("url response:", response);
 
       if (response.status === 200 && response.data) {
         return response.data;
@@ -416,8 +433,10 @@ function AddNewMovie() {
     }
   };
 
-  // DATA FETCH
+  // -----------------/ MOVIE DATA FETCH /----------------- //
+
   const handleMovieClick = async (movieId) => {
+    resetStates();
     try {
       const options = {
         method: "GET",
@@ -436,7 +455,10 @@ function AddNewMovie() {
       setMovie({
         ...movie,
         title: movieData.title,
-        altTitle: movieData.original_title || "",
+        altTitle:
+          movieData.original_title !== movieData.title
+            ? movieData.original_title
+            : "",
         year: movieData.release_date.substring(0, 4),
         duration: movieData.runtime,
         pitch: movieData.tagline || "",
@@ -445,16 +467,22 @@ function AddNewMovie() {
       });
 
       // Fetch GENRES
-      const fetchGenre = async (genre) => {
-        const genreData = await searchGenreInDatabase(genre.name);
+      const fetchGenre = async (genreName) => {
+        const genreData = await searchGenreInDatabase(genreName);
         if (genreData) {
           return { id: genreData.id, name: genreData.name };
         }
-        const newGenreData = await createGenreInDatabase(genre.name);
-        return { id: newGenreData.id, name: genre.name };
+        const newGenreData = await createGenreInDatabase(genreName);
+        return { id: newGenreData.id, name: genreName };
       };
 
-      const genresData = await Promise.all(movieData.genres.map(fetchGenre));
+      // Fetch genres and add "adulte" genre if the movie is for adults
+      const genresToFetch = movieData.genres.map((genre) => genre.name);
+      if (movieData.adult) {
+        genresToFetch.push("adulte");
+      }
+
+      const genresData = await Promise.all(genresToFetch.map(fetchGenre));
       setSelectedKinds(genresData);
 
       // Fetch STUDIO
@@ -517,6 +545,7 @@ function AddNewMovie() {
       };
 
       const response2 = await axios(options2);
+      console.info("response2:", response2);
       const crewData = response2.data.crew;
       const castData = response2.data.cast;
 
@@ -548,7 +577,9 @@ function AddNewMovie() {
         crewData
           .filter(
             (crewMember) =>
-              crewMember.job === "Screenplay" || crewMember.job === "Writer"
+              crewMember.job === "Screenplay" ||
+              crewMember.job === "Writer" ||
+              crewMember.job === "Author"
           )
           .map((screenwriter) =>
             fetchOrCreateEntity(
@@ -563,7 +594,11 @@ function AddNewMovie() {
       // Fetch COMPOSITORS
       const compositorsData = await Promise.all(
         crewData
-          .filter((crewMember) => crewMember.job === "Original Music Composer")
+          .filter(
+            (crewMember) =>
+              crewMember.job === "Original Music Composer" ||
+              crewMember.job === "Music"
+          )
           .map((compositor) =>
             fetchOrCreateEntity(
               compositor,
@@ -640,7 +675,8 @@ function AddNewMovie() {
     }
   };
 
-  // MODAL FETCH ITEMS
+  // -----------------/ ITEMS MODAL FETCH /----------------- //
+
   const fetchData = (route) => {
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/${route}`)
       .then((response) => {
@@ -744,7 +780,7 @@ function AddNewMovie() {
     return selectedTags.map((tag) => tag.name).join(", ");
   };
 
-  // INPUT FILE
+  // -----------------/ INPUT FILE /----------------- //
   const fileInputRef = useRef(null);
 
   const handleFileChange = (event) => {
@@ -792,7 +828,8 @@ function AddNewMovie() {
     supportsHandleChange(event);
   };
 
-  // INPUT COVER
+  // -----------------/ INPUT COVER /----------------- //
+
   const fileCoverRef = useRef(null);
 
   const handleCoverChange = (event) => {
@@ -811,7 +848,7 @@ function AddNewMovie() {
     }
   };
 
-  // POST NEW MOVIE
+  // -----------------/ POST NEW MOVIE /----------------- //
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -879,36 +916,7 @@ function AddNewMovie() {
 
         alert("Le film a été ajouté avec succès !");
         // Vider le formulaire
-        setMovie({
-          title: "",
-          altTitle: "",
-          year: "",
-          duration: "",
-          pitch: "",
-          story: "",
-          trailer: "",
-          location: null,
-          videoFormat: "",
-          videoSupport: "",
-          fileSize: null,
-          idTheMovieDb: "",
-          idIMDb: null,
-        });
-        // Réinitialiser valeur par défaut
-        setSource("MovieDb");
-        setFormat("");
-        setvideoSupport("");
-        setFileSize(null);
-        setSelectedFile(null);
-        setSelectedKinds([]);
-        setSelectedDirectors([]);
-        setSelectedCasting([]);
-        setSelectedScreenwriters([]);
-        setSelectedMusic([]);
-        setSelectedStudios([]);
-        setSelectedCountries([]);
-        setSelectedLanguages([]);
-        setSelectedTags([]);
+        resetStates();
       })
       .catch((error) => {
         console.error(error);
@@ -916,7 +924,7 @@ function AddNewMovie() {
       });
   };
 
-  // BUTTON STYLE
+  // -----------------/ BUTTON STYLE /----------------- //
   const theme = createTheme({
     palette: {
       primary: {
@@ -928,7 +936,7 @@ function AddNewMovie() {
     },
   });
 
-  // MODAL STYLE
+  // -----------------/ MODAL STYLE /----------------- //
   const style = {
     position: "absolute",
     top: "50%",
@@ -954,31 +962,15 @@ function AddNewMovie() {
     padding: 0,
   };
 
+  // -----------------------------/ RETURN /----------------------------- //
   return (
     <main>
       <section className="Adm_form_box">
         <section className="Adm_l1">
           <div className="Adm_l1a">
             <h1 className="AdM_main_title">ADD NEW MOVIE</h1>
-            {/* movie idTheMovieDb - idImDB */}
+            {/* movie idTheMovieDb */}
             <div className="SourceResearchItems">
-              <Box sx={{ minWidth: 120 }}>
-                <FormControl fullWidth>
-                  <InputLabel id="demo-simple-select-label">
-                    MovieDb / ImDB
-                  </InputLabel>
-                  <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    value={source}
-                    label="MovieDb / ImDB"
-                    onChange={handleChangeSource}
-                  >
-                    <MenuItem value="MovieDb">MovieDb</MenuItem>
-                    <MenuItem value="ImDB">ImDB</MenuItem>
-                  </Select>
-                </FormControl>
-              </Box>
               <Box
                 component="form"
                 sx={{ "& > :not(style)": { width: "15ch" } }}
@@ -989,24 +981,13 @@ function AddNewMovie() {
                 gap={4}
                 p={2}
               >
-                {source === "MovieDb" && (
-                  <TextField
-                    id="filled-basic"
-                    label="Id MovieDb"
-                    variant="outlined"
-                    value={movie.idTheMovieDb}
-                    onChange={handleChangeMovieDb}
-                  />
-                )}
-                {source === "ImDB" && (
-                  <TextField
-                    id="filled-basic"
-                    label="Id ImDB"
-                    variant="outlined"
-                    value={movie.idIMDb}
-                    onChange={handleChangeImDb}
-                  />
-                )}
+                <TextField
+                  id="filled-basic"
+                  label="Id MovieDb"
+                  variant="outlined"
+                  value={movie.idTheMovieDb}
+                  onChange={handleChangeMovieDb}
+                />
               </Box>
               <Stack spacing={2} direction="row">
                 <Button
@@ -1408,49 +1389,51 @@ function AddNewMovie() {
                 </MenuItem>
               </Select>
             </FormControl>
-            <div>
-              {/* movie VIDEOFORMAT */}
-              <Box
-                component="form"
-                sx={{ "& > :not(style)": { width: "25ch" } }}
-                noValidate
-                autoComplete="off"
-                display="flex"
-                alignItems="center"
-                gap={4}
-              >
-                <FormControl sx={{ m: 1, minWidth: 120 }}>
-                  <InputLabel id="demo-select-small-label">format</InputLabel>
-                  <Select
-                    labelId="demo-select-small-label"
-                    id="demo-select-small"
-                    value={format}
-                    label="format"
-                    onChange={formatsHandleChange}
-                  >
-                    <MenuItem value="">
-                      <em>choisir un format</em>
-                    </MenuItem>
-                    <MenuItem value="avi">avi</MenuItem>
-                    <MenuItem value="mkv">mkv</MenuItem>
-                    <MenuItem value="mp4">mp4</MenuItem>
-                  </Select>
-                </FormControl>
-                {/* movie FILESIZE */}
-                <TextField
-                  label="File Size"
-                  id="outlined-start-adornment"
-                  sx={{ m: 1, width: "25ch" }}
-                  value={fileSize || ""}
-                  onChange={(event) => setFileSize(event.target.value)}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">Go</InputAdornment>
-                    ),
-                  }}
-                />
-              </Box>
-            </div>
+            {videoSupport !== "DVD" && videoSupport !== "DVD R/RW" && (
+              <div>
+                {/* movie VIDEOFORMAT */}
+                <Box
+                  component="form"
+                  sx={{ "& > :not(style)": { width: "25ch" } }}
+                  noValidate
+                  autoComplete="off"
+                  display="flex"
+                  alignItems="center"
+                  gap={4}
+                >
+                  <FormControl sx={{ m: 1, minWidth: 120 }}>
+                    <InputLabel id="demo-select-small-label">format</InputLabel>
+                    <Select
+                      labelId="demo-select-small-label"
+                      id="demo-select-small"
+                      value={format}
+                      label="format"
+                      onChange={formatsHandleChange}
+                    >
+                      <MenuItem value="">
+                        <em>choisir un format</em>
+                      </MenuItem>
+                      <MenuItem value="avi">avi</MenuItem>
+                      <MenuItem value="mkv">mkv</MenuItem>
+                      <MenuItem value="mp4">mp4</MenuItem>
+                    </Select>
+                  </FormControl>
+                  {/* movie FILESIZE */}
+                  <TextField
+                    label="File Size"
+                    id="outlined-start-adornment"
+                    sx={{ m: 1, width: "25ch" }}
+                    value={fileSize || ""}
+                    onChange={(event) => setFileSize(event.target.value)}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">Go</InputAdornment>
+                      ),
+                    }}
+                  />
+                </Box>
+              </div>
+            )}
             {/* movie LOCAL FILE */}
             <Box
               component="form"
