@@ -135,13 +135,15 @@ function AddNewMovie() {
 
   // GENRES NEW INSERT METHOD
   const createGenreInDatabase = async (genreName) => {
+    console.info("Creating genre in database:", genreName);
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/genre`,
         { name: genreName }
       );
 
-      if (response.status === 200 && response.data) {
+      if (response.status === 201 && response.data) {
+        console.info("genre created:", response.data);
         return response.data;
       }
       throw new Error("Failed to create genre in database");
@@ -157,7 +159,6 @@ function AddNewMovie() {
         import.meta.env.VITE_BACKEND_URL
       }/api/studio/byname/${encodeURIComponent(studioName)}`;
       const response = await axios.get(url);
-      console.info("url response:", response);
 
       if (response.status === 200 && response.data) {
         return response.data;
@@ -469,6 +470,7 @@ function AddNewMovie() {
       // Fetch GENRES
       const fetchGenre = async (genreName) => {
         const genreData = await searchGenreInDatabase(genreName);
+        console.info("genreData:", genreData);
         if (genreData) {
           return { id: genreData.id, name: genreData.name };
         }
