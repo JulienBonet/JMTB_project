@@ -21,6 +21,7 @@ function MovieCard({ movie, origin }) {
     videoSupport,
     fileSize,
   } = movie;
+  console.info("movie:", movie);
 
   const { genres, countries, directors, screenwriters, music, studios, cast } =
     movieData;
@@ -58,8 +59,6 @@ function MovieCard({ movie, origin }) {
         });
     }, [id]);
   }
-
-  const FichierMultimedia = "Fichier multimédia";
 
   // TOGGLE trailer
   const [isTrailerVisible, setIsTrailerVisible] = useState(false);
@@ -162,7 +161,8 @@ function MovieCard({ movie, origin }) {
                 <span className="paraph_bolder">Support:</span> {videoSupport}
               </p>
 
-              {videoSupport === FichierMultimedia && (
+              {(videoSupport === "Fichier multimédia" ||
+                videoSupport === "FICHIER MULTIMEDIA") && (
                 <>
                   <p className="MovieCard_info paraph_height">
                     <span className="paraph_bolder">Emplacement:</span>{" "}

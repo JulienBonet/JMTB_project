@@ -800,7 +800,7 @@ function AddNewMovie() {
         location: event.target.value,
         videoFormat: fileExtension,
         videoSupport: "FICHIER MULTIMEDIA",
-        fileSize: fileSizeInGigabytes.toFixed(2),
+        fileSize: `${fileSizeInGigabytes.toFixed(2)} GB`,
       }));
     } else {
       alert("Veuillez sélectionner un fichier vidéo valide.");
