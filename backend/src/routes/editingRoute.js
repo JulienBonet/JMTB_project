@@ -80,6 +80,7 @@ router.put(
   editingController.uploadCountryImage
 );
 router.delete("/country/:id", editingController.eraseCountry);
+router.get("/country/byname/:name", editingController.getCountryByName);
 
 // GENRE ROUTES
 router.post("/genre", editingController.addGenre);
@@ -90,6 +91,7 @@ router.delete("/genre/:id", editingController.eraseGenre);
 router.post("/language", editingController.addLanguage);
 router.put("/language/:id", editingController.editingLanguage);
 router.delete("/language/:id", editingController.eraseLanguage);
+router.get("/language/byname/:name", editingController.getLanguageByName);
 
 // TAG ROUTES
 router.post("/tag", editingController.addTag);

@@ -149,29 +149,6 @@ function AddNewMovie() {
   };
 
   // STUDIO NEW INSERT METHOD
-  // const createStudioInDatabase = async (studioName) => {
-  //   try {
-  //     console.info("Creating studio in database:", studioName);
-  //     const response = await axios.post(
-  //       `${import.meta.env.VITE_BACKEND_URL}/api/studio`,
-  //       { name: studioName }
-  //     );
-
-  //     console.info("Response from server:", response);
-
-  //     if (response.status === 200 && response.data) {
-  //       console.info("Studio created:", response.data);
-  //       return response.data;
-  //     }
-  //     throw new Error("Failed to create studio in database");
-  //   } catch (error) {
-  //     console.error("Error creating studio in database:", error.message);
-  //     throw error;
-  //   }
-  // };
-
-  // console.info("Selected studios:", selectedStudios);
-
   const createStudioInDatabase = async (studioName) => {
     console.info("Creating studio in database:", studioName);
     try {
@@ -183,6 +160,80 @@ function AddNewMovie() {
       return response.data;
     } catch (error) {
       console.error("Error creating studio:", error);
+      throw error;
+    }
+  };
+
+  // COUNTRY SEARCH BY NAME METHOD
+  const searchCountryInDatabase = async (countryName) => {
+    try {
+      const url = `${
+        import.meta.env.VITE_BACKEND_URL
+      }/api/country/byname/${encodeURIComponent(countryName)}`;
+      console.info("url:", url);
+      const response = await axios.get(url);
+      console.info("url response:", response);
+
+      if (response.status === 200 && response.data) {
+        return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw new Error(
+        `Error searching for country in database: ${error.message}`
+      );
+    }
+  };
+
+  // COUNTRY NEW INSERT METHOD
+  const createCountryInDatabase = async (countryName) => {
+    console.info("Creating country in database:", countryName);
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/country`,
+        { name: countryName }
+      );
+      console.info("country created:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error creating country:", error);
+      throw error;
+    }
+  };
+
+  // LANGUAGE SEARCH BY NAME METHOD
+  const searchLanguageInDatabase = async (languageName) => {
+    try {
+      const url = `${
+        import.meta.env.VITE_BACKEND_URL
+      }/api/language/byname/${encodeURIComponent(languageName)}`;
+      console.info("url:", url);
+      const response = await axios.get(url);
+      console.info("url response:", response);
+
+      if (response.status === 200 && response.data) {
+        return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw new Error(
+        `Error searching for language in database: ${error.message}`
+      );
+    }
+  };
+
+  // LANGUAGE NEW INSERT METHOD
+  const createLanguageInDatabase = async (languageName) => {
+    console.info("Creating language in database:", languageName);
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/language`,
+        { name: languageName }
+      );
+      console.info("language created:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error creating language:", error);
       throw error;
     }
   };
@@ -538,6 +589,40 @@ function AddNewMovie() {
         movieData.production_companies.map(fetchStudio)
       );
       setSelectedStudios(studiosData);
+
+      // Fetch COUNTRY
+      const fetchCountry = async (country) => {
+        const countryData = await searchCountryInDatabase(country.name);
+        if (countryData) {
+          return { id: countryData.id, name: countryData.name };
+        }
+        const newCountryData = await createCountryInDatabase(country.name);
+        return { id: newCountryData.id, name: country.name };
+      };
+
+      const countriesData = await Promise.all(
+        movieData.production_countries.map(fetchCountry)
+      );
+      setSelectedCountries(countriesData);
+
+      // Fetch LANGUAGE
+      const fetchLanguage = async (language) => {
+        const languageData = await searchLanguageInDatabase(
+          language.english_name
+        );
+        if (languageData) {
+          return { id: languageData.id, name: languageData.name };
+        }
+        const newLanguageData = await createLanguageInDatabase(
+          language.english_name
+        );
+        return { id: newLanguageData.id, name: language.english_name };
+      };
+
+      const languagesData = await Promise.all(
+        movieData.spoken_languages.map(fetchLanguage)
+      );
+      setSelectedLanguages(languagesData);
 
       // Deuxième fetch pour les crédits (cast et crew)
       const options2 = {
