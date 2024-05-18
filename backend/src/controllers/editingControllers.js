@@ -1181,6 +1181,16 @@ const eraseTag = async (req, res, next) => {
   }
 };
 
+const getTagByName = async (req, res, next) => {
+  try {
+    const { name } = req.params;
+    const [[tag]] = await editingModel.findTagByName(name);
+    res.status(200).json(tag);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   addDirector,
   editingDirector,
@@ -1221,4 +1231,5 @@ module.exports = {
   addTag,
   editingTag,
   eraseTag,
+  getTagByName,
 };

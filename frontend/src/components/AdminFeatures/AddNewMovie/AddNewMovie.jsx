@@ -382,159 +382,41 @@ function AddNewMovie() {
     }
   };
 
+  // TAG SEARCH BY NAME METHOD
+  const searchTagInDatabase = async (tagsNames) => {
+    try {
+      const response = await axios.get(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/api/tag/byname/${encodeURIComponent(tagsNames)}`
+      );
+
+      if (response.status === 200 && response.data) {
+        return response.data;
+      }
+      return null;
+    } catch (error) {
+      throw new Error(`Error searching for tag in database: ${error.message}`);
+    }
+  };
+
+  // TAG NEW INSERT METHOD
+  const createTagInDatabase = async (TagName) => {
+    console.info("Creating casting in database:", TagName);
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/tag`,
+        { name: TagName }
+      );
+      console.info("tag created:", response.data);
+      return response.data;
+    } catch (error) {
+      console.error("Error tag casting:", error);
+      throw error;
+    }
+  };
+
   // DATA FETCH
-  // const handleMovieClick = async (movieId) => {
-  //   try {
-  //     const options = {
-  //       method: "GET",
-  //       url: `https://api.themoviedb.org/3/movie/${movieId}?language=fr-FR`,
-  //       headers: {
-  //         accept: "application/json",
-  //         Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
-  //       },
-  //     };
-
-  //     const response = await axios(options);
-  //     const movieData = response.data;
-
-  //     setMovieDetails(movieData);
-
-  //     setMovie({
-  //       ...movie,
-  //       title: movieData.title,
-  //       altTitle: movieData.original_title ? movieData.original_title : "",
-  //       year: movieData.release_date.substring(0, 4),
-  //       duration: movieData.runtime,
-  //       pitch: movieData.tagline ? movieData.tagline : "",
-  //       story: movieData.overview,
-  //       idTheMovieDb: movieData.id,
-  //     });
-
-  //     // fetch GENRES
-  //     const { genres } = movieData;
-  //     const genresData = await Promise.all(
-  //       genres.map(async (genre) => {
-  //         const genreData = await searchGenreInDatabase(genre.name);
-  //         if (genreData) {
-  //           return { id: genreData.id, name: genreData.name };
-  //         }
-  //         const newGenreData = await createGenreInDatabase(genre.name);
-  //         return { id: newGenreData.id, name: genre.name };
-  //       })
-  //     );
-
-  //     setSelectedKinds(genresData);
-
-  //     // fetch STUDIO
-  //     const { productionCompanies } = movieData;
-  //     const studiosData = await Promise.all(
-  //       productionCompanies.map(async (studio) => {
-  //         const studioData = await searchStudioInDatabase(
-  //           productionCompanies.name
-  //         );
-  //         if (studioData) {
-  //           return { id: studioData.id, name: studioData.name };
-  //         }
-  //         const newStudioData = await createStudioInDatabase(
-  //           productionCompanies.name
-  //         );
-  //         return { id: newStudioData.id, name: studio.name };
-  //       })
-  //     );
-
-  //     setSelectedStudios(studiosData);
-
-  //     // Deuxième fetch pour les crédits (cast et crew)
-  //     const options2 = {
-  //       method: "GET",
-  //       url: `https://api.themoviedb.org/3/movie/${movieId}/credits?language=fr-FR`,
-  //       headers: {
-  //         accept: "application/json",
-  //         Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
-  //       },
-  //     };
-
-  //     const response2 = await axios(options2);
-  //     const crewData = response2.data.crew;
-  //     const castData = response2.data.cast;
-
-  //     // fetch DIRECTORS
-  //     const directors = crewData.filter(
-  //       (crewMember) => crewMember.job === "Director"
-  //     );
-
-  //     const directorsData = await Promise.all(
-  //       directors.map(async (director) => {
-  //         let directorData = await searchDirectorInDatabase(director.name);
-  //         if (!directorData) {
-  //           directorData = await createDirectorInDatabase(director.name);
-  //         }
-  //         return { id: directorData.id, name: director.name };
-  //       })
-  //     );
-
-  //     setSelectedDirectors(directorsData);
-
-  //     // fetch SCREENWRITERS
-  //     const screenwriters = crewData.filter(
-  //       (crewMember) =>
-  //         crewMember.job === "Screenplay" || crewMember.job === "Writer"
-  //     );
-
-  //     const screenwritersData = await Promise.all(
-  //       screenwriters.map(async (screenwriter) => {
-  //         let screenwriterData = await searchScreenwriterInDatabase(
-  //           screenwriter.name
-  //         );
-  //         if (!screenwriterData) {
-  //           screenwriterData = await createScreenwriterInDatabase(
-  //             screenwriter.name
-  //           );
-  //         }
-  //         return { id: screenwriterData.id, name: screenwriter.name };
-  //       })
-  //     );
-
-  //     setSelectedScreenwriters(screenwritersData);
-
-  //     // fetch COMPOSITORS
-  //     const compositors = crewData.filter(
-  //       (crewMember) => crewMember.job === "Original Music Composer"
-  //     );
-
-  //     const compositorsData = await Promise.all(
-  //       compositors.map(async (compositor) => {
-  //         let compositorData = await searchCompositorInDatabase(
-  //           compositor.name
-  //         );
-  //         if (!compositorData) {
-  //           compositorData = await createCompositorInDatabase(compositor.name);
-  //         }
-  //         return { id: compositorData.id, name: compositor.name };
-  //       })
-  //     );
-
-  //     setSelectedMusic(compositorsData);
-
-  //     // fetch CASTING
-  //     const castings = castData.filter((castMember) => castMember.order <= 5);
-
-  //     const castingsData = await Promise.all(
-  //       castings.map(async (casting) => {
-  //         let castingData = await searchCastingInDatabase(casting.name);
-  //         if (!castingData) {
-  //           castingData = await createCastingInDatabase(casting.name);
-  //         }
-  //         return { id: castingData.id, name: casting.name };
-  //       })
-  //     );
-
-  //     setSelectedCasting(castingsData);
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //   }
-  // };
-
   const handleMovieClick = async (movieId) => {
     try {
       const options = {
@@ -624,7 +506,7 @@ function AddNewMovie() {
       );
       setSelectedLanguages(languagesData);
 
-      // Deuxième fetch pour les crédits (cast et crew)
+      // CREDITS FETCH (cast & crew)
       const options2 = {
         method: "GET",
         url: `https://api.themoviedb.org/3/movie/${movieId}/credits?language=fr-FR`,
@@ -705,6 +587,54 @@ function AddNewMovie() {
           )
       );
       setSelectedCasting(castingsData);
+
+      // Fetch trailer
+      const trailerOptions = {
+        method: "GET",
+        url: `https://api.themoviedb.org/3/movie/${movieId}/videos?language=fr-FR`,
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
+        },
+      };
+
+      const trailerResponse = await axios(trailerOptions);
+      const trailerData = trailerResponse.data.results.find(
+        (video) => video.type === "Trailer" && video.site === "YouTube"
+      );
+      const videoUrl = trailerData
+        ? `https://www.youtube.com/watch?v=${trailerData.key}`
+        : "";
+
+      setMovie((prevMovie) => ({
+        ...prevMovie,
+        trailer: videoUrl,
+      }));
+
+      // Fetch keywords (tags)
+      const keywordsOptions = {
+        method: "GET",
+        url: `https://api.themoviedb.org/3/movie/${movieId}/keywords`,
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
+        },
+      };
+
+      const keywordsResponse = await axios(keywordsOptions);
+      const keywordsData = keywordsResponse.data.keywords;
+
+      // Fetch or create tags in database
+      const tagsData = await Promise.all(
+        keywordsData.map((keyword) =>
+          fetchOrCreateEntity(
+            { name: keyword.name },
+            searchTagInDatabase,
+            createTagInDatabase
+          )
+        )
+      );
+      setSelectedTags(tagsData);
     } catch (error) {
       console.error("Error:", error);
     }

@@ -97,5 +97,6 @@ router.get("/language/byname/:name", editingController.getLanguageByName);
 router.post("/tag", editingController.addTag);
 router.put("/tag/:id", editingController.editingTag);
 router.delete("/tag/:id", editingController.eraseTag);
+router.get("/tag/byname/:name", editingController.getTagByName);
 
 module.exports = router;

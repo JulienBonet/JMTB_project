@@ -282,6 +282,9 @@ const deleteLanguage = (id) =>
 const findTagById = (id) =>
   db.query("SELECT * FROM tag WHERE id = ?", [id]).then(([rows]) => rows);
 
+const findTagByName = (name) =>
+  db.query("SELECT * FROM tag WHERE name = ?", [name]);
+
 const insertTag = (name) =>
   db.query("INSERT INTO tag (name) VALUES (?);", [name]);
 
@@ -352,6 +355,7 @@ module.exports = {
   editLanguage,
   deleteLanguage,
   findTagById,
+  findTagByName,
   insertTag,
   editTag,
   deleteTag,
