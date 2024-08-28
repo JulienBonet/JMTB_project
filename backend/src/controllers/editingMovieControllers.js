@@ -1,11 +1,41 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-plusplus */
 /* eslint-disable consistent-return */
 /* eslint-disable prefer-destructuring */
-// const fs = require("fs");
-// const path = require("path");
+const axios = require("axios");
+const fs = require("fs");
+const path = require("path");
+const { v4: uuidv4 } = require("uuid");
 const editingModel = require("../models/editingModel");
 const editingMovieModel = require("../models/editingMovieModel");
+
+// Fonction de téléchargement de l'image
+const downloadImage = async (url, filepath) => {
+  const response = await axios({
+    url,
+    responseType: "stream",
+  });
+
+  return new Promise((resolve, reject) => {
+    response.data
+      .pipe(fs.createWriteStream(filepath))
+      .on("finish", () => resolve(filepath))
+      .on("error", (e) => reject(e));
+  });
+};
+
+const downloadPoster = async (posterPath) => {
+  const tmdbBaseUrl = "https://image.tmdb.org/t/p/original";
+  const posterUrl = `${tmdbBaseUrl}${posterPath}`;
+  const extension = path.extname(posterPath);
+  const filename = `poster-${uuidv4()}${extension}`;
+  const filepath = path.join(__dirname, "../../public/images", filename);
+
+  await downloadImage(posterUrl, filepath);
+  return filename; // Retourne le nom de fichier de l'image téléchargée
+};
 
 const addMovie = async (req, res) => {
   try {
@@ -14,6 +44,7 @@ const addMovie = async (req, res) => {
       altTitle,
       year,
       duration,
+      posterUrl,
       trailer,
       pitch,
       story,
@@ -38,11 +69,18 @@ const addMovie = async (req, res) => {
       return res.status(400).json({ message: "Movie's title is required" });
     }
 
+    // Téléchargez l'affiche du film
+    let posterFilename = "";
+    if (posterUrl) {
+      posterFilename = path.basename(posterUrl);
+    }
+
     await editingMovieModel.insertMovie(
       title,
       altTitle,
       year,
       duration,
+      posterFilename,
       trailer,
       pitch,
       story,
@@ -58,46 +96,36 @@ const addMovie = async (req, res) => {
 
     // INSERT KINDS
     if (genres.length > 0) {
-      // Créer un tableau de promesses pour insérer les genres associés au film
       const genrePromises = genres.map((genre) =>
         editingMovieModel.addMovieKind(movieId, genre.id)
       );
-
-      // Attendre que toutes les promesses soient résolues
       await Promise.all(genrePromises);
     }
 
     // INSERT DIRECTORS
     if (directors && directors.length > 0) {
-      // Vérifier si chaque réalisateur existe en base de données
       const directorsPromises = directors.map((directorName) =>
         editingModel.findDirectorByName(directorName)
       );
 
-      // Attendre que toutes les promesses soient résolues
       const directorsExist = await Promise.all(directorsPromises);
-
-      // Créer un tableau pour stocker les ID des réalisateurs
       const directorIds = [];
 
-      // Vérifier si chaque réalisateur existe en base de données
       for (let i = 0; i < directorsExist.length; i++) {
         const director = directorsExist[i][0];
-        directorIds.push(director[0].id); // Accéder à l'élément du tableau
+        if (!director) {
+          const result = await editingModel.insertDirector(directors[i]);
+          directorIds.push(result.insertId);
+        } else {
+          directorIds.push(director[0].id);
+        }
       }
 
-      // Créer les relations entre le film et les réalisateurs
       const directorPromises = directorIds.map((directorId) =>
         editingMovieModel.addMovieDirector(movieId, directorId)
       );
 
-      // Attendre que toutes les promesses soient résolues
-      try {
-        await Promise.all(directorPromises);
-      } catch (error) {
-        console.error("Error creating movie-director relationships:", error);
-        // Gérer l'erreur ici, par exemple en renvoyant un message d'erreur à l'utilisateur
-      }
+      await Promise.all(directorPromises);
     }
 
     // INSERT CASTING
@@ -107,18 +135,13 @@ const addMovie = async (req, res) => {
       );
 
       const castingExist = await Promise.all(castingsPromises);
-
       const castingIds = [];
 
       for (let i = 0; i < castingExist.length; i++) {
         const casting = castingExist[i][0];
         if (!casting) {
-          try {
-            const result = await editingModel.insertCasting(castings[i]);
-            castingIds.push(result.insertId);
-          } catch (error) {
-            console.error("Error inserting casting:", error);
-          }
+          const result = await editingModel.insertCasting(castings[i]);
+          castingIds.push(result.insertId);
         } else {
           castingIds.push(casting[0].id);
         }
@@ -128,11 +151,7 @@ const addMovie = async (req, res) => {
         editingMovieModel.addMovieCasting(movieId, castingId)
       );
 
-      try {
-        await Promise.all(castingPromises);
-      } catch (error) {
-        console.error("Error creating movie-casting relationships:", error);
-      }
+      await Promise.all(castingPromises);
     }
 
     // INSERT SCREENWRITERS
@@ -142,26 +161,25 @@ const addMovie = async (req, res) => {
       );
 
       const screenwriterExist = await Promise.all(screenwritersPromises);
-
       const screenwriterIds = [];
 
       for (let i = 0; i < screenwriterExist.length; i++) {
         const screenwriter = screenwriterExist[i][0];
-        screenwriterIds.push(screenwriter[0].id);
+        if (!screenwriter) {
+          const result = await editingModel.insertScreenwriter(
+            screenwriters[i]
+          );
+          screenwriterIds.push(result.insertId);
+        } else {
+          screenwriterIds.push(screenwriter[0].id);
+        }
       }
 
       const screenwriterPromises = screenwriterIds.map((screenwriterId) =>
         editingMovieModel.addMovieScreenwriter(movieId, screenwriterId)
       );
 
-      try {
-        await Promise.all(screenwriterPromises);
-      } catch (error) {
-        console.error(
-          "Error creating movie-screenwriter relationships:",
-          error
-        );
-      }
+      await Promise.all(screenwriterPromises);
     }
 
     // INSERT COMPOSITOR
@@ -171,68 +189,55 @@ const addMovie = async (req, res) => {
       );
 
       const compositorExist = await Promise.all(compositorsPromises);
-
       const compositorIds = [];
 
       for (let i = 0; i < compositorExist.length; i++) {
         const compositor = compositorExist[i][0];
-        compositorIds.push(compositor[0].id);
+        if (!compositor) {
+          const result = await editingModel.insertCompositor(compositors[i]);
+          compositorIds.push(result.insertId);
+        } else {
+          compositorIds.push(compositor[0].id);
+        }
       }
 
       const compositorPromises = compositorIds.map((compositorId) =>
         editingMovieModel.addMovieMusic(movieId, compositorId)
       );
 
-      try {
-        await Promise.all(compositorPromises);
-      } catch (error) {
-        console.error("Error creating movie-compositor relationships:", error);
-      }
+      await Promise.all(compositorPromises);
     }
 
-    // INSERT STUDIO
+    // INSERT STUDIOS
     if (studios && studios.length > 0) {
       const studioIds = [];
 
       for (let i = 0; i < studios.length; i++) {
-        try {
-          const result = await editingModel.insertStudio(studios[i]);
-          studioIds.push(result.insertId);
-        } catch (error) {
-          console.error("Error inserting studio:", error);
-        }
+        const result = await editingModel.insertStudio(studios[i]);
+        studioIds.push(result.insertId);
       }
 
       const studioPromises = studioIds.map((studioId) =>
         editingMovieModel.addMovieStudio(movieId, studioId)
       );
 
-      try {
-        await Promise.all(studioPromises);
-      } catch (error) {
-        console.error("Error creating movie-studio relationships:", error);
-      }
+      await Promise.all(studioPromises);
     }
 
-    // INSERT COUNTRY
+    // INSERT COUNTRIES
     if (countries && countries.length > 0) {
       const countriesPromises = countries.map((countryName) =>
         editingModel.findCountryByName(countryName)
       );
 
       const countryExist = await Promise.all(countriesPromises);
-
       const countryIds = [];
 
       for (let i = 0; i < countryExist.length; i++) {
         const country = countryExist[i][0];
         if (!country) {
-          try {
-            const result = await editingModel.insertStudio(countries[i]);
-            countryIds.push(result.insertId);
-          } catch (error) {
-            console.error("Error inserting country:", error);
-          }
+          const result = await editingModel.insertCountry(countries[i]);
+          countryIds.push(result.insertId);
         } else {
           countryIds.push(country[0].id);
         }
@@ -242,32 +247,23 @@ const addMovie = async (req, res) => {
         editingMovieModel.addMovieCountry(movieId, countryId)
       );
 
-      try {
-        await Promise.all(countryPromises);
-      } catch (error) {
-        console.error("Error creating movie-country relationships:", error);
-      }
+      await Promise.all(countryPromises);
     }
 
-    // INSERT LANGUAGE
+    // INSERT LANGUAGES
     if (languages && languages.length > 0) {
       const languagesPromises = languages.map((languageName) =>
         editingModel.findLanguageByName(languageName)
       );
 
       const languageExist = await Promise.all(languagesPromises);
-
       const languageIds = [];
 
       for (let i = 0; i < languageExist.length; i++) {
         const language = languageExist[i][0];
         if (!language) {
-          try {
-            const result = await editingModel.insertLanguage(languages[i]);
-            languageIds.push(result.insertId);
-          } catch (error) {
-            console.error("Error inserting language:", error);
-          }
+          const result = await editingModel.insertLanguage(languages[i]);
+          languageIds.push(result.insertId);
         } else {
           languageIds.push(language[0].id);
         }
@@ -277,11 +273,7 @@ const addMovie = async (req, res) => {
         editingMovieModel.addMovieLanguage(movieId, languageId)
       );
 
-      try {
-        await Promise.all(languagePromises);
-      } catch (error) {
-        console.error("Error creating movie-language relationships:", error);
-      }
+      await Promise.all(languagePromises);
     }
 
     // INSERT TAGS

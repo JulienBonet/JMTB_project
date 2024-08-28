@@ -5,6 +5,7 @@ const insertMovie = (
   altTitle,
   year,
   duration,
+  cover,
   trailer,
   pitch,
   story,
@@ -16,12 +17,13 @@ const insertMovie = (
   idIMDb
 ) =>
   db.query(
-    "INSERT INTO movies (title, altTitle, year, duration, trailer, pitch, story, location, videoFormat, videoSupport, fileSize, idTheMovieDb, idIMDb) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+    "INSERT INTO movies (title, altTitle, year, duration, cover, trailer, pitch, story, location, videoFormat, videoSupport, fileSize, idTheMovieDb, idIMDb) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
     [
       title,
       altTitle,
       year,
       duration,
+      cover,
       trailer,
       pitch,
       story,
@@ -104,7 +106,7 @@ const findMovieMusic = (movieId, musicId) =>
   );
 
 const addMovieMusic = (movieId, musicId) =>
-  db.query("INSERT INTO `movie_music` (`movieId`, `musicId`) VALUES (? , ?);", [
+  db.query("INSERT INTO `movie_music` (`movieId`, `musicId`) VALUES (?, ?);", [
     movieId,
     musicId,
   ]);

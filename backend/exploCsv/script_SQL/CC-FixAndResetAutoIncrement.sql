@@ -1,7 +1,7 @@
 USE jmdb;
 
 -- DIRECTOR TABLE
-DELETE FROM jmdb.director WHERE id = 1778;
+DELETE FROM jmdb.director WHERE id = 1830;
 
 -- Récupérer le dernier ID utilisé dans la table director
 SET @maxId = (SELECT MAX(id) FROM director);
@@ -16,7 +16,7 @@ DEALLOCATE PREPARE stmt;
 SELECT * FROM director;
 
 -- CASTING TABLE
-DELETE FROM jmdb.casting WHERE id = 9907;
+DELETE FROM jmdb.casting WHERE id = 10129;
 
 -- Récupérer le dernier ID utilisé dans la table director
 SET @maxId = (SELECT MAX(id) FROM casting);
@@ -31,7 +31,7 @@ DEALLOCATE PREPARE stmt;
 SELECT * FROM casting;
 
 -- SCREENWRITER TABLE
-DELETE FROM jmdb.screenwriter WHERE id = 3887;
+DELETE FROM jmdb.screenwriter WHERE id = 3991;
 
 -- Récupérer le dernier ID utilisé dans la table director
 SET @maxId = (SELECT MAX(id) FROM screenwriter);
@@ -45,7 +45,7 @@ DEALLOCATE PREPARE stmt;
 SELECT * FROM screenwriter;
 
 -- MUSIC TABLE
-DELETE FROM jmdb.music WHERE id = 1278;
+DELETE FROM jmdb.music WHERE id = 1317;
 
 -- Récupérer le dernier ID utilisé dans la table director
 SET @maxId = (SELECT MAX(id) FROM music);
@@ -59,7 +59,7 @@ DEALLOCATE PREPARE stmt;
 SELECT * FROM music;
 
 -- STUDIO TABLE
-DELETE FROM jmdb.studio WHERE id = 957;
+DELETE FROM jmdb.studio WHERE id = 1000;
 
 -- Récupérer le dernier ID utilisé dans la table director
 SET @maxId = (SELECT MAX(id) FROM studio);
@@ -73,7 +73,7 @@ DEALLOCATE PREPARE stmt;
 SELECT * FROM studio;
 
 -- GENRE TABLE
-DELETE FROM jmdb.genre WHERE id = 40;
+DELETE FROM jmdb.genre WHERE id = 39;
 
 -- Récupérer le dernier ID utilisé dans la table director
 SET @maxId = (SELECT MAX(id) FROM genre);
@@ -116,7 +116,7 @@ SELECT * FROM country;
 
 
 -- TAG TABLE
-DELETE FROM jmdb.tag WHERE id = 209;
+DELETE FROM jmdb.tag WHERE id = 208;
 
 -- Récupérer le dernier ID utilisé dans la table director
 SET @maxId = (SELECT MAX(id) FROM tag);

@@ -13,13 +13,33 @@ import "./movieInfosEntrance.css";
 function MovieInfosEntrance({ title, onMovieClick, handleCloseModalMIE }) {
   const [data, setData] = useState([]);
   const [fullData, setFullData] = useState(null);
-  const [genres, setGenres] = useState([]);
+  const [genres, setGenres] = useState([]); // Initialisation avec un tableau vide
   const [page, setPage] = useState(1);
   const [adult, setAdult] = useState(false);
   const [error, setError] = useState(null);
+  const [genresLoaded, setGenresLoaded] = useState(false); // Nouvel état pour indiquer si les genres sont chargés
 
-  // ELEMENTS FOR FETCH URL
   const encodedTitle = encodeURIComponent(title);
+
+  // Fonction pour récupérer les genres d'un film
+  const getMovieGenres = (movie) => {
+    // Vérifier si genres est chargé ou non
+    if (!genresLoaded) {
+      return "Chargement des genres...";
+    }
+    // Vérifier si movie.genre_ids est défini
+    if (!movie.genre_ids) {
+      return "";
+    }
+    const genreNames = [];
+    movie.genre_ids.forEach((id) => {
+      const genre = genres.find((genre) => genre.id === id);
+      if (genre) {
+        genreNames.push(genre.name);
+      }
+    });
+    return genreNames.join(", ");
+  };
 
   const handleAdultSwitchChange = (event) => {
     setAdult(event.target.checked);
@@ -38,14 +58,19 @@ function MovieInfosEntrance({ title, onMovieClick, handleCloseModalMIE }) {
     },
   }));
 
-  // DATA FETCH
   useEffect(() => {
     setError(null);
     setData([]);
 
     const options = {
       method: "GET",
-      url: `https://api.themoviedb.org/3/search/movie?query=${encodedTitle}&include_adult=${adult}&language=fr-FR&page=${page}`,
+      url: `https://api.themoviedb.org/3/search/movie`,
+      params: {
+        query: encodedTitle,
+        include_adult: adult,
+        language: "fr-FR",
+        page,
+      },
       headers: {
         accept: "application/json",
         Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
@@ -58,7 +83,6 @@ function MovieInfosEntrance({ title, onMovieClick, handleCloseModalMIE }) {
         setData(response.data.results);
         setFullData(response.data);
 
-        // Récupérer les noms de genres en français
         const genresOptions = {
           method: "GET",
           url: "https://api.themoviedb.org/3/genre/movie/list",
@@ -75,6 +99,7 @@ function MovieInfosEntrance({ title, onMovieClick, handleCloseModalMIE }) {
           .request(genresOptions)
           .then((response) => {
             setGenres(response.data.genres);
+            setGenresLoaded(true); // Marquer les genres comme chargés
           })
           .catch((error) => {
             console.error(error);
@@ -85,29 +110,9 @@ function MovieInfosEntrance({ title, onMovieClick, handleCloseModalMIE }) {
         console.error(error);
         setError("Erreur lors de la récupération des films");
       });
-  }, [page, adult]);
+  }, [page, adult, encodedTitle]);
 
-  // RECUP KINDS NAMES
-  const getMovieGenres = (movie) => {
-    const genreNames = [];
-    movie.genre_ids.forEach((id) => {
-      const genre = genres.find((genre) => genre.id === id);
-      if (genre) {
-        genreNames.push(genre.name);
-      }
-    });
-    return genreNames.join(", ");
-  };
-
-  // FORMAT RELEASE DATE
-  const getYear = (releaseDate) => {
-    if (!releaseDate) {
-      return "";
-    }
-    return releaseDate.substring(0, 4);
-  };
-
-  // PAGINATION
+  // Fonction pour faire défiler vers le haut de la page
   const scrollToTop = () => {
     const topElement = document.getElementById("top");
     if (topElement) {
@@ -117,6 +122,15 @@ function MovieInfosEntrance({ title, onMovieClick, handleCloseModalMIE }) {
     }
   };
 
+  // Fonction pour formater la date de sortie
+  const getYear = (releaseDate) => {
+    if (!releaseDate) {
+      return "";
+    }
+    return releaseDate.substring(0, 4);
+  };
+
+  // Fonction pour gérer le clic sur le bouton précédent
   const handlePrevPage = () => {
     if (page > 1) {
       setPage(page - 1);
@@ -124,6 +138,7 @@ function MovieInfosEntrance({ title, onMovieClick, handleCloseModalMIE }) {
     }
   };
 
+  // Fonction pour gérer le clic sur le bouton suivant
   const handleNextPage = () => {
     if (fullData && page < fullData.total_pages) {
       setPage(page + 1);
@@ -131,23 +146,24 @@ function MovieInfosEntrance({ title, onMovieClick, handleCloseModalMIE }) {
     }
   };
 
-  // CATCH ERRO
+  // Afficher un message d'erreur s'il y en a un
   if (error) {
     return <div>{error}</div>;
   }
 
-  // LOADER
+  // Afficher un message de chargement si les données complètes ne sont pas encore disponibles
   if (!fullData) {
     return <div>Chargement...</div>;
   }
 
+  // Rendu du composant MovieInfosEntrance
   return (
     <section className="MIE_container">
       <span id="top" />
       <section className="MIE_contents">
-        <h1 className="MIE-title">MOVIE SEARCH ENTRANCES</h1>
+        <h1 className="MIE-title">ENTRÉES DE RECHERCHE DE FILM</h1>
         <p className="MIE-movie_count">
-          <span className="MIE_bold">{fullData.total_results}</span> movie(s)
+          <span className="MIE_bold">{fullData.total_results}</span> film(s)
         </p>
         {fullData.total_pages > 1 && (
           <p className="MIE_PagesCounter">
@@ -165,7 +181,7 @@ function MovieInfosEntrance({ title, onMovieClick, handleCloseModalMIE }) {
                   color="primary"
                 />
               }
-              label="include adult content"
+              label="Inclure le contenu pour adultes"
             />
           </FormGroup>
         </div>
@@ -188,17 +204,19 @@ function MovieInfosEntrance({ title, onMovieClick, handleCloseModalMIE }) {
                     <span className="MIE_italic">{movie.original_title}</span>
                   </h3>
                 )}
-                {movie.adult === true && <p className="MIE_adult">X ADULT X</p>}
+                {movie.adult === true && (
+                  <p className="MIE_adult">X ADULTE X</p>
+                )}
                 <p className="MIE_movie_genre">
-                  <span className="MIE_bold">Genre: </span>
+                  <span className="MIE_bold">Genre : </span>
                   {getMovieGenres(movie)}
                 </p>
                 <p className="MIE_movie_release">
-                  <span className="MIE_bold">Release: </span>
+                  <span className="MIE_bold">Sortie : </span>
                   {getYear(movie.release_date)}
                 </p>
                 <p className="MIE_movie_synopsis">
-                  <span className="MIE_bold">Synopsis: </span>
+                  <span className="MIE_bold">Synopsis : </span>
                   {movie.overview}
                 </p>
               </div>

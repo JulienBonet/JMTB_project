@@ -115,6 +115,7 @@ function MovieCasting() {
       console.error("Error fetching data:", error);
     }
   };
+
   // REQUEST ALL MOVIES SORTED ALPHABETICAL DESC
   const movieSortedZ = async () => {
     try {
@@ -133,6 +134,7 @@ function MovieCasting() {
       console.error("Error fetching data:", error);
     }
   };
+
   // REQUEST ALL MOVIES SORTED CHRONOLOGICAL ASC
   const movieSortedYear = async () => {
     try {
@@ -186,8 +188,8 @@ function MovieCasting() {
         dark: "#e59100",
         contrastText: "#242105",
       },
-    },
-  });
+    }, // end palette
+  }); // end const theme
 
   // PROPS FOR TEXTS & IMAGE
   const origin = "casting";
@@ -237,7 +239,7 @@ function MovieCasting() {
         </section>
       </section>
     </main>
-  );
-}
+  ); // end return
+} // function MovieCasting()
 
 export default MovieCasting;

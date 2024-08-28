@@ -48,15 +48,17 @@ function AddNewMovie() {
     duration: "",
     pitch: "",
     story: "",
+    posterUrl: "",
     trailer: "",
     location: "",
     videoFormat: "",
     videoSupport: "",
     fileSize: "",
     idTheMovieDb: "",
-    idIMDb: null,
   });
+
   console.info("movieDetails:", movieDetails);
+  console.info("movie:", movie);
 
   // -----------------/ SOURCE /----------------- //
 
@@ -83,7 +85,6 @@ function AddNewMovie() {
       videoSupport: "",
       fileSize: null,
       idTheMovieDb: "",
-      idIMDb: null,
     });
     // Réinitialiser valeur par défaut
     setFormat("");
@@ -99,6 +100,7 @@ function AddNewMovie() {
     setSelectedCountries([]);
     setSelectedLanguages([]);
     setSelectedTags([]);
+    setCoverPreview("http://localhost:3310/00_cover_default.jpg");
   };
 
   // -----------------/ MOVIE INFO ENTRANCE MODAL /----------------- //
@@ -672,6 +674,15 @@ function AddNewMovie() {
         )
       );
       setSelectedTags(tagsData);
+
+      const posterUrl = movieData.poster_path
+        ? `https://image.tmdb.org/t/p/original${movieData.poster_path}`
+        : null;
+      setCoverPreview(posterUrl);
+      setMovie((prevMovie) => ({
+        ...prevMovie,
+        posterUrl,
+      }));
     } catch (error) {
       console.error("Error:", error);
     }
@@ -836,17 +847,45 @@ function AddNewMovie() {
 
   const handleCoverChange = (event) => {
     const file = event.target.files[0];
-    const fileExtension = file.name.split(".").pop().toLowerCase();
-    const imageFormats = ["jpg", "jpeg", "png"];
-
-    if (imageFormats.includes(fileExtension)) {
+    if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setCoverPreview(reader.result);
       };
       reader.readAsDataURL(file);
-    } else {
-      alert("Veuillez sélectionner un fichier image valide.");
+      setSelectedFile(file);
+    }
+  };
+
+  const handleFileUpload = async () => {
+    if (selectedFile) {
+      const formData = new FormData();
+      formData.append("cover", selectedFile);
+
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/upload-cover`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to upload file");
+        }
+
+        const data = await response.json();
+        console.info("coverFile uploaded successfully:", data);
+
+        setCoverPreview(`http://localhost:3310/images/${data.coverFilename}`);
+        setMovie((prevMovie) => ({
+          ...prevMovie,
+          posterUrl: `http://localhost:3310/images/${data.coverFilename}`,
+        }));
+      } catch (error) {
+        console.error("Error uploading file:", error);
+      }
     }
   };
 
@@ -866,13 +905,13 @@ function AddNewMovie() {
     }
   };
 
-  const handleFormSubmit = (event) => {
+  const handleFormSubmit = async (event) => {
     event.preventDefault();
+
     const selectedGenre = selectedKinds.map((kind) => kind);
     const selectedDirectorsName = selectedDirectors.map(
       (director) => director.name
     );
-    console.info("selectedDirectorsName:", selectedDirectorsName);
     const selectedCastingName = selectedCasting.map((casting) => casting.name);
     const selectedScreenwritersName = selectedScreenwriters.map(
       (screenwriter) => screenwriter.name
@@ -900,30 +939,35 @@ function AddNewMovie() {
       tags: selectedTagsId,
     };
 
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movie`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestBody),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.info("data:", data);
+    if (selectedFile) {
+      await handleFileUpload();
+    }
 
-        alert("Le film a été ajouté avec succès !");
-        // Vider le formulaire
-        resetStates();
-      })
-      .catch((error) => {
-        console.error(error);
-        alert("Erreur lors de l'ajout du film. Veuillez réessayer.");
-      });
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/movie`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.info("data:", data);
+
+      alert("Le film a été ajouté avec succès !");
+      resetStates(); // Assuming resetStates() is a function to reset the form
+    } catch (error) {
+      console.error(error);
+      alert("Erreur lors de l'ajout du film. Veuillez réessayer.");
+    }
   };
 
   // -----------------/ BUTTON STYLE /----------------- //
@@ -1469,6 +1513,23 @@ function AddNewMovie() {
             </Box>
           </div>
           {/* movie COVER */}
+          {/* <div className="Adm_l2b">
+            <img
+              className="preview_cover"
+              src={coverPreview}
+              alt="Couverture"
+            />
+            <input
+              type="file"
+              style={{ display: "none" }}
+              onChange={handleCoverChange}
+              ref={fileCoverRef}
+              accept="image/*"
+            />
+            <button type="button" onClick={() => fileCoverRef.current.click()}>
+              Sélectionner une image
+            </button>
+          </div> */}
           <div className="Adm_l2b">
             <img
               className="preview_cover"
@@ -1484,6 +1545,9 @@ function AddNewMovie() {
             />
             <button type="button" onClick={() => fileCoverRef.current.click()}>
               Sélectionner une image
+            </button>
+            <button type="button" onClick={handleFileUpload}>
+              Télécharger l'image
             </button>
           </div>
         </section>

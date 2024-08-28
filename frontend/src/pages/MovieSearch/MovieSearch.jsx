@@ -243,7 +243,7 @@ function MovieSearch() {
         </div>
       </section>
     </main>
-  );
-}
+  ); // return
+} // function MovieSearch()
 
 export default MovieSearch;

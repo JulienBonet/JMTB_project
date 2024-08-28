@@ -23,9 +23,9 @@ function Home() {
         shuffled[randomIndex],
         shuffled[i],
       ];
-    }
+    } // end boucle for
     return shuffled;
-  };
+  }; // end const shuffleArray = (array)
 
   // Méthode pour déclencher le mélange des données
   const handleShuffle = () => {
@@ -59,8 +59,8 @@ function Home() {
         dark: "#e59100",
         contrastText: "#242105",
       },
-    },
-  });
+    }, // end palette
+  }); // const theme = createTheme
 
   return (
     <main>
@@ -104,7 +104,7 @@ function Home() {
         </div>
       </section>
     </main>
-  );
-}
+  ); // end return
+} // function Home()
 
 export default Home;
