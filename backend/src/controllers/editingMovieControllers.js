@@ -28,35 +28,7 @@ const downloadImage = async (url, filepath) => {
       .on("finish", () => resolve(filepath))
       .on("error", (e) => reject(e));
   });
-};
-
-
-const downloadPoster = async (posterPath) => {
-  const tmdbBaseUrl = "https://image.tmdb.org/t/p/original";
-  const posterUrl = `${tmdbBaseUrl}${posterPath}`;
-  const extension = path.extname(posterPath);
-  const filename = `poster-${uuidv4()}${extension}`;
-  const filepath = path.join(__dirname, "../../public/images", filename);
-
-  await downloadImage(posterUrl, filepath);
-  return filename; // Retourne le nom de fichier de l'image téléchargée
-};
-*/
-
-// Fonction de téléchargement de l'image
-const downloadImage = async (url, filepath) => {
-  const response = await axios({
-    url,
-    responseType: "stream",
-  });
-
-  return new Promise((resolve, reject) => {
-    response.data
-      .pipe(fs.createWriteStream(filepath))
-      .on("finish", () => resolve(filepath))
-      .on("error", (e) => reject(e));
-  });
-};
+}; // end const downloadImage
 
 // Fonction de téléchargement et redimensionnement de l'affiche
 const downloadPoster = async (posterPath) => {
@@ -80,6 +52,79 @@ const downloadPoster = async (posterPath) => {
     .toFile(resizedFilepath); // Enregistre l'image redimensionnée avec un nouveau nom
 
   return `resized-${filename}`; // Retourne le nom du fichier redimensionné
+
+}; // end downloadPoster
+*/
+
+// Fonction de téléchargement de l'image
+const downloadImage = async (url, filepath) => {
+  const response = await axios({
+    url,
+    responseType: "stream",
+  });
+
+  return new Promise((resolve, reject) => {
+    const writeStream = fs.createWriteStream(filepath);
+    response.data
+      .pipe(writeStream)
+      .on("finish", () => {
+        writeStream.close(() => resolve(filepath)); // Ferme le flux et résout la promesse
+      })
+      .on("error", (e) => reject(e));
+  });
+};
+
+// Fonction de téléchargement et redimensionnement de l'affiche
+const downloadPoster = async (posterPath) => {
+  const tmdbBaseUrl = "https://image.tmdb.org/t/p/original";
+  const posterUrl = `${tmdbBaseUrl}${posterPath}`;
+  const extension = path.extname(posterPath);
+  const filename = `poster-${uuidv4()}${extension}`;
+  const filepath = path.join(__dirname, "../../public/images", filename);
+
+  // Télécharge l'image
+  await downloadImage(posterUrl, filepath);
+
+  // Crée un chemin temporaire pour l'image redimensionnée
+  const resizedFilepath = path.join(
+    __dirname,
+    "../../public/images",
+    `resized-${filename}`
+  );
+
+  // Redimensionne l'image après le téléchargement
+  await sharp(filepath)
+    .resize(300, 450) // Redimensionne à 300x450
+    .toFile(resizedFilepath); // Enregistre l'image redimensionnée dans un nouveau fichier
+
+  // Assure un léger délai avant de supprimer le fichier original
+  setTimeout(() => {
+    // Supprime l'image originale
+    fs.unlink(filepath, (error) => {
+      if (error) {
+        console.error(
+          "Erreur lors de la suppression de l'image originale :",
+          error
+        );
+      } else {
+        console.info("Image originale supprimée avec succès.");
+      }
+    });
+
+    // Renomme l'image redimensionnée pour qu'elle remplace l'image originale
+    fs.rename(resizedFilepath, filepath, (error) => {
+      if (error) {
+        console.error(
+          "Erreur lors du renommage de l'image redimensionnée :",
+          error
+        );
+      } else {
+        console.info("Image redimensionnée renommée avec succès.");
+      }
+    });
+  }, 100); // Délai de 100 ms pour s'assurer que le fichier est libéré
+
+  return filename; // Retourne le nom du fichier redimensionné
 };
 
 const addMovie = async (req, res) => {
