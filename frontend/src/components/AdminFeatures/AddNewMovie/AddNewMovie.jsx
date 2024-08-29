@@ -1513,23 +1513,6 @@ function AddNewMovie() {
             </Box>
           </div>
           {/* movie COVER */}
-          {/* <div className="Adm_l2b">
-            <img
-              className="preview_cover"
-              src={coverPreview}
-              alt="Couverture"
-            />
-            <input
-              type="file"
-              style={{ display: "none" }}
-              onChange={handleCoverChange}
-              ref={fileCoverRef}
-              accept="image/*"
-            />
-            <button type="button" onClick={() => fileCoverRef.current.click()}>
-              Sélectionner une image
-            </button>
-          </div> */}
           <div className="Adm_l2b">
             <img
               className="preview_cover"

@@ -1,9 +1,11 @@
+/* eslint-disable no-unreachable */
 /* eslint-disable no-unused-vars */
 /* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-plusplus */
 /* eslint-disable consistent-return */
 /* eslint-disable prefer-destructuring */
+require("dotenv").config();
 const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
@@ -70,17 +72,22 @@ const addMovie = async (req, res) => {
     }
 
     // Téléchargez l'affiche du film
-    let posterFilename = "";
+    let cover = "";
     if (posterUrl) {
-      posterFilename = path.basename(posterUrl);
+      cover = await downloadPoster(posterUrl); // Télécharge l'image et retourne le nom du fichier
+      // Ajoute l'URL de base (localhost:3310) pour créer l'URL complète de l'affiche
+      const backendUrl =
+        process.env.VITE_BACKEND_URL || "http://localhost:3310";
+      cover = `${backendUrl}/${cover}`; // Créer l'URL complète
     }
+    console.info("cover : ", cover);
 
     await editingMovieModel.insertMovie(
       title,
       altTitle,
       year,
       duration,
-      posterFilename,
+      cover,
       trailer,
       pitch,
       story,
