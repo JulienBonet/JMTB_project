@@ -14,48 +14,6 @@ const sharp = require("sharp");
 const editingModel = require("../models/editingModel");
 const editingMovieModel = require("../models/editingMovieModel");
 
-/*
-// Fonction de téléchargement de l'image
-const downloadImage = async (url, filepath) => {
-  const response = await axios({
-    url,
-    responseType: "stream",
-  });
-
-  return new Promise((resolve, reject) => {
-    response.data
-      .pipe(fs.createWriteStream(filepath))
-      .on("finish", () => resolve(filepath))
-      .on("error", (e) => reject(e));
-  });
-}; // end const downloadImage
-
-// Fonction de téléchargement et redimensionnement de l'affiche
-const downloadPoster = async (posterPath) => {
-  const tmdbBaseUrl = "https://image.tmdb.org/t/p/original";
-  const posterUrl = `${tmdbBaseUrl}${posterPath}`;
-  const extension = path.extname(posterPath);
-  const filename = `poster-${uuidv4()}${extension}`;
-  const filepath = path.join(__dirname, "../../public/images", filename);
-
-  // Télécharge l'image
-  await downloadImage(posterUrl, filepath);
-
-  // Redimensionne l'image après le téléchargement
-  const resizedFilepath = path.join(
-    __dirname,
-    "../../public/images",
-    `resized-${filename}`
-  );
-  await sharp(filepath)
-    .resize(300, 450) // Redimensionne à 300x450
-    .toFile(resizedFilepath); // Enregistre l'image redimensionnée avec un nouveau nom
-
-  return `resized-${filename}`; // Retourne le nom du fichier redimensionné
-
-}; // end downloadPoster
-*/
-
 // Fonction de téléchargement de l'image
 const downloadImage = async (url, filepath) => {
   const response = await axios({
@@ -72,7 +30,7 @@ const downloadImage = async (url, filepath) => {
       })
       .on("error", (e) => reject(e));
   });
-};
+}; // end const downloadImage
 
 // Fonction de téléchargement et redimensionnement de l'affiche
 const downloadPoster = async (posterPath) => {
@@ -125,7 +83,7 @@ const downloadPoster = async (posterPath) => {
   }, 100); // Délai de 100 ms pour s'assurer que le fichier est libéré
 
   return filename; // Retourne le nom du fichier redimensionné
-};
+}; // end downloadPoster
 
 const addMovie = async (req, res) => {
   try {

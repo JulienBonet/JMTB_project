@@ -25,10 +25,12 @@ function AddNewMovie() {
   const [videoSupport, setvideoSupport] = useState("");
   const [format, setFormat] = useState("");
   const [fileSize, setFileSize] = useState(null);
-  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null); // Pour le fichier vidéo
+  const [selectedCoverFile, setSelectedCoverFile] = useState(null); // Pour l'affiche
   const [coverPreview, setCoverPreview] = useState(
     "http://localhost:3310/00_cover_default.jpg"
-  );
+  ); // Pour l'aperçu de l'affiche
+
   const [openModal, setOpenModal] = useState(false);
   const [openModalMIE, setOpenModalMIE] = useState(false);
   const [selectedKinds, setSelectedKinds] = useState([]);
@@ -57,8 +59,10 @@ function AddNewMovie() {
     idTheMovieDb: "",
   });
 
-  console.info("movieDetails:", movieDetails);
-  console.info("movie:", movie);
+  console.info("movieDetails : ", movieDetails);
+  console.info("movie : ", movie);
+  console.info("selectedCoverFile : ", selectedCoverFile);
+  console.info("coverPreview : ", coverPreview);
 
   // -----------------/ SOURCE /----------------- //
 
@@ -794,7 +798,7 @@ function AddNewMovie() {
   };
 
   // -----------------/ INPUT FILE /----------------- //
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef(null); // Référence pour le fichier vidéo
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -843,7 +847,7 @@ function AddNewMovie() {
 
   // -----------------/ INPUT COVER /----------------- //
 
-  const fileCoverRef = useRef(null);
+  const fileCoverRef = useRef(null); // Référence pour le fichier image
 
   const handleCoverChange = (event) => {
     const file = event.target.files[0];
@@ -853,14 +857,14 @@ function AddNewMovie() {
         setCoverPreview(reader.result);
       };
       reader.readAsDataURL(file);
-      setSelectedFile(file);
+      setSelectedCoverFile(file);
     }
   };
 
   const handleFileUpload = async () => {
-    if (selectedFile) {
+    if (selectedCoverFile) {
       const formData = new FormData();
-      formData.append("cover", selectedFile);
+      formData.append("cover", selectedCoverFile);
 
       try {
         const response = await fetch(
@@ -1414,6 +1418,7 @@ function AddNewMovie() {
         <div className="dashed_secondary_bar" />
 
         <section className="Adm_l2">
+          {/* movie FILE */}
           <div className="Adm_l2a">
             {/* movie SUPPORT */}
             <FormControl sx={{ m: 1, minWidth: 120 }}>
