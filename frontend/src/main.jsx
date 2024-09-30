@@ -24,10 +24,24 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Home />,
-        loader: () => {
-          return fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/api/movies/sorted/nox`
-          );
+        loader: async () => {
+          try {
+            const response = await fetch(
+              `${import.meta.env.VITE_BACKEND_URL}/api/movies/sorted/nox`
+            );
+      
+            // Vérifie si la réponse est correcte
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+      
+            // Retourne les données JSON
+            return response.json();
+          } catch (error) {
+            console.error("Error fetching movies:", error);
+            // Gérer l'erreur en renvoyant une valeur par défaut ou en affichant un message
+            return []; // Par exemple, renvoie un tableau vide en cas d'erreur
+          }
         },
       },
       {

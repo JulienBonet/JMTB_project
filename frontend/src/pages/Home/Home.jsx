@@ -29,8 +29,12 @@ function Home() {
 
   // Méthode pour déclencher le mélange des données
   const handleShuffle = () => {
-    const newShuffledData = shuffleArray([...data]).slice(0, 10);
-    setShuffledData(newShuffledData);
+    if (data && data.length > 0) {
+      const newShuffledData = shuffleArray(data).slice(0, 10); // Prendre les 10 premiers films
+      setShuffledData(newShuffledData);
+    } else {
+      console.error("No movies data available to shuffle.");
+    }
   };
 
   // Effectuer le premier mélange au chargement initial
