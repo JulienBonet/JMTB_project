@@ -4,13 +4,27 @@ const findAll = (orderBy = "id", orderDir = "DESC") => {
   return db.query(`SELECT * FROM movies ORDER BY ${orderBy} ${orderDir}`, []);
 };
 
+// const findAllSortedNoX = () => {
+//   console.info("Exécution de la requête SQL pour trouver tous les films");
+//   return db.query(
+//     `SELECT *
+//     FROM movies
+//     WHERE id NOT IN (SELECT movieId FROM jmdb.movie_genre WHERE genreId = 24);`,
+//     []
+//   );
+// };
+
 const findAllSortedNoX = () => {
-  return db.query(
-    `SELECT *
+  return db
+    .query(
+      `SELECT *
     FROM movies
     WHERE id NOT IN (SELECT movieId FROM jmdb.movie_genre WHERE genreId = 24);`,
-    []
-  );
+      []
+    )
+    .then((result) => {
+      return result; // Assurez-vous de retourner le résultat
+    });
 };
 
 // const findById = (id) => {

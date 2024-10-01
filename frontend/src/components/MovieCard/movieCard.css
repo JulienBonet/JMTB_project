@@ -25,6 +25,10 @@
 .MovieCard_Cover_Position {
   margin: 0 2rem 1rem 0;
 }
+.MovieCard_cover{
+  width: 306px;
+  height: 459px;
+}
 .infos_bloc_1 {
   display: flex;
   flex-direction: column;

@@ -3,12 +3,23 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  root: './frontend', // chemin vers votre frontend
+  root: './frontend',
   build: {
-    outDir: './build', // Le build sera généré dans frontend/build
-    emptyOutDir: true, // Vide le dossier de build avant chaque build
+    outDir: './build',
+    emptyOutDir: true,
     rollupOptions: {
-      input: './frontend/index.html', // Assurez-vous que ce chemin est correct
+      input: './frontend/index.html',
+    },
+  },
+  server: {
+    port: 5173,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3310',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
     },
   },
 });
+

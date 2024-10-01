@@ -45,11 +45,21 @@ const getAllSorted3 = async (req, res, next) => {
   }
 };
 
+// const getAllSortedNox = async (req, res, next) => {
+//   console.info("controller: Requête reçue pour /sorted/nox");
+//   try {
+//     const [movies] = await moviesModel.findAllSortedNoX();
+//     res.status(200).json(movies);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 const getAllSortedNox = async (req, res, next) => {
   try {
     const [movies] = await moviesModel.findAllSortedNoX();
     res.status(200).json(movies);
   } catch (error) {
+    console.error("Erreur lors de la récupération des films :", error);
     next(error);
   }
 };

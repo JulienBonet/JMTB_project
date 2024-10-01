@@ -6,6 +6,8 @@ import "./movieCard.css";
 import ReactPlayer from "react-player";
 
 function MovieCard({ movie, origin }) {
+  const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
+
   // DATA
   const [movieData, setMovieData] = useState([]);
   const {
@@ -73,7 +75,7 @@ function MovieCard({ movie, origin }) {
           <div className="MovieCard_Cover_Position">
             <img
               className="MovieCard_cover"
-              src={cover}
+              src={`${backendUrl}/images/${cover}`}
               alt={`Cover ${title}`}
             />
           </div>

@@ -8,6 +8,8 @@ const app = express();
 app.use(
   cors({
     origin: [process.env.FRONTEND_URL],
+    methods: ["GET", "POST"], // Méthodes autorisées
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
@@ -17,8 +19,12 @@ app.use(
   express.urlencoded({ extended: false, limit: "30mb", parameterLimit: 50000 })
 );
 
+// *** Servir les fichiers statiques à partir du dossier 'public' ***
+app.use("/images", express.static(path.join(__dirname, "../public/images")));
+
 // Import des routes API
-const router = require("./router"); // Assure-toi que le chemin soit correct
+const router = require("./router");
+// Assure-toi que le chemin soit correct
 app.use("/api", router); // Routes API
 
 // Chemin vers le build React (une fois construit)
@@ -32,8 +38,6 @@ app.get("*", (req, res) => {
 
 // Exporter l'application sans la démarrer
 module.exports = app;
-
-
 
 // _______________________________________________________________________________
 // /* eslint-disable no-unused-vars */

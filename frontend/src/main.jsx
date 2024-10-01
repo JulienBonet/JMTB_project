@@ -1,6 +1,8 @@
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable import/extensions */
 import React from "react";
-import ReactDOM from "react-dom";
+// import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -16,6 +18,14 @@ import AdminFeat from "./pages/AdminFeat/AdminFeat.jsx";
 import AddNewMovie from "./components/AdminFeatures/AddNewMovie/AddNewMovie.jsx";
 import MovieInfosEntrance from "./components/AdminFeatures/AddNewMovie/MovieInfosEntrance.jsx";
 
+// Déterminer si on est en mode développement
+const isDevelopment = import.meta.env.MODE === "development";
+
+// Configurer l'URL de votre backend en fonction de l'environnement
+const backendUrl =
+  import.meta.env.VITE_BACKEND_URL ||
+  `http://localhost:${isDevelopment ? 3310 : process.env.APP_PORT}`; // Utilisez APP_PORT pour la prod
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -26,21 +36,17 @@ const router = createBrowserRouter([
         element: <Home />,
         loader: async () => {
           try {
-            const response = await fetch(
-              `${import.meta.env.VITE_BACKEND_URL}/api/movies/sorted/nox`
-            );
-      
-            // Vérifie si la réponse est correcte
+            const response = await fetch(`${backendUrl}/api/movies/sorted/nox`);
             if (!response.ok) {
+              const text = await response.text(); // Lire la réponse comme texte
+              console.error("Response text: ", text); // Loguer le texte de la réponse
               throw new Error("Network response was not ok");
             }
-      
-            // Retourne les données JSON
-            return response.json();
+            const data = await response.json();
+            return data;
           } catch (error) {
-            console.error("Error fetching movies:", error);
-            // Gérer l'erreur en renvoyant une valeur par défaut ou en affichant un message
-            return []; // Par exemple, renvoie un tableau vide en cas d'erreur
+            console.error("Fetch error: ", error);
+            throw error;
           }
         },
       },
@@ -51,36 +57,51 @@ const router = createBrowserRouter([
       {
         path: "/movie_directors",
         element: <MovieDirectors />,
-        loader: () => {
-          return fetch(`${import.meta.env.VITE_BACKEND_URL}/api/directors`);
+        loader: async () => {
+          try {
+            const response = await fetch(`${backendUrl}/api/directors`);
+            if (!response.ok) {
+              const text = await response.text(); // Lire la réponse comme texte
+              console.error("Response text: ", text); // Loguer le texte de la réponse
+              throw new Error("Network response was not ok");
+            }
+            const data = await response.json();
+            return data;
+          } catch (error) {
+            console.error("Fetch error: ", error);
+            throw error;
+          }
         },
+        // loader: () => {
+        //   return fetch(`${backendUrl}/api/directors`);
+        // },
       },
       {
         path: "/movie_casting",
         element: <MovieCasting />,
         loader: () => {
-          return fetch(`${import.meta.env.VITE_BACKEND_URL}/api/casting`);
+          return fetch(`${backendUrl}/api/casting`);
         },
       },
       {
         path: "/movie_screenwriters",
         element: <MovieScreenwriters />,
         loader: () => {
-          return fetch(`${import.meta.env.VITE_BACKEND_URL}/api/screenwriters`);
+          return fetch(`${backendUrl}/api/screenwriters`);
         },
       },
       {
         path: "/movie_music",
         element: <MovieMusic />,
         loader: () => {
-          return fetch(`${import.meta.env.VITE_BACKEND_URL}/api/music`);
+          return fetch(`${backendUrl}/api/music`);
         },
       },
       {
         path: "/movie_studio",
         element: <MovieStudio />,
         loader: () => {
-          return fetch(`${import.meta.env.VITE_BACKEND_URL}/api/studio`);
+          return fetch(`${backendUrl}/api/studio`);
         },
       },
       {
@@ -100,7 +121,15 @@ const router = createBrowserRouter([
 ]);
 
 // Utiliser ReactDOM.createRoot pour rendre l'application complète
-ReactDOM.createRoot(document.getElementById("root")).render(
+// ReactDOM.createRoot(document.getElementById("root")).render(
+//   <React.StrictMode>
+//     <RouterProvider router={router} />
+//     <ToastContainer />
+//   </React.StrictMode>
+// );
+
+// Utiliser createRoot pour rendre l'application complète
+createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <RouterProvider router={router} />
     <ToastContainer />

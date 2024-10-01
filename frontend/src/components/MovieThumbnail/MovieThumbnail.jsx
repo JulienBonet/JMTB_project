@@ -8,6 +8,8 @@ import "./movieThumbnail.css";
 import MovieCard from "../MovieCard/MovieCard";
 
 function MovieThumbnail({ data, origin }) {
+  const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
+
   const { title, year, cover } = data;
 
   const [selectedMovie, setSelectedMovie] = useState(null);
@@ -29,7 +31,13 @@ function MovieThumbnail({ data, origin }) {
         onClick={openModal}
         onKeyDown={openModal}
       >
-        <img className="thumbail_cover" src={cover} alt={`Cover ${title}`} />
+        <img
+          className="thumbail_cover"
+          src={`${backendUrl}/images/${cover}`}
+          alt={`Cover ${title}`}
+        />
+        {console.info("Backend URL:", backendUrl)}
+        {console.info("Image filename (cover):", cover)}
         <p className="thumbail_title">
           {title} <span className="thumbail_year">({year})</span>
         </p>
