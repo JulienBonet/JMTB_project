@@ -241,7 +241,7 @@ function MovieDirectors() {
         </section>
       </section>
     </main>
-  );
-}
+  ); // end return
+} // end function MovieDirectors()
 
 export default MovieDirectors;

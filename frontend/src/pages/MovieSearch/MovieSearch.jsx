@@ -86,7 +86,7 @@ function MovieSearch() {
 
       // Mettre à jour l'état des données filtrées
       setFilteredMovies(filteredMovies);
-      setIsLoading(false); // Définir isLoading à false une fois les données chargées
+      setIsLoading(false);
     };
 
     // Simuler une durée de chargement
@@ -243,7 +243,7 @@ function MovieSearch() {
         </div>
       </section>
     </main>
-  );
-}
+  ); // return
+} // function MovieSearch()
 
 export default MovieSearch;

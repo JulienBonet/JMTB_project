@@ -243,7 +243,7 @@ function MovieScreenwriters() {
         </section>
       </section>
     </main>
-  );
-}
+  ); // return
+} // function MovieScreenwriters()
 
 export default MovieScreenwriters;

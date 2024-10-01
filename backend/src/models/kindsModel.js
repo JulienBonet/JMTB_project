@@ -43,6 +43,10 @@ const findAllSortedYearDESC = (genre) => {
   );
 };
 
+const findGenreByName = (name) => {
+  return db.query("SELECT * FROM genre WHERE name = ?", [name]);
+};
+
 module.exports = {
   findAllKinds,
   findAllKindsIdDesc,
@@ -51,4 +55,5 @@ module.exports = {
   findAllSortedZeta,
   findAllSortedYear,
   findAllSortedYearDESC,
+  findGenreByName,
 };

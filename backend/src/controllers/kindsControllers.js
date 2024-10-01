@@ -68,6 +68,16 @@ const getAllSorted3 = async (req, res, next) => {
   }
 };
 
+const getAllByName = async (req, res, next) => {
+  try {
+    const { name } = req.params;
+    const [[genre]] = await kindsModel.findGenreByName(name);
+    res.status(200).json(genre);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAllKinds,
   getAllKindsIdDesc,
@@ -76,4 +86,5 @@ module.exports = {
   getAllSorted1,
   getAllSorted2,
   getAllSorted3,
+  getAllByName,
 };

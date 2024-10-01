@@ -46,8 +46,8 @@ CHANGE COLUMN `Support` videoSupport TEXT NULL DEFAULT NULL,
 CHANGE COLUMN `Taille du fichier` fileSize TEXT NULL DEFAULT NULL,
 CHANGE COLUMN `ID TheMovieDb` idTheMovieDb TEXT NULL DEFAULT NULL,
 CHANGE COLUMN `ID IMDb` idIMDb DOUBLE NULL DEFAULT NULL;
-UPDATE jmdb.movies
-SET cover = CONCAT('http://localhost:3310/', cover);
+-- UPDATE jmdb.movies
+-- SET cover = CONCAT('http://localhost:3310/', cover);
 
 SELECT * FROM jmdb.movies;
 

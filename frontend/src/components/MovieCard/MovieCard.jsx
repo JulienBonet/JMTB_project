@@ -6,6 +6,8 @@ import "./movieCard.css";
 import ReactPlayer from "react-player";
 
 function MovieCard({ movie, origin }) {
+  const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
+
   // DATA
   const [movieData, setMovieData] = useState([]);
   const {
@@ -21,16 +23,10 @@ function MovieCard({ movie, origin }) {
     videoSupport,
     fileSize,
   } = movie;
+  console.info("movie:", movie);
 
-  const {
-    genres,
-    countries,
-    director_name,
-    screenwriters,
-    music,
-    studios,
-    cast,
-  } = movieData;
+  const { genres, countries, directors, screenwriters, music, studios, cast } =
+    movieData;
 
   if (origin === "country") {
     useEffect(() => {
@@ -66,8 +62,6 @@ function MovieCard({ movie, origin }) {
     }, [id]);
   }
 
-  const FichierMultimedia = "Fichier multimédia";
-
   // TOGGLE trailer
   const [isTrailerVisible, setIsTrailerVisible] = useState(false);
   const toggleTrailerVideo = () => {
@@ -81,7 +75,7 @@ function MovieCard({ movie, origin }) {
           <div className="MovieCard_Cover_Position">
             <img
               className="MovieCard_cover"
-              src={cover}
+              src={`${backendUrl}/images/${cover}`}
               alt={`Cover ${title}`}
             />
           </div>
@@ -109,12 +103,12 @@ function MovieCard({ movie, origin }) {
                 </p>
                 <div className="divider_dashed" />
                 {/* Autres détails du film */}
-                {director_name && (
+                {directors && (
                   <p className="MovieCard_info">
                     <span className="paraph_bolder paraph_color_2">
                       Réalisateur:
                     </span>{" "}
-                    {director_name}
+                    {directors}
                   </p>
                 )}
                 {screenwriters && (
@@ -169,7 +163,8 @@ function MovieCard({ movie, origin }) {
                 <span className="paraph_bolder">Support:</span> {videoSupport}
               </p>
 
-              {videoSupport === FichierMultimedia && (
+              {(videoSupport === "Fichier multimédia" ||
+                videoSupport === "FICHIER MULTIMEDIA") && (
                 <>
                   <p className="MovieCard_info paraph_height">
                     <span className="paraph_bolder">Emplacement:</span>{" "}

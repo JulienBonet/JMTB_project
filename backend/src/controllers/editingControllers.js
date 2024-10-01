@@ -993,6 +993,16 @@ const eraseCountry = async (req, res, next) => {
   }
 };
 
+const getCountryByName = async (req, res, next) => {
+  try {
+    const { name } = req.params;
+    const [[country]] = await editingModel.findCountryByName(name);
+    res.status(200).json(country);
+  } catch (error) {
+    next(error);
+  }
+};
+
 // EDIT GENRE
 const addGenre = async (req, res) => {
   try {
@@ -1105,6 +1115,16 @@ const eraseLanguage = async (req, res, next) => {
   }
 };
 
+const getLanguageByName = async (req, res, next) => {
+  try {
+    const { name } = req.params;
+    const [[language]] = await editingModel.findLanguageByName(name);
+    res.status(200).json(language);
+  } catch (error) {
+    next(error);
+  }
+};
+
 // EDIT TAG
 const addTag = async (req, res) => {
   try {
@@ -1161,6 +1181,16 @@ const eraseTag = async (req, res, next) => {
   }
 };
 
+const getTagByName = async (req, res, next) => {
+  try {
+    const { name } = req.params;
+    const [[tag]] = await editingModel.findTagByName(name);
+    res.status(200).json(tag);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   addDirector,
   editingDirector,
@@ -1190,13 +1220,16 @@ module.exports = {
   editingCountry,
   uploadCountryImage,
   eraseCountry,
+  getCountryByName,
   addGenre,
   editingGenre,
   eraseGenre,
   addLanguage,
   editingLanguage,
   eraseLanguage,
+  getLanguageByName,
   addTag,
   editingTag,
   eraseTag,
+  getTagByName,
 };

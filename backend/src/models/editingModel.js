@@ -5,6 +5,9 @@ const db = require("../../database/client");
 const findDirectorById = (id) =>
   db.query("SELECT * FROM director WHERE id = ?", [id]).then(([rows]) => rows);
 
+const findDirectorByName = (name) =>
+  db.query("SELECT * FROM director WHERE name = ?", [name]);
+
 const insertDirector = (name) =>
   db.query("INSERT INTO director (name) VALUES (?);", [name]);
 
@@ -32,6 +35,9 @@ const deleteDirector = (id) =>
 
 const findCastingById = (id) =>
   db.query("SELECT * FROM casting WHERE id = ?", [id]).then(([rows]) => rows);
+
+const findCastingByName = (name) =>
+  db.query("SELECT * FROM casting WHERE name = ?", [name]);
 
 const insertCasting = (name) =>
   db.query("INSERT INTO casting (name) VALUES (?);", [name]);
@@ -63,6 +69,9 @@ const findScreenwriterById = (id) =>
     .query("SELECT * FROM screenwriter WHERE id = ?", [id])
     .then(([rows]) => rows);
 
+const findScreenwriterByName = (name) =>
+  db.query("SELECT * FROM screenwriter WHERE name = ?", [name]);
+
 const insertScreenwriter = (name) =>
   db.query("INSERT INTO screenwriter (name) VALUES (?);", [name]);
 
@@ -91,6 +100,9 @@ const deleteScreenwriter = (id) =>
 const findCompositorById = (id) =>
   db.query("SELECT * FROM music WHERE id = ?", [id]).then(([rows]) => rows);
 
+const findCompositorByName = (name) =>
+  db.query("SELECT * FROM music WHERE name = ?", [name]);
+
 const insertCompositor = (name) =>
   db.query("INSERT INTO music (name) VALUES (?);", [name]);
 
@@ -118,6 +130,9 @@ const deleteCompositor = (id) =>
 
 const findStudioById = (id) =>
   db.query("SELECT * FROM studio WHERE id = ?", [id]).then(([rows]) => rows);
+
+const findStudioByName = (name) =>
+  db.query("SELECT * FROM studio WHERE name = ?", [name]);
 
 const insertStudio = (name) =>
   db.query("INSERT INTO studio (name) VALUES (?);", [name]);
@@ -173,6 +188,9 @@ const deleteThema = (id) => db.query("DELETE FROM thema WHERE id = ?;", [id]);
 const findCountryById = (id) =>
   db.query("SELECT * FROM country WHERE id = ?", [id]).then(([rows]) => rows);
 
+const findCountryByName = (name) =>
+  db.query("SELECT * FROM country WHERE name = ?", [name]);
+
 const insertCountry = (name) =>
   db.query("INSERT INTO country (name) VALUES (?);", [name]);
 
@@ -196,11 +214,25 @@ const deleteCountry = (id) =>
 
 // EDIT GENRE
 
+const findGenreByName = (name) => {
+  db.query("SELECT * FROM genre WHERE name = ?", [name])
+    .then(([rows]) => {
+      console.info(`SQL results: ${JSON.stringify(rows)}`);
+      return rows;
+    })
+    .catch((err) => {
+      console.error(`Error executing SQL query: ${err}`);
+      throw err;
+    });
+};
+
 const findGenreById = (id) =>
   db.query("SELECT * FROM genre WHERE id = ?", [id]).then(([rows]) => rows);
 
-const insertGenre = (name) =>
-  db.query("INSERT INTO genre (name) VALUES (?);", [name]);
+const insertGenre = async (name) => {
+  const result = await db.query("INSERT INTO genre (name) VALUES (?);", [name]);
+  return { insertId: result.insertId };
+};
 
 const editGenre = async (name, id) => {
   const query = `
@@ -220,6 +252,9 @@ const deleteGenre = (id) => db.query("DELETE FROM genre WHERE id = ?;", [id]);
 
 const findLanguageById = (id) =>
   db.query("SELECT * FROM language WHERE id = ?", [id]).then(([rows]) => rows);
+
+const findLanguageByName = (name) =>
+  db.query("SELECT * FROM language WHERE name = ?", [name]);
 
 const insertLanguage = (name) =>
   db.query("INSERT INTO language (name) VALUES (?);", [name]);
@@ -244,6 +279,9 @@ const deleteLanguage = (id) =>
 const findTagById = (id) =>
   db.query("SELECT * FROM tag WHERE id = ?", [id]).then(([rows]) => rows);
 
+const findTagByName = (name) =>
+  db.query("SELECT * FROM tag WHERE name = ?", [name]);
+
 const insertTag = (name) =>
   db.query("INSERT INTO tag (name) VALUES (?);", [name]);
 
@@ -263,26 +301,31 @@ const deleteTag = (id) => db.query("DELETE FROM tag WHERE id = ?;", [id]);
 
 module.exports = {
   findDirectorById,
+  findDirectorByName,
   insertDirector,
   editDirector,
   editDirectorImage,
   deleteDirector,
   findCastingById,
+  findCastingByName,
   insertCasting,
   editCasting,
   editCastingImage,
   deleteCasting,
   findScreenwriterById,
+  findScreenwriterByName,
   insertScreenwriter,
   editScreenwriter,
   editScreenwriterImage,
   deleteScreenwriter,
   findCompositorById,
+  findCompositorByName,
   insertCompositor,
   editCompositor,
   editCompositorImage,
   deleteCompositor,
   findStudioById,
+  findStudioByName,
   insertStudio,
   editStudio,
   editStudioImage,
@@ -293,19 +336,23 @@ module.exports = {
   editThemaImage,
   deleteThema,
   findCountryById,
+  findCountryByName,
   insertCountry,
   editCountry,
   editCountryImage,
   deleteCountry,
+  findGenreByName,
   findGenreById,
   insertGenre,
   editGenre,
   deleteGenre,
   findLanguageById,
+  findLanguageByName,
   insertLanguage,
   editLanguage,
   deleteLanguage,
   findTagById,
+  findTagByName,
   insertTag,
   editTag,
   deleteTag,

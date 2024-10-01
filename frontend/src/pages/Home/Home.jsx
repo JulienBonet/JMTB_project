@@ -15,8 +15,19 @@ function Home() {
   const [shuffledData, setShuffledData] = useState([]);
 
   // Fonction pour mélanger un tableau de données aléatoirement
+  // const shuffleArray = (array) => {
+  //   const shuffled = array.slice(); // Créer une copie du tableau d'origine
+  //   for (let i = shuffled.length - 1; i > 0; i--) {
+  //     const randomIndex = Math.floor(Math.random() * (i + 1));
+  //     [shuffled[i], shuffled[randomIndex]] = [
+  //       shuffled[randomIndex],
+  //       shuffled[i],
+  //     ];
+  //   } // end boucle for
+  //   return shuffled;
+  // }; // end const shuffleArray = (array)
   const shuffleArray = (array) => {
-    const shuffled = array.slice(); // Créer une copie du tableau d'origine
+    const shuffled = JSON.parse(JSON.stringify(array)); // Copie profonde pour éviter de modifier l'original
     for (let i = shuffled.length - 1; i > 0; i--) {
       const randomIndex = Math.floor(Math.random() * (i + 1));
       [shuffled[i], shuffled[randomIndex]] = [
@@ -28,9 +39,24 @@ function Home() {
   };
 
   // Méthode pour déclencher le mélange des données
+  // const handleShuffle = () => {
+  //   if (data && data.length > 0) {
+  //     const newShuffledData = shuffleArray(data).slice(0, 10); // Prendre les 10 premiers films
+  //     setShuffledData(newShuffledData);
+  //   } else {
+  //     console.error("No movies data available to shuffle.");
+  //   }
+  // };
   const handleShuffle = () => {
-    const newShuffledData = shuffleArray([...data]).slice(0, 10);
-    setShuffledData(newShuffledData);
+    if (Array.isArray(data) && data.length > 0) {
+      // Vérifiez que data est un tableau
+      const newShuffledData = shuffleArray(data).slice(0, 10); // Prendre les 10 premiers films
+      setShuffledData(newShuffledData);
+    } else {
+      console.error(
+        "No movies data available to shuffle or data is not an array."
+      );
+    }
   };
 
   // Effectuer le premier mélange au chargement initial
@@ -59,8 +85,8 @@ function Home() {
         dark: "#e59100",
         contrastText: "#242105",
       },
-    },
-  });
+    }, // end palette
+  }); // const theme = createTheme
 
   return (
     <main>
@@ -104,7 +130,7 @@ function Home() {
         </div>
       </section>
     </main>
-  );
-}
+  ); // end return
+} // function Home()
 
 export default Home;

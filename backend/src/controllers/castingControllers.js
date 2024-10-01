@@ -86,7 +86,25 @@ const getAllByLetter = async (req, res, next) => {
     next(error);
   }
 };
+const getAllByName = async (req, res, next) => {
+  try {
+    const { name } = req.params;
+    const [[casting]] = await castingModel.findCastingByName(name);
+    res.status(200).json(casting);
+  } catch (error) {
+    next(error);
+  }
+};
 
+const getAllById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const [[casting]] = await castingModel.findCastingById(id);
+    res.status(200).json(casting);
+  } catch (error) {
+    next(error);
+  }
+};
 module.exports = {
   getAllArtistAsc,
   getAllArtistDesc,
@@ -97,4 +115,6 @@ module.exports = {
   getAllSorted2,
   getAllSorted3,
   getAllByLetter,
+  getAllByName,
+  getAllById,
 };

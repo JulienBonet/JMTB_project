@@ -26,8 +26,8 @@ function AdminFeat() {
       secondary: {
         main: "#ffebaa",
       },
-    },
-  });
+    }, // end palette
+  }); // end const theme
 
   // ADMIN NAV
 
@@ -63,8 +63,8 @@ function AdminFeat() {
         return <AdminThemaList />;
       default:
         return null;
-    }
-  };
+    } // end switch (selectedItem)
+  }; // const renderSelectedItem
 
   return (
     <main>
@@ -78,7 +78,7 @@ function AdminFeat() {
               "& > *": {
                 m: 1,
               },
-            }}
+            }} // end sx
           >
             <ButtonGroup
               variant="outlined"
@@ -114,7 +114,7 @@ function AdminFeat() {
         <div className="AdminFeatContent">{renderSelectedItem()}</div>
       </section>
     </main>
-  );
-}
+  ); // end return
+} // function AdminFeat()
 
 export default AdminFeat;

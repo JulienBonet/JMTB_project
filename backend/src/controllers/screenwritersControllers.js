@@ -91,6 +91,28 @@ const getAllByLetter = async (req, res, next) => {
   }
 };
 
+const getAllByName = async (req, res, next) => {
+  try {
+    const { name } = req.params;
+    const [[screenwriter]] = await screenwritersModel.findScreenwriterByName(
+      name
+    );
+    res.status(200).json(screenwriter);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getAllById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const [[screenwriter]] = await screenwritersModel.findScreenwriterById(id);
+    res.status(200).json(screenwriter);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getAllArtistAsc,
   getAllArtistDesc,
@@ -101,4 +123,6 @@ module.exports = {
   getAllSorted2,
   getAllSorted3,
   getAllByLetter,
+  getAllByName,
+  getAllById,
 };

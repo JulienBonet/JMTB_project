@@ -237,7 +237,7 @@ function MovieCasting() {
         </section>
       </section>
     </main>
-  );
-}
+  ); // end return
+} // function MovieCasting()
 
 export default MovieCasting;
