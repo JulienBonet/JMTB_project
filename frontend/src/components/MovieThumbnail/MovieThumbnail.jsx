@@ -36,8 +36,6 @@ function MovieThumbnail({ data, origin }) {
           src={`${backendUrl}/images/${cover}`}
           alt={`Cover ${title}`}
         />
-        {console.info("Backend URL:", backendUrl)}
-        {console.info("Image filename (cover):", cover)}
         <p className="thumbail_title">
           {title} <span className="thumbail_year">({year})</span>
         </p>

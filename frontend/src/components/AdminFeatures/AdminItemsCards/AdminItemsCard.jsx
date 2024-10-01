@@ -11,6 +11,8 @@ import CachedIcon from "@mui/icons-material/Cached";
 import "./adminItemsCard.css";
 
 function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
+  const backendUrl = `${import.meta.env.VITE_BACKEND_URL}/images`;
+
   const [isModify, setIsModify] = useState(false);
   const [name, setName] = useState(item.name);
   const [pitch, setPitch] = useState(item.pitch);
@@ -216,7 +218,12 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
 
       <section className="ItemsCard_Col2">
         {image && (
-          <img className="ItemImage" src={image} alt={`${item.name}`} />
+          <img
+            className="ItemImage"
+            src={`${backendUrl}/${image}`}
+            // src={image}
+            alt={`${item.name}`}
+          />
         )}
         {isModify && (
           <>
