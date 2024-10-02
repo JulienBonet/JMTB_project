@@ -32,7 +32,6 @@ const downloadImage = async (url, filepath) => {
   });
 }; // end const downloadImage
 
-// Fonction de téléchargement et redimensionnement de l'affiche
 const downloadPoster = async (posterPath) => {
   const tmdbBaseUrl = "https://image.tmdb.org/t/p/original";
   const posterUrl = `${tmdbBaseUrl}${posterPath}`;
@@ -43,47 +42,10 @@ const downloadPoster = async (posterPath) => {
   // Télécharge l'image
   await downloadImage(posterUrl, filepath);
 
-  // Crée un chemin temporaire pour l'image redimensionnée
-  const resizedFilepath = path.join(
-    __dirname,
-    "../../public/images",
-    `resized-${filename}`
-  );
+  console.info("Image téléchargée avec succès : ", filepath);
 
-  // Redimensionne l'image après le téléchargement
-  await sharp(filepath)
-    .resize(300, 450) // Redimensionne à 300x450
-    .toFile(resizedFilepath); // Enregistre l'image redimensionnée dans un nouveau fichier
-
-  // Assure un léger délai avant de supprimer le fichier original
-  setTimeout(() => {
-    // Supprime l'image originale
-    fs.unlink(filepath, (error) => {
-      if (error) {
-        console.error(
-          "Erreur lors de la suppression de l'image originale :",
-          error
-        );
-      } else {
-        console.info("Image originale supprimée avec succès.");
-      }
-    });
-
-    // Renomme l'image redimensionnée pour qu'elle remplace l'image originale
-    fs.rename(resizedFilepath, filepath, (error) => {
-      if (error) {
-        console.error(
-          "Erreur lors du renommage de l'image redimensionnée :",
-          error
-        );
-      } else {
-        console.info("Image redimensionnée renommée avec succès.");
-      }
-    });
-  }, 100); // Délai de 100 ms pour s'assurer que le fichier est libéré
-
-  return filename; // Retourne le nom du fichier redimensionné
-}; // end downloadPoster
+  return filename;
+};
 
 const addMovie = async (req, res) => {
   try {
@@ -120,13 +82,8 @@ const addMovie = async (req, res) => {
     // Téléchargez l'affiche du film
     let cover = "";
     if (posterUrl) {
-      cover = await downloadPoster(posterUrl); // Télécharge l'image et retourne le nom du fichier
-      // Ajoute l'URL de base (localhost:3310) pour créer l'URL complète de l'affiche
-      const backendUrl =
-        process.env.VITE_BACKEND_URL || "http://localhost:3310";
-      cover = `${backendUrl}/${cover}`; // Créer l'URL complète
+      cover = await downloadPoster(posterUrl);
     }
-    console.info("cover : ", cover);
 
     await editingMovieModel.insertMovie(
       title,

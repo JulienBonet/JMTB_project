@@ -20,17 +20,18 @@ import MovieInfosEntrance from "./MovieInfosEntrance";
 import "./addNewMovie.css";
 
 function AddNewMovie() {
+  const backendUrl = `${import.meta.env.VITE_BACKEND_URL}/images`;
+
   const [data, setData] = useState([]);
   const [dataType, setDataType] = useState("");
   const [videoSupport, setvideoSupport] = useState("");
   const [format, setFormat] = useState("");
   const [fileSize, setFileSize] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null); // Pour le fichier vidéo
-  const [selectedCoverFile, setSelectedCoverFile] = useState(null); // Pour l'affiche
+  const [selectedCoverFile, setSelectedCoverFile] = useState(""); // Pour l'affiche
   const [coverPreview, setCoverPreview] = useState(
-    "http://localhost:3310/00_cover_default.jpg"
+    `${backendUrl}/00_cover_default.jpg`
   ); // Pour l'aperçu de l'affiche
-
   const [openModal, setOpenModal] = useState(false);
   const [openModalMIE, setOpenModalMIE] = useState(false);
   const [selectedKinds, setSelectedKinds] = useState([]);
@@ -104,7 +105,7 @@ function AddNewMovie() {
     setSelectedCountries([]);
     setSelectedLanguages([]);
     setSelectedTags([]);
-    setCoverPreview("http://localhost:3310/00_cover_default.jpg");
+    setCoverPreview(`${backendUrl}/00_cover_default.jpg`);
   };
 
   // -----------------/ MOVIE INFO ENTRANCE MODAL /----------------- //
@@ -882,10 +883,10 @@ function AddNewMovie() {
         const data = await response.json();
         console.info("coverFile uploaded successfully:", data);
 
-        setCoverPreview(`http://localhost:3310/images/${data.coverFilename}`);
+        setCoverPreview(`${backendUrl}/${data.coverFilename}`);
         setMovie((prevMovie) => ({
           ...prevMovie,
-          posterUrl: `http://localhost:3310/images/${data.coverFilename}`,
+          posterUrl: data.coverFilename,
         }));
       } catch (error) {
         console.error("Error uploading file:", error);

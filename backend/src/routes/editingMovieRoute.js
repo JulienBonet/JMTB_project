@@ -19,9 +19,8 @@ router.post(
       }
       const coverUrl = `/images/${req.file.filename}`;
       // Téléchargez l'image de couverture et obtenez le nom de fichier
-      const coverFilename = await editingMovieController.downloadPoster(
-        coverUrl
-      );
+      const coverFilename =
+        await editingMovieController.downloadPoster(coverUrl);
       // Envoyez le nom de fichier de l'image de couverture en réponse
       res.status(200).json({ coverFilename });
     } catch (error) {
