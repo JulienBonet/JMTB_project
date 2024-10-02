@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Pagination from "@mui/material/Pagination";
 import { Button, Container } from "@mui/material";
@@ -64,6 +65,13 @@ function AdminMovieList() {
     setCurrentPage(value);
   };
 
+  // NAVIGATION VERS NEW MOVIE
+  const navigate = useNavigate();
+
+  const handleAddNewMovie = () => {
+    navigate("/new_movie");
+  };
+
   return (
     <section className="AdminItemsSection">
       <section className="HeaderAdminItemsSection">
@@ -79,10 +87,7 @@ function AdminMovieList() {
               placeholder="recherche"
             />
           </div>
-          <Button
-            variant="contained"
-            onClick={() => console.info("Ajouter un film")}
-          >
+          <Button variant="contained" onClick={handleAddNewMovie}>
             ADD NEW FILM
           </Button>
         </div>

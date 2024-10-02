@@ -80,26 +80,62 @@ const addMovie = async (req, res) => {
     }
 
     // Téléchargez l'affiche du film
-    let cover = "";
+    let cover = "00_cover_default.jpg";
     if (posterUrl) {
       cover = await downloadPoster(posterUrl);
     }
 
+    // await editingMovieModel.insertMovie(
+    //   title,
+    //   altTitle,
+    //   year,
+    //   duration,
+    //   cover,
+    //   trailer,
+    //   pitch,
+    //   story,
+    //   location,
+    //   videoFormat,
+    //   videoSupport,
+    //   fileSize,
+    //   idTheMovieDb,
+    //   idIMDb
+    // );
+
+    // Création de l'objet movieData pour gérer les champs optionnels et leur transformation
+    const movieData = {
+      title, // Le title ne sera jamais null car il est validé plus haut
+      altTitle: altTitle || null,
+      year: year || null,
+      duration: duration ? parseInt(duration, 10) : null, // Transforme en entier ou null
+      cover: cover || null, // Utilise la variable cover pour l'image téléchargée
+      trailer: trailer || null,
+      pitch: pitch || null,
+      story: story || null,
+      location: location || null,
+      videoFormat: videoFormat || null,
+      videoSupport: videoSupport || null,
+      fileSize: fileSize || null,
+      idTheMovieDb: idTheMovieDb || null,
+      idIMDb: idIMDb || null,
+    };
+
+    // Insertion des données dans la base
     await editingMovieModel.insertMovie(
-      title,
-      altTitle,
-      year,
-      duration,
-      cover,
-      trailer,
-      pitch,
-      story,
-      location,
-      videoFormat,
-      videoSupport,
-      fileSize,
-      idTheMovieDb,
-      idIMDb
+      movieData.title,
+      movieData.altTitle,
+      movieData.year,
+      movieData.duration,
+      movieData.cover,
+      movieData.trailer,
+      movieData.pitch,
+      movieData.story,
+      movieData.location,
+      movieData.videoFormat,
+      movieData.videoSupport,
+      movieData.fileSize,
+      movieData.idTheMovieDb,
+      movieData.idIMDb
     );
 
     const [[{ movieId }]] = await editingMovieModel.getLastInsertedMovieId();
