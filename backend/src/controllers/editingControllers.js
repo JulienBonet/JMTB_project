@@ -401,9 +401,8 @@ const eraseScreenwriter = async (req, res, next) => {
   try {
     const screenwriterId = req.params.id;
 
-    const screenwriters = await editingModel.findScreenwriterById(
-      screenwriterId
-    );
+    const screenwriters =
+      await editingModel.findScreenwriterById(screenwriterId);
     if (!screenwriters || screenwriters.length === 0) {
       return res.status(404).json({ message: "Casting non trouvé" });
     }
