@@ -10,7 +10,7 @@ const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
-const sharp = require("sharp");
+// const sharp = require("sharp");
 const editingModel = require("../models/editingModel");
 const editingMovieModel = require("../models/editingMovieModel");
 
@@ -36,18 +36,43 @@ const downloadPoster = async (posterPath) => {
   const tmdbBaseUrl = "https://image.tmdb.org/t/p/original";
   const posterUrl = `${tmdbBaseUrl}${posterPath}`;
   const extension = path.extname(posterPath);
-  const filename = `poster-${uuidv4()}${extension}`;
+  const filename = `cover-${uuidv4()}${extension}`;
   const filepath = path.join(__dirname, "../../public/images", filename);
 
   // Télécharge l'image
   await downloadImage(posterUrl, filepath);
 
-  console.info("Image téléchargée avec succès : ", filepath);
+  // console.info("Image téléchargée avec succès : ", filepath);
 
   return filename;
+}; // end const downloadPoster
+
+const uploadLocalCover = async (localCoverPath, coverUrl) => {
+  const extension = path.extname(localCoverPath);
+  const filename = `cover-${uuidv4()}${extension}`;
+  const targetPath = path.join(__dirname, "../../public/images", filename);
+  // console.info("targetPath in uploadLocalCover:", targetPath);
+
+  return new Promise((resolve, reject) => {
+    const readStream = fs.createReadStream(localCoverPath);
+    const writeStream = fs.createWriteStream(targetPath);
+
+    readStream
+      .pipe(writeStream)
+      .on("finish", () => {
+        console.info("Image locale téléchargée avec succès : ", targetPath);
+        resolve(filename);
+      })
+      .on("error", (error) => {
+        console.error("Erreur lors de l'upload de l'image locale :", error);
+        reject(error);
+      });
+  });
 };
 
 const addMovie = async (req, res) => {
+  // console.info("Données reçues:", req.body);
+  // console.info("req.file dans addMovie:", req.file);
   try {
     const {
       title,
@@ -75,40 +100,21 @@ const addMovie = async (req, res) => {
       tags,
     } = req.body;
 
+    // console.info("cover dans reqbody", req.body.cover);
     if (!title) {
       return res.status(400).json({ message: "Movie's title is required" });
     }
 
-    // Téléchargez l'affiche du film
-    let cover = "00_cover_default.jpg";
-    if (posterUrl) {
-      cover = await downloadPoster(posterUrl);
-    }
-
-    // await editingMovieModel.insertMovie(
-    //   title,
-    //   altTitle,
-    //   year,
-    //   duration,
-    //   cover,
-    //   trailer,
-    //   pitch,
-    //   story,
-    //   location,
-    //   videoFormat,
-    //   videoSupport,
-    //   fileSize,
-    //   idTheMovieDb,
-    //   idIMDb
-    // );
+    // Recuperer l'affiche du film
+    const cover = req.body.cover;
 
     // Création de l'objet movieData pour gérer les champs optionnels et leur transformation
     const movieData = {
-      title, // Le title ne sera jamais null car il est validé plus haut
+      title,
       altTitle: altTitle || null,
       year: year || null,
-      duration: duration ? parseInt(duration, 10) : null, // Transforme en entier ou null
-      cover: cover || null, // Utilise la variable cover pour l'image téléchargée
+      duration: duration ? parseInt(duration, 10) : null,
+      cover,
       trailer: trailer || null,
       pitch: pitch || null,
       story: story || null,
@@ -339,4 +345,6 @@ const addMovie = async (req, res) => {
 
 module.exports = {
   addMovie,
+  downloadPoster,
+  uploadLocalCover,
 };

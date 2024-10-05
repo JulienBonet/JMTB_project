@@ -43,7 +43,7 @@ function AddNewMovie() {
   const [selectedCountries, setSelectedCountries] = useState([]);
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
-  const [movieDetails, setMovieDetails] = useState([]);
+  const [uploadLocal, setUploadLocal] = useState(false);
   const [movie, setMovie] = useState({
     title: "",
     altTitle: "",
@@ -59,11 +59,6 @@ function AddNewMovie() {
     fileSize: "",
     idTheMovieDb: "",
   });
-
-  console.info("movieDetails : ", movieDetails);
-  console.info("movie : ", movie);
-  console.info("selectedCoverFile : ", selectedCoverFile);
-  console.info("coverPreview : ", coverPreview);
 
   // -----------------/ SOURCE /----------------- //
 
@@ -106,6 +101,8 @@ function AddNewMovie() {
     setSelectedLanguages([]);
     setSelectedTags([]);
     setCoverPreview(`${backendUrl}/00_cover_default.jpg`);
+    setSelectedCoverFile("");
+    setUploadLocal(false);
   };
 
   // -----------------/ MOVIE INFO ENTRANCE MODAL /----------------- //
@@ -458,8 +455,6 @@ function AddNewMovie() {
       const response = await axios(options);
       const movieData = response.data;
 
-      setMovieDetails(movieData);
-
       setMovie({
         ...movie,
         title: movieData.title,
@@ -554,7 +549,6 @@ function AddNewMovie() {
       };
 
       const response2 = await axios(options2);
-      console.info("response2:", response2);
       const crewData = response2.data.crew;
       const castData = response2.data.cast;
 
@@ -680,6 +674,7 @@ function AddNewMovie() {
       );
       setSelectedTags(tagsData);
 
+      // fetch movie cover
       const posterUrl = movieData.poster_path
         ? `https://image.tmdb.org/t/p/original${movieData.poster_path}`
         : null;
@@ -688,6 +683,7 @@ function AddNewMovie() {
         ...prevMovie,
         posterUrl,
       }));
+      console.info("posterUrl:", posterUrl);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -855,21 +851,31 @@ function AddNewMovie() {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setCoverPreview(reader.result);
+        setCoverPreview(reader.result); // Affiche l'aperçu de l'image sélectionnée
       };
       reader.readAsDataURL(file);
-      setSelectedCoverFile(file);
+      setSelectedCoverFile(file); // Stocke le fichier sélectionné
+      // console.info("setSelectedCoverFile in handleCoverChange :", file);
+      setUploadLocal(true); // Passe en mode upload local
     }
-  };
+  }; // end handleCoverChange
 
   const handleFileUpload = async () => {
-    if (selectedCoverFile) {
+    let coverFilename = null; // Initialiser le nom du fichier de couverture
+
+    if (uploadLocal && selectedCoverFile) {
+      // Upload via la route /upload-local-cover pour les fichiers locaux
       const formData = new FormData();
       formData.append("cover", selectedCoverFile);
 
+      // console.info("FormData juste avant l'upload :");
+      // for (const pair of formData.entries()) {
+      //   console.info("Clé :", pair[0], "Valeur :", pair[1]);
+      // }
+
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/upload-cover`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/upload-local-cover`, // Route pour l'upload local
           {
             method: "POST",
             body: formData,
@@ -877,22 +883,52 @@ function AddNewMovie() {
         );
 
         if (!response.ok) {
-          throw new Error("Failed to upload file");
+          const errorData = await response.json();
+          console.error("Erreur lors de l'upload local:", errorData);
+          throw new Error("Failed to upload local file");
         }
 
         const data = await response.json();
-        console.info("coverFile uploaded successfully:", data);
+        // console.info("coverFile uploaded successfully:", data);
 
+        // Mettez à jour l'état de prévisualisation et le nom du fichier
         setCoverPreview(`${backendUrl}/${data.coverFilename}`);
-        setMovie((prevMovie) => ({
-          ...prevMovie,
-          posterUrl: data.coverFilename,
-        }));
+        coverFilename = data.coverFilename; // Récupérer le nom du fichier pour le retourner
       } catch (error) {
-        console.error("Error uploading file:", error);
+        console.error("Error uploading local file:", error);
       }
-    }
-  };
+    } else if (!uploadLocal) {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/upload-cover`, // Route pour l'upload via API
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ posterUrl: movie.posterUrl }), // On passe l'URL du poster récupéré via l'API
+          }
+        );
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error("Erreur lors de l'upload via API:", errorData);
+          throw new Error("Failed to upload cover via API");
+        }
+
+        const data = await response.json();
+        // console.info("coverFile uploaded successfully via API:", data);
+
+        // Mettez à jour l'état de prévisualisation et le nom du fichier
+        setCoverPreview(`${backendUrl}/${data.coverFilename}`);
+        coverFilename = data.coverFilename; // Récupérer le nom du fichier pour le retourner
+      } catch (error) {
+        console.error("Error uploading cover via API:", error.message);
+      }
+    } // end else if (!uploadLocal)
+
+    return coverFilename; // Retourne le nom du fichier de couverture
+  }; // end handleFileUpload
 
   // -----------------/ POST NEW MOVIE /----------------- //
 
@@ -913,6 +949,7 @@ function AddNewMovie() {
   const handleFormSubmit = async (event) => {
     event.preventDefault();
 
+    // Récupérer toutes les données sélectionnées
     const selectedGenre = selectedKinds.map((kind) => kind);
     const selectedDirectorsName = selectedDirectors.map(
       (director) => director.name
@@ -931,6 +968,7 @@ function AddNewMovie() {
     );
     const selectedTagsId = selectedTags.map((tag) => tag.id);
 
+    // Créer le corps de la requête
     const requestBody = {
       ...movie,
       genres: selectedGenre,
@@ -944,9 +982,11 @@ function AddNewMovie() {
       tags: selectedTagsId,
     };
 
-    if (selectedFile) {
-      await handleFileUpload();
-    }
+    // Effectuer l'upload de l'image (que ce soit via API ou localement)
+    const coverFilename = await handleFileUpload(); // Attendre le résultat de l'upload
+
+    // Ajouter le nom du fichier de couverture au corps de la requête
+    requestBody.cover = coverFilename || "00_cover_default.jpg"; // Utiliser une valeur par défaut si pas d'upload
 
     try {
       const response = await fetch(
@@ -964,11 +1004,12 @@ function AddNewMovie() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
+      // log verificication datas
       const data = await response.json();
       console.info("data:", data);
 
       alert("Le film a été ajouté avec succès !");
-      resetStates(); // Assuming resetStates() is a function to reset the form
+      resetStates(); // Réinitialiser les états du formulaire
     } catch (error) {
       console.error(error);
       alert("Erreur lors de l'ajout du film. Veuillez réessayer.");
@@ -1527,6 +1568,7 @@ function AddNewMovie() {
             />
             <input
               type="file"
+              name="cover"
               style={{ display: "none" }}
               onChange={handleCoverChange}
               ref={fileCoverRef}
@@ -1534,9 +1576,6 @@ function AddNewMovie() {
             />
             <button type="button" onClick={() => fileCoverRef.current.click()}>
               Sélectionner une image
-            </button>
-            <button type="button" onClick={handleFileUpload}>
-              Télécharger l'image
             </button>
           </div>
         </section>
