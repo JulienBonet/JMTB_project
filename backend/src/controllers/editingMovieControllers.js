@@ -343,8 +343,52 @@ const addMovie = async (req, res) => {
   }
 };
 
+// DELETE MOVIE
+
+const deleteMovie = async (req, res) => {
+  const { id } = req.params;
+  const movieId = parseInt(id, 10); // Convertit l'ID en entier
+  console.info("Tentative de suppression du film avec ID:", movieId);
+
+  try {
+    // Récupérer les réalisateurs associés avant de supprimer le film
+    const directors = await editingMovieModel.findDirectorsByMovieId(movieId);
+    console.info("Directeurs associés au film:", directors);
+
+    if (directors.length === 0) {
+      console.info(`Aucun réalisateur associé au film avec ID: ${movieId}`);
+    }
+
+    // Suppression du film
+    await editingMovieModel.eraseMovie(movieId);
+    console.info("Film supprimé avec succès");
+
+    // Pour chaque directeur, vérifier s'il est lié à d'autres films
+    for (const director of directors) {
+      const [result] = await editingMovieModel.countMoviesByDirector(
+        director.directorId
+      );
+      console.info(
+        `Nombre de films pour le réalisateur avec ID ${director.directorId}:`,
+        result.movieCount
+      );
+
+      if (result.movieCount === 0) {
+        await editingModel.deleteDirector(director.directorId); // Supprimer le réalisateur s'il n'est plus lié à aucun film
+        console.info("Réalisateur supprimé avec succès:", director.directorId);
+      }
+    }
+
+    return res.status(204).send();
+  } catch (error) {
+    console.error("Erreur durant la suppression du film:", error);
+    return res.status(500).json({ message: "Erreur lors de la suppression" });
+  }
+};
+
 module.exports = {
   addMovie,
   downloadPoster,
   uploadLocalCover,
+  deleteMovie,
 };

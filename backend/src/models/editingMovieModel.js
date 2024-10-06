@@ -39,6 +39,11 @@ const insertMovie = (
 const getLastInsertedMovieId = () =>
   db.query("SELECT LAST_INSERT_ID() AS movieId");
 
+const findMovieById = async (id) => {
+  const [result] = await db.query("SELECT * FROM movies WHERE id = ?", [id]);
+  return result;
+};
+
 const eraseMovie = (id) => db.query("DELETE FROM movies WHERE id = ?", [id]);
 
 // EDIT MOVIE_GENRE
@@ -62,6 +67,21 @@ const findMovieDirector = (movieId, directorId) =>
     "SELECT * FROM `movie_director` WHERE `movieId` = ? AND `directorId` = ?",
     [movieId, directorId]
   );
+const findDirectorsByMovieId = async (movieId) => {
+  const [result] = await db.query(
+    "SELECT directorId FROM `movie_director` WHERE `movieId` = ?",
+    [movieId]
+  );
+  return result;
+};
+
+const countMoviesByDirector = async (directorId) => {
+  const [result] = await db.query(
+    "SELECT COUNT(*) AS movieCount FROM movie_director WHERE directorId = ?",
+    [directorId]
+  );
+  return result; // Retourne uniquement le tableau de résultats
+};
 
 const addMovieDirector = (movieId, directorId) =>
   db.query(
@@ -170,10 +190,13 @@ const addMovieTag = (movieId, tagId) =>
 module.exports = {
   insertMovie,
   getLastInsertedMovieId,
+  findMovieById,
   eraseMovie,
   findMovieKind,
   addMovieKind,
   findMovieDirector,
+  findDirectorsByMovieId,
+  countMoviesByDirector,
   addMovieDirector,
   findMovieCasting,
   addMovieCasting,

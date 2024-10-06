@@ -70,4 +70,6 @@ router.post(
   }
 );
 
+router.delete("/movie/:id", editingMovieController.deleteMovie);
+
 module.exports = router;
