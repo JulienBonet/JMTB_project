@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+// /* eslint-disable react/prop-types */
 import { useState, useRef } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -14,12 +15,12 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}/images`;
 
   const [isModify, setIsModify] = useState(false);
-  const [name, setName] = useState(item.name);
-  const [pitch, setPitch] = useState(item.pitch);
-  const [wikilink, setWikilink] = useState(item.wikilink);
-  const [imdblink, setImdblink] = useState(item.imdblink);
+  const [name, setName] = useState(item.name || "");
+  const [pitch, setPitch] = useState(item.pitch || "");
+  const [wikilink, setWikilink] = useState(item.wikilink || "");
+  const [imdblink, setImdblink] = useState(item.imdblink || "");
   const [isEditing, setIsEditing] = useState(false);
-  const [image, setImage] = useState(item.image);
+  const [image, setImage] = useState(`${backendUrl}/${item.image}`);
   const [showUploadButton, setShowUploadButton] = useState(true);
   const fileInputRef = useRef(null);
 
@@ -58,6 +59,7 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
 
   const handleValidate = async () => {
     try {
+      // 1. Vérifier s'il y a des changements dans les données textuelles
       const hasChanges =
         name !== item.name ||
         pitch !== item.pitch ||
@@ -72,7 +74,7 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
           imdblink,
         };
 
-        // 1. Mettre à jour les infos
+        // 1. Mettre à jour les infos textuelles (nom, pitch, etc.)
         const response = await fetch(
           `${import.meta.env.VITE_BACKEND_URL}/api/${origin}/${item.id}`,
           {
@@ -91,20 +93,23 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
         console.info("Item successfully updated");
       }
 
-      // 2. Mettre à jour l'image'
+      // 2. Mettre à jour l'image (s'il y a un fichier sélectionné)
       if (fileInputRef.current.files[0]) {
-        handleUpdateImage();
+        await handleUpdateImage(); // Utilisation de await pour attendre la fin de la mise à jour de l'image
         console.info("Image successfully updated");
       }
 
-      // 3. Réinitialiser les états locaux
+      // 3. Réinitialiser les états locaux, déclencher la mise à jour du parent et fermer le modal
       toast.success(`${origin} successfully updated`, {
         className: "custom-toast",
       });
+
       setIsModify(false);
       setIsEditing(false);
       setShowUploadButton(true);
-      onUpdate();
+
+      onUpdate(); // Rafraîchir les données dans le composant parent
+      closeModal(); // Fermer le modal après tout
     } catch (error) {
       console.error("Request error:", error);
     }
@@ -129,7 +134,8 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
   };
 
   const handleResetImage = () => {
-    setImage(item.image);
+    // setImage(item.image);
+    setImage(`${backendUrl}/${item.image}`);
     setShowUploadButton(true);
   };
 
@@ -217,11 +223,18 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
       </section>
 
       <section className="ItemsCard_Col2">
-        {image && (
+        {/* {image && (
           <img
             className="ItemImage"
-            src={`${backendUrl}/${image}`}
-            // src={image}
+            // src={`${backendUrl}/${image}`}
+            src={image}
+            alt={`${item.name}`}
+          />
+        )} */}
+        {item && image && (
+          <img
+            className="ItemImage"
+            src={image} // Vérifie que `image` est bien défini avant d'essayer de l'afficher
             alt={`${item.name}`}
           />
         )}

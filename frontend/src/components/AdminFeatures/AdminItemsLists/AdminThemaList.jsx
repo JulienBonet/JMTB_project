@@ -133,7 +133,7 @@ function AdminThemaList() {
     <section className="AdminItemsSection">
       <section className="HeaderAdminItemsSection">
         <div className="admin_Title_feat_container">
-          <h1 className="admin_Title_feat">STUDIOS LIST</h1>
+          <h1 className="admin_Title_feat">THEMAS LIST</h1>
         </div>
         <div className="admin_feat_tools_line">
           <div className="Admin_search_bar_container">

@@ -69,14 +69,14 @@ const uploadDirectorImage = async (req, res) => {
 
     const director = await editingModel.findDirectorById(id);
     const currentImageUrl = director[0].image;
-    // effacer la précédente image
-    if (currentImageUrl !== "http://localhost:3310/00_item_default.png") {
+
+    // Effacer la précédente image
+    if (currentImageUrl !== "00_item_default.png") {
       try {
-        const pathname = new URL(currentImageUrl).pathname;
         const fullPath = path.join(
           __dirname,
           "../../public/images",
-          path.basename(pathname)
+          currentImageUrl // Utilisation directe du nom de fichier
         );
         if (fs.existsSync(fullPath)) {
           fs.unlinkSync(fullPath);
@@ -90,10 +90,9 @@ const uploadDirectorImage = async (req, res) => {
         );
       }
     }
-    // mettre à jour la nouvelle image
-    const imageUrl = `${req.protocol}://${req.get("host")}/${
-      req.file.filename
-    }`;
+
+    // Mettre à jour la nouvelle image
+    const imageUrl = req.file.filename;
     const result = await editingModel.editDirectorImage(imageUrl, id);
 
     if (result.affectedRows > 0) {
@@ -111,7 +110,7 @@ const eraseDirector = async (req, res, next) => {
   try {
     const directorId = req.params.id;
 
-    // Supprimer l'image
+    // Find the director by ID
     const directors = await editingModel.findDirectorById(directorId);
     if (!directors || directors.length === 0) {
       return res.status(404).json({ message: "director non trouvé" });
@@ -119,13 +118,13 @@ const eraseDirector = async (req, res, next) => {
 
     const director = directors[0];
     const imageUrl = director.image;
-    if (imageUrl && imageUrl !== "http://localhost:3310/00_item_default.png") {
+    if (imageUrl && imageUrl !== "00_item_default.png") {
       try {
-        const pathname = new URL(imageUrl).pathname;
+        // Correct the usage of imageUrl in path.basename
         const fullPath = path.join(
           __dirname,
           "../../public/images",
-          path.basename(pathname)
+          path.basename(imageUrl) // Use imageUrl to get the filename
         );
         if (fs.existsSync(fullPath)) {
           fs.unlinkSync(fullPath);
@@ -140,7 +139,7 @@ const eraseDirector = async (req, res, next) => {
       }
     }
 
-    // Supprimer le director de la base de données
+    // Delete the director from the database
     await editingModel.deleteDirector(directorId);
     res.sendStatus(204);
   } catch (error) {
@@ -212,13 +211,12 @@ const uploadCastingImage = async (req, res) => {
     const casting = await editingModel.findCastingById(id);
     const currentImageUrl = casting[0].image;
 
-    if (currentImageUrl !== "http://localhost:3310/00_item_default.png") {
+    if (currentImageUrl !== "00_item_default.png") {
       try {
-        const pathname = new URL(currentImageUrl).pathname;
         const fullPath = path.join(
           __dirname,
           "../../public/images",
-          path.basename(pathname)
+          currentImageUrl
         );
         if (fs.existsSync(fullPath)) {
           fs.unlinkSync(fullPath);
@@ -233,9 +231,7 @@ const uploadCastingImage = async (req, res) => {
       }
     }
 
-    const imageUrl = `${req.protocol}://${req.get("host")}/${
-      req.file.filename
-    }`;
+    const imageUrl = req.file.filename;
 
     const result = await editingModel.editCastingImage(imageUrl, id);
 
@@ -261,13 +257,12 @@ const eraseCasting = async (req, res, next) => {
 
     const casting = castings[0];
     const imageUrl = casting.image;
-    if (imageUrl && imageUrl !== "http://localhost:3310/00_item_default.png") {
+    if (imageUrl && imageUrl !== "00_item_default.png") {
       try {
-        const pathname = new URL(imageUrl).pathname;
         const fullPath = path.join(
           __dirname,
           "../../public/images",
-          path.basename(pathname)
+          path.basename(imageUrl)
         );
         if (fs.existsSync(fullPath)) {
           fs.unlinkSync(fullPath);
@@ -359,13 +354,12 @@ const uploadScreenwriterImage = async (req, res) => {
     const screenwriter = await editingModel.findScreenwriterById(id);
     const currentImageUrl = screenwriter[0].image;
 
-    if (currentImageUrl !== "http://localhost:3310/00_item_default.png") {
+    if (currentImageUrl !== "00_item_default.png") {
       try {
-        const pathname = new URL(currentImageUrl).pathname;
         const fullPath = path.join(
           __dirname,
           "../../public/images",
-          path.basename(pathname)
+          currentImageUrl
         );
         if (fs.existsSync(fullPath)) {
           fs.unlinkSync(fullPath);
@@ -380,9 +374,7 @@ const uploadScreenwriterImage = async (req, res) => {
       }
     }
 
-    const imageUrl = `${req.protocol}://${req.get("host")}/${
-      req.file.filename
-    }`;
+    const imageUrl = req.file.filename;
 
     const result = await editingModel.editScreenwriterImage(imageUrl, id);
 
@@ -409,13 +401,12 @@ const eraseScreenwriter = async (req, res, next) => {
 
     const screenwriter = screenwriters[0];
     const imageUrl = screenwriter.image;
-    if (imageUrl && imageUrl !== "http://localhost:3310/00_item_default.png") {
+    if (imageUrl && imageUrl !== "00_item_default.png") {
       try {
-        const pathname = new URL(imageUrl).pathname;
         const fullPath = path.join(
           __dirname,
           "../../public/images",
-          path.basename(pathname)
+          path.basename(imageUrl)
         );
         if (fs.existsSync(fullPath)) {
           fs.unlinkSync(fullPath);
@@ -503,13 +494,12 @@ const uploadCompositorImage = async (req, res) => {
     const compositor = await editingModel.findCompositorById(id);
     const currentImageUrl = compositor[0].image;
 
-    if (currentImageUrl !== "http://localhost:3310/00_item_default.png") {
+    if (currentImageUrl !== "00_item_default.png") {
       try {
-        const pathname = new URL(currentImageUrl).pathname;
         const fullPath = path.join(
           __dirname,
           "../../public/images",
-          path.basename(pathname)
+          currentImageUrl
         );
         if (fs.existsSync(fullPath)) {
           fs.unlinkSync(fullPath);
@@ -524,9 +514,7 @@ const uploadCompositorImage = async (req, res) => {
       }
     }
 
-    const imageUrl = `${req.protocol}://${req.get("host")}/${
-      req.file.filename
-    }`;
+    const imageUrl = req.file.filename;
 
     const result = await editingModel.editCompositorImage(imageUrl, id);
 
@@ -552,13 +540,12 @@ const eraseCompositor = async (req, res, next) => {
 
     const compositor = compositors[0];
     const imageUrl = compositor.image;
-    if (imageUrl && imageUrl !== "http://localhost:3310/00_item_default.png") {
+    if (imageUrl && imageUrl !== "00_item_default.png") {
       try {
-        const pathname = new URL(imageUrl).pathname;
         const fullPath = path.join(
           __dirname,
           "../../public/images",
-          path.basename(pathname)
+          path.basename(imageUrl)
         );
         if (fs.existsSync(fullPath)) {
           fs.unlinkSync(fullPath);
@@ -644,13 +631,12 @@ const uploadStudioImage = async (req, res) => {
     const studio = await editingModel.findStudioById(id);
     const currentImageUrl = studio[0].image;
 
-    if (currentImageUrl !== "http://localhost:3310/00_jmtb_item_default.jpg") {
+    if (currentImageUrl !== "00_jmtb_item_default.jpg") {
       try {
-        const pathname = new URL(currentImageUrl).pathname;
         const fullPath = path.join(
           __dirname,
           "../../public/images",
-          path.basename(pathname)
+          currentImageUrl
         );
         if (fs.existsSync(fullPath)) {
           fs.unlinkSync(fullPath);
@@ -665,9 +651,7 @@ const uploadStudioImage = async (req, res) => {
       }
     }
 
-    const imageUrl = `${req.protocol}://${req.get("host")}/${
-      req.file.filename
-    }`;
+    const imageUrl = req.file.filename;
 
     const result = await editingModel.editStudioImage(imageUrl, id);
 
@@ -693,16 +677,12 @@ const eraseStudio = async (req, res, next) => {
 
     const studio = studios[0];
     const imageUrl = studio.image;
-    if (
-      imageUrl &&
-      imageUrl !== "http://localhost:3310/00_jmtb_item_default.jpg"
-    ) {
+    if (imageUrl && imageUrl !== "00_jmtb_item_default.jpg") {
       try {
-        const pathname = new URL(imageUrl).pathname;
         const fullPath = path.join(
           __dirname,
           "../../public/images",
-          path.basename(pathname)
+          path.basename(imageUrl)
         );
         if (fs.existsSync(fullPath)) {
           fs.unlinkSync(fullPath);
@@ -777,13 +757,12 @@ const uploadThemaImage = async (req, res) => {
     const thema = await editingModel.findThemaById(id);
     const currentImageUrl = thema[0].image;
 
-    if (currentImageUrl !== "http://localhost:3310/00_jmtb_item_default.jpg") {
+    if (currentImageUrl !== "00_jmtb_item_default.jpg") {
       try {
-        const pathname = new URL(currentImageUrl).pathname;
         const fullPath = path.join(
           __dirname,
           "../../public/images",
-          path.basename(pathname)
+          currentImageUrl
         );
         if (fs.existsSync(fullPath)) {
           fs.unlinkSync(fullPath);
@@ -798,9 +777,7 @@ const uploadThemaImage = async (req, res) => {
       }
     }
 
-    const imageUrl = `${req.protocol}://${req.get("host")}/${
-      req.file.filename
-    }`;
+    const imageUrl = req.file.filename;
 
     const result = await editingModel.editThemaImage(imageUrl, id);
 
@@ -826,16 +803,12 @@ const eraseThema = async (req, res, next) => {
 
     const thema = themas[0];
     const imageUrl = thema.image;
-    if (
-      imageUrl &&
-      imageUrl !== "http://localhost:3310/00_jmtb_item_default.jpg"
-    ) {
+    if (imageUrl && imageUrl !== "00_jmtb_item_default.jpg") {
       try {
-        const pathname = new URL(imageUrl).pathname;
         const fullPath = path.join(
           __dirname,
           "../../public/images",
-          path.basename(pathname)
+          path.basename(imageUrl)
         );
         if (fs.existsSync(fullPath)) {
           fs.unlinkSync(fullPath);
@@ -910,15 +883,12 @@ const uploadCountryImage = async (req, res) => {
     const [country] = await editingModel.findCountryById(id);
     const currentImageUrl = country.image;
 
-    if (
-      currentImageUrl !== "http://localhost:3310/00_jmtb_flag_item_default.jpg"
-    ) {
+    if (currentImageUrl !== "00_jmtb_flag_item_default.jpg") {
       try {
-        const pathname = new URL(currentImageUrl).pathname;
         const fullPath = path.join(
           __dirname,
           "../../public/images",
-          path.basename(pathname)
+          currentImageUrl
         );
         if (fs.existsSync(fullPath)) {
           fs.unlinkSync(fullPath);
@@ -933,9 +903,7 @@ const uploadCountryImage = async (req, res) => {
       }
     }
 
-    const imageUrl = `${req.protocol}://${req.get("host")}/${
-      req.file.filename
-    }`;
+    const imageUrl = req.file.filename;
 
     const result = await editingModel.editCountryImage(imageUrl, id);
 
@@ -961,16 +929,12 @@ const eraseCountry = async (req, res, next) => {
 
     const country = countries[0];
     const imageUrl = country.image;
-    if (
-      imageUrl &&
-      imageUrl !== "http://localhost:3310/00_jmtb_flag_item_default.jpg"
-    ) {
+    if (imageUrl && imageUrl !== "00_jmtb_flag_item_default.jpg") {
       try {
-        const pathname = new URL(imageUrl).pathname;
         const fullPath = path.join(
           __dirname,
           "../../public/images",
-          path.basename(pathname)
+          path.basename(imageUrl)
         );
         if (fs.existsSync(fullPath)) {
           fs.unlinkSync(fullPath);
