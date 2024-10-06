@@ -11,11 +11,13 @@ import CachedIcon from "@mui/icons-material/Cached";
 import "./adminItemsCard.css";
 
 function AdminItemsCard4({ item, origin, onUpdate, closeModal }) {
+  const backendUrl = `${import.meta.env.VITE_BACKEND_URL}/images`;
+
   const [isModify, setIsModify] = useState(false);
   const [name, setName] = useState(item.name);
   const [pitch, setPitch] = useState(item.pitch);
   const [isEditing, setIsEditing] = useState(false);
-  const [image, setImage] = useState(item.image);
+  const [image, setImage] = useState(`${backendUrl}/${item.image}`);
   const [showUploadButton, setShowUploadButton] = useState(true);
   const fileInputRef = useRef(null);
 
@@ -46,10 +48,11 @@ function AdminItemsCard4({ item, origin, onUpdate, closeModal }) {
 
       if (imageResponse.ok) {
         console.info("Item image successfully updated");
-      } else {
-        console.error("Error updating item image");
+        return `${backendUrl}/${file.name}`; // Retourne la nouvelle URL de l'image
       }
+      console.error("Error updating item image");
     }
+    return null; // Retourne null si aucun fichier n'est sélectionné
   };
 
   const handleValidate = async () => {
@@ -81,10 +84,16 @@ function AdminItemsCard4({ item, origin, onUpdate, closeModal }) {
         console.info("Item successfully updated");
       }
 
-      // 2. Mettre à jour l'image'
+      // 2. Mettre à jour l'image
+      let newImageUrl = image; // Garde l'ancienne URL par défaut
       if (fileInputRef.current.files[0]) {
-        handleUpdateImage();
+        newImageUrl = await handleUpdateImage(); // Récupère la nouvelle URL
         console.info("Image successfully updated");
+      }
+
+      // Mettre à jour l'état avec la nouvelle URL d'image
+      if (newImageUrl) {
+        setImage(newImageUrl); // Met à jour l'image
       }
 
       // 3. Réinitialiser les états locaux
@@ -94,12 +103,13 @@ function AdminItemsCard4({ item, origin, onUpdate, closeModal }) {
       setIsModify(false);
       setIsEditing(false);
       setShowUploadButton(true);
-      onUpdate();
+
+      onUpdate(); // Rafraîchir les données dans le composant parent
+      closeModal(); // Fermer le modal après tout
     } catch (error) {
       console.error("Request error:", error);
     }
   };
-
   const handleUndo = () => {
     setIsModify(false);
     setIsEditing(false);
@@ -113,7 +123,6 @@ function AdminItemsCard4({ item, origin, onUpdate, closeModal }) {
     setImage(newImageUrl);
     setShowUploadButton(false);
   };
-
   const handleUploadClick = () => {
     fileInputRef.current.click();
   };

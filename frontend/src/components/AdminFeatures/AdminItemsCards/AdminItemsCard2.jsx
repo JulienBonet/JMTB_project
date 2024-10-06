@@ -57,6 +57,7 @@ function AdminItemsCard2({ item, origin, onUpdate, closeModal }) {
       setIsModify(false);
       setIsEditing(false);
       onUpdate();
+      closeModal();
     } catch (error) {
       console.error("Request error:", error);
     }
