@@ -20,7 +20,7 @@ const fileFilter = (req, file, cb) => {
   if (types.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error("file type is not appropriate"));
+    cb(new Error("Le type de fichier n'est pas supporté"));
   }
 };
 
@@ -29,7 +29,6 @@ const fileUpload = multer({
   fileFilter,
 });
 
-// Middleware type
 const setType = (type) => (req, res, next) => {
   req.multerType = type;
   next();

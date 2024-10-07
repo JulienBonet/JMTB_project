@@ -79,6 +79,7 @@ function AddNewMovie() {
       duration: "",
       pitch: "",
       story: "",
+      posterUrl: "",
       trailer: "",
       location: null,
       videoFormat: "",
@@ -860,75 +861,126 @@ function AddNewMovie() {
     }
   }; // end handleCoverChange
 
-  const handleFileUpload = async () => {
-    let coverFilename = null; // Initialiser le nom du fichier de couverture
+  // const handleFileUpload = async () => {
+  //   let coverFilename = null; // Initialiser le nom du fichier de couverture
 
+  //   if (uploadLocal && selectedCoverFile) {
+  //     // Upload via la route /upload-local-cover pour les fichiers locaux
+  //     const formData = new FormData();
+  //     formData.append("cover", selectedCoverFile);
+
+  //     // console.info("FormData juste avant l'upload :");
+  //     // for (const pair of formData.entries()) {
+  //     //   console.info("Clé :", pair[0], "Valeur :", pair[1]);
+  //     // }
+
+  //     try {
+  //       const response = await fetch(
+  //         `${import.meta.env.VITE_BACKEND_URL}/api/upload-local-cover`, // Route pour l'upload local
+  //         {
+  //           method: "POST",
+  //           body: formData,
+  //         }
+  //       );
+
+  //       if (!response.ok) {
+  //         const errorData = await response.json();
+  //         console.error("Erreur lors de l'upload local:", errorData);
+  //         throw new Error("Failed to upload local file");
+  //       }
+
+  //       const data = await response.json();
+  //       // console.info("coverFile uploaded successfully:", data);
+
+  //       // Mettez à jour l'état de prévisualisation et le nom du fichier
+  //       setCoverPreview(`${backendUrl}/${data.coverFilename}`);
+  //       coverFilename = data.coverFilename; // Récupérer le nom du fichier pour le retourner
+  //     } catch (error) {
+  //       console.error("Error uploading local file:", error);
+  //     }
+  //   } else if (!uploadLocal) {
+  //     try {
+  //       const response = await fetch(
+  //         `${import.meta.env.VITE_BACKEND_URL}/api/upload-cover`, // Route pour l'upload via API
+  //         {
+  //           method: "POST",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify({ posterUrl: movie.posterUrl }), // On passe l'URL du poster récupéré via l'API
+  //         }
+  //       );
+
+  //       if (!response.ok) {
+  //         const errorData = await response.json();
+  //         console.error("Erreur lors de l'upload via API:", errorData);
+  //         throw new Error("Failed to upload cover via API");
+  //       }
+
+  //       const data = await response.json();
+  //       // console.info("coverFile uploaded successfully via API:", data);
+
+  //       // Mettez à jour l'état de prévisualisation et le nom du fichier
+  //       setCoverPreview(`${backendUrl}/${data.coverFilename}`);
+  //       coverFilename = data.coverFilename; // Récupérer le nom du fichier pour le retourner
+  //     } catch (error) {
+  //       console.error("Error uploading cover via API:", error.message);
+  //     }
+  //   } // end else if (!uploadLocal)
+
+  //   return coverFilename; // Retourne le nom du fichier de couverture
+  // }; // end handleFileUpload
+
+  const handleFileUpload = async () => {
+    let coverFilename = "00_cover_default.jpg"; // Image par défaut
+
+    // Cas 1: Upload manuel d'une image
     if (uploadLocal && selectedCoverFile) {
-      // Upload via la route /upload-local-cover pour les fichiers locaux
       const formData = new FormData();
       formData.append("cover", selectedCoverFile);
 
-      // console.info("FormData juste avant l'upload :");
-      // for (const pair of formData.entries()) {
-      //   console.info("Clé :", pair[0], "Valeur :", pair[1]);
-      // }
-
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/upload-local-cover`, // Route pour l'upload local
+          `${import.meta.env.VITE_BACKEND_URL}/api/upload-local-cover`,
           {
             method: "POST",
             body: formData,
           }
         );
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.error("Erreur lors de l'upload local:", errorData);
-          throw new Error("Failed to upload local file");
+        if (response.ok) {
+          const data = await response.json();
+          setCoverPreview(`${backendUrl}/${data.coverFilename}`);
+          coverFilename = data.coverFilename; // Fichier uploadé
         }
-
-        const data = await response.json();
-        // console.info("coverFile uploaded successfully:", data);
-
-        // Mettez à jour l'état de prévisualisation et le nom du fichier
-        setCoverPreview(`${backendUrl}/${data.coverFilename}`);
-        coverFilename = data.coverFilename; // Récupérer le nom du fichier pour le retourner
       } catch (error) {
         console.error("Error uploading local file:", error);
       }
-    } else if (!uploadLocal) {
+    }
+    // Cas 2: Récupération via une API
+    else if (!uploadLocal && movie.posterUrl) {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/upload-cover`, // Route pour l'upload via API
+          `${import.meta.env.VITE_BACKEND_URL}/api/upload-cover`,
           {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ posterUrl: movie.posterUrl }), // On passe l'URL du poster récupéré via l'API
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ posterUrl: movie.posterUrl }),
           }
         );
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.error("Erreur lors de l'upload via API:", errorData);
-          throw new Error("Failed to upload cover via API");
+        if (response.ok) {
+          const data = await response.json();
+          setCoverPreview(`${backendUrl}/${data.coverFilename}`);
+          coverFilename = data.coverFilename; // Image récupérée via l'API
         }
-
-        const data = await response.json();
-        // console.info("coverFile uploaded successfully via API:", data);
-
-        // Mettez à jour l'état de prévisualisation et le nom du fichier
-        setCoverPreview(`${backendUrl}/${data.coverFilename}`);
-        coverFilename = data.coverFilename; // Récupérer le nom du fichier pour le retourner
       } catch (error) {
-        console.error("Error uploading cover via API:", error.message);
+        console.error("Error uploading cover via API:", error);
       }
-    } // end else if (!uploadLocal)
+    }
 
-    return coverFilename; // Retourne le nom du fichier de couverture
-  }; // end handleFileUpload
+    return coverFilename;
+  };
 
   // -----------------/ POST NEW MOVIE /----------------- //
 

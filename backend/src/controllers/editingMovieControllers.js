@@ -51,7 +51,7 @@ const uploadLocalCover = async (localCoverPath, coverUrl) => {
   const extension = path.extname(localCoverPath);
   const filename = `cover-${uuidv4()}${extension}`;
   const targetPath = path.join(__dirname, "../../public/images", filename);
-  // console.info("targetPath in uploadLocalCover:", targetPath);
+  console.info("targetPath in uploadLocalCover:", targetPath);
 
   return new Promise((resolve, reject) => {
     const readStream = fs.createReadStream(localCoverPath);
@@ -79,7 +79,6 @@ const addMovie = async (req, res) => {
       altTitle,
       year,
       duration,
-      posterUrl,
       trailer,
       pitch,
       story,
@@ -106,7 +105,16 @@ const addMovie = async (req, res) => {
     }
 
     // Recuperer l'affiche du film
-    const cover = req.body.cover;
+    // Initialiser la variable coverFilename
+    let coverFilename = "00_cover_default.jpg"; // Valeur par défaut
+
+    // Vérifier s'il y a un fichier uploadé (cas de l'upload local via Multer)
+    if (req.file) {
+      coverFilename = req.file.filename;
+    } else if (req.body.cover) {
+      // Si l'image de couverture a été envoyée via req.body (par exemple depuis une API)
+      coverFilename = req.body.cover;
+    }
 
     // Création de l'objet movieData pour gérer les champs optionnels et leur transformation
     const movieData = {
@@ -114,7 +122,7 @@ const addMovie = async (req, res) => {
       altTitle: altTitle || null,
       year: year || null,
       duration: duration ? parseInt(duration, 10) : null,
-      cover,
+      cover: coverFilename,
       trailer: trailer || null,
       pitch: pitch || null,
       story: story || null,
