@@ -10,7 +10,6 @@ const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
-// const sharp = require("sharp");
 const editingModel = require("../models/editingModel");
 const editingMovieModel = require("../models/editingMovieModel");
 
@@ -39,10 +38,7 @@ const downloadPoster = async (posterPath) => {
   const filename = `cover-${uuidv4()}${extension}`;
   const filepath = path.join(__dirname, "../../public/images", filename);
 
-  // Télécharge l'image
   await downloadImage(posterUrl, filepath);
-
-  // console.info("Image téléchargée avec succès : ", filepath);
 
   return filename;
 }; // end const downloadPoster
@@ -51,7 +47,6 @@ const uploadLocalCover = async (localCoverPath, coverUrl) => {
   const extension = path.extname(localCoverPath);
   const filename = `cover-${uuidv4()}${extension}`;
   const targetPath = path.join(__dirname, "../../public/images", filename);
-  console.info("targetPath in uploadLocalCover:", targetPath);
 
   return new Promise((resolve, reject) => {
     const readStream = fs.createReadStream(localCoverPath);
@@ -68,11 +63,9 @@ const uploadLocalCover = async (localCoverPath, coverUrl) => {
         reject(error);
       });
   });
-};
+}; // end const uploadLocalCover
 
 const addMovie = async (req, res) => {
-  // console.info("Données reçues:", req.body);
-  // console.info("req.file dans addMovie:", req.file);
   try {
     const {
       title,
@@ -99,16 +92,13 @@ const addMovie = async (req, res) => {
       tags,
     } = req.body;
 
-    // console.info("cover dans reqbody", req.body.cover);
     if (!title) {
       return res.status(400).json({ message: "Movie's title is required" });
     }
 
     // Recuperer l'affiche du film
-    // Initialiser la variable coverFilename
     let coverFilename = "00_cover_default.jpg"; // Valeur par défaut
-
-    // Vérifier s'il y a un fichier uploadé (cas de l'upload local via Multer)
+    // Vérifier s'il y a un fichier local uploadé
     if (req.file) {
       coverFilename = req.file.filename;
     } else if (req.body.cover) {
