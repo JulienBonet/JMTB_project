@@ -964,6 +964,8 @@ function AddNewMovie() {
       tags: selectedTagsId,
     };
 
+    console.info("requestBody:", requestBody);
+
     // Effectuer l'upload de l'image (que ce soit via API ou localement)
     const coverFilename = await handleFileUpload(); // Attendre le résultat de l'upload
 

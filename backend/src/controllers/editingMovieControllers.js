@@ -427,7 +427,32 @@ const deleteMovie = async (req, res) => {
       console.info(`Aucun tag associé au film avec ID: ${movieId}`);
     }
 
-    // SUPPRESSION DU FIL
+    // SUPPRESSION DE L'AFFICHE DU FULM
+    const movieArray = await editingMovieModel.findMovieById(movieId);
+    const movie = movieArray[0];
+    const imageUrl = movie.cover;
+    if (imageUrl && imageUrl !== "00_cover_default.jpg") {
+      try {
+        const fullPath = path.join(
+          __dirname,
+          "../../public/images",
+          path.basename(imageUrl)
+        );
+        if (fs.existsSync(fullPath)) {
+          fs.unlinkSync(fullPath); // Suppression du fichier
+          console.info(`Affiche supprimée avec succès : ${fullPath}`);
+        } else {
+          console.info(`L'affiche n'existe pas : ${fullPath}`);
+        }
+      } catch (unlinkError) {
+        console.error(
+          "Erreur lors de la suppression de l'affiche :",
+          unlinkError
+        );
+      }
+    }
+
+    // SUPPRESSION DU FILM
     await editingMovieModel.eraseMovie(movieId);
     console.info("Film supprimé avec succès");
 
