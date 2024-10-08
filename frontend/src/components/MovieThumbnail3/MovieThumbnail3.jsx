@@ -4,6 +4,7 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import { Container } from "@mui/material";
 import "./movieThumbnail3.css";
+import "./movieThumbnail3_MediaQueries.css";
 import MovieCard from "../MovieCard/MovieCard";
 
 function MovieThumbnail3({ data }) {

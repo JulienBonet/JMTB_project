@@ -1,0 +1,30 @@
+@media (min-width: 1280px) and (max-width: 1439px) {
+    .thumbail_container3 {
+        width: 18rem;
+        height: 12rem;
+        gap: 14px;
+        margin: min(13px);
+    }
+    .thumbail_title3 {
+        font-size: small;
+    }
+    .thumbail_cover3 {
+        height: 10rem;
+    }
+  }
+
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    .thumbail_container3 {
+        width: 13rem;
+        height: 12rem;
+        gap: 14px;
+        margin: min(16px);
+    }
+    .thumbail_title3 {
+        font-size: small;
+    }
+    .thumbail_cover3 {
+        height: 10rem;
+    }
+
+  }
