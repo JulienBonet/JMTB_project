@@ -425,7 +425,7 @@ function AddNewMovie() {
 
   // TAG NEW INSERT METHOD
   const createTagInDatabase = async (TagName) => {
-    console.info("Creating casting in database:", TagName);
+    console.info("Creating tag in database:", TagName);
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/tag`,
@@ -948,7 +948,20 @@ function AddNewMovie() {
     const selectedLanguagesName = selectedLanguages.map(
       (language) => language.name
     );
-    const selectedTagsId = selectedTags.map((tag) => tag.id);
+
+    const selectedTagsName = selectedTags.map((tag) => tag.name);
+
+    // const selectedTagsId = selectedTags.map((tag) => tag.id);
+    // // Vérifiez les tags avant l'envoi
+    // console.info("Tags avant l'envoi :", selectedTagsId); // Affichez les tags avant de les envoyer
+
+    // // Filtrez les tags indéfinis
+    // const validTags = selectedTagsId.filter(
+    //   (tag) => tag !== undefined && tag !== null
+    // );
+
+    // // Vérifiez les tags filtrés
+    // console.info("Tags filtrés :", validTags);
 
     // Créer le corps de la requête
     const requestBody = {
@@ -961,7 +974,8 @@ function AddNewMovie() {
       studios: selectedStudiosName,
       countries: selectedCountriesName,
       languages: selectedLanguagesName,
-      tags: selectedTagsId,
+      // tags: selectedTagsId,
+      tags: selectedTagsName,
     };
 
     console.info("requestBody:", requestBody);

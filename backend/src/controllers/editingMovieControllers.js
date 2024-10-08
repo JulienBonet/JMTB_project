@@ -13,6 +13,7 @@ const { v4: uuidv4 } = require("uuid");
 const editingController = require("./editingControllers");
 const editingModel = require("../models/editingModel");
 const editingMovieModel = require("../models/editingMovieModel");
+const purgeModel = require("../models/purgeModel");
 
 // TELECHARGEMENT IMAGE
 const downloadImage = async (url, filepath) => {
@@ -95,7 +96,7 @@ const addMovie = async (req, res) => {
     } = req.body;
 
     console.info("title:", req.body.title);
-    console.info("studios:", req.body.studio);
+    console.info("tags:", req.body.tags);
 
     if (!title) {
       return res.status(400).json({ message: "Movie's title is required" });
@@ -268,10 +269,24 @@ const addMovie = async (req, res) => {
       const studioIds = [];
 
       for (let i = 0; i < studios.length; i++) {
-        const result = await editingModel.insertStudio(studios[i]);
-        studioIds.push(result.insertId);
+        const studioName = studios[i];
+        // Vérifie si le studio existe déjà
+        const existingStudioId =
+          await editingModel.findStudioByName(studioName);
+
+        if (existingStudioId) {
+          studioIds.push(existingStudioId); // Ajoute l'ID du studio existant
+        } else {
+          // Insère le studio s'il n'existe pas
+          const result = await editingModel.insertStudio(studioName);
+          studioIds.push(result.insertId);
+          console.info(
+            `Studio créé: ${studioName} avec ID: ${result.insertId}`
+          );
+        }
       }
 
+      // Associe les studios au film
       const studioPromises = studioIds.map((studioId) =>
         editingMovieModel.addMovieStudio(movieId, studioId)
       );
@@ -332,12 +347,43 @@ const addMovie = async (req, res) => {
     }
 
     // INSERT TAGS
-    if (tags.length > 0) {
-      const tagsPromises = tags.map((tagId) =>
-        editingMovieModel.addMovieTag(movieId, tagId)
-      );
-      await Promise.all(tagsPromises);
+    if (tags && tags.length > 0) {
+      const tagIds = [];
+
+      for (const tagName of tags) {
+        console.info(`Recherche de tag: ${tagName}`);
+        const existingTag = await editingModel.findTagByNameInBackend(tagName);
+
+        if (existingTag) {
+          tagIds.push(existingTag.id); // Ajoute l'ID du tag existant
+          console.info(`Tag trouvé: ID ${existingTag.id}`);
+        } else {
+          // Créer le tag si non trouvé
+          const result = await editingModel.insertTag(tagName);
+          tagIds.push(result.insertId); // Ajoute le nouvel ID
+          console.info(
+            `Tag '${tagName}' inséré avec succès. ID: ${result.insertId}`
+          );
+        }
+      }
+
+      // Associe les tags au film uniquement si des tagIds valides existent
+      if (tagIds.length > 0) {
+        console.info(`Tag IDs à associer au film ${movieId}:`, tagIds); // Log des tagIds
+        const tagPromises = tagIds.map((tagId) => {
+          console.info(`Ajout du Tag ID: ${tagId} au film ID: ${movieId}`); // Log de chaque ajout
+          return editingMovieModel.addMovieTag(movieId, tagId);
+        });
+
+        await Promise.all(tagPromises);
+        console.info(`Tous les tags ont été ajoutés au film ID: ${movieId}`);
+      } else {
+        console.warn("Aucun tag valide à associer au film.");
+      }
     }
+
+    // Purger les données inutiles
+    await purgeModel.purgeOrphanedRecords();
 
     return res.status(201).json({ message: "Movie successfully created" });
   } catch (error) {
@@ -629,8 +675,8 @@ const deleteMovie = async (req, res) => {
 };
 
 module.exports = {
-  addMovie,
   downloadPoster,
   uploadLocalCover,
+  addMovie,
   deleteMovie,
 };
