@@ -1,4 +1,4 @@
-use jmdb;
+use jmdb2;
 
 ALTER TABLE movies
 MODIFY COLUMN cover VARCHAR(255) NOT NULL DEFAULT '00_cover_default.jpg',
@@ -85,3 +85,7 @@ CREATE TABLE movie_thema (
 );
 
 SELECT * FROM thema;
+
+ALTER TABLE tag MODIFY name VARCHAR(255);
+ALTER TABLE tag ADD UNIQUE (name);
+SELECT * FROM tag;

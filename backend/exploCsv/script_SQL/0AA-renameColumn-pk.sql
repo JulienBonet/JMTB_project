@@ -1,4 +1,4 @@
-USE jmdb;
+USE jmdb2;
 
 -- Définition des colonnes AUTO_INCREMENT et PRIMARY KEY en premier
 ALTER TABLE movies

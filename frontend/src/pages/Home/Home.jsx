@@ -14,20 +14,8 @@ function Home() {
   // SHUFFLE DE FILMS
   const [shuffledData, setShuffledData] = useState([]);
 
-  // Fonction pour mélanger un tableau de données aléatoirement
-  // const shuffleArray = (array) => {
-  //   const shuffled = array.slice(); // Créer une copie du tableau d'origine
-  //   for (let i = shuffled.length - 1; i > 0; i--) {
-  //     const randomIndex = Math.floor(Math.random() * (i + 1));
-  //     [shuffled[i], shuffled[randomIndex]] = [
-  //       shuffled[randomIndex],
-  //       shuffled[i],
-  //     ];
-  //   } // end boucle for
-  //   return shuffled;
-  // }; // end const shuffleArray = (array)
   const shuffleArray = (array) => {
-    const shuffled = JSON.parse(JSON.stringify(array)); // Copie profonde pour éviter de modifier l'original
+    const shuffled = JSON.parse(JSON.stringify(array));
     for (let i = shuffled.length - 1; i > 0; i--) {
       const randomIndex = Math.floor(Math.random() * (i + 1));
       [shuffled[i], shuffled[randomIndex]] = [
@@ -38,15 +26,6 @@ function Home() {
     return shuffled;
   };
 
-  // Méthode pour déclencher le mélange des données
-  // const handleShuffle = () => {
-  //   if (data && data.length > 0) {
-  //     const newShuffledData = shuffleArray(data).slice(0, 10); // Prendre les 10 premiers films
-  //     setShuffledData(newShuffledData);
-  //   } else {
-  //     console.error("No movies data available to shuffle.");
-  //   }
-  // };
   const handleShuffle = () => {
     if (Array.isArray(data) && data.length > 0) {
       // Vérifiez que data est un tableau
@@ -96,11 +75,6 @@ function Home() {
       <div className="dashed_secondary_bar" />
       <section className="welcome_container">
         <div className="welcome_content">
-          {/* <img
-            src={CameraBear}
-            alt="A groovy bear on a camera in a cinema"
-            className="camera_bear_welcome"
-          /> */}
           <div className="ShuffleThumbnails_welcome">
             <div className="MovieThumbnails_welcome">
               {shuffledData.map((movieData) => (

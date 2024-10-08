@@ -131,8 +131,12 @@ const deleteCompositor = (id) =>
 const findStudioById = (id) =>
   db.query("SELECT * FROM studio WHERE id = ?", [id]).then(([rows]) => rows);
 
-const findStudioByName = (name) =>
-  db.query("SELECT * FROM studio WHERE name = ?", [name]);
+// const findStudioByName = (name) =>
+//   db.query("SELECT * FROM studio WHERE name = ?", [name]);
+const findStudioByName = async (name) => {
+  const [rows] = await db.query("SELECT id FROM studio WHERE name = ?", [name]);
+  return rows.length > 0 ? rows[0].id : null;
+};
 
 const insertStudio = (name) =>
   db.query("INSERT INTO studio (name) VALUES (?);", [name]);
@@ -276,14 +280,27 @@ const deleteLanguage = (id) =>
 
 // EDIT TAG
 
-const findTagById = (id) =>
-  db.query("SELECT * FROM tag WHERE id = ?", [id]).then(([rows]) => rows);
+// const findTagById = (id) =>
+//   db.query("SELECT * FROM tag WHERE id = ?", [id]).then(([rows]) => rows);
+const findTagById = async (tagId) => {
+  const [rows] = await db.query("SELECT id FROM tag WHERE id = ?", [tagId]);
+  return rows.length > 0 ? rows[0].id : null;
+};
 
 const findTagByName = (name) =>
   db.query("SELECT * FROM tag WHERE name = ?", [name]);
 
+const findTagByNameInBackend = async (name) => {
+  const [results] = await db.query("SELECT * FROM tag WHERE name = ?", [name]);
+  return results.length > 0 ? results[0] : null; // Retourne le premier tag trouvé ou null
+};
+
+// const insertTag = (name) =>
+//   db.query("INSERT INTO tag (name) VALUES (?);", [name]);
 const insertTag = (name) =>
-  db.query("INSERT INTO tag (name) VALUES (?);", [name]);
+  db.query("INSERT INTO tag (name) VALUES (?);", [name]).then((result) => {
+    return result; // Assurez-vous de retourner le résultat ici
+  });
 
 const editTag = async (name, id) => {
   const query = `
@@ -353,6 +370,7 @@ module.exports = {
   deleteLanguage,
   findTagById,
   findTagByName,
+  findTagByNameInBackend,
   insertTag,
   editTag,
   deleteTag,

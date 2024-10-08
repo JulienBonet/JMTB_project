@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -72,6 +73,45 @@ function AdminMovieList() {
     navigate("/new_movie");
   };
 
+  // Fonction pour supprimer un film
+  const handleDeleteMovie = async (id) => {
+    console.info("Tentative de suppression du film avec ID:", id); // Log ID du film
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this movie?"
+    );
+    if (!confirmDelete) {
+      console.info("Suppression annulée par l'utilisateur.");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/movie/${id}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      console.info("Réponse du serveur:", response); // Log de la réponse du serveur
+
+      if (response.ok) {
+        setData(data.filter((movie) => movie.id !== id)); // Met à jour la liste des films
+        setFilteredData(filteredData.filter((movie) => movie.id !== id)); // Met à jour les données filtrées
+        // Alerte pour confirmer la suppression
+        window.alert("Film supprimé avec succès");
+        console.info("Film supprimé avec succès");
+      } else {
+        window.alert("Erreur lors de la suppression du film");
+        console.error(
+          "Erreur lors de la suppression du film",
+          await response.text()
+        ); // Log l'erreur
+      }
+    } catch (error) {
+      console.error("Erreur durant la suppression:", error);
+    }
+  };
+
   return (
     <section className="AdminItemsSection">
       <section className="HeaderAdminItemsSection">
@@ -123,7 +163,10 @@ function AdminMovieList() {
                   <ModeIcon className="admin_tools_ico" />
                 </td>
                 <td>
-                  <DeleteIcon className="admin_tools_ico" />
+                  <DeleteIcon
+                    className="admin_tools_ico"
+                    onClick={() => handleDeleteMovie(movieData.id)}
+                  />
                 </td>
               </tr>
             ))

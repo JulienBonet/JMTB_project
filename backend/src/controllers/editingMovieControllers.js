@@ -10,11 +10,12 @@ const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
-// const sharp = require("sharp");
+const editingController = require("./editingControllers");
 const editingModel = require("../models/editingModel");
 const editingMovieModel = require("../models/editingMovieModel");
+const purgeModel = require("../models/purgeModel");
 
-// Fonction de téléchargement de l'image
+// TELECHARGEMENT IMAGE
 const downloadImage = async (url, filepath) => {
   const response = await axios({
     url,
@@ -39,10 +40,7 @@ const downloadPoster = async (posterPath) => {
   const filename = `cover-${uuidv4()}${extension}`;
   const filepath = path.join(__dirname, "../../public/images", filename);
 
-  // Télécharge l'image
   await downloadImage(posterUrl, filepath);
-
-  // console.info("Image téléchargée avec succès : ", filepath);
 
   return filename;
 }; // end const downloadPoster
@@ -51,7 +49,6 @@ const uploadLocalCover = async (localCoverPath, coverUrl) => {
   const extension = path.extname(localCoverPath);
   const filename = `cover-${uuidv4()}${extension}`;
   const targetPath = path.join(__dirname, "../../public/images", filename);
-  // console.info("targetPath in uploadLocalCover:", targetPath);
 
   return new Promise((resolve, reject) => {
     const readStream = fs.createReadStream(localCoverPath);
@@ -68,18 +65,16 @@ const uploadLocalCover = async (localCoverPath, coverUrl) => {
         reject(error);
       });
   });
-};
+}; // end const uploadLocalCover
 
+// ADD MOVIE
 const addMovie = async (req, res) => {
-  // console.info("Données reçues:", req.body);
-  // console.info("req.file dans addMovie:", req.file);
   try {
     const {
       title,
       altTitle,
       year,
       duration,
-      posterUrl,
       trailer,
       pitch,
       story,
@@ -100,13 +95,22 @@ const addMovie = async (req, res) => {
       tags,
     } = req.body;
 
-    // console.info("cover dans reqbody", req.body.cover);
+    console.info("title:", req.body.title);
+    console.info("tags:", req.body.tags);
+
     if (!title) {
       return res.status(400).json({ message: "Movie's title is required" });
     }
 
     // Recuperer l'affiche du film
-    const cover = req.body.cover;
+    let coverFilename = "00_cover_default.jpg"; // Valeur par défaut
+    // Vérifier s'il y a un fichier local uploadé
+    if (req.file) {
+      coverFilename = req.file.filename;
+    } else if (req.body.cover) {
+      // Si l'image de couverture a été envoyée via req.body (par exemple depuis une API)
+      coverFilename = req.body.cover;
+    }
 
     // Création de l'objet movieData pour gérer les champs optionnels et leur transformation
     const movieData = {
@@ -114,7 +118,7 @@ const addMovie = async (req, res) => {
       altTitle: altTitle || null,
       year: year || null,
       duration: duration ? parseInt(duration, 10) : null,
-      cover,
+      cover: coverFilename,
       trailer: trailer || null,
       pitch: pitch || null,
       story: story || null,
@@ -265,10 +269,24 @@ const addMovie = async (req, res) => {
       const studioIds = [];
 
       for (let i = 0; i < studios.length; i++) {
-        const result = await editingModel.insertStudio(studios[i]);
-        studioIds.push(result.insertId);
+        const studioName = studios[i];
+        // Vérifie si le studio existe déjà
+        const existingStudioId =
+          await editingModel.findStudioByName(studioName);
+
+        if (existingStudioId) {
+          studioIds.push(existingStudioId); // Ajoute l'ID du studio existant
+        } else {
+          // Insère le studio s'il n'existe pas
+          const result = await editingModel.insertStudio(studioName);
+          studioIds.push(result.insertId);
+          console.info(
+            `Studio créé: ${studioName} avec ID: ${result.insertId}`
+          );
+        }
       }
 
+      // Associe les studios au film
       const studioPromises = studioIds.map((studioId) =>
         editingMovieModel.addMovieStudio(movieId, studioId)
       );
@@ -329,12 +347,43 @@ const addMovie = async (req, res) => {
     }
 
     // INSERT TAGS
-    if (tags.length > 0) {
-      const tagsPromises = tags.map((tagId) =>
-        editingMovieModel.addMovieTag(movieId, tagId)
-      );
-      await Promise.all(tagsPromises);
+    if (tags && tags.length > 0) {
+      const tagIds = [];
+
+      for (const tagName of tags) {
+        console.info(`Recherche de tag: ${tagName}`);
+        const existingTag = await editingModel.findTagByNameInBackend(tagName);
+
+        if (existingTag) {
+          tagIds.push(existingTag.id); // Ajoute l'ID du tag existant
+          console.info(`Tag trouvé: ID ${existingTag.id}`);
+        } else {
+          // Créer le tag si non trouvé
+          const result = await editingModel.insertTag(tagName);
+          tagIds.push(result.insertId); // Ajoute le nouvel ID
+          console.info(
+            `Tag '${tagName}' inséré avec succès. ID: ${result.insertId}`
+          );
+        }
+      }
+
+      // Associe les tags au film uniquement si des tagIds valides existent
+      if (tagIds.length > 0) {
+        console.info(`Tag IDs à associer au film ${movieId}:`, tagIds); // Log des tagIds
+        const tagPromises = tagIds.map((tagId) => {
+          console.info(`Ajout du Tag ID: ${tagId} au film ID: ${movieId}`); // Log de chaque ajout
+          return editingMovieModel.addMovieTag(movieId, tagId);
+        });
+
+        await Promise.all(tagPromises);
+        console.info(`Tous les tags ont été ajoutés au film ID: ${movieId}`);
+      } else {
+        console.warn("Aucun tag valide à associer au film.");
+      }
     }
+
+    // Purger les données inutiles
+    await purgeModel.purgeOrphanedRecords();
 
     return res.status(201).json({ message: "Movie successfully created" });
   } catch (error) {
@@ -343,8 +392,291 @@ const addMovie = async (req, res) => {
   }
 };
 
+// DELETE MOVIE
+
+const deleteMovie = async (req, res) => {
+  const { id } = req.params;
+  const movieId = parseInt(id, 10); // Convertit l'ID en entier
+  console.info("Tentative de suppression du film avec ID:", movieId);
+
+  try {
+    // Récupérer les réalisateurs associés avant de supprimer le film
+    const directors = await editingMovieModel.findDirectorsByMovieId(movieId);
+    console.info("Directeurs associés au film:", directors);
+
+    if (directors.length === 0) {
+      console.info(`Aucun réalisateur associé au film avec ID: ${movieId}`);
+    }
+
+    // Récupérer le casting associé avant de supprimer le film
+    const castings = await editingMovieModel.findCastingByMovieId(movieId);
+    console.info("Castings associés au film:", castings);
+
+    if (castings.length === 0) {
+      console.info(`Aucun casting associé au film avec ID: ${movieId}`);
+    }
+
+    // Récupérer le screenwriter associé avant de supprimer le film
+    const screenwriters =
+      await editingMovieModel.findScreenwriterByMovieId(movieId);
+    console.info("scénaristes associés au film:", screenwriters);
+
+    if (screenwriters.length === 0) {
+      console.info(`Aucun scénariste associé au film avec ID: ${movieId}`);
+    }
+
+    // Récupérer le compositor associé avant de supprimer le film
+    const musics = await editingMovieModel.findMusicByMovieId(movieId);
+    console.info("Compositeurs associés au film:", musics);
+
+    if (musics.length === 0) {
+      console.info(`Aucun Compositeur associé au film avec ID: ${movieId}`);
+    }
+
+    // Récupérer le studio associé avant de supprimer le film
+    const studios = await editingMovieModel.findStudioByMovieId(movieId);
+    console.info("Studios associés au film:", studios);
+
+    if (studios.length === 0) {
+      console.info(`Aucun studio associé au film avec ID: ${movieId}`);
+    }
+
+    // Récupérer le pays associé avant de supprimer le film
+    const countries = await editingMovieModel.findCountryByMovieId(movieId);
+    console.info("Pays associés au film:", countries);
+
+    if (countries.length === 0) {
+      console.info(`Aucun pays associé au film avec ID: ${movieId}`);
+    }
+
+    // Récupérer le genre avant de supprimer le film
+    const kinds = await editingMovieModel.findKindByMovieId(movieId);
+    console.info("genre associées au film:", kinds);
+
+    if (kinds.length === 0) {
+      console.info(`Aucun genre associé au film avec ID: ${movieId}`);
+    }
+
+    // Récupérer la langue associée avant de supprimer le film
+    const languages = await editingMovieModel.findLanguageByMovieId(movieId);
+    console.info("langues associées au film:", languages);
+
+    if (languages.length === 0) {
+      console.info(`Aucune langue associée au film avec ID: ${movieId}`);
+    }
+
+    // Récupérer le tag avant de supprimer le film
+    const tags = await editingMovieModel.findTagByMovieId(movieId);
+    console.info("tags associées au film:", tags);
+
+    if (tags.length === 0) {
+      console.info(`Aucun tag associé au film avec ID: ${movieId}`);
+    }
+
+    // SUPPRESSION DE L'AFFICHE DU FULM
+    const movieArray = await editingMovieModel.findMovieById(movieId);
+    const movie = movieArray[0];
+    const imageUrl = movie.cover;
+    if (imageUrl && imageUrl !== "00_cover_default.jpg") {
+      try {
+        const fullPath = path.join(
+          __dirname,
+          "../../public/images",
+          path.basename(imageUrl)
+        );
+        if (fs.existsSync(fullPath)) {
+          fs.unlinkSync(fullPath); // Suppression du fichier
+          console.info(`Affiche supprimée avec succès : ${fullPath}`);
+        } else {
+          console.info(`L'affiche n'existe pas : ${fullPath}`);
+        }
+      } catch (unlinkError) {
+        console.error(
+          "Erreur lors de la suppression de l'affiche :",
+          unlinkError
+        );
+      }
+    }
+
+    // SUPPRESSION DU FILM
+    await editingMovieModel.eraseMovie(movieId);
+    console.info("Film supprimé avec succès");
+
+    // Pour chaque directeur, vérifier s'il est lié à d'autres films
+    for (const director of directors) {
+      const [result] = await editingMovieModel.countMoviesByDirector(
+        director.directorId
+      );
+      console.info(
+        `Nombre de films pour le réalisateur avec ID ${director.directorId}:`,
+        result.movieCount
+      );
+
+      // if (result.movieCount === 0) {
+      //   await editingModel.deleteDirector(director.directorId); // Supprimer le réalisateur s'il n'est plus lié à aucun film
+      //   console.info("Réalisateur supprimé avec succès:", director.directorId);
+      // }
+      if (result.movieCount === 0) {
+        await editingController.eraseDirector(
+          { params: { id: director.directorId } },
+          null
+        );
+        console.info("Réalisateur supprimé avec succès:", director.directorId);
+      }
+    }
+
+    // Pour chaque casting, vérifier s'il est lié à d'autres films
+    for (const casting of castings) {
+      const [result] = await editingMovieModel.countMoviesByCasting(
+        casting.castingId
+      );
+      console.info(
+        `Nombre de films pour le casting avec ID ${casting.castingId}:`,
+        result.movieCount
+      );
+
+      if (result.movieCount === 0) {
+        await editingController.eraseCasting(
+          { params: { id: casting.castingId } },
+          null
+        );
+        console.info("casting supprimé avec succès:", casting.castingId);
+      }
+    }
+
+    // Pour chaque screenwriter, vérifier s'il est lié à d'autres films
+    for (const screenwriter of screenwriters) {
+      const [result] = await editingMovieModel.countMoviesByScreenwriter(
+        screenwriter.screenwriterId
+      );
+      console.info(
+        `Nombre de films pour le scénariste avec ID ${screenwriter.screenwriterId}:`,
+        result.movieCount
+      );
+
+      if (result.movieCount === 0) {
+        await editingController.eraseScreenwriter(
+          { params: { id: screenwriter.screenwriterId } },
+          null
+        );
+        console.info(
+          "scénariste supprimé avec succès:",
+          screenwriter.screenwriterId
+        );
+      }
+    }
+
+    // Pour chaque compositeur, vérifier s'il est lié à d'autres films
+    for (const music of musics) {
+      const [result] = await editingMovieModel.countMoviesByMusic(
+        music.musicId
+      );
+      console.info(
+        `Nombre de films pour le compositeur avec ID ${music.musicId}:`,
+        result.movieCount
+      );
+
+      if (result.movieCount === 0) {
+        await editingController.eraseCompositor(
+          { params: { id: music.musicId } },
+          null
+        );
+        console.info("compositeur supprimé avec succès:", music.musicId);
+      }
+    }
+
+    // Pour chaque studio, vérifier s'il est lié à d'autres films
+    for (const studio of studios) {
+      const [result] = await editingMovieModel.countMoviesByStudio(
+        studio.studioId
+      );
+      console.info(
+        `Nombre de films pour le studio avec ID ${studio.studioId}:`,
+        result.movieCount
+      );
+
+      if (result.movieCount === 0) {
+        await editingController.eraseStudio(
+          { params: { id: studio.studioId } },
+          null
+        );
+        console.info("studio supprimé avec succès:", studio.studioId);
+      }
+    }
+
+    // Pour chaque pays, vérifier s'il est lié à d'autres films
+    for (const country of countries) {
+      const [result] = await editingMovieModel.countMoviesByCountry(
+        country.countryId
+      );
+      console.info(
+        `Nombre de films pour le pays avec ID ${country.countryId}:`,
+        result.movieCount
+      );
+
+      if (result.movieCount === 0) {
+        await editingController.eraseCountry(
+          { params: { id: country.countryId } },
+          null
+        );
+        console.info("Pays supprimé avec succès:", country.countryId);
+      }
+    }
+
+    // Pour chaque genre, vérifier si il est lié à d'autres films
+    for (const kind of kinds) {
+      const [result] = await editingMovieModel.countMoviesByKind(kind.genreId);
+      console.info(
+        `Nombre de films pour le genre avec ID ${kind.genreId}:`,
+        result.movieCount
+      );
+
+      if (result.movieCount === 0) {
+        await editingModel.deleteGenre(kind.genreId);
+        console.info("genre supprimé avec succès:", kind.genreId);
+      }
+    }
+
+    // Pour chaque langue, vérifier si elle est liée à d'autres films
+    for (const language of languages) {
+      const [result] = await editingMovieModel.countMoviesBylanguage(
+        language.languageId
+      );
+      console.info(
+        `Nombre de films pour la langue avec ID ${language.languageId}:`,
+        result.movieCount
+      );
+
+      if (result.movieCount === 0) {
+        await editingModel.deleteLanguage(language.languageId);
+        console.info("Langue supprimée avec succès:", language.languageId);
+      }
+    }
+
+    // Pour chaque tag, vérifier si il est lié à d'autres films
+    for (const tag of tags) {
+      const [result] = await editingMovieModel.countMoviesByTag(tag.tagId);
+      console.info(
+        `Nombre de films pour le tag avec ID ${tag.tagId}:`,
+        result.movieCount
+      );
+
+      if (result.movieCount === 0) {
+        await editingModel.deleteTag(tag.tagId);
+        console.info("tag supprimé avec succès:", tag.tagId);
+      }
+    }
+
+    return res.status(204).send();
+  } catch (error) {
+    console.error("Erreur durant la suppression du film:", error);
+    return res.status(500).json({ message: "Erreur lors de la suppression" });
+  }
+};
+
 module.exports = {
-  addMovie,
   downloadPoster,
   uploadLocalCover,
+  addMovie,
+  deleteMovie,
 };
