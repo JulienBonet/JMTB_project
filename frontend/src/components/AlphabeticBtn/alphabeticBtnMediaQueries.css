@@ -1,0 +1,16 @@
+@media (min-width: 1440px) and (max-width: 1740px) {
+  .alphabetic_btn {
+    width: min(20%);
+  }
+}
+@media (min-width: 1280px) and (max-width: 1439px) {
+  .alphabetic_btn {
+    width: min(20%);
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .alphabetic_btn {
+    width: min(25%);
+  }
+}

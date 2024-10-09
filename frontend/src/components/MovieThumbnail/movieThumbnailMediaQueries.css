@@ -1,0 +1,40 @@
+@media (min-width: 1440px) and (max-width: 1740px) {
+    .thumbail_container {
+        width: 14rem;
+        height: 16rem;
+    }
+
+    .thumbail_cover {
+        height: 12rem;
+      }
+}
+
+@media (min-width: 1280px) and (max-width: 1439px){
+    .thumbail_container {
+        width: 12rem;
+        height: 13rem;
+    }
+
+    .thumbail_cover {
+        height: 10rem;
+      }
+    
+      .thumbail_title {
+        font-size: small;
+    }
+  }
+
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    .thumbail_container {
+        width: 12rem;
+        height: 10rem;
+    }
+
+    .thumbail_cover {
+        height: 8rem;
+      }
+    
+      .thumbail_title {
+        font-size: small;
+    }
+  }

@@ -1,0 +1,17 @@
+@media (min-width: 1440px) and (max-width: 1740px) {
+    .MovieThumbnails_container {
+        height: 500px;
+    }
+  }
+
+  @media (min-width: 1280px) and (max-width: 1439px){
+    .MovieThumbnails_container {
+        height: 400px;
+    }
+  }
+
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    .MovieThumbnails_container {
+        height: 260px;
+    }
+  }

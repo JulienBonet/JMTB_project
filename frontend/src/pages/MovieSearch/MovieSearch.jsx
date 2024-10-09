@@ -3,6 +3,7 @@
 /* eslint-disable no-undef */
 import { useState, useEffect } from "react";
 import "./movieSearch.css";
+import "./movieSearchMediaQueries.css";
 import "../../assets/css/scrollButton.css";
 import CachedIcon from "@mui/icons-material/Cached";
 import AlphabeticBtn from "../../components/AlphabeticBtn/AlphabeticBtn";
