@@ -1,17 +1,45 @@
 @media (min-width: 1440px) and (max-width: 1740px) {
+  .MovieThumbnails_container {
+    height: 500px;
+  }
+}
+
+@media (min-width: 1280px) and (max-width: 1439px) {
+  .MovieThumbnails_container {
+    height: 400px;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .MovieThumbnails_container {
+    height: 260px;
+  }
+}
+
+@media (min-width: 820px) and (max-width: 1023px) {
     .MovieThumbnails_container {
-        height: 500px;
+      height: 650px;
+    }
+    .search_bar {
+      padding: 5px;
+      font-size: small;
+      width: 100%;
+    }
+    .dropdown_search_container {
+      gap: 1rem;
     }
   }
 
-  @media (min-width: 1280px) and (max-width: 1439px){
-    .MovieThumbnails_container {
-        height: 400px;
-    }
+@media (min-width: 768px) and (max-width: 819px) {
+  .MovieThumbnails_container {
+    height: 600px;
   }
-
-  @media (min-width: 1024px) and (max-width: 1279px) {
-    .MovieThumbnails_container {
-        height: 260px;
-    }
+  .search_bar {
+    padding: 5px;
+    font-size: small;
+    width: 100%;
   }
+  .dropdown_search_container {
+    gap: 1rem;
+  }
+}

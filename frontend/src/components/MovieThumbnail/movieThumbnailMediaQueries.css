@@ -53,3 +53,46 @@
         font-size: small;
     }
   }
+
+  @media (min-width: 950px) and (max-width: 1023px) {
+    .thumbail_container {
+        width: 11rem;
+        height: 18rem;
+        margin: min(12px);
+        gap: 15px;
+    }
+}
+
+  @media (min-width: 850px) and (max-width: 920px) {
+    .thumbail_container {
+        width: 13rem;
+        height: 12rem;
+        margin: min(12px);
+        gap: 15px;
+    }
+
+    .thumbail_cover {
+        height: 10rem;
+      }
+    
+      .thumbail_title {
+        font-size: small;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 849px) {
+    .thumbail_container {
+        width: 12rem;
+        height: 12rem;
+        margin: min(12px);
+        gap:15px;
+    }
+
+    .thumbail_cover {
+        height: 10rem;
+      }
+    
+      .thumbail_title {
+        font-size: small;
+    }
+  }
