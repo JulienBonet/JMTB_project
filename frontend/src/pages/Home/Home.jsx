@@ -28,23 +28,6 @@ function Home() {
     return shuffled;
   };
 
-  // const handleShuffle = () => {
-  //   if (Array.isArray(data) && data.length > 0) {
-  //     // Vérifiez que data est un tableau
-  //     const newShuffledData = shuffleArray(data).slice(0, 10); // Prendre les 10 premiers films
-  //     setShuffledData(newShuffledData);
-  //   } else {
-  //     console.error(
-  //       "No movies data available to shuffle or data is not an array."
-  //     );
-  //   }
-  // };
-
-  // // Effectuer le premier mélange au chargement initial
-  // useEffect(() => {
-  //   handleShuffle();
-  // }, []);
-
   // Fonction qui gère le mélange et l'affichage des films en fonction de la taille de l'écran
   const handleShuffle = () => {
     if (Array.isArray(data) && data.length > 0) {
