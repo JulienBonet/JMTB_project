@@ -1,0 +1,60 @@
+@media (min-width: 1440px) and (max-width: 1902px) {
+    .artists_bear {
+        height: 540px;
+    }
+    .artists_filmo {
+        height: 540px;
+    }
+    .artists_groups {
+        width: 25%;
+    }
+    .artists_groups_content {
+        height: 520px;
+    }
+  }
+
+  @media (min-width: 1280px) and (max-width: 1439px) {
+    .artists_bear {
+        height: 440px;
+    }
+    .artists_filmo {
+        height: 440px;
+
+    }
+    .artists_groups {
+        width: 25%;
+    }
+    .artists_groups_content {
+        height: 386px;
+        width: 70%;
+    }
+  }
+
+  @media (min-width: 1024px) and (max-width: 1279px) {
+    .artists_bear {
+        height: 300px;
+    }
+    .artists_filmo {
+        height: 300px;
+
+    }
+    .artists_groups {
+        width: 25%;
+    }
+    .artists_groups_content {
+        height: 257px;
+        width: 70%;
+    }
+    .AlphabetDropdown {
+        font-size: small !important;
+    }
+    .Amount_info_counter {
+        font-size: small !important;
+    }
+      .Amount_info {
+        font-size: small !important;
+    }
+    .MuiButton-root.artists_button {
+        font-size: small;
+      }
+  }

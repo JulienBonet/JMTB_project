@@ -19,7 +19,7 @@
 
 .MC_line1 {
   display: flex;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
 }
 
 .MovieCard_Cover_Position {
