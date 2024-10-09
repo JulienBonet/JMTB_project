@@ -1,12 +1,16 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-to-interactive-role */
 /* eslint-disable import/no-unresolved */
 import { useNavigate } from "react-router-dom";
-import "./Header.css";
+import { useMediaQuery } from "@mui/material";
 import LogoJmdb from "../../assets/ico/logo_jmdb.png";
 import NavBar from "./NavBar/NavBar";
+import NavBarBurger from "./NavBarBurger/NavBarBurger";
+import "./Header.css";
 
 function Header() {
   const navigate = useNavigate();
+
+  const isDesktop = useMediaQuery("(min-width:1024px)");
 
   function handleClick() {
     navigate("/");
@@ -24,8 +28,14 @@ function Header() {
           role="button"
         />
       </div>
-      <NavBar />
-      <div className="header_03" />
+      {isDesktop ? (
+        <>
+          <NavBar />
+          <div className="header_03" />
+        </>
+      ) : (
+        <NavBarBurger />
+      )}
     </header>
   );
 }
