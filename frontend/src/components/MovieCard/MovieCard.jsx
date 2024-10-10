@@ -22,6 +22,8 @@ function MovieCard({ movie, origin }) {
     location,
     videoSupport,
     fileSize,
+    multi,
+    vostfr,
   } = movie;
   console.info("movie:", movie);
 
@@ -162,7 +164,16 @@ function MovieCard({ movie, origin }) {
               <p className="MovieCard_info">
                 <span className="paraph_bolder">Support:</span> {videoSupport}
               </p>
-
+              {vostfr ? (
+                <p className="MovieCard_info paraph_height">
+                  <span className="paraph_bolder">Version:</span> VOSTFR
+                </p>
+              ) : null}
+              {multi ? (
+                <p className="MovieCard_info paraph_height">
+                  <span className="paraph_bolder">Version:</span> Multi-langues
+                </p>
+              ) : null}
               {(videoSupport === "Fichier multimédia" ||
                 videoSupport === "FICHIER MULTIMEDIA") && (
                 <>
