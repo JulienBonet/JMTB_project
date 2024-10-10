@@ -5,13 +5,13 @@ import * as React from "react";
 import { useState, useEffect } from "react";
 import { FixedSizeList } from "react-window";
 import Grid from "@mui/material/Grid";
-import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Checkbox from "@mui/material/Checkbox";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
+import TextField from "@mui/material/TextField";
 
 function not(a, b) {
   return a.filter((value) => b.indexOf(value) === -1);
@@ -95,6 +95,7 @@ export default function TransferList({
   const [right, setRight] = useState(
     items.filter((item) => !selectedItems.some((kind) => kind.id === item.id))
   );
+  const [searchTermRight, setSearchTermRight] = useState(""); // État pour la barre de recherche dans la liste de droite
 
   useEffect(() => {
     setRight(
@@ -104,6 +105,9 @@ export default function TransferList({
       )
     );
   }, [items, selectedItems]);
+
+  console.info("left: ", left);
+  console.info("right: ", right);
 
   const leftChecked = intersection(checked, left);
   const rightChecked = intersection(checked, right);
@@ -144,13 +148,42 @@ export default function TransferList({
     onSelectedItemsUpdate(left.concat(rightChecked));
   };
 
-  const customList = (items) => (
-    <Paper sx={{ width: 350, height: 500, overflow: "auto" }}>
+  // Fonction pour filtrer les items de droite en fonction de la recherche
+  const filteredRightItems = right.filter((item) =>
+    item.name.toLowerCase().includes(searchTermRight.toLowerCase())
+  );
+
+  const customList = (
+    items,
+    showSearch = false,
+    searchTerm = "",
+    onSearchChange = () => {}
+  ) => (
+    <Paper
+      sx={{
+        width: 350,
+        height: 520,
+        overflow: "auto",
+        overflowX: "hidden",
+        overflowY: "hidden",
+      }}
+    >
+      {showSearch && (
+        <TextField
+          sx={{ m: 1, width: "335px" }}
+          fullWidth
+          label="Search"
+          variant="outlined"
+          value={searchTerm}
+          onChange={onSearchChange}
+        />
+      )}
       <FixedSizeList
-        height={500}
+        height={450}
         width={350}
         itemCount={items.length}
-        itemSize={50} // Hauteur de chaque élément
+        itemSize={50}
+        style={{ overflowX: "hidden", overflowY: "auto" }}
       >
         {({ index, style }) => (
           <ListItemButton
@@ -200,7 +233,9 @@ export default function TransferList({
           </Button>
         </Grid>
       </Grid>
-      <Grid item>{customList(right)}</Grid>
+      {customList(filteredRightItems, true, searchTermRight, (e) =>
+        setSearchTermRight(e.target.value)
+      )}
     </Grid>
   );
 }
