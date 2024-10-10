@@ -37,7 +37,8 @@ function CreateItemCard({ origin, onUpdate, closeModal }) {
       toast.success(`${origin} successfully created`, {
         className: "custom-toast",
       });
-      onUpdate();
+
+      onUpdate(name);
       closeModal();
     } catch (error) {
       console.error("Request error:", error);
