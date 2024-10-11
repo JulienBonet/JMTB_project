@@ -27,11 +27,11 @@ function AddNewMovie() {
   const [videoSupport, setvideoSupport] = useState("");
   const [format, setFormat] = useState("");
   const [fileSize, setFileSize] = useState(null);
-  const [selectedFile, setSelectedFile] = useState(null); // Pour le fichier vidéo
-  const [selectedCoverFile, setSelectedCoverFile] = useState(""); // Pour l'affiche
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedCoverFile, setSelectedCoverFile] = useState("");
   const [coverPreview, setCoverPreview] = useState(
     `${backendUrl}/00_cover_default.jpg`
-  ); // Pour l'aperçu de l'affiche
+  );
   const [openModal, setOpenModal] = useState(false);
   const [openModalMIE, setOpenModalMIE] = useState(false);
   const [selectedKinds, setSelectedKinds] = useState([]);

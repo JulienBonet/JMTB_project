@@ -125,6 +125,27 @@
   opacity: 0;
 }
 
+.Movie_editing_btn-container{
+  margin-top: 1rem;
+}
+
+.Item_Movie_Editing_Buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+  gap: 1rem
+}
+
+.item_movie_mode_ico,
+.item_movie_undo_ico,
+.item_movie_don_ico {
+  cursor: pointer;
+  color: var(--color-02);
+  padding: 0.3rem 0.5rem;
+  border: solid 1px;
+  border-radius: 10px;
+}
+
 @media (min-width: 1200px) {
   .css-1oqqzyl-MuiContainer-root {
     max-width: 1400px !important;

@@ -4,9 +4,15 @@ import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import "./movieCard.css";
 import ReactPlayer from "react-player";
+import ModeIcon from "@mui/icons-material/Mode";
+import DoneOutlineIcon from "@mui/icons-material/DoneOutline";
+import UndoIcon from "@mui/icons-material/Undo";
+// import FileUploadIcon from "@mui/icons-material/FileUpload";
+// import CachedIcon from "@mui/icons-material/Cached";
 
 function MovieCard({ movie, origin }) {
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
+  const [isModify, setIsModify] = useState(false);
 
   // DATA
   const [movieData, setMovieData] = useState([]);
@@ -68,6 +74,16 @@ function MovieCard({ movie, origin }) {
   const [isTrailerVisible, setIsTrailerVisible] = useState(false);
   const toggleTrailerVideo = () => {
     setIsTrailerVisible(!isTrailerVisible);
+  };
+
+  // MODIF MODE
+
+  const isModifyMode = () => {
+    setIsModify(true);
+  };
+
+  const closeModifyMode = () => {
+    setIsModify(false);
   };
 
   return (
@@ -211,6 +227,26 @@ function MovieCard({ movie, origin }) {
               </div>
             </div>
           )}
+        </section>
+
+        <section className="Movie_editing_btn-container">
+          <div className="divider_dashed divider_trailer" />
+          <section className="Item_Movie_Editing_Buttons">
+            {isModify ? (
+              <>
+                <UndoIcon
+                  className="item_movie_undo_ico"
+                  onClick={() => closeModifyMode()}
+                />
+                <DoneOutlineIcon className="item_movie_don_ico" />
+              </>
+            ) : (
+              <ModeIcon
+                className="item_movie_mode_ico"
+                onClick={() => isModifyMode()}
+              />
+            )}
+          </section>
         </section>
       </div>
     </article>
