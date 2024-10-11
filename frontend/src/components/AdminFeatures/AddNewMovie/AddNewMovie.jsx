@@ -1473,9 +1473,9 @@ function AddNewMovie() {
                 <MenuItem value="">
                   <em>choisir un support</em>
                 </MenuItem>
-                <MenuItem value="DVD">DVD</MenuItem>
+                <MenuItem value="DVD original">DVD</MenuItem>
                 <MenuItem value="DVD R/RW">DVD R/RW</MenuItem>
-                <MenuItem value="FICHIER MULTIMEDIA">
+                <MenuItem value="Fichier multimédia">
                   FICHIER MULTIMEDIA
                 </MenuItem>
               </Select>

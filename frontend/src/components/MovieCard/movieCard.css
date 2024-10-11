@@ -35,6 +35,13 @@
   /* justify-content: center; */
   gap: 0.5rem;
 }
+.infos_bloc_1_modify {
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center; */
+  gap: 1.3rem;
+  width: 100%;
+}
 .MovieCard_title {
   font-family: var(--font-05);
   color: var(--color-02);
@@ -58,7 +65,14 @@
 .MC_line2 {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 5px;
+}
+
+.MC_line2_modify{
+  display: flex;
+  flex-direction: column;
+  margin-top: 1rem;
+  gap: 1rem;
 }
 
 .MovieCard_info {
@@ -127,23 +141,35 @@
 
 .Movie_editing_btn-container{
   margin-top: 1rem;
+  
 }
 
 .Item_Movie_Editing_Buttons {
   display: flex;
   justify-content: flex-end;
   margin-top: 1rem;
-  gap: 1rem
+  gap: 1rem;
 }
 
 .item_movie_mode_ico,
 .item_movie_undo_ico,
-.item_movie_don_ico {
+.item_movie_done_ico {
   cursor: pointer;
-  color: var(--color-02);
   padding: 0.3rem 0.5rem;
   border: solid 1px;
   border-radius: 10px;
+}
+
+.item_movie_mode_ico{
+  color: var(--color-02);
+}
+
+.item_movie_undo_ico{
+  color: whitesmoke;
+}
+
+.item_movie_done_ico{
+  color: greenyellow;
 }
 
 @media (min-width: 1200px) {
