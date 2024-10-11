@@ -131,7 +131,6 @@ function MovieCard({ movie, origin }) {
   // Fonction pour gérer les changements dans les champs TextField
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.info(`Changement de ${name} à ${value}`); // Log pour le changement
     setMovieData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -160,30 +159,6 @@ function MovieCard({ movie, origin }) {
   //   }
   // };
 
-  // STYLE MUI
-  const StyledTextField = styled(TextField)({
-    width: "80%",
-    height: "50px",
-    color: "white",
-    "& .MuiInputLabel-root": {
-      color: "white", // Couleur du label en blanc
-    },
-    "& .MuiInputBase-input": {
-      color: "white", // Couleur du texte
-    },
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        borderColor: "white", // Couleur de la bordure
-      },
-      "&:hover fieldset": {
-        borderColor: "orange", // Couleur de la bordure au hover
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
-      },
-    },
-  });
-
   return (
     <article className="MovieCard">
       <div className="MovieCard_container">
@@ -198,43 +173,143 @@ function MovieCard({ movie, origin }) {
           {/* info bloc 1 */}
           {isModify ? (
             <div className="infos_bloc_1_modify">
-              <StyledTextField
+              <TextField
                 label="Title"
                 name="title"
-                value={title}
-                onChange={handleChange}
+                value={movieData.title}
+                onChange={(e) => handleChange(e)}
                 fullWidth
+                sx={{
+                  width: "80%",
+                  "& .MuiInputLabel-root": {
+                    color: "white", // Couleur du label en blanc
+                  },
+                  "& .MuiInputBase-input": {
+                    color: "white", // Couleur du texte
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "white", // Couleur de la bordure
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "orange", // Couleur de la bordure au hover
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                    },
+                  },
+                }}
               />
               <div className="divider" />
-              <StyledTextField
+              <TextField
                 label="Alt Title"
                 name="altTitle"
-                value={altTitle}
+                value={movieData.altTitle}
                 onChange={handleChange}
                 fullWidth
+                sx={{
+                  width: "80%",
+                  "& .MuiInputLabel-root": {
+                    color: "white", // Couleur du label en blanc
+                  },
+                  "& .MuiInputBase-input": {
+                    color: "white", // Couleur du texte
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "white", // Couleur de la bordure
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "orange", // Couleur de la bordure au hover
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                    },
+                  },
+                }}
               />
-              <StyledTextField
+              <TextField
                 label="Genres"
                 name="genres"
                 value={genres}
                 onChange={handleChange}
                 fullWidth
+                sx={{
+                  width: "80%",
+                  "& .MuiInputLabel-root": {
+                    color: "white", // Couleur du label en blanc
+                  },
+                  "& .MuiInputBase-input": {
+                    color: "white", // Couleur du texte
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "white", // Couleur de la bordure
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "orange", // Couleur de la bordure au hover
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                    },
+                  },
+                }}
               />
-              <StyledTextField
+              <TextField
                 label="Year"
                 name="year"
-                value={year}
-                onChange={handleChange}
+                value={movieData.year}
+                onChange={(e) => handleChange(e)}
                 fullWidth
                 type="number"
+                sx={{
+                  width: "80%",
+                  "& .MuiInputLabel-root": {
+                    color: "white", // Couleur du label en blanc
+                  },
+                  "& .MuiInputBase-input": {
+                    color: "white", // Couleur du texte
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "white", // Couleur de la bordure
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "orange", // Couleur de la bordure au hover
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                    },
+                  },
+                }}
               />
-              <StyledTextField
+              <TextField
                 label="Duration"
                 name="duration"
-                value={duration}
-                onChange={handleChange}
+                value={movieData.duration}
+                onChange={(e) => handleChange(e)}
                 fullWidth
                 type="number"
+                sx={{
+                  width: "80%",
+                  "& .MuiInputLabel-root": {
+                    color: "white", // Couleur du label en blanc
+                  },
+                  "& .MuiInputBase-input": {
+                    color: "white", // Couleur du texte
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "white", // Couleur de la bordure
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "orange", // Couleur de la bordure au hover
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                    },
+                  },
+                }}
               />
             </div>
           ) : (
@@ -315,7 +390,7 @@ function MovieCard({ movie, origin }) {
           {isModify ? (
             <div className="MC_line2_modify">
               <div className="divider" />
-              <StyledTextField
+              <TextField
                 label="Réalisateur"
                 name="directors"
                 value={directors}
@@ -323,9 +398,26 @@ function MovieCard({ movie, origin }) {
                 fullWidth
                 sx={{
                   width: "85%",
+                  "& .MuiInputLabel-root": {
+                    color: "white", // Couleur du label en blanc
+                  },
+                  "& .MuiInputBase-input": {
+                    color: "white", // Couleur du texte
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "white", // Couleur de la bordure
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "orange", // Couleur de la bordure au hover
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                    },
+                  },
                 }}
               />
-              <StyledTextField
+              <TextField
                 label="Scénariste"
                 name="screenwriters"
                 value={screenwriters}
@@ -333,9 +425,26 @@ function MovieCard({ movie, origin }) {
                 fullWidth
                 sx={{
                   width: "85%",
+                  "& .MuiInputLabel-root": {
+                    color: "white", // Couleur du label en blanc
+                  },
+                  "& .MuiInputBase-input": {
+                    color: "white", // Couleur du texte
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "white", // Couleur de la bordure
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "orange", // Couleur de la bordure au hover
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                    },
+                  },
                 }}
               />
-              <StyledTextField
+              <TextField
                 label="Compositeur"
                 name="music"
                 value={music}
@@ -343,9 +452,26 @@ function MovieCard({ movie, origin }) {
                 fullWidth
                 sx={{
                   width: "85%",
+                  "& .MuiInputLabel-root": {
+                    color: "white", // Couleur du label en blanc
+                  },
+                  "& .MuiInputBase-input": {
+                    color: "white", // Couleur du texte
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "white", // Couleur de la bordure
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "orange", // Couleur de la bordure au hover
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                    },
+                  },
                 }}
               />
-              <StyledTextField
+              <TextField
                 label="Studio"
                 name="studios"
                 value={studios}
@@ -353,9 +479,26 @@ function MovieCard({ movie, origin }) {
                 fullWidth
                 sx={{
                   width: "85%",
+                  "& .MuiInputLabel-root": {
+                    color: "white", // Couleur du label en blanc
+                  },
+                  "& .MuiInputBase-input": {
+                    color: "white", // Couleur du texte
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "white", // Couleur de la bordure
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "orange", // Couleur de la bordure au hover
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                    },
+                  },
                 }}
               />
-              <StyledTextField
+              <TextField
                 label="Casting"
                 name="cast"
                 value={cast}
@@ -363,14 +506,31 @@ function MovieCard({ movie, origin }) {
                 fullWidth
                 sx={{
                   width: "85%",
+                  "& .MuiInputLabel-root": {
+                    color: "white", // Couleur du label en blanc
+                  },
+                  "& .MuiInputBase-input": {
+                    color: "white", // Couleur du texte
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "white", // Couleur de la bordure
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "orange", // Couleur de la bordure au hover
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                    },
+                  },
                 }}
               />
               <div className="divider" />
               <TextField
                 label="Résumé"
                 name="story"
-                value={story}
-                onChange={handleChange}
+                value={movieData.story}
+                onChange={(e) => handleChange(e)}
                 multiline
                 fullWidth
                 sx={{
@@ -436,38 +596,90 @@ function MovieCard({ movie, origin }) {
 
               {movieData.videoSupport === "Fichier multimédia" && (
                 <>
-                  <StyledTextField
+                  <TextField
                     label="Emplacement"
                     name="location"
-                    value={location}
-                    onChange={handleChange}
+                    value={movieData.location}
+                    onChange={(e) => handleChange(e)}
                     fullWidth
                     sx={{
                       width: "85%",
+                      "& .MuiInputLabel-root": {
+                        color: "white", // Couleur du label en blanc
+                      },
+                      "& .MuiInputBase-input": {
+                        color: "white", // Couleur du texte
+                      },
+                      "& .MuiOutlinedInput-root": {
+                        "& fieldset": {
+                          borderColor: "white", // Couleur de la bordure
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "orange", // Couleur de la bordure au hover
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                        },
+                      },
                     }}
                   />
 
-                  <StyledTextField
+                  <TextField
                     label="Taille du fichier"
                     name="fileSize"
-                    value={fileSize}
-                    onChange={handleChange}
+                    value={movieData.fileSize}
+                    onChange={(e) => handleChange(e)}
                     fullWidth
+                    type="number"
                     sx={{
                       width: "85%",
+                      "& .MuiInputLabel-root": {
+                        color: "white", // Couleur du label en blanc
+                      },
+                      "& .MuiInputBase-input": {
+                        color: "white", // Couleur du texte
+                      },
+                      "& .MuiOutlinedInput-root": {
+                        "& fieldset": {
+                          borderColor: "white", // Couleur de la bordure
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "orange", // Couleur de la bordure au hover
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                        },
+                      },
                     }}
                   />
                 </>
               )}
               <div className="divider" />
-              <StyledTextField
+              <TextField
                 label="trailer"
                 name="trailer"
-                value={trailer}
-                onChange={handleChange}
+                value={movieData.trailer}
+                onChange={(e) => handleChange(e)}
                 fullWidth
                 sx={{
                   width: "85%",
+                  "& .MuiInputLabel-root": {
+                    color: "white", // Couleur du label en blanc
+                  },
+                  "& .MuiInputBase-input": {
+                    color: "white", // Couleur du texte
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "white", // Couleur de la bordure
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "orange", // Couleur de la bordure au hover
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                    },
+                  },
                 }}
               />
             </div>
