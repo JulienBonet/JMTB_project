@@ -66,6 +66,7 @@ function AdminItemsCard2({ item, origin, onUpdate, closeModal }) {
   const handleUndo = () => {
     setIsModify(false);
     setIsEditing(false);
+    closeModal();
   };
 
   return (

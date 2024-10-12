@@ -119,7 +119,8 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
     setIsModify(false);
     setIsEditing(false);
     setImage(item.image);
-    setShowUploadButton(true);
+    setShowUploadButton(false);
+    closeModal();
   };
 
   const handleFileUpload = (event) => {

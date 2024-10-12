@@ -674,9 +674,75 @@ const deleteMovie = async (req, res) => {
   }
 };
 
+// EDIT MOVIE
+const editMovieById = async (req, res) => {
+  try {
+    console.info(req.body); // Ajoute ceci pour vérifier ce que tu reçois
+    console.info(req.params.id); // Vérifie que l'ID est bien récupéré
+
+    const {
+      title,
+      altTitle,
+      year,
+      duration,
+      trailer,
+      pitch,
+      story,
+      location,
+      videoFormat,
+      videoSupport,
+      fileSize,
+      idTheMovieDb,
+      idIMDb,
+    } = req.body;
+
+    const { id } = req.params;
+
+    console.info("Data received:", {
+      title,
+      altTitle,
+      year,
+      duration,
+      trailer,
+      pitch,
+      story,
+      location,
+      videoFormat,
+      videoSupport,
+      fileSize,
+      idTheMovieDb,
+      idIMDb,
+      id,
+    });
+
+    // Appel à la fonction updateMovie
+    await editingMovieModel.updateMovie(
+      title,
+      altTitle,
+      year,
+      duration,
+      trailer,
+      pitch,
+      story,
+      location,
+      videoFormat,
+      videoSupport,
+      fileSize,
+      idTheMovieDb,
+      idIMDb,
+      id
+    );
+
+    res.status(200).send("Film mis à jour avec succès");
+  } catch (error) {
+    res.status(500).send("Erreur lors de la mise à jour du film");
+  }
+};
+
 module.exports = {
   downloadPoster,
   uploadLocalCover,
   addMovie,
   deleteMovie,
+  editMovieById,
 };

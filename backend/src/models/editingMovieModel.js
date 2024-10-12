@@ -36,6 +36,42 @@ const insertMovie = (
     ]
   );
 
+const updateMovie = (
+  title,
+  altTitle,
+  year,
+  duration,
+  trailer,
+  pitch,
+  story,
+  location,
+  videoFormat,
+  videoSupport,
+  fileSize,
+  idTheMovieDb,
+  idIMDb,
+  id
+) =>
+  db.query(
+    "UPDATE movies SET title = ?, altTitle = ?, year = ?, duration = ?, trailer = ?, pitch = ?, story = ?, location = ?, videoFormat = ?, videoSupport = ?, fileSize = ?, idTheMovieDb = ?, idIMDb = ? WHERE id = ?",
+    [
+      title,
+      altTitle,
+      year,
+      duration,
+      trailer,
+      pitch,
+      story,
+      location,
+      videoFormat,
+      videoSupport,
+      fileSize,
+      idTheMovieDb,
+      idIMDb,
+      id,
+    ]
+  );
+
 const getLastInsertedMovieId = () =>
   db.query("SELECT LAST_INSERT_ID() AS movieId");
 
@@ -318,6 +354,7 @@ const addMovieTag = (movieId, tagId) =>
 
 module.exports = {
   insertMovie,
+  updateMovie,
   getLastInsertedMovieId,
   findMovieById,
   eraseMovie,

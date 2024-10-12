@@ -59,6 +59,15 @@ router.post(
   }
 );
 
+router.put(
+  "/movie/:id",
+  (req, res, next) => {
+    console.info("La route PUT a été appelée"); // Vérifier que la route est appelée
+    next();
+  },
+  editingMovieController.editMovieById
+);
+
 router.delete("/movie/:id", editingMovieController.deleteMovie);
 
 module.exports = router;
