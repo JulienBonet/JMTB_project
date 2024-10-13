@@ -432,11 +432,11 @@ const deleteMovie = async (req, res) => {
 
     // Récupérer le studio associé avant de supprimer le film
     const studios = await editingMovieModel.findStudioByMovieId(movieId);
-    console.info("Studios associés au film:", studios);
 
-    if (studios.length === 0) {
-      console.info(`Aucun studio associé au film avec ID: ${movieId}`);
-    }
+    // console.info("Studios associés au film:", studios);
+    // if (studios.length === 0) {
+    //   console.info(`Aucun studio associé au film avec ID: ${movieId}`);
+    // }
 
     // Récupérer le pays associé avant de supprimer le film
     const countries = await editingMovieModel.findCountryByMovieId(movieId);

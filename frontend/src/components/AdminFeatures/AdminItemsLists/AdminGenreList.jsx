@@ -143,7 +143,7 @@ function AdminGenreList() {
     <section className="AdminItemsSection">
       <section className="HeaderAdminItemsSection">
         <div className="admin_Title_feat_container">
-          <h1 className="admin_Title_feat">KINDS LIST</h1>
+          <h1 className="admin_Title_feat">GENRES LIST</h1>
         </div>
         <div className="admin_feat_tools_line">
           <div className="Admin_search_bar_container">
@@ -163,7 +163,7 @@ function AdminGenreList() {
         <thead>
           <tr>
             <th scope="col">ID</th>
-            <th scope="col">KIND</th>
+            <th scope="col">GENRE</th>
           </tr>
         </thead>
         <tbody>

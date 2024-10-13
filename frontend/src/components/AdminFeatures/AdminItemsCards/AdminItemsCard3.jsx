@@ -112,9 +112,8 @@ function AdminItemsCard3({ item, origin, onUpdate, closeModal }) {
   const handleUndo = () => {
     setIsModify(false);
     setIsEditing(false);
-    setImage(item.image);
+    setImage(`${backendUrl}/${item.image}`);
     setShowUploadButton(true);
-    closeModal();
   };
 
   const handleFileUpload = (event) => {
@@ -129,7 +128,7 @@ function AdminItemsCard3({ item, origin, onUpdate, closeModal }) {
   };
 
   const handleResetImage = () => {
-    setImage(item.image);
+    setImage(`${backendUrl}/${item.image}`);
     setShowUploadButton(true);
   };
 

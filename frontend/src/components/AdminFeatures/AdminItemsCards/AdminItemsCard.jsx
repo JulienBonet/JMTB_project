@@ -24,6 +24,8 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
   const [showUploadButton, setShowUploadButton] = useState(true);
   const fileInputRef = useRef(null);
 
+  console.info("image:", image);
+
   const openModif = () => {
     setIsModify(true);
     setIsEditing(true);
@@ -109,7 +111,6 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
       setShowUploadButton(true);
 
       onUpdate(); // Rafraîchir les données dans le composant parent
-      closeModal(); // Fermer le modal après tout
     } catch (error) {
       console.error("Request error:", error);
     }
@@ -118,9 +119,8 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
   const handleUndo = () => {
     setIsModify(false);
     setIsEditing(false);
-    setImage(item.image);
+    setImage(`${backendUrl}/${item.image}`);
     setShowUploadButton(false);
-    closeModal();
   };
 
   const handleFileUpload = (event) => {
@@ -135,7 +135,6 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
   };
 
   const handleResetImage = () => {
-    // setImage(item.image);
     setImage(`${backendUrl}/${item.image}`);
     setShowUploadButton(true);
   };
@@ -233,11 +232,7 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
           />
         )} */}
         {item && image && (
-          <img
-            className="ItemImage"
-            src={image} // Vérifie que `image` est bien défini avant d'essayer de l'afficher
-            alt={`${item.name}`}
-          />
+          <img className="ItemImage" src={image} alt={`${item.name}`} />
         )}
         {isModify && (
           <>
