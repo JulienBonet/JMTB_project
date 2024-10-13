@@ -1,7 +1,7 @@
+/* eslint-disable no-alert */
 /* eslint-disable react/prop-types */
 /* eslint-disable camelcase */
 import { useState, useEffect } from "react";
-import PropTypes from "prop-types";
 import "./movieCard.css";
 import ReactPlayer from "react-player";
 import ModeIcon from "@mui/icons-material/Mode";
@@ -15,12 +15,13 @@ import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 
-function MovieCard({ movie, origin }) {
+function MovieCard({ movie, origin, onUpdateMovie }) {
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
   const [isModify, setIsModify] = useState(false);
 
   // DATA
   const [movieData, setMovieData] = useState({
+    id: movie.id || "",
     title: movie.title || "",
     altTitle: movie.altTitle || "",
     year: movie.year || "",
@@ -35,39 +36,25 @@ function MovieCard({ movie, origin }) {
     location: movie.location || "",
     fileSize: movie.fileSize || "",
   });
+  console.info("movie: ", movie);
+  console.info("movieData", movieData);
 
-  const {
-    id,
-    title,
-    altTitle,
-    year,
-    duration,
-    cover,
-    trailer,
-    story,
-    location,
-    videoSupport,
-    fileSize,
-    multi,
-    vostfr,
-  } = movie;
-  console.info("movie:", movie);
-
-  useEffect(() => {
-    console.info("Valeur actuelle de videoSupport:", movieData.videoSupport);
-    setMovieData({
-      title: movie.title || "",
-      altTitle: movie.altTitle || "",
-      year: movie.year || "",
-      duration: movie.duration || "",
-      videoSupport: movie.videoSupport || "",
-      multi: movie.multi || false,
-      vostfr: movie.vostfr || false,
-      story: movie.story || "",
-      location: movie.location || "",
-      fileSize: movie.fileSize || "",
-    });
-  }, [movie]);
+  // const {
+  //   id,
+  //   title,
+  //   altTitle,
+  //   year,
+  //   duration,
+  //   cover,
+  //   trailer,
+  //   story,
+  //   location,
+  //   videoSupport,
+  //   fileSize,
+  //   multi,
+  //   vostfr,
+  // } = movie;
+  // console.info("movie:", movie);
 
   const { genres, countries, directors, screenwriters, music, studios, cast } =
     movieData;
@@ -90,7 +77,7 @@ function MovieCard({ movie, origin }) {
     }, [movie.id]);
   } else {
     useEffect(() => {
-      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movies/${id}`)
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movies/${movieData.id}`)
         .then((response) => {
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -103,7 +90,7 @@ function MovieCard({ movie, origin }) {
         .catch((error) => {
           console.error("Error fetching user data:", error);
         });
-    }, [id]);
+    }, [movieData.id]);
   }
 
   // TOGGLE trailer
@@ -137,26 +124,47 @@ function MovieCard({ movie, origin }) {
   };
 
   // Fonction pour soumettre les modifications
-  // const handleSubmit = async () => {
-  //   try {
-  //     const response = await fetch(`/api/movies/${id}`, {
-  //       method: "PUT",
-  //       headers: {
-  //         "Content-Type": "application/json",
-  //       },
-  //       body: JSON.stringify(movieData),
-  //     });
+  const handleUpdateMovie = async () => {
+    const confirmUpadte = window.confirm(
+      "Are you sure you want to update this film?"
+    );
 
-  //     if (response.ok) {
-  //       alert("Film mis à jour avec succès !");
-  //     } else {
-  //       throw new Error("Erreur lors de la mise à jour du film.");
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //     alert("Erreur lors de la mise à jour du film.");
-  //   }
-  // };
+    if (confirmUpadte) {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/movie/${movieData.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: movieData.title,
+            altTitle: movieData.altTitle,
+            year: movieData.year,
+            duration: movieData.duration,
+            trailer: movieData.trailer,
+            story: movieData.story,
+            location: movieData.location,
+            videoFormat: movieData.videoFormat,
+            videoSupport: movieData.videoSupport,
+            fileSize: movieData.fileSize,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        console.info("Film mis à jour avec succès");
+        const updatedMovie = await response.json();
+        console.info("updatedMovie", updatedMovie);
+        setMovieData(updatedMovie[0]);
+        onUpdateMovie(updatedMovie[0]);
+        // onUpdateMovie();
+        closeModifyMode();
+      } else {
+        console.error("Erreur lors de la mise à jour");
+      }
+    } // end confirm update
+  };
 
   return (
     <article className="MovieCard">
@@ -165,8 +173,8 @@ function MovieCard({ movie, origin }) {
           <div className="MovieCard_Cover_Position">
             <img
               className="MovieCard_cover"
-              src={`${backendUrl}/images/${cover}`}
-              alt={`Cover ${title}`}
+              src={`${backendUrl}/images/${movieData.cover}`}
+              alt={`Cover ${movieData.title}`}
             />
           </div>
           {/* info bloc 1 */}
@@ -313,26 +321,31 @@ function MovieCard({ movie, origin }) {
             </div>
           ) : (
             <div className="infos_bloc_1">
-              <p className="MovieCard_title">{title}</p>
+              <p className="MovieCard_title">{movieData.title}</p>
               <div className="divider" />
               {isTrailerVisible ? (
                 <div className="MovieCard_trailer">
-                  <ReactPlayer url={trailer} className="video_player" />
+                  <ReactPlayer
+                    url={movieData.trailer}
+                    className="video_player"
+                  />
                 </div>
               ) : (
                 <>
-                  <p className="MovieCard_info">{altTitle}</p>
+                  <p className="MovieCard_info">{movieData.altTitle}</p>
                   <p className="MovieCard_info">
                     <span className="paraph_bolder">Genre:</span> {genres}
                   </p>
                   <p className="MovieCard_info">
-                    <span className="paraph_bolder">Année:</span> {year}
+                    <span className="paraph_bolder">Année:</span>{" "}
+                    {movieData.year}
                   </p>
                   <p className="MovieCard_info">
                     <span className="paraph_bolder">Pays:</span> {countries}
                   </p>
                   <p className="MovieCard_info">
-                    <span className="paraph_bolder">Durée:</span> {duration}mn
+                    <span className="paraph_bolder">Durée:</span>{" "}
+                    {movieData.duration}mn
                   </p>
                   <div className="divider_dashed" />
                   {/* Autres détails du film */}
@@ -581,7 +594,7 @@ function MovieCard({ movie, origin }) {
                 <Select
                   id="demo-select-small"
                   name="videoSupport"
-                  value={movieData.videoSupport}
+                  value={movieData.videoSupport || ""}
                   label="Support"
                   onChange={(e) => handleChange(e)}
                 >
@@ -598,7 +611,7 @@ function MovieCard({ movie, origin }) {
                   <TextField
                     label="Emplacement"
                     name="location"
-                    value={movieData.location}
+                    value={movieData.location || ""}
                     onChange={(e) => handleChange(e)}
                     fullWidth
                     sx={{
@@ -626,7 +639,7 @@ function MovieCard({ movie, origin }) {
                   <TextField
                     label="Taille du fichier"
                     name="fileSize"
-                    value={movieData.fileSize}
+                    value={movieData.fileSize || ""}
                     onChange={(e) => handleChange(e)}
                     fullWidth
                     type="number"
@@ -690,40 +703,41 @@ function MovieCard({ movie, origin }) {
                 <>
                   <p className="MovieCard_info paraph_bolder">Résumé:</p>
                   <p className="MovieCard_info MovieCard_story  paraph_height">
-                    {story}
+                    {movieData.story}
                   </p>
                   <div className="divider_dashed" />
                   <p className="MovieCard_info">
                     <span className="paraph_bolder">Support:</span>{" "}
-                    {videoSupport}
+                    {movieData.videoSupport}
                   </p>
-                  {vostfr ? (
+                  {movieData.vostfr ? (
                     <p className="MovieCard_info paraph_height">
                       <span className="paraph_bolder">Version:</span> VOSTFR
                     </p>
                   ) : null}
-                  {multi ? (
+                  {movieData.multi ? (
                     <p className="MovieCard_info paraph_height">
                       <span className="paraph_bolder">Version:</span>{" "}
                       Multi-langues
                     </p>
                   ) : null}
-                  {(videoSupport === "Fichier multimédia" ||
-                    videoSupport === "FICHIER MULTIMEDIA") && (
+                  {(movieData.videoSupport === "Fichier multimédia" ||
+                    movieData.videoSupport === "FICHIER MULTIMEDIA") && (
                     <>
                       <p className="MovieCard_info paraph_height">
                         <span className="paraph_bolder">Emplacement:</span>{" "}
-                        {location}
+                        {movieData.location}
                       </p>
                       <p className="MovieCard_info">
-                        <span className="paraph_bolder">Size:</span> {fileSize}
+                        <span className="paraph_bolder">Size:</span>{" "}
+                        {movieData.fileSize}
                       </p>
                     </>
                   )}
                 </>
               )}
 
-              {trailer && (
+              {movieData.trailer && (
                 <div className="MovieCard_trailer">
                   <div className="divider_dashed divider_trailer" />
                   <div
@@ -758,7 +772,10 @@ function MovieCard({ movie, origin }) {
                   className="item_movie_undo_ico"
                   onClick={() => closeModifyMode()}
                 />
-                <DoneOutlineIcon className="item_movie_done_ico" />
+                <DoneOutlineIcon
+                  className="item_movie_done_ico"
+                  onClick={() => handleUpdateMovie()}
+                />
               </>
             ) : (
               <ModeIcon
@@ -772,31 +789,5 @@ function MovieCard({ movie, origin }) {
     </article>
   );
 }
-
-// VALIDATION PROPTYPES
-MovieCard.propTypes = {
-  movie: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    title: PropTypes.string.isRequired,
-    altTitle: PropTypes.string,
-    year: PropTypes.number.isRequired,
-    duration: PropTypes.number,
-    cover: PropTypes.string.isRequired,
-    trailer: PropTypes.string,
-    story: PropTypes.string,
-    location: PropTypes.string,
-    videoSupport: PropTypes.string,
-    fileSize: PropTypes.string,
-  }).isRequired,
-  movieData: PropTypes.shape({
-    genres: PropTypes.arrayOf(PropTypes.string),
-    countries: PropTypes.arrayOf(PropTypes.string),
-    director_name: PropTypes.string,
-    screenwriters: PropTypes.arrayOf(PropTypes.string),
-    music: PropTypes.arrayOf(PropTypes.string),
-    studios: PropTypes.arrayOf(PropTypes.string),
-    cast: PropTypes.arrayOf(PropTypes.string),
-  }).isRequired,
-};
 
 export default MovieCard;

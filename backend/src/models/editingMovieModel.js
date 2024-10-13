@@ -42,32 +42,26 @@ const updateMovie = (
   year,
   duration,
   trailer,
-  pitch,
   story,
   location,
   videoFormat,
   videoSupport,
   fileSize,
-  idTheMovieDb,
-  idIMDb,
   id
 ) =>
   db.query(
-    "UPDATE movies SET title = ?, altTitle = ?, year = ?, duration = ?, trailer = ?, pitch = ?, story = ?, location = ?, videoFormat = ?, videoSupport = ?, fileSize = ?, idTheMovieDb = ?, idIMDb = ? WHERE id = ?",
+    "UPDATE movies SET title = ?, altTitle = ?, year = ?, duration = ?, trailer = ?, story = ?, location = ?, videoFormat = ?, videoSupport = ?, fileSize = ? WHERE id = ?",
     [
       title,
       altTitle,
       year,
       duration,
       trailer,
-      pitch,
       story,
       location,
       videoFormat,
       videoSupport,
       fileSize,
-      idTheMovieDb,
-      idIMDb,
       id,
     ]
   );

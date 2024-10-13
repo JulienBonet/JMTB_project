@@ -1,5 +1,5 @@
+/* eslint-disable react/prop-types */
 import { useState } from "react";
-import PropTypes from "prop-types";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import { Container } from "@mui/material";
@@ -9,7 +9,10 @@ import MovieCard from "../MovieCard/MovieCard";
 function MovieThumbnail2({ data }) {
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
 
-  const { title, year, cover } = data;
+  // Initialisation des données du film à partir des props
+  const [movieData, setMovieData] = useState(data);
+
+  const { title, year, cover } = movieData;
 
   const [selectedMovie, setSelectedMovie] = useState(null);
 
@@ -19,6 +22,26 @@ function MovieThumbnail2({ data }) {
 
   const closeModal = () => {
     setSelectedMovie(null);
+  };
+
+  // Fonction de callback pour mettre à jour les données après modification dans MovieCard
+  const handleUpdateMovie = async () => {
+    try {
+      const response = await fetch(`${backendUrl}/api/movies/${data.id}`);
+      if (response.ok) {
+        const updatedMovie = await response.json();
+        setMovieData(updatedMovie); // Met à jour les données du film
+      } else {
+        console.error(
+          "Erreur lors de la récupération des données mises à jour"
+        );
+      }
+    } catch (error) {
+      console.error(
+        "Erreur lors de la récupération des données mises à jour:",
+        error
+      );
+    }
   };
 
   return (
@@ -57,7 +80,10 @@ function MovieThumbnail2({ data }) {
               >
                 X Fermer
               </div>
-              <MovieCard movie={selectedMovie} />
+              <MovieCard
+                movie={selectedMovie}
+                onUpdateMovie={handleUpdateMovie}
+              />
             </Container>
           </Box>
         </Modal>
@@ -65,14 +91,5 @@ function MovieThumbnail2({ data }) {
     </>
   );
 }
-
-// VALIDATION PROPTYPES
-MovieThumbnail2.propTypes = {
-  data: PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    year: PropTypes.number.isRequired,
-    cover: PropTypes.string.isRequired,
-  }).isRequired,
-};
 
 export default MovieThumbnail2;

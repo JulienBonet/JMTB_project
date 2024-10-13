@@ -8,7 +8,6 @@ import { Button, Container } from "@mui/material";
 import Modal from "@mui/material/Modal";
 import "./adminLists.css";
 import PreviewIcon from "@mui/icons-material/Preview";
-import ModeIcon from "@mui/icons-material/Mode";
 import DeleteIcon from "@mui/icons-material/Delete";
 import MovieCard from "../../MovieCard/MovieCard";
 
@@ -73,9 +72,23 @@ function AdminMovieList() {
     navigate("/new_movie");
   };
 
+  // Fonction pour Raffraichier l'affichage d'un film en cas d'update dans MovieCard
+  const updateMovieData = (updatedMovie) => {
+    setData((prevData) =>
+      prevData.map((movie) =>
+        movie.id === updatedMovie.id ? updatedMovie : movie
+      )
+    );
+    setFilteredData((prevFilteredData) =>
+      prevFilteredData.map((movie) =>
+        movie.id === updatedMovie.id ? updatedMovie : movie
+      )
+    );
+  };
+
   // Fonction pour supprimer un film
   const handleDeleteMovie = async (id) => {
-    console.info("Tentative de suppression du film avec ID:", id); // Log ID du film
+    console.info("Tentative de suppression du film avec ID:", id);
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this movie?"
     );
@@ -159,9 +172,9 @@ function AdminMovieList() {
                     onClick={() => openModal(movieData)}
                   />
                 </td>
-                <td>
+                {/* <td>
                   <ModeIcon className="admin_tools_ico" />
-                </td>
+                </td> */}
                 <td>
                   <DeleteIcon
                     className="admin_tools_ico"
@@ -199,7 +212,11 @@ function AdminMovieList() {
               >
                 X Fermer
               </div>
-              <MovieCard movie={selectedMovie} origin={origin} />
+              <MovieCard
+                movie={selectedMovie}
+                origin={origin}
+                onUpdateMovie={updateMovieData}
+              />
             </Container>
           </Box>
         </Modal>
