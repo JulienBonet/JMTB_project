@@ -705,8 +705,6 @@ const editMovieImage = async (req, res) => {
     // Mettre à jour la nouvelle image
     const imageUrl = req.file.filename;
     const result = await editingMovieModel.updateMovieImage(imageUrl, id);
-    console.info("imageUrl", imageUrl);
-    console.info("result", result);
 
     if (result.affectedRows > 0) {
       const updatedMovie = await editingMovieModel.findMovieById(id); // Récupère les infos mises à jour du film
@@ -726,9 +724,6 @@ const editMovieImage = async (req, res) => {
 
 const editMovieById = async (req, res) => {
   try {
-    console.info(req.body); // Ajoute ceci pour vérifier ce que tu reçois
-    console.info(req.params.id); // Vérifie que l'ID est bien récupéré
-
     const {
       title,
       altTitle,
@@ -743,20 +738,6 @@ const editMovieById = async (req, res) => {
     } = req.body;
 
     const { id } = req.params;
-
-    console.info("Data received:", {
-      title,
-      altTitle,
-      year,
-      duration,
-      trailer,
-      story,
-      location,
-      videoFormat,
-      videoSupport,
-      fileSize,
-      id,
-    });
 
     // Appel à la fonction updateMovie
     await editingMovieModel.updateMovie(

@@ -7,7 +7,8 @@ import "./movieThumbnail.css";
 import "./movieThumbnailMediaQueries.css";
 import MovieCard from "../MovieCard/MovieCard";
 
-function MovieThumbnail({ data, origin }) {
+function MovieThumbnail({ data }) {
+  const origin = "movie";
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
 
   // Initialisation des données du film à partir des props

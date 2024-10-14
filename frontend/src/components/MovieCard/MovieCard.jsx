@@ -18,7 +18,6 @@ import MenuItem from "@mui/material/MenuItem";
 function MovieCard({ movie, origin, onUpdateMovie }) {
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
   const [isModify, setIsModify] = useState(false);
-  console.info("origin", origin);
 
   // DATA
   const [movieData, setMovieData] = useState({
@@ -130,11 +129,23 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
   const fileInputRef = useRef(null);
   console.info("image:", image);
 
+  useEffect(() => {
+    if (isModify) {
+      // Lorsque le mode modification est activé, réinitialiser l'affichage du bouton d'upload
+      if (image === `${backendUrl}/images/${movie.cover}`) {
+        setShowUploadButton(true); // Si l'image n'a pas été changée, montrer l'icône d'upload
+      } else {
+        setShowUploadButton(false); // Si l'image a été modifiée, montrer l'icône de reset
+      }
+    }
+  }, [isModify, image, movie.cover, backendUrl]);
+
+  // Handle File Upload
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     const newImageUrl = URL.createObjectURL(file);
     setImage(newImageUrl);
-    setShowUploadButton(false);
+    setShowUploadButton(false); // Après le choix d'une image, afficher le bouton de reset
   };
 
   const handleUploadClick = () => {
@@ -142,8 +153,8 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
   };
 
   const handleResetImage = () => {
-    setImage(`${backendUrl}/images/${movie.cover}`);
-    setShowUploadButton(true);
+    setImage(`${backendUrl}/images/${movie.cover}`); // Remettre l'image d'origine
+    setShowUploadButton(true); // Remettre l'icône d'upload
   };
 
   const handleUpdateImage = async () => {
@@ -163,9 +174,9 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
       );
 
       if (imageResponse.ok) {
-        const responseData = await imageResponse.json(); // Assure-toi que ton backend renvoie le film mis à jour
-        console.info("Image successfully updated");
-        setImage(`${backendUrl}/images/${responseData.movie.cover}`); // Met à jour avec l'URL finale de l'image
+        const { movie: updatedMovie } = await imageResponse.json();
+        setImage(`${backendUrl}/images/${updatedMovie.cover}`); // Utiliser la nouvelle URL de l'image
+        console.info("Image successfully updated", updatedMovie.cover);
       } else {
         console.error("Error updating item image");
       }
@@ -179,44 +190,51 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
     );
 
     if (confirmUpdate) {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/movie/${movieData.id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            title: movieData.title,
-            altTitle: movieData.altTitle,
-            year: movieData.year,
-            duration: movieData.duration,
-            trailer: movieData.trailer,
-            story: movieData.story,
-            location: movieData.location,
-            videoFormat: movieData.videoFormat,
-            videoSupport: movieData.videoSupport,
-            fileSize: movieData.fileSize,
-          }),
+      try {
+        // Mettre à jour l'image (s'il y a un fichier sélectionné)
+        if (fileInputRef.current.files[0]) {
+          await handleUpdateImage(); // Attendre que l'image soit mise à jour avant de poursuivre
+          console.info("Image successfully updated");
         }
-      );
 
-      // Mettre à jour l'image (s'il y a un fichier sélectionné)
-      if (fileInputRef.current.files[0]) {
-        await handleUpdateImage(); // Utilisation de await pour attendre la fin de la mise à jour de l'image
-        console.info("Image successfully updated");
-      }
+        // Mettre à jour les autres informations du film
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/movie/${movieData.id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              title: movieData.title,
+              altTitle: movieData.altTitle,
+              year: movieData.year,
+              duration: movieData.duration,
+              trailer: movieData.trailer,
+              story: movieData.story,
+              location: movieData.location,
+              videoFormat: movieData.videoFormat,
+              videoSupport: movieData.videoSupport,
+              fileSize: movieData.fileSize,
+            }),
+          }
+        );
 
-      if (response.ok) {
-        console.info("Film mis à jour avec succès");
-        const updatedMovie = await response.json();
-        console.info("updatedMovie", updatedMovie);
-        setMovieData(updatedMovie[0]);
-        onUpdateMovie(updatedMovie[0]);
-        // onUpdateMovie();
-        closeModifyMode();
-      } else {
-        console.error("Erreur lors de la mise à jour");
+        if (response.ok) {
+          console.info("Film mis à jour avec succès");
+          const updatedMovie = await response.json();
+          console.info("updatedMovie", updatedMovie);
+          setMovieData(updatedMovie[0]);
+          onUpdateMovie(updatedMovie[0]);
+          closeModifyMode();
+        } else {
+          console.error("Erreur lors de la mise à jour");
+        }
+      } catch (error) {
+        console.error(
+          "Erreur lors de la mise à jour du film et de l'image",
+          error
+        );
       }
     } // end confirm update
   };
@@ -242,15 +260,19 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
                   style={{ display: "none" }}
                 />
                 {showUploadButton ? (
-                  <FileUploadIcon
-                    className="Item_uploadButton"
-                    onClick={handleUploadClick}
-                  />
+                  <div className="movie_cover_modify_button">
+                    <FileUploadIcon
+                      className="Item_uploadButton"
+                      onClick={handleUploadClick}
+                    />
+                  </div>
                 ) : (
-                  <CachedIcon
-                    className="Item_reset_img_Button"
-                    onClick={handleResetImage}
-                  />
+                  <div className="movie_cover_modify_button">
+                    <CachedIcon
+                      className="Item_reset_img_Button"
+                      onClick={handleResetImage}
+                    />
+                  </div>
                 )}
               </>
             )}

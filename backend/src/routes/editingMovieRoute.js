@@ -59,23 +59,10 @@ router.post(
   }
 );
 
-router.put(
-  "/movie/:id",
-  (req, res, next) => {
-    console.info("La route PUT a été appelée"); // Vérifier que la route est appelée
-    next();
-  },
-  editingMovieController.editMovieById
-);
+router.put("/movie/:id", editingMovieController.editMovieById);
 
 router.put(
   "/movie/:id/image",
-  (req, res, next) => {
-    console.info("La route PUT image a été appelée"); // Vérifier que la route est appelée
-    console.info(req.body); // Log les champs envoyés
-    console.info(req.file); // Log l'information du fichier
-    next();
-  },
   setType("cover"),
   fileUpload.single("cover"),
   editingMovieController.editMovieImage
