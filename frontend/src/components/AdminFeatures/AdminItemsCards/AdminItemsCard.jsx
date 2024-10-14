@@ -223,14 +223,6 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
       </section>
 
       <section className="ItemsCard_Col2">
-        {/* {image && (
-          <img
-            className="ItemImage"
-            // src={`${backendUrl}/${image}`}
-            src={image}
-            alt={`${item.name}`}
-          />
-        )} */}
         {item && image && (
           <img className="ItemImage" src={image} alt={`${item.name}`} />
         )}

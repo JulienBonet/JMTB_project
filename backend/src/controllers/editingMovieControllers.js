@@ -668,6 +668,62 @@ const deleteMovie = async (req, res) => {
 };
 
 // EDIT MOVIE
+const editMovieImage = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ message: "Aucun fichier n'a été téléchargé" });
+    }
+
+    const movie = await editingMovieModel.findMovieById(id);
+    const currentImageUrl = movie[0].cover;
+
+    // Effacer la précédente image
+    if (currentImageUrl !== "00_item_default.png") {
+      try {
+        const fullPath = path.join(
+          __dirname,
+          "../../public/images",
+          currentImageUrl // Utilisation directe du nom de fichier
+        );
+        if (fs.existsSync(fullPath)) {
+          fs.unlinkSync(fullPath);
+        } else {
+          console.info(`Le fichier n'existe pas : ${fullPath}`);
+        }
+      } catch (unlinkError) {
+        console.error(
+          "Erreur lors de la suppression du fichier :",
+          unlinkError
+        );
+      }
+    }
+
+    // Mettre à jour la nouvelle image
+    const imageUrl = req.file.filename;
+    const result = await editingMovieModel.updateMovieImage(imageUrl, id);
+    console.info("imageUrl", imageUrl);
+    console.info("result", result);
+
+    if (result.affectedRows > 0) {
+      const updatedMovie = await editingMovieModel.findMovieById(id); // Récupère les infos mises à jour du film
+      return res.status(200).json({
+        message: "Image successfully updated",
+        movie: updatedMovie[0], // Renvoie le film mis à jour, incluant la nouvelle image
+      });
+    }
+
+    console.error("Erreur lors de la mise à jour de l'image");
+    return res.status(500).json({ message: "Error updating image" });
+  } catch (error) {
+    console.error("Erreur lors du téléchargement de l'image :", error);
+    return res.status(500).json({ message: "Error updating image" });
+  }
+};
+
 const editMovieById = async (req, res) => {
   try {
     console.info(req.body); // Ajoute ceci pour vérifier ce que tu reçois
@@ -731,5 +787,6 @@ module.exports = {
   uploadLocalCover,
   addMovie,
   deleteMovie,
+  editMovieImage,
   editMovieById,
 };

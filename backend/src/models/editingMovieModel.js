@@ -66,6 +66,11 @@ const updateMovie = (
     ]
   );
 
+const updateMovieImage = (imageUrl, id) =>
+  db
+    .query("UPDATE movies SET cover = ? WHERE id = ?", [imageUrl, id])
+    .then(([result]) => result);
+
 const getLastInsertedMovieId = () =>
   db.query("SELECT LAST_INSERT_ID() AS movieId");
 
@@ -349,6 +354,7 @@ const addMovieTag = (movieId, tagId) =>
 module.exports = {
   insertMovie,
   updateMovie,
+  updateMovieImage,
   getLastInsertedMovieId,
   findMovieById,
   eraseMovie,

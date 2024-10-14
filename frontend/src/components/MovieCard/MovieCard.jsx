@@ -1,14 +1,14 @@
 /* eslint-disable no-alert */
 /* eslint-disable react/prop-types */
 /* eslint-disable camelcase */
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./movieCard.css";
 import ReactPlayer from "react-player";
 import ModeIcon from "@mui/icons-material/Mode";
 import DoneOutlineIcon from "@mui/icons-material/DoneOutline";
 import UndoIcon from "@mui/icons-material/Undo";
-// import FileUploadIcon from "@mui/icons-material/FileUpload";
-// import CachedIcon from "@mui/icons-material/Cached";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
+import CachedIcon from "@mui/icons-material/Cached";
 import TextField from "@mui/material/TextField";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
@@ -18,6 +18,7 @@ import MenuItem from "@mui/material/MenuItem";
 function MovieCard({ movie, origin, onUpdateMovie }) {
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
   const [isModify, setIsModify] = useState(false);
+  console.info("origin", origin);
 
   // DATA
   const [movieData, setMovieData] = useState({
@@ -123,13 +124,61 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
     }));
   };
 
+  // Fonctions pour modifier l'image
+  const [image, setImage] = useState(`${backendUrl}/images/${movie.cover}`);
+  const [showUploadButton, setShowUploadButton] = useState(true);
+  const fileInputRef = useRef(null);
+  console.info("image:", image);
+
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    const newImageUrl = URL.createObjectURL(file);
+    setImage(newImageUrl);
+    setShowUploadButton(false);
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleResetImage = () => {
+    setImage(`${backendUrl}/images/${movie.cover}`);
+    setShowUploadButton(true);
+  };
+
+  const handleUpdateImage = async () => {
+    const fileInput = fileInputRef.current;
+    const file = fileInput.files[0];
+
+    if (file) {
+      const imageData = new FormData();
+      imageData.append("cover", file);
+
+      const imageResponse = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/${origin}/${movie.id}/image`,
+        {
+          method: "PUT",
+          body: imageData,
+        }
+      );
+
+      if (imageResponse.ok) {
+        const responseData = await imageResponse.json(); // Assure-toi que ton backend renvoie le film mis à jour
+        console.info("Image successfully updated");
+        setImage(`${backendUrl}/images/${responseData.movie.cover}`); // Met à jour avec l'URL finale de l'image
+      } else {
+        console.error("Error updating item image");
+      }
+    }
+  };
+
   // Fonction pour soumettre les modifications
   const handleUpdateMovie = async () => {
-    const confirmUpadte = window.confirm(
+    const confirmUpdate = window.confirm(
       "Are you sure you want to update this film?"
     );
 
-    if (confirmUpadte) {
+    if (confirmUpdate) {
       const response = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/api/movie/${movieData.id}`,
         {
@@ -152,6 +201,12 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
         }
       );
 
+      // Mettre à jour l'image (s'il y a un fichier sélectionné)
+      if (fileInputRef.current.files[0]) {
+        await handleUpdateImage(); // Utilisation de await pour attendre la fin de la mise à jour de l'image
+        console.info("Image successfully updated");
+      }
+
       if (response.ok) {
         console.info("Film mis à jour avec succès");
         const updatedMovie = await response.json();
@@ -173,9 +228,32 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
           <div className="MovieCard_Cover_Position">
             <img
               className="MovieCard_cover"
-              src={`${backendUrl}/images/${movieData.cover}`}
+              src={image}
               alt={`Cover ${movieData.title}`}
             />
+            {isModify && (
+              <>
+                <input
+                  type="file"
+                  name="cover"
+                  accept="image/*"
+                  onChange={handleFileUpload}
+                  ref={fileInputRef}
+                  style={{ display: "none" }}
+                />
+                {showUploadButton ? (
+                  <FileUploadIcon
+                    className="Item_uploadButton"
+                    onClick={handleUploadClick}
+                  />
+                ) : (
+                  <CachedIcon
+                    className="Item_reset_img_Button"
+                    onClick={handleResetImage}
+                  />
+                )}
+              </>
+            )}
           </div>
           {/* info bloc 1 */}
           {isModify ? (

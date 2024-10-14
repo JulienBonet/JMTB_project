@@ -19,6 +19,8 @@ function AdminMovieList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredData, setFilteredData] = useState([]);
 
+  const origin = "movie";
+
   const openModal = (movieData) => {
     setSelectedMovie(movieData);
   };
@@ -84,6 +86,11 @@ function AdminMovieList() {
         movie.id === updatedMovie.id ? updatedMovie : movie
       )
     );
+
+    // Mettre à jour aussi le film sélectionné pour refléter les modifications dans le modal
+    if (selectedMovie && selectedMovie.id === updatedMovie.id) {
+      setSelectedMovie(updatedMovie);
+    }
   };
 
   // Fonction pour supprimer un film

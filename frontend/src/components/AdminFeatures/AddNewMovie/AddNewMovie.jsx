@@ -951,18 +951,6 @@ function AddNewMovie() {
 
     const selectedTagsName = selectedTags.map((tag) => tag.name);
 
-    // const selectedTagsId = selectedTags.map((tag) => tag.id);
-    // // Vérifiez les tags avant l'envoi
-    // console.info("Tags avant l'envoi :", selectedTagsId); // Affichez les tags avant de les envoyer
-
-    // // Filtrez les tags indéfinis
-    // const validTags = selectedTagsId.filter(
-    //   (tag) => tag !== undefined && tag !== null
-    // );
-
-    // // Vérifiez les tags filtrés
-    // console.info("Tags filtrés :", validTags);
-
     // Créer le corps de la requête
     const requestBody = {
       ...movie,
@@ -974,7 +962,6 @@ function AddNewMovie() {
       studios: selectedStudiosName,
       countries: selectedCountriesName,
       languages: selectedLanguagesName,
-      // tags: selectedTagsId,
       tags: selectedTagsName,
     };
 
@@ -1012,7 +999,7 @@ function AddNewMovie() {
       console.error(error);
       alert("Erreur lors de l'ajout du film. Veuillez réessayer.");
     }
-  };
+  }; // end handleFormSubmit
 
   // -----------------/ BUTTON STYLE /----------------- //
   const theme = createTheme({
@@ -1480,82 +1467,87 @@ function AddNewMovie() {
                 </MenuItem>
               </Select>
             </FormControl>
-            {videoSupport !== "DVD" && videoSupport !== "DVD R/RW" && (
-              <div>
-                {/* movie VIDEOFORMAT */}
+            {videoSupport === "Fichier multimédia" && (
+              <>
+                <div>
+                  {/* movie VIDEOFORMAT */}
+                  <Box
+                    component="form"
+                    sx={{ "& > :not(style)": { width: "25ch" } }}
+                    noValidate
+                    autoComplete="off"
+                    display="flex"
+                    alignItems="center"
+                    gap={4}
+                  >
+                    <FormControl sx={{ m: 1, minWidth: 120 }}>
+                      <InputLabel id="demo-select-small-label">
+                        format
+                      </InputLabel>
+                      <Select
+                        labelId="demo-select-small-label"
+                        id="demo-select-small"
+                        value={format}
+                        label="format"
+                        onChange={formatsHandleChange}
+                      >
+                        <MenuItem value="">
+                          <em>choisir un format</em>
+                        </MenuItem>
+                        <MenuItem value="avi">avi</MenuItem>
+                        <MenuItem value="mkv">mkv</MenuItem>
+                        <MenuItem value="mp4">mp4</MenuItem>
+                      </Select>
+                    </FormControl>
+                    {/* movie FILESIZE */}
+                    <TextField
+                      label="File Size"
+                      id="outlined-start-adornment"
+                      sx={{ m: 1, width: "25ch" }}
+                      value={fileSize || ""}
+                      onChange={(event) => setFileSize(event.target.value)}
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">Go</InputAdornment>
+                        ),
+                      }}
+                    />
+                  </Box>
+                </div>
+
+                {/* movie LOCAL FILE */}
                 <Box
                   component="form"
-                  sx={{ "& > :not(style)": { width: "25ch" } }}
+                  sx={{ "& > :not(style)": { width: "75ch" } }}
                   noValidate
                   autoComplete="off"
                   display="flex"
                   alignItems="center"
                   gap={4}
+                  p={1}
                 >
-                  <FormControl sx={{ m: 1, minWidth: 120 }}>
-                    <InputLabel id="demo-select-small-label">format</InputLabel>
-                    <Select
-                      labelId="demo-select-small-label"
-                      id="demo-select-small"
-                      value={format}
-                      label="format"
-                      onChange={formatsHandleChange}
-                    >
-                      <MenuItem value="">
-                        <em>choisir un format</em>
-                      </MenuItem>
-                      <MenuItem value="avi">avi</MenuItem>
-                      <MenuItem value="mkv">mkv</MenuItem>
-                      <MenuItem value="mp4">mp4</MenuItem>
-                    </Select>
-                  </FormControl>
-                  {/* movie FILESIZE */}
                   <TextField
-                    label="File Size"
-                    id="outlined-start-adornment"
-                    sx={{ m: 1, width: "25ch" }}
-                    value={fileSize || ""}
-                    onChange={(event) => setFileSize(event.target.value)}
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">Go</InputAdornment>
-                      ),
-                    }}
+                    id="filled-basic"
+                    label="fichier Local"
+                    variant="outlined"
+                    value={selectedFile ? selectedFile.name : ""}
                   />
+                  <input
+                    type="file"
+                    style={{ display: "none" }}
+                    onChange={handleFileChange}
+                    ref={fileInputRef}
+                  />
+                  <button
+                    type="button"
+                    className="input_file_btn"
+                    onClick={() => fileInputRef.current.click()}
+                  >
+                    Sélectionner un fichier vidéo
+                  </button>
                 </Box>
-              </div>
+              </>
             )}
-            {/* movie LOCAL FILE */}
-            <Box
-              component="form"
-              sx={{ "& > :not(style)": { width: "75ch" } }}
-              noValidate
-              autoComplete="off"
-              display="flex"
-              alignItems="center"
-              gap={4}
-              p={1}
-            >
-              <TextField
-                id="filled-basic"
-                label="fichier Local"
-                variant="outlined"
-                value={selectedFile ? selectedFile.name : ""}
-              />
-              <input
-                type="file"
-                style={{ display: "none" }}
-                onChange={handleFileChange}
-                ref={fileInputRef}
-              />
-              <button
-                type="button"
-                className="input_file_btn"
-                onClick={() => fileInputRef.current.click()}
-              >
-                Sélectionner un fichier vidéo
-              </button>
-            </Box>
           </div>
           {/* movie COVER */}
           <div className="Adm_l2b">
