@@ -682,7 +682,7 @@ const editMovieImage = async (req, res) => {
     const currentImageUrl = movie[0].cover;
 
     // Effacer la précédente image
-    if (currentImageUrl !== "00_item_default.png") {
+    if (currentImageUrl !== "00_cover_default.jpg") {
       try {
         const fullPath = path.join(
           __dirname,
