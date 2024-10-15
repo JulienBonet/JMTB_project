@@ -735,7 +735,10 @@ const editMovieById = async (req, res) => {
       videoFormat,
       videoSupport,
       fileSize,
+      genres,
+      // !!! ajouter les update item que l'on envoi par la route !!!
     } = req.body;
+    console.info("req.body:", req.body);
 
     const { id } = req.params;
 
@@ -754,7 +757,19 @@ const editMovieById = async (req, res) => {
       id
     );
 
-    const updatedMovie = await editingMovieModel.findMovieById(id);
+    // Mettre à jour les genres dans la table intermédiaire
+    if (genres && genres.length > 0) {
+      // Supprimer les genres actuels du film
+      await editingMovieModel.eraseKindByMovieId(id); // !!!! fonction a créer à chaque fois !!!!
+
+      // Ajouter les nouveaux genres sélectionnés
+      for (const genreId of genres) {
+        await editingMovieModel.addMovieKind(id, genreId);
+      }
+    }
+
+    const updatedMovie = await editingMovieModel.findMovieExtendedById(id); // !!!! Fonction a faire évoluer à chaque update Item ajouter !!!
+    console.info("updatedMovie:", updatedMovie);
 
     // res.status(200).json({ message: "Film mis à jour avec succès" });
     res.status(200).json(updatedMovie);

@@ -4,20 +4,25 @@
 import { useState, useEffect, useRef } from "react";
 import "./movieCard.css";
 import ReactPlayer from "react-player";
+import Box from "@mui/material/Box";
+import Modal from "@mui/material/Modal";
 import ModeIcon from "@mui/icons-material/Mode";
 import DoneOutlineIcon from "@mui/icons-material/DoneOutline";
 import UndoIcon from "@mui/icons-material/Undo";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import CachedIcon from "@mui/icons-material/Cached";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import TextField from "@mui/material/TextField";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
+import TransferList from "../AdminFeatures/AddNewMovie/MovieItemList";
 
 function MovieCard({ movie, origin, onUpdateMovie }) {
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
   const [isModify, setIsModify] = useState(false);
+  const [selectedKinds, setSelectedKinds] = useState([]);
 
   // DATA
   const [movieData, setMovieData] = useState({
@@ -36,8 +41,8 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
     location: movie.location || "",
     fileSize: movie.fileSize || "",
   });
-  console.info("movie: ", movie);
-  console.info("movieData", movieData);
+
+  console.info("movieData1", movieData);
 
   // const {
   //   id,
@@ -54,10 +59,11 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
   //   multi,
   //   vostfr,
   // } = movie;
-  // console.info("movie:", movie);
+  console.info("movie:", movie);
 
   const { genres, countries, directors, screenwriters, music, studios, cast } =
     movieData;
+  console.info("movieData2", movieData);
 
   if (origin === "country") {
     useEffect(() => {
@@ -85,6 +91,7 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
           return response.json();
         })
         .then((data) => {
+          console.info("data in fetch:", data);
           setMovieData(data);
         })
         .catch((error) => {
@@ -216,6 +223,8 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
               videoFormat: movieData.videoFormat,
               videoSupport: movieData.videoSupport,
               fileSize: movieData.fileSize,
+              genres: selectedKinds.map((genre) => genre.id),
+              // !!! ajouter les items que l'on met à jour !!!!
             }),
           }
         );
@@ -227,6 +236,12 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
           setMovieData(updatedMovie[0]);
           onUpdateMovie(updatedMovie[0]);
           closeModifyMode();
+
+          // Rafraîchir les genres après la mise à jour
+          const genresNames = updatedMovie[0].genres
+            .map((g) => g.name)
+            .join(", ");
+          setSelectedKinds(genresNames); // Mets à jour les genres avec les nouvelles données
         } else {
           console.error("Erreur lors de la mise à jour");
         }
@@ -237,6 +252,85 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
         );
       }
     } // end confirm update
+  };
+
+  // TRANSFERT LIST
+  const [openModal, setOpenModal] = useState(false);
+  const [data, setData] = useState([]);
+  const [dataType, setDataType] = useState("");
+
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "50%",
+    bgcolor: "background.paper",
+    border: "2px solid #000",
+    boxShadow: 24,
+    p: 4,
+  };
+
+  const fetchData = (route) => {
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/${route}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((datas) => {
+        setData(datas);
+      })
+      .catch((error) => {
+        console.error(`Error fetching ${route}:`, error);
+      });
+  };
+
+  const handleOpenModal = (type) => {
+    setDataType(type);
+    setOpenModal(true);
+    fetchData(type);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setDataType("");
+    setData([]);
+  };
+
+  // update les genres
+  useEffect(() => {
+    const fetchGenres = async () => {
+      try {
+        const genresArray = genres.split(", ").map(async (genreName) => {
+          const response = await fetch(`${backendUrl}/api/genres/${genreName}`);
+          if (!response.ok) {
+            throw new Error(
+              `Error fetching genre ${genreName}: ${response.statusText}`
+            );
+          }
+
+          const genre = await response.json();
+          return genre;
+        });
+
+        const genresData = await Promise.all(genresArray);
+        setSelectedKinds(genresData); // Met à jour avec [{ id, name }]
+      } catch (error) {
+        console.error("Error fetching genres:", error);
+      }
+    };
+
+    fetchGenres();
+  }, [genres]);
+
+  const getSelectedKindsNames = (selectKinds) => {
+    return selectKinds.map((kind) => kind.name).join(", ");
+  };
+
+  const handleSelectedKindsUpdate = (updatedSelectedKinds) => {
+    setSelectedKinds(updatedSelectedKinds);
   };
 
   return (
@@ -335,7 +429,7 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
                   },
                 }}
               />
-              <TextField
+              {/* <TextField
                 label="Genres"
                 name="genres"
                 value={genres}
@@ -361,7 +455,48 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
                     },
                   },
                 }}
-              />
+              /> */}
+              <div className="box_item_form">
+                <Box
+                  component="form"
+                  sx={{
+                    width: "80%",
+                    "& .MuiInputLabel-root": {
+                      color: "white", // Couleur du label en blanc
+                    },
+                    "& .MuiInputBase-input": {
+                      color: "white", // Couleur du texte
+                    },
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: "white", // Couleur de la bordure
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "orange", // Couleur de la bordure au hover
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                      },
+                    },
+                  }}
+                  noValidate
+                  autoComplete="off"
+                  display="flex"
+                  alignItems="center"
+                >
+                  <TextField
+                    id="outlined-read-only-input"
+                    label="Genre(s)"
+                    value={getSelectedKindsNames(selectedKinds)}
+                    InputProps={{ readOnly: true }}
+                    fullWidth
+                  />
+                </Box>
+                <AddCircleOutlineIcon
+                  className="Btn_Add_itemsPopUp_MovieCard"
+                  onClick={() => handleOpenModal("kinds")}
+                />
+              </div>
               <TextField
                 label="Year"
                 name="year"
@@ -885,9 +1020,25 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
             )}
           </section>
         </section>
+
+        <Modal
+          open={openModal}
+          onClose={handleCloseModal}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={style}>
+            <TransferList
+              dataType={dataType}
+              items={data}
+              selectedKinds={selectedKinds}
+              onSelectedKindsUpdate={handleSelectedKindsUpdate}
+            />
+          </Box>
+        </Modal>
       </div>
     </article>
-  );
+  ); // end return
 }
 
 export default MovieCard;

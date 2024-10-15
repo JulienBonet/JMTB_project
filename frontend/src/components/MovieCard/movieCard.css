@@ -53,6 +53,16 @@
   font-size: x-large;
   margin-bottom: 0.5rem;
 }
+.box_item_form{
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.Btn_Add_itemsPopUp_MovieCard {
+  cursor: pointer;
+  color: whitesmoke;
+}
 
 .divider {
   background-color: whitesmoke;

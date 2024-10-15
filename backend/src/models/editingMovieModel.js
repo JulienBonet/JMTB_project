@@ -79,6 +79,18 @@ const findMovieById = async (id) => {
   return result;
 };
 
+const findMovieExtendedById = async (id) => {
+  const [result] = await db.query(
+    `SELECT m.*, GROUP_CONCAT(g.name SEPARATOR ', ') AS genres
+     FROM movies m
+     LEFT JOIN movie_genre mg ON m.id = mg.movieId
+     LEFT JOIN genre g ON mg.genreId = g.id
+     WHERE m.id = ? GROUP BY m.id`,
+    [id]
+  );
+  return result;
+};
+
 const eraseMovie = (id) => db.query("DELETE FROM movies WHERE id = ?", [id]);
 
 // EDIT MOVIE_GENRE
@@ -110,6 +122,10 @@ const addMovieKind = (movieId, genreId) =>
     movieId,
     genreId,
   ]);
+
+const eraseKindByMovieId = (movieId) => {
+  return db.query("DELETE FROM movie_genre WHERE movieId = ?", [movieId]);
+};
 
 // EDIT MOVIE_DIRECTOR
 
@@ -357,11 +373,13 @@ module.exports = {
   updateMovieImage,
   getLastInsertedMovieId,
   findMovieById,
+  findMovieExtendedById,
   eraseMovie,
   findMovieKind,
   findKindByMovieId,
   countMoviesByKind,
   addMovieKind,
+  eraseKindByMovieId,
   findMovieDirector,
   findDirectorsByMovieId,
   countMoviesByDirector,
