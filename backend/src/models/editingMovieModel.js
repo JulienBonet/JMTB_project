@@ -251,6 +251,12 @@ const addMovieScreenwriter = (movieId, screenwriterId) =>
     [movieId, screenwriterId]
   );
 
+const eraseScreenwriterByMovieId = (movieId) => {
+  return db.query("DELETE FROM movie_screenwriter WHERE movieId = ?", [
+    movieId,
+  ]);
+};
+
 // EDIT MOVIE_MUSIC
 
 const findMovieMusic = (movieId, musicId) =>
@@ -280,6 +286,10 @@ const addMovieMusic = (movieId, musicId) =>
     movieId,
     musicId,
   ]);
+
+const eraseMusicByMovieId = (movieId) => {
+  return db.query("DELETE FROM movie_music WHERE movieId = ?", [movieId]);
+};
 
 // EDIT MOVIE_STUDIO
 
@@ -311,6 +321,10 @@ const addMovieStudio = (movieId, studioId) =>
     [movieId, studioId]
   );
 
+const eraseStudioByMovieId = (movieId) => {
+  return db.query("DELETE FROM movie_studio WHERE movieId = ?", [movieId]);
+};
+
 // EDIT MOVIE_COUNTRY
 
 const findMovieCountry = (movieId, countryId) =>
@@ -340,6 +354,10 @@ const addMovieCountry = (movieId, countryId) =>
     "INSERT INTO `movie_country` (`movieId`, `countryId`) VALUES (? , ?);",
     [movieId, countryId]
   );
+
+const eraseCountryByMovieId = (movieId) => {
+  return db.query("DELETE FROM movie_country WHERE movieId = ?", [movieId]);
+};
 
 // EDIT MOVIE_LANGUAGE
 
@@ -371,6 +389,10 @@ const addMovieLanguage = (movieId, languageId) =>
     [movieId, languageId]
   );
 
+const eraseLanguageByMovieId = (movieId) => {
+  return db.query("DELETE FROM movie_language WHERE movieId = ?", [movieId]);
+};
+
 // EDIT MOVIE_TAG
 
 const findMovieTag = (movieId, tagId) =>
@@ -401,6 +423,10 @@ const addMovieTag = (movieId, tagId) =>
     tagId,
   ]);
 
+const eraseTagByMovieId = (movieId) => {
+  return db.query("DELETE FROM movie_tag WHERE movieId = ?", [movieId]);
+};
+
 module.exports = {
   insertMovie,
   updateMovie,
@@ -428,24 +454,30 @@ module.exports = {
   findScreenwriterByMovieId,
   countMoviesByScreenwriter,
   addMovieScreenwriter,
+  eraseScreenwriterByMovieId,
   findMovieMusic,
   findMusicByMovieId,
   countMoviesByMusic,
   addMovieMusic,
+  eraseMusicByMovieId,
   findMovieStudio,
   findStudioByMovieId,
   countMoviesByStudio,
   addMovieStudio,
+  eraseStudioByMovieId,
   findMovieCountry,
   findCountryByMovieId,
   countMoviesByCountry,
   addMovieCountry,
+  eraseCountryByMovieId,
   findMovieLanguage,
   findLanguageByMovieId,
   countMoviesBylanguage,
   addMovieLanguage,
+  eraseLanguageByMovieId,
   findMovieTag,
   findTagByMovieId,
   countMoviesByTag,
   addMovieTag,
+  eraseTagByMovieId,
 };

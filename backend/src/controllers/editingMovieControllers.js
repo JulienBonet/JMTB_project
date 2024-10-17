@@ -738,6 +738,10 @@ const editMovieById = async (req, res) => {
       genres,
       directors,
       castings,
+      screenwriters,
+      musics,
+      studios,
+      countries,
       // !!! ajouter les update item que l'on envoi par la route !!!
     } = req.body;
     console.info("req.body:", req.body);
@@ -783,12 +787,46 @@ const editMovieById = async (req, res) => {
 
     // Mettre à jour les castings dans la table intermédiaire
     if (castings && castings.length > 0) {
-      // Supprimer les directors actuels du film
       await editingMovieModel.eraseCastingByMovieId(id); // !!!! fonction a créer à chaque fois !!!!
 
-      // Ajouter les directors genres sélectionnés
       for (const castingId of castings) {
         await editingMovieModel.addMovieCasting(id, castingId);
+      }
+    }
+
+    // Mettre à jour les screenwriters dans la table intermédiaire
+    if (screenwriters && screenwriters.length > 0) {
+      await editingMovieModel.eraseScreenwriterByMovieId(id); // !!!! fonction a créer à chaque fois !!!!
+
+      for (const screenwriterId of screenwriters) {
+        await editingMovieModel.addMovieScreenwriter(id, screenwriterId);
+      }
+    }
+
+    // Mettre à jour les compositors dans la table intermédiaire
+    if (musics && musics.length > 0) {
+      await editingMovieModel.eraseMusicByMovieId(id); // !!!! fonction a créer à chaque fois !!!!
+
+      for (const musicId of musics) {
+        await editingMovieModel.addMovieMusic(id, musicId);
+      }
+    }
+
+    // Mettre à jour les studios dans la table intermédiaire
+    if (studios && studios.length > 0) {
+      await editingMovieModel.eraseStudioByMovieId(id); // !!!! fonction a créer à chaque fois !!!!
+
+      for (const studioId of studios) {
+        await editingMovieModel.addMovieStudio(id, studioId);
+      }
+    }
+
+    // Mettre à jour les pays dans la table intermédiaire
+    if (countries && countries.length > 0) {
+      await editingMovieModel.eraseCountryByMovieId(id); // !!!! fonction a créer à chaque fois !!!!
+
+      for (const countryId of countries) {
+        await editingMovieModel.addMovieCountry(id, countryId);
       }
     }
 

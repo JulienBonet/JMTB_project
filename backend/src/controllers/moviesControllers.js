@@ -155,6 +155,16 @@ const getAllCountryIdDesc = async (req, res, next) => {
   }
 };
 
+const getAllCountryByName = async (req, res, next) => {
+  try {
+    const { name } = req.params;
+    const [[country]] = await moviesModel.findStudioByName(name);
+    res.status(200).json(country);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getAllByCountry = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -273,6 +283,7 @@ module.exports = {
   getAllYears,
   getAllCountry,
   getAllCountryIdDesc,
+  getAllCountryByName,
   getAllByCountry,
   getAllByCountrySorted0,
   getAllByCountrySorted1,

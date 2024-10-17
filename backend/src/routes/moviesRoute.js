@@ -38,5 +38,6 @@ router.get("/years", moviesController.getAllYears);
 router.get("/decades", moviesController.getAllDecades);
 router.get("/country", moviesController.getAllCountry);
 router.get("/country/sorted_id", moviesController.getAllCountryIdDesc);
+router.get("/country/byname/:name", moviesController.getAllCountryByName);
 
 module.exports = router;

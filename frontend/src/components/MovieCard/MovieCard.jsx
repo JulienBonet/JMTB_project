@@ -25,9 +25,16 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
   const [selectedKinds, setSelectedKinds] = useState([]);
   const [selectedDirectors, setSelectedDirectors] = useState([]);
   const [selectedCasting, setSelectedCasting] = useState([]);
+  const [selectedScreenwriters, setSelectedScreenwriters] = useState([]);
+  const [selectedMusic, setSelectedMusic] = useState([]);
+  const [selectedStudios, setSelectedStudios] = useState([]);
+  const [selectedCountries, setSelectedCountries] = useState([]);
+  const [selectedLanguages, setSelectedLanguages] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
   console.info("selectedDirectors", selectedDirectors);
   console.info("selectedKinds", selectedKinds);
   console.info("selectedCasting", selectedCasting);
+  console.info("selectedStudios", selectedStudios);
 
   // DATA
   const [movieData, setMovieData] = useState({
@@ -66,11 +73,15 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
   // } = movie;
   console.info("movie:", movie);
 
-  const { genres, countries, directors, screenwriters, music, studios, casting } =
-    movieData;
-  console.info("movieData2", movieData);
-  console.info("directors in movie data:", directors);
-  console.info("genres in movie data:", genres);
+  const {
+    genres,
+    countries,
+    directors,
+    screenwriters,
+    music,
+    studios,
+    casting,
+  } = movieData;
 
   if (origin === "country") {
     useEffect(() => {
@@ -233,6 +244,12 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
               genres: selectedKinds.map((genre) => genre.id),
               directors: selectedDirectors.map((director) => director.id),
               castings: selectedCasting.map((cast) => cast.id),
+              screenwriters: selectedScreenwriters.map(
+                (screenwriter) => screenwriter.id
+              ),
+              musics: selectedMusic.map((compositor) => compositor.id),
+              studios: selectedStudios.map((studio) => studio.id),
+              countries: selectedCountries.map((country) => country.id),
               // !!! ajouter les items que l'on met à jour !!!!
             }),
           }
@@ -422,6 +439,175 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
   const handleSelectedCastingUpdate = (updatedSelectedCasting) => {
     setSelectedCasting(updatedSelectedCasting);
   };
+
+  // update les screenwriters
+  useEffect(() => {
+    const fetchScreenwriters = async () => {
+      try {
+        const screenwritersArray = screenwriters
+          .split(", ")
+          .map(async (screenwriterName) => {
+            const response = await fetch(
+              `${backendUrl}/api/screenwriter/byname/${screenwriterName}`
+            );
+            if (!response.ok) {
+              throw new Error(
+                `Error fetching screenwriter ${screenwriterName}: ${response.statusText}`
+              );
+            }
+
+            const screenwriter = await response.json();
+            return screenwriter;
+          });
+
+        const screenwritersData = await Promise.all(screenwritersArray);
+        console.info("screenwritersData", screenwritersData);
+        setSelectedScreenwriters(screenwritersData); // Met à jour avec [{ id, name }]
+      } catch (error) {
+        console.error("Error fetching screenwriter:", error);
+      }
+    };
+
+    fetchScreenwriters();
+  }, [screenwriters]);
+
+  const getSelectedScreenwritersNames = (selectScreenwriters) => {
+    return selectScreenwriters
+      .map((screenwriter) => screenwriter.name)
+      .join(", ");
+  };
+  const handleSelectedScreenwritersUpdate = (updatedSelectedScreenwriters) => {
+    setSelectedScreenwriters(updatedSelectedScreenwriters);
+  };
+
+  // update les compositors
+  useEffect(() => {
+    const fetchMusics = async () => {
+      try {
+        const musicsArray = music.split(", ").map(async (musicName) => {
+          const response = await fetch(
+            `${backendUrl}/api/music/byname/${musicName}`
+          );
+          if (!response.ok) {
+            throw new Error(
+              `Error fetching compositor ${musicName}: ${response.statusText}`
+            );
+          }
+
+          const music = await response.json();
+          return music;
+        });
+
+        const musicsData = await Promise.all(musicsArray);
+        setSelectedMusic(musicsData); // Met à jour avec [{ id, name }]
+      } catch (error) {
+        console.error("Error fetching compositor:", error);
+      }
+    };
+
+    fetchMusics();
+  }, [music]);
+
+  const getSelectedMusicNames = (selectMusic) => {
+    return selectMusic.map((compositor) => compositor.name).join(", ");
+  };
+
+  const handleSelectedMusicUpdate = (updatedSelectedMusic) => {
+    setSelectedMusic(updatedSelectedMusic);
+  };
+
+  // update les studios
+  useEffect(() => {
+    const fetchStudios = async () => {
+      try {
+        const studiosArray = studios.split(", ").map(async (studioName) => {
+          console.info(`${backendUrl}/api/studio/byname/${studioName}`);
+          const response = await fetch(
+            `${backendUrl}/api/studio/byname/${studioName}`
+          );
+          if (!response.ok) {
+            throw new Error(
+              `Error fetching studio ${studioName}: ${response.statusText}`
+            );
+          }
+
+          const studio = await response.json();
+          console.info("studio in fetch studio:", studio);
+          return studio;
+        });
+
+        const studiosData = await Promise.all(studiosArray);
+        console.info("studiosData:", studiosData);
+        setSelectedStudios(studiosData); // Met à jour avec [{ id, name }]
+      } catch (error) {
+        console.error("Error fetching studio:", error);
+      }
+    };
+
+    fetchStudios();
+  }, [studios]);
+
+  // update les pays
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const countriesArray = countries
+          .split(", ")
+          .map(async (countryName) => {
+            const response = await fetch(
+              `${backendUrl}/api/country/byname/${countryName}`
+            );
+            if (!response.ok) {
+              throw new Error(
+                `Error fetching country ${countryName}: ${response.statusText}`
+              );
+            }
+
+            const country = await response.json();
+            return country;
+          });
+
+        const countriesData = await Promise.all(countriesArray);
+        setSelectedCountries(countriesData); // Met à jour avec [{ id, name }]
+      } catch (error) {
+        console.error("Error country studio:", error);
+      }
+    };
+
+    fetchCountries();
+  }, [countries]);
+
+  const getSelectedStudiosNames = (selectStudios) => {
+    return selectStudios.map((studio) => studio.name).join(", ");
+  };
+
+  const handleSelectedStudiosUpdate = (updatedSelectedStudios) => {
+    setSelectedStudios(updatedSelectedStudios);
+  };
+
+  const getSelectedCountriesNames = (selectedCountries) => {
+    return selectedCountries.map((country) => country.name).join(", ");
+  };
+
+  const handleSelectedCountriesUpdate = (updatedSelectedCountries) => {
+    setSelectedCountries(updatedSelectedCountries);
+  };
+
+  // const getSelectedLanguagesNames = (selectedLanguages) => {
+  //   return selectedLanguages.map((language) => language.name).join(", ");
+  // };
+
+  // const getSelectedTagsNames = (selectedTags) => {
+  //   return selectedTags.map((tag) => tag.name).join(", ");
+  // };
+
+  // const handleSelectedLanguagesUpdate = (updatedSelectedLanguages) => {
+  //   setSelectedLanguages(updatedSelectedLanguages);
+  // };
+
+  // const handleSelectedTagsUpdate = (updatedSelectedTags) => {
+  //   setSelectedTags(updatedSelectedTags);
+  // };
 
   return (
     <article className="MovieCard">
@@ -700,33 +886,47 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
           {isModify ? (
             <div className="MC_line2_modify">
               <div className="divider" />
-              {/* <TextField
-                label="Réalisateur"
-                name="directors"
-                value={directors}
-                onChange={handleChange}
-                fullWidth
-                sx={{
-                  width: "85%",
-                  "& .MuiInputLabel-root": {
-                    color: "white", // Couleur du label en blanc
-                  },
-                  "& .MuiInputBase-input": {
-                    color: "white", // Couleur du texte
-                  },
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      borderColor: "white", // Couleur de la bordure
+              <div className="box_item_form">
+                <Box
+                  component="form"
+                  sx={{
+                    width: "80%",
+                    "& .MuiInputLabel-root": {
+                      color: "white", // Couleur du label en blanc
                     },
-                    "&:hover fieldset": {
-                      borderColor: "orange", // Couleur de la bordure au hover
+                    "& .MuiInputBase-input": {
+                      color: "white", // Couleur du texte
                     },
-                    "&.Mui-focused fieldset": {
-                      borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: "white", // Couleur de la bordure
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "orange", // Couleur de la bordure au hover
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                      },
                     },
-                  },
-                }}
-              /> */}
+                  }}
+                  noValidate
+                  autoComplete="off"
+                  display="flex"
+                  alignItems="center"
+                >
+                  <TextField
+                    id="outlined-read-only-input"
+                    label="Pays"
+                    value={getSelectedCountriesNames(selectedCountries)}
+                    InputProps={{ readOnly: true }}
+                    fullWidth
+                  />
+                </Box>
+                <AddCircleOutlineIcon
+                  className="Btn_Add_itemsPopUp_MovieCard"
+                  onClick={() => handleOpenModal("country")}
+                />
+              </div>
               <div className="box_item_form">
                 <Box
                   component="form"
@@ -768,114 +968,129 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
                   onClick={() => handleOpenModal("directors")}
                 />
               </div>
-              <TextField
-                label="Scénariste"
-                name="screenwriters"
-                value={screenwriters}
-                onChange={handleChange}
-                fullWidth
-                sx={{
-                  width: "85%",
-                  "& .MuiInputLabel-root": {
-                    color: "white", // Couleur du label en blanc
-                  },
-                  "& .MuiInputBase-input": {
-                    color: "white", // Couleur du texte
-                  },
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      borderColor: "white", // Couleur de la bordure
+              <div className="box_item_form">
+                <Box
+                  component="form"
+                  sx={{
+                    width: "80%",
+                    "& .MuiInputLabel-root": {
+                      color: "white", // Couleur du label en blanc
                     },
-                    "&:hover fieldset": {
-                      borderColor: "orange", // Couleur de la bordure au hover
+                    "& .MuiInputBase-input": {
+                      color: "white", // Couleur du texte
                     },
-                    "&.Mui-focused fieldset": {
-                      borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: "white", // Couleur de la bordure
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "orange", // Couleur de la bordure au hover
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                      },
                     },
-                  },
-                }}
-              />
-              <TextField
-                label="Compositeur"
-                name="music"
-                value={music}
-                onChange={handleChange}
-                fullWidth
-                sx={{
-                  width: "85%",
-                  "& .MuiInputLabel-root": {
-                    color: "white", // Couleur du label en blanc
-                  },
-                  "& .MuiInputBase-input": {
-                    color: "white", // Couleur du texte
-                  },
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      borderColor: "white", // Couleur de la bordure
+                  }}
+                  noValidate
+                  autoComplete="off"
+                  display="flex"
+                  alignItems="center"
+                >
+                  <TextField
+                    id="outlined-read-only-input"
+                    label="Scénariste(s)"
+                    value={getSelectedScreenwritersNames(selectedScreenwriters)}
+                    InputProps={{ readOnly: true }}
+                    fullWidth
+                  />
+                </Box>
+                <AddCircleOutlineIcon
+                  className="Btn_Add_itemsPopUp_MovieCard"
+                  onClick={() => handleOpenModal("screenwriters")}
+                />
+              </div>
+              <div className="box_item_form">
+                <Box
+                  component="form"
+                  sx={{
+                    width: "80%",
+                    "& .MuiInputLabel-root": {
+                      color: "white", // Couleur du label en blanc
                     },
-                    "&:hover fieldset": {
-                      borderColor: "orange", // Couleur de la bordure au hover
+                    "& .MuiInputBase-input": {
+                      color: "white", // Couleur du texte
                     },
-                    "&.Mui-focused fieldset": {
-                      borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: "white", // Couleur de la bordure
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "orange", // Couleur de la bordure au hover
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                      },
                     },
-                  },
-                }}
-              />
-              <TextField
-                label="Studio"
-                name="studios"
-                value={studios}
-                onChange={handleChange}
-                fullWidth
-                sx={{
-                  width: "85%",
-                  "& .MuiInputLabel-root": {
-                    color: "white", // Couleur du label en blanc
-                  },
-                  "& .MuiInputBase-input": {
-                    color: "white", // Couleur du texte
-                  },
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      borderColor: "white", // Couleur de la bordure
+                  }}
+                  noValidate
+                  autoComplete="off"
+                  display="flex"
+                  alignItems="center"
+                >
+                  <TextField
+                    id="outlined-read-only-input"
+                    label="Compositeur(s)"
+                    value={getSelectedMusicNames(selectedMusic)}
+                    InputProps={{ readOnly: true }}
+                    fullWidth
+                  />
+                </Box>
+                <AddCircleOutlineIcon
+                  className="Btn_Add_itemsPopUp_MovieCard"
+                  onClick={() => handleOpenModal("music")}
+                />
+              </div>
+              <div className="box_item_form">
+                <Box
+                  component="form"
+                  sx={{
+                    width: "80%",
+                    "& .MuiInputLabel-root": {
+                      color: "white", // Couleur du label en blanc
                     },
-                    "&:hover fieldset": {
-                      borderColor: "orange", // Couleur de la bordure au hover
+                    "& .MuiInputBase-input": {
+                      color: "white", // Couleur du texte
                     },
-                    "&.Mui-focused fieldset": {
-                      borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: "white", // Couleur de la bordure
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "orange", // Couleur de la bordure au hover
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                      },
                     },
-                  },
-                }}
-              />
-              {/* <TextField
-                label="Casting"
-                name="cast"
-                value={cast}
-                onChange={handleChange}
-                fullWidth
-                sx={{
-                  width: "85%",
-                  "& .MuiInputLabel-root": {
-                    color: "white", // Couleur du label en blanc
-                  },
-                  "& .MuiInputBase-input": {
-                    color: "white", // Couleur du texte
-                  },
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      borderColor: "white", // Couleur de la bordure
-                    },
-                    "&:hover fieldset": {
-                      borderColor: "orange", // Couleur de la bordure au hover
-                    },
-                    "&.Mui-focused fieldset": {
-                      borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
-                    },
-                  },
-                }}
-              /> */}
+                  }}
+                  noValidate
+                  autoComplete="off"
+                  display="flex"
+                  alignItems="center"
+                >
+                  <TextField
+                    id="outlined-read-only-input"
+                    label="Studio(s)"
+                    value={getSelectedStudiosNames(selectedStudios)}
+                    InputProps={{ readOnly: true }}
+                    fullWidth
+                  />
+                </Box>
+                <AddCircleOutlineIcon
+                  className="Btn_Add_itemsPopUp_MovieCard"
+                  onClick={() => handleOpenModal("studio")}
+                />
+              </div>
               <div className="box_item_form">
                 <Box
                   component="form"
@@ -1182,6 +1397,14 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
               onSelectedDirectorsUpdate={handleSelectedDirectorsUpdate}
               selectedCasting={selectedCasting}
               onSelectedCastingUpdate={handleSelectedCastingUpdate}
+              selectedScreenwriters={selectedScreenwriters}
+              onSelectedScreenwritersUpdate={handleSelectedScreenwritersUpdate}
+              selectedMusic={selectedMusic}
+              onSelectedMusicUpdate={handleSelectedMusicUpdate}
+              selectedStudios={selectedStudios}
+              onSelectedStudiosUpdate={handleSelectedStudiosUpdate}
+              selectedCountries={selectedCountries}
+              onSelectedCountriesUpdate={handleSelectedCountriesUpdate}
             />
           </Box>
         </Modal>
