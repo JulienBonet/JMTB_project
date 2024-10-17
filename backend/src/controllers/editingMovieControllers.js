@@ -736,6 +736,8 @@ const editMovieById = async (req, res) => {
       videoSupport,
       fileSize,
       genres,
+      directors,
+      castings,
       // !!! ajouter les update item que l'on envoi par la route !!!
     } = req.body;
     console.info("req.body:", req.body);
@@ -765,6 +767,28 @@ const editMovieById = async (req, res) => {
       // Ajouter les nouveaux genres sélectionnés
       for (const genreId of genres) {
         await editingMovieModel.addMovieKind(id, genreId);
+      }
+    }
+
+    // Mettre à jour les directors dans la table intermédiaire
+    if (directors && directors.length > 0) {
+      // Supprimer les directors actuels du film
+      await editingMovieModel.eraseDirectorByMovieId(id); // !!!! fonction a créer à chaque fois !!!!
+
+      // Ajouter les directors genres sélectionnés
+      for (const directorId of directors) {
+        await editingMovieModel.addMovieDirector(id, directorId);
+      }
+    }
+
+    // Mettre à jour les castings dans la table intermédiaire
+    if (castings && castings.length > 0) {
+      // Supprimer les directors actuels du film
+      await editingMovieModel.eraseCastingByMovieId(id); // !!!! fonction a créer à chaque fois !!!!
+
+      // Ajouter les directors genres sélectionnés
+      for (const castingId of castings) {
+        await editingMovieModel.addMovieCasting(id, castingId);
       }
     }
 

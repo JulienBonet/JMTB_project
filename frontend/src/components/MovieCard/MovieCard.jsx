@@ -23,6 +23,11 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
   const [isModify, setIsModify] = useState(false);
   const [selectedKinds, setSelectedKinds] = useState([]);
+  const [selectedDirectors, setSelectedDirectors] = useState([]);
+  const [selectedCasting, setSelectedCasting] = useState([]);
+  console.info("selectedDirectors", selectedDirectors);
+  console.info("selectedKinds", selectedKinds);
+  console.info("selectedCasting", selectedCasting);
 
   // DATA
   const [movieData, setMovieData] = useState({
@@ -61,9 +66,11 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
   // } = movie;
   console.info("movie:", movie);
 
-  const { genres, countries, directors, screenwriters, music, studios, cast } =
+  const { genres, countries, directors, screenwriters, music, studios, casting } =
     movieData;
   console.info("movieData2", movieData);
+  console.info("directors in movie data:", directors);
+  console.info("genres in movie data:", genres);
 
   if (origin === "country") {
     useEffect(() => {
@@ -224,6 +231,8 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
               videoSupport: movieData.videoSupport,
               fileSize: movieData.fileSize,
               genres: selectedKinds.map((genre) => genre.id),
+              directors: selectedDirectors.map((director) => director.id),
+              castings: selectedCasting.map((cast) => cast.id),
               // !!! ajouter les items que l'on met à jour !!!!
             }),
           }
@@ -258,6 +267,7 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
   const [openModal, setOpenModal] = useState(false);
   const [data, setData] = useState([]);
   const [dataType, setDataType] = useState("");
+  console.info("data", data);
 
   const style = {
     position: "absolute",
@@ -304,7 +314,9 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
     const fetchGenres = async () => {
       try {
         const genresArray = genres.split(", ").map(async (genreName) => {
+          console.info(`${backendUrl}/api/genres/${genreName}`);
           const response = await fetch(`${backendUrl}/api/genres/${genreName}`);
+
           if (!response.ok) {
             throw new Error(
               `Error fetching genre ${genreName}: ${response.statusText}`
@@ -331,6 +343,84 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
 
   const handleSelectedKindsUpdate = (updatedSelectedKinds) => {
     setSelectedKinds(updatedSelectedKinds);
+  };
+
+  // update les directors
+  useEffect(() => {
+    const fetchDirectors = async () => {
+      try {
+        const directorsArray = directors
+          .split(", ")
+          .map(async (directorName) => {
+            console.info(`${backendUrl}/api/director/byname/${directorName}`);
+            const response = await fetch(
+              `${backendUrl}/api/director/byname/${directorName}`
+            );
+            if (!response.ok) {
+              throw new Error(
+                `Error fetching director ${directorName}: ${response.statusText}`
+              );
+            }
+
+            const director = await response.json();
+            return director;
+          });
+
+        const directorsData = await Promise.all(directorsArray);
+        console.info("directorsData", directorsData);
+        setSelectedDirectors(directorsData); // Met à jour avec [{ id, name }]
+      } catch (error) {
+        console.error("Error fetching directors:", error);
+      }
+    };
+
+    fetchDirectors();
+  }, [directors]);
+
+  const getSelectedDirectorsNames = (selectDirectors) => {
+    return selectDirectors.map((director) => director.name).join(", ");
+  };
+
+  const handleSelectedDirectorsUpdate = (updatedSelectedDirectors) => {
+    setSelectedDirectors(updatedSelectedDirectors);
+  };
+
+  // update les casting
+  useEffect(() => {
+    const fetchCastings = async () => {
+      try {
+        const castingsArray = casting.split(", ").map(async (castingName) => {
+          console.info(`${backendUrl}/api/casting/byname/${castingName}`);
+          const response = await fetch(
+            `${backendUrl}/api/casting/byname/${castingName}`
+          );
+          if (!response.ok) {
+            throw new Error(
+              `Error fetching casting ${castingName}: ${response.statusText}`
+            );
+          }
+
+          const castingN = await response.json();
+          return castingN;
+        });
+
+        const castingsData = await Promise.all(castingsArray);
+        console.info("castingsData", castingsData);
+        setSelectedCasting(castingsData); // Met à jour avec [{ id, name }]
+      } catch (error) {
+        console.error("Error fetching castings:", error);
+      }
+    };
+
+    fetchCastings();
+  }, [casting]);
+
+  const getSelectedCastingNames = (selectCasting) => {
+    return selectCasting.map((cast) => cast.name).join(", ");
+  };
+
+  const handleSelectedCastingUpdate = (updatedSelectedCasting) => {
+    setSelectedCasting(updatedSelectedCasting);
   };
 
   return (
@@ -429,33 +519,6 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
                   },
                 }}
               />
-              {/* <TextField
-                label="Genres"
-                name="genres"
-                value={genres}
-                onChange={handleChange}
-                fullWidth
-                sx={{
-                  width: "80%",
-                  "& .MuiInputLabel-root": {
-                    color: "white", // Couleur du label en blanc
-                  },
-                  "& .MuiInputBase-input": {
-                    color: "white", // Couleur du texte
-                  },
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      borderColor: "white", // Couleur de la bordure
-                    },
-                    "&:hover fieldset": {
-                      borderColor: "orange", // Couleur de la bordure au hover
-                    },
-                    "&.Mui-focused fieldset": {
-                      borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
-                    },
-                  },
-                }}
-              /> */}
               <div className="box_item_form">
                 <Box
                   component="form"
@@ -616,12 +679,12 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
                       {studios}
                     </p>
                   )}
-                  {cast && (
+                  {casting && (
                     <p className="MovieCard_info MovieCard_casting paraph_height">
                       <span className="paraph_bolder paraph_color_2">
                         Casting:
                       </span>{" "}
-                      {cast}
+                      {casting}
                     </p>
                   )}
                   <div className="divider" />
@@ -637,7 +700,7 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
           {isModify ? (
             <div className="MC_line2_modify">
               <div className="divider" />
-              <TextField
+              {/* <TextField
                 label="Réalisateur"
                 name="directors"
                 value={directors}
@@ -663,7 +726,48 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
                     },
                   },
                 }}
-              />
+              /> */}
+              <div className="box_item_form">
+                <Box
+                  component="form"
+                  sx={{
+                    width: "80%",
+                    "& .MuiInputLabel-root": {
+                      color: "white", // Couleur du label en blanc
+                    },
+                    "& .MuiInputBase-input": {
+                      color: "white", // Couleur du texte
+                    },
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: "white", // Couleur de la bordure
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "orange", // Couleur de la bordure au hover
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                      },
+                    },
+                  }}
+                  noValidate
+                  autoComplete="off"
+                  display="flex"
+                  alignItems="center"
+                >
+                  <TextField
+                    id="outlined-read-only-input"
+                    label="Réalisateur(s)"
+                    value={getSelectedDirectorsNames(selectedDirectors)}
+                    InputProps={{ readOnly: true }}
+                    fullWidth
+                  />
+                </Box>
+                <AddCircleOutlineIcon
+                  className="Btn_Add_itemsPopUp_MovieCard"
+                  onClick={() => handleOpenModal("directors")}
+                />
+              </div>
               <TextField
                 label="Scénariste"
                 name="screenwriters"
@@ -745,7 +849,7 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
                   },
                 }}
               />
-              <TextField
+              {/* <TextField
                 label="Casting"
                 name="cast"
                 value={cast}
@@ -771,7 +875,48 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
                     },
                   },
                 }}
-              />
+              /> */}
+              <div className="box_item_form">
+                <Box
+                  component="form"
+                  sx={{
+                    width: "80%",
+                    "& .MuiInputLabel-root": {
+                      color: "white", // Couleur du label en blanc
+                    },
+                    "& .MuiInputBase-input": {
+                      color: "white", // Couleur du texte
+                    },
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: "white", // Couleur de la bordure
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "orange", // Couleur de la bordure au hover
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                      },
+                    },
+                  }}
+                  noValidate
+                  autoComplete="off"
+                  display="flex"
+                  alignItems="center"
+                >
+                  <TextField
+                    id="outlined-read-only-input"
+                    label="Casting"
+                    value={getSelectedCastingNames(selectedCasting)}
+                    InputProps={{ readOnly: true }}
+                    fullWidth
+                  />
+                </Box>
+                <AddCircleOutlineIcon
+                  className="Btn_Add_itemsPopUp_MovieCard"
+                  onClick={() => handleOpenModal("casting")}
+                />
+              </div>
               <div className="divider" />
               <TextField
                 label="Résumé"
@@ -1033,6 +1178,10 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
               items={data}
               selectedKinds={selectedKinds}
               onSelectedKindsUpdate={handleSelectedKindsUpdate}
+              selectedDirectors={selectedDirectors}
+              onSelectedDirectorsUpdate={handleSelectedDirectorsUpdate}
+              selectedCasting={selectedCasting}
+              onSelectedCastingUpdate={handleSelectedCastingUpdate}
             />
           </Box>
         </Modal>

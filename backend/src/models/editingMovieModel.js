@@ -81,11 +81,37 @@ const findMovieById = async (id) => {
 
 const findMovieExtendedById = async (id) => {
   const [result] = await db.query(
-    `SELECT m.*, GROUP_CONCAT(g.name SEPARATOR ', ') AS genres
+    `SELECT m.*, 
+            GROUP_CONCAT(DISTINCT g.name SEPARATOR ', ') AS genres, 
+            GROUP_CONCAT(DISTINCT d.name SEPARATOR ', ') AS directors, 
+            GROUP_CONCAT(DISTINCT c.name SEPARATOR ', ') AS casting, 
+            GROUP_CONCAT(DISTINCT sw.name SEPARATOR ', ') AS screenwriters, 
+            GROUP_CONCAT(DISTINCT mus.name SEPARATOR ', ') AS music, 
+            GROUP_CONCAT(DISTINCT ctr.name SEPARATOR ', ') AS countries, 
+            GROUP_CONCAT(DISTINCT l.name SEPARATOR ', ') AS languages, 
+            GROUP_CONCAT(DISTINCT s.name SEPARATOR ', ') AS studios, 
+            GROUP_CONCAT(DISTINCT t.name SEPARATOR ', ') AS tags
      FROM movies m
      LEFT JOIN movie_genre mg ON m.id = mg.movieId
      LEFT JOIN genre g ON mg.genreId = g.id
-     WHERE m.id = ? GROUP BY m.id`,
+     LEFT JOIN movie_director md ON m.id = md.movieId
+     LEFT JOIN director d ON md.directorId = d.id
+     LEFT JOIN movie_casting mc ON m.id = mc.movieId
+     LEFT JOIN casting c ON mc.castingId = c.id
+     LEFT JOIN movie_screenwriter msw ON m.id = msw.movieId
+     LEFT JOIN screenwriter sw ON msw.screenwriterId = sw.id
+     LEFT JOIN movie_music mco ON m.id = mco.movieId
+     LEFT JOIN music mus ON mco.musicId = mus.id
+     LEFT JOIN movie_country mctr ON m.id = mctr.movieId
+     LEFT JOIN country ctr ON mctr.countryId = ctr.id
+     LEFT JOIN movie_language ml ON m.id = ml.movieId
+     LEFT JOIN language l ON ml.languageId = l.id
+     LEFT JOIN movie_studio ms ON m.id = ms.movieId
+     LEFT JOIN studio s ON ms.studioId = s.id
+     LEFT JOIN movie_tag mt ON m.id = mt.movieId
+     LEFT JOIN tag t ON mt.tagId = t.id
+     WHERE m.id = ? 
+     GROUP BY m.id`,
     [id]
   );
   return result;
@@ -157,6 +183,10 @@ const addMovieDirector = (movieId, directorId) =>
     [movieId, directorId]
   );
 
+const eraseDirectorByMovieId = (movieId) => {
+  return db.query("DELETE FROM movie_director WHERE movieId = ?", [movieId]);
+};
+
 // EDIT MOVIE_CASTING
 
 const findMovieCasting = (movieId, castingId) =>
@@ -186,6 +216,10 @@ const addMovieCasting = (movieId, castingId) =>
     "INSERT INTO `movie_casting` (`movieId`, `castingId`) VALUES (? , ?);",
     [movieId, castingId]
   );
+
+const eraseCastingByMovieId = (movieId) => {
+  return db.query("DELETE FROM movie_casting WHERE movieId = ?", [movieId]);
+};
 
 // EDIT MOVIE_SCREENWRITER
 
@@ -384,10 +418,12 @@ module.exports = {
   findDirectorsByMovieId,
   countMoviesByDirector,
   addMovieDirector,
+  eraseDirectorByMovieId,
   findMovieCasting,
   findCastingByMovieId,
   countMoviesByCasting,
   addMovieCasting,
+  eraseCastingByMovieId,
   findMovieScreenwriter,
   findScreenwriterByMovieId,
   countMoviesByScreenwriter,
