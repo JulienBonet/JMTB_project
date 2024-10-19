@@ -29,8 +29,8 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
   const [selectedMusic, setSelectedMusic] = useState([]);
   const [selectedStudios, setSelectedStudios] = useState([]);
   const [selectedCountries, setSelectedCountries] = useState([]);
-  const [selectedLanguages, setSelectedLanguages] = useState([]);
-  const [selectedTags, setSelectedTags] = useState([]);
+  // const [selectedLanguages, setSelectedLanguages] = useState([]);
+  // const [selectedTags, setSelectedTags] = useState([]);
   console.info("selectedDirectors", selectedDirectors);
   console.info("selectedKinds", selectedKinds);
   console.info("selectedCasting", selectedCasting);
@@ -124,7 +124,7 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
     setIsTrailerVisible(!isTrailerVisible);
   };
 
-  // MODIF MODE
+  // UPDATE MODE
 
   const isModifyMode = () => {
     setIsModify(true);
@@ -494,8 +494,8 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
             );
           }
 
-          const music = await response.json();
-          return music;
+          const musicN = await response.json();
+          return musicN;
         });
 
         const musicsData = await Promise.all(musicsArray);
@@ -585,8 +585,8 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
     setSelectedStudios(updatedSelectedStudios);
   };
 
-  const getSelectedCountriesNames = (selectedCountries) => {
-    return selectedCountries.map((country) => country.name).join(", ");
+  const getSelectedCountriesNames = (selectCountries) => {
+    return selectCountries.map((country) => country.name).join(", ");
   };
 
   const handleSelectedCountriesUpdate = (updatedSelectedCountries) => {

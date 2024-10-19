@@ -60,6 +60,8 @@ function AddNewMovie() {
     idTheMovieDb: "",
   });
 
+  console.info("selectedStudios", selectedStudios);
+
   // -----------------/ SOURCE /----------------- //
 
   const handleChangeMovieDb = (event) => {
@@ -140,7 +142,6 @@ function AddNewMovie() {
 
   // GENRES NEW INSERT METHOD
   const createGenreInDatabase = async (genreName) => {
-    console.info("Creating genre in database:", genreName);
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/genre`,
@@ -148,7 +149,6 @@ function AddNewMovie() {
       );
 
       if (response.status === 201 && response.data) {
-        console.info("genre created:", response.data);
         return response.data;
       }
       throw new Error("Failed to create genre in database");
@@ -160,9 +160,15 @@ function AddNewMovie() {
   // STUDIO SEARCH BY NAME METHOD
   const searchStudioInDatabase = async (studioName) => {
     try {
+      // Remplacer les slashes par des tirets
+      const regexStudioName = studioName.replace(/\//g, "-");
+      console.info(
+        "regexStudioName in searchStudioInDatabase",
+        regexStudioName
+      );
       const url = `${
         import.meta.env.VITE_BACKEND_URL
-      }/api/studio/byname/${encodeURIComponent(studioName)}`;
+      }/api/studio/byname/${encodeURIComponent(regexStudioName)}`;
       const response = await axios.get(url);
 
       if (response.status === 200 && response.data) {
@@ -178,13 +184,19 @@ function AddNewMovie() {
 
   // STUDIO NEW INSERT METHOD
   const createStudioInDatabase = async (studioName) => {
-    console.info("Creating studio in database:", studioName);
     try {
+      // Remplacer les slashes par des tirets
+      const regexStudioName = studioName.replace(/\//g, "-");
+      console.info(
+        "regexStudioName in create Studio in database",
+        regexStudioName
+      );
+
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/studio`,
-        { name: studioName }
+        { name: regexStudioName }
       );
-      console.info("studio created:", response.data);
+      console.info("studio crées:", response.data);
       return response.data;
     } catch (error) {
       console.error("Error creating studio:", error);
@@ -212,13 +224,11 @@ function AddNewMovie() {
 
   // COUNTRY NEW INSERT METHOD
   const createCountryInDatabase = async (countryName) => {
-    console.info("Creating country in database:", countryName);
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/country`,
         { name: countryName }
       );
-      console.info("country created:", response.data);
       return response.data;
     } catch (error) {
       console.error("Error creating country:", error);
@@ -247,13 +257,11 @@ function AddNewMovie() {
 
   // LANGUAGE NEW INSERT METHOD
   const createLanguageInDatabase = async (languageName) => {
-    console.info("Creating language in database:", languageName);
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/language`,
         { name: languageName }
       );
-      console.info("language created:", response.data);
       return response.data;
     } catch (error) {
       console.error("Error creating language:", error);
@@ -283,13 +291,11 @@ function AddNewMovie() {
 
   // DIRECTORS NEW INSERT METHOD
   const createDirectorInDatabase = async (directorName) => {
-    console.info("Creating director in database:", directorName);
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/director`,
         { name: directorName }
       );
-      console.info("Director created:", response.data);
       return response.data;
     } catch (error) {
       console.error("Error creating director:", error);
@@ -319,13 +325,11 @@ function AddNewMovie() {
 
   // SCREENWRITER NEW INSERT METHOD
   const createScreenwriterInDatabase = async (screenwriterName) => {
-    console.info("Creating screenwriter in database:", screenwriterName);
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/screenwriter`,
         { name: screenwriterName }
       );
-      console.info("screenwriter created:", response.data);
       return response.data;
     } catch (error) {
       console.error("Error creating screenwriter:", error);
@@ -355,13 +359,11 @@ function AddNewMovie() {
 
   // COMPOSITOR NEW INSERT METHOD
   const createCompositorInDatabase = async (compositorName) => {
-    console.info("Creating compositor in database:", compositorName);
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/compositor`,
         { name: compositorName }
       );
-      console.info("compositor created:", response.data);
       return response.data;
     } catch (error) {
       console.error("Error creating compositor:", error);
@@ -391,13 +393,11 @@ function AddNewMovie() {
 
   // CASTINGG NEW INSERT METHOD
   const createCastingInDatabase = async (castingName) => {
-    console.info("Creating casting in database:", castingName);
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/casting`,
         { name: castingName }
       );
-      console.info("casting created:", response.data);
       return response.data;
     } catch (error) {
       console.error("Error creating casting:", error);
@@ -425,13 +425,11 @@ function AddNewMovie() {
 
   // TAG NEW INSERT METHOD
   const createTagInDatabase = async (TagName) => {
-    console.info("Creating tag in database:", TagName);
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/tag`,
         { name: TagName }
       );
-      console.info("tag created:", response.data);
       return response.data;
     } catch (error) {
       console.error("Error tag casting:", error);
@@ -473,7 +471,6 @@ function AddNewMovie() {
       // Fetch GENRES
       const fetchGenre = async (genreName) => {
         const genreData = await searchGenreInDatabase(genreName);
-        console.info("genreData:", genreData);
         if (genreData) {
           return { id: genreData.id, name: genreData.name };
         }
@@ -684,7 +681,6 @@ function AddNewMovie() {
         ...prevMovie,
         posterUrl,
       }));
-      console.info("posterUrl:", posterUrl);
     } catch (error) {
       console.error("Error:", error);
     }
@@ -856,7 +852,6 @@ function AddNewMovie() {
       };
       reader.readAsDataURL(file);
       setSelectedCoverFile(file); // Stocke le fichier sélectionné
-      // console.info("setSelectedCoverFile in handleCoverChange :", file);
       setUploadLocal(true); // Passe en mode upload local
     }
   }; // end handleCoverChange
@@ -964,8 +959,7 @@ function AddNewMovie() {
       languages: selectedLanguagesName,
       tags: selectedTagsName,
     };
-
-    console.info("requestBody:", requestBody);
+    // console.info("requestBody:", requestBody);
 
     // Effectuer l'upload de l'image (que ce soit via API ou localement)
     const coverFilename = await handleFileUpload(); // Attendre le résultat de l'upload

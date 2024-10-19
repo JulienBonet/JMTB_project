@@ -110,10 +110,24 @@ function AdminItemsCard4({ item, origin, onUpdate, closeModal }) {
       console.error("Request error:", error);
     }
   };
+
+  // Fonctions pour filtrer les caractères interdits
+  const regexInput = (value) => {
+    return value.replace(/[/\\]/g, "-");
+  };
+
+  const handleNameChange = (e) => {
+    const sanitizedValue = regexInput(e.target.value);
+    setName(sanitizedValue);
+  };
+  // end Fonctions pour filtrer les caractères interdits
+
   const handleUndo = () => {
+    setName(item.name);
+    setPitch(item.pitch);
+    setImage(`${backendUrl}/${item.image}`);
     setIsModify(false);
     setIsEditing(false);
-    setImage(`${backendUrl}/${item.image}`);
     setShowUploadButton(true);
   };
 
@@ -142,11 +156,7 @@ function AdminItemsCard4({ item, origin, onUpdate, closeModal }) {
         <div className="Info_item_line">
           <h2 className="ItemsCard_title">NAME: </h2>
           {isModify ? (
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+            <input type="text" value={name} onChange={handleNameChange} />
           ) : (
             <p className="Items_info">{name}</p>
           )}

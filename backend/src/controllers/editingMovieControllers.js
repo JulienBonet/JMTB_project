@@ -744,11 +744,10 @@ const editMovieById = async (req, res) => {
       countries,
       // !!! ajouter les update item que l'on envoi par la route !!!
     } = req.body;
-    console.info("req.body:", req.body);
+    // console.info("req.body:", req.body);
 
     const { id } = req.params;
 
-    // Appel à la fonction updateMovie
     await editingMovieModel.updateMovie(
       title,
       altTitle,
@@ -766,7 +765,7 @@ const editMovieById = async (req, res) => {
     // Mettre à jour les genres dans la table intermédiaire
     if (genres && genres.length > 0) {
       // Supprimer les genres actuels du film
-      await editingMovieModel.eraseKindByMovieId(id); // !!!! fonction a créer à chaque fois !!!!
+      await editingMovieModel.eraseKindByMovieId(id);
 
       // Ajouter les nouveaux genres sélectionnés
       for (const genreId of genres) {
@@ -776,10 +775,8 @@ const editMovieById = async (req, res) => {
 
     // Mettre à jour les directors dans la table intermédiaire
     if (directors && directors.length > 0) {
-      // Supprimer les directors actuels du film
-      await editingMovieModel.eraseDirectorByMovieId(id); // !!!! fonction a créer à chaque fois !!!!
+      await editingMovieModel.eraseDirectorByMovieId(id);
 
-      // Ajouter les directors genres sélectionnés
       for (const directorId of directors) {
         await editingMovieModel.addMovieDirector(id, directorId);
       }
@@ -787,7 +784,7 @@ const editMovieById = async (req, res) => {
 
     // Mettre à jour les castings dans la table intermédiaire
     if (castings && castings.length > 0) {
-      await editingMovieModel.eraseCastingByMovieId(id); // !!!! fonction a créer à chaque fois !!!!
+      await editingMovieModel.eraseCastingByMovieId(id);
 
       for (const castingId of castings) {
         await editingMovieModel.addMovieCasting(id, castingId);
@@ -796,7 +793,7 @@ const editMovieById = async (req, res) => {
 
     // Mettre à jour les screenwriters dans la table intermédiaire
     if (screenwriters && screenwriters.length > 0) {
-      await editingMovieModel.eraseScreenwriterByMovieId(id); // !!!! fonction a créer à chaque fois !!!!
+      await editingMovieModel.eraseScreenwriterByMovieId(id);
 
       for (const screenwriterId of screenwriters) {
         await editingMovieModel.addMovieScreenwriter(id, screenwriterId);
@@ -805,7 +802,7 @@ const editMovieById = async (req, res) => {
 
     // Mettre à jour les compositors dans la table intermédiaire
     if (musics && musics.length > 0) {
-      await editingMovieModel.eraseMusicByMovieId(id); // !!!! fonction a créer à chaque fois !!!!
+      await editingMovieModel.eraseMusicByMovieId(id);
 
       for (const musicId of musics) {
         await editingMovieModel.addMovieMusic(id, musicId);
@@ -814,7 +811,7 @@ const editMovieById = async (req, res) => {
 
     // Mettre à jour les studios dans la table intermédiaire
     if (studios && studios.length > 0) {
-      await editingMovieModel.eraseStudioByMovieId(id); // !!!! fonction a créer à chaque fois !!!!
+      await editingMovieModel.eraseStudioByMovieId(id);
 
       for (const studioId of studios) {
         await editingMovieModel.addMovieStudio(id, studioId);
@@ -823,17 +820,19 @@ const editMovieById = async (req, res) => {
 
     // Mettre à jour les pays dans la table intermédiaire
     if (countries && countries.length > 0) {
-      await editingMovieModel.eraseCountryByMovieId(id); // !!!! fonction a créer à chaque fois !!!!
+      await editingMovieModel.eraseCountryByMovieId(id);
 
       for (const countryId of countries) {
         await editingMovieModel.addMovieCountry(id, countryId);
       }
     }
 
-    const updatedMovie = await editingMovieModel.findMovieExtendedById(id); // !!!! Fonction a faire évoluer à chaque update Item ajouter !!!
-    console.info("updatedMovie:", updatedMovie);
+    // Purger les données inutiles
+    await purgeModel.purgeOrphanedRecords();
 
-    // res.status(200).json({ message: "Film mis à jour avec succès" });
+    // renvoyer l'objet film mis à jour pour rafraichir l'affichage en front
+    const updatedMovie = await editingMovieModel.findMovieExtendedById(id);
+    // console.info("updatedMovie:", updatedMovie);
     res.status(200).json(updatedMovie);
   } catch (error) {
     res.status(500).send("Erreur lors de la mise à jour du film");

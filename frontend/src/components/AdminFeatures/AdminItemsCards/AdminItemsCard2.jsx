@@ -63,7 +63,19 @@ function AdminItemsCard2({ item, origin, onUpdate, closeModal }) {
     }
   };
 
+  // Fonctions pour filtrer les caractères interdits
+  const regexInput = (value) => {
+    return value.replace(/[/\\]/g, "-");
+  };
+
+  const handleNameChange = (e) => {
+    const sanitizedValue = regexInput(e.target.value);
+    setName(sanitizedValue);
+  };
+  // end Fonctions pour filtrer les caractères interdits
+
   const handleUndo = () => {
+    setName(item.name);
     setIsModify(false);
     setIsEditing(false);
     closeModal();
@@ -79,11 +91,7 @@ function AdminItemsCard2({ item, origin, onUpdate, closeModal }) {
         <div className="Info_item_line">
           <h2 className="ItemsCard_title">NAME: </h2>
           {isModify ? (
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+            <input type="text" value={name} onChange={handleNameChange} />
           ) : (
             <p className="Items_info">{name}</p>
           )}

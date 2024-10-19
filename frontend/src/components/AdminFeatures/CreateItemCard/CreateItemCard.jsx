@@ -9,6 +9,17 @@ import "./createItemCard.css";
 function CreateItemCard({ origin, onUpdate, closeModal }) {
   const [name, setName] = useState("");
 
+  // Fonctions pour filtrer les caractères interdits
+  const regexInput = (value) => {
+    return value.replace(/[/\\]/g, "-");
+  };
+
+  const handleNameChange = (e) => {
+    const sanitizedValue = regexInput(e.target.value);
+    setName(sanitizedValue);
+  };
+  // end Fonctions pour filtrer les caractères interdits
+
   const handleValidate = async () => {
     try {
       const data = {
@@ -62,7 +73,7 @@ function CreateItemCard({ origin, onUpdate, closeModal }) {
         <input
           type="text"
           value={name}
-          onChange={(e) => setName(e.target.value)}
+          onChange={handleNameChange}
           className="created-item_input"
         />
       </div>
