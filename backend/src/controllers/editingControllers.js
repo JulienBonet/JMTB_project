@@ -1312,12 +1312,13 @@ const getCountryByName = async (req, res, next) => {
 const addGenre = async (req, res) => {
   try {
     const { name } = req.body;
+    console.info("name in addGenre", name);
     if (!name) {
       return res.status(400).json({ message: "Genre's name is required" });
     }
-    await editingModel.insertGenre(name);
+    const result = await editingModel.insertGenre(name);
 
-    return res.status(201).json({ message: "Genre successfully created" });
+    return res.status(201).json({ id: result.insertId, name });
   } catch (error) {
     console.error("Error Genre creation :", error);
     return res.status(500).json({ message: "Error Genre creation" });

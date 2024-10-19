@@ -60,7 +60,7 @@ function AddNewMovie() {
     idTheMovieDb: "",
   });
 
-  console.info("selectedStudios", selectedStudios);
+  console.info("selectedKinds", selectedKinds);
 
   // -----------------/ SOURCE /----------------- //
 
@@ -123,6 +123,12 @@ function AddNewMovie() {
   // GENRES SEARCH BY NAME METHOD
   const searchGenreInDatabase = async (genreName) => {
     try {
+      console.info("genreName in searchGenreInDatabase", genreName);
+      console.info(
+        `${import.meta.env.VITE_BACKEND_URL}/api/genres/${encodeURIComponent(
+          genreName
+        )}`
+      );
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/api/genres/${encodeURIComponent(
           genreName
@@ -130,6 +136,7 @@ function AddNewMovie() {
       );
 
       if (response.status === 200 && response.data) {
+        console.info("genre cherché:", response.data);
         return response.data;
       }
       return null;
@@ -148,6 +155,8 @@ function AddNewMovie() {
         { name: genreName }
       );
 
+      console.info("genre crée:", response.data);
+
       if (response.status === 201 && response.data) {
         return response.data;
       }
@@ -162,10 +171,6 @@ function AddNewMovie() {
     try {
       // Remplacer les slashes par des tirets
       const regexStudioName = studioName.replace(/\//g, "-");
-      console.info(
-        "regexStudioName in searchStudioInDatabase",
-        regexStudioName
-      );
       const url = `${
         import.meta.env.VITE_BACKEND_URL
       }/api/studio/byname/${encodeURIComponent(regexStudioName)}`;
@@ -187,16 +192,11 @@ function AddNewMovie() {
     try {
       // Remplacer les slashes par des tirets
       const regexStudioName = studioName.replace(/\//g, "-");
-      console.info(
-        "regexStudioName in create Studio in database",
-        regexStudioName
-      );
 
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/studio`,
         { name: regexStudioName }
       );
-      console.info("studio crées:", response.data);
       return response.data;
     } catch (error) {
       console.error("Error creating studio:", error);
@@ -959,7 +959,7 @@ function AddNewMovie() {
       languages: selectedLanguagesName,
       tags: selectedTagsName,
     };
-    // console.info("requestBody:", requestBody);
+    console.info("requestBody:", requestBody);
 
     // Effectuer l'upload de l'image (que ce soit via API ou localement)
     const coverFilename = await handleFileUpload(); // Attendre le résultat de l'upload

@@ -94,6 +94,7 @@ const addMovie = async (req, res) => {
       languages,
       tags,
     } = req.body;
+    console.info("genres in create movie", req.body.genres);
 
     if (!title) {
       return res.status(400).json({ message: "Movie's title is required" });

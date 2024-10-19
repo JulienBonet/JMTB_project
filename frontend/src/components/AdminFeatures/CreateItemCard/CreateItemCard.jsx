@@ -8,6 +8,10 @@ import "./createItemCard.css";
 
 function CreateItemCard({ origin, onUpdate, closeModal }) {
   const [name, setName] = useState("");
+  console.info("origin in CreateItemCard:", origin);
+  console.info("onUpdate in CreateItemCard:", onUpdate);
+  console.info("closeModal in CreateItemCard:", closeModal);
+  console.info("name in CreateItemCard:", name);
 
   // Fonctions pour filtrer les caractères interdits
   const regexInput = (value) => {
@@ -15,8 +19,8 @@ function CreateItemCard({ origin, onUpdate, closeModal }) {
   };
 
   const handleNameChange = (e) => {
-    const sanitizedValue = regexInput(e.target.value);
-    setName(sanitizedValue);
+    const regexValue = regexInput(e.target.value);
+    setName(regexValue);
   };
   // end Fonctions pour filtrer les caractères interdits
 
@@ -25,6 +29,11 @@ function CreateItemCard({ origin, onUpdate, closeModal }) {
       const data = {
         name,
       };
+
+      console.info(
+        "POST in CeateItemCard:",
+        `${import.meta.env.VITE_BACKEND_URL}/api/${origin}`
+      );
 
       const response = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/api/${origin}`,

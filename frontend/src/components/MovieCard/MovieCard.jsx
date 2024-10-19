@@ -31,10 +31,8 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
   const [selectedCountries, setSelectedCountries] = useState([]);
   // const [selectedLanguages, setSelectedLanguages] = useState([]);
   // const [selectedTags, setSelectedTags] = useState([]);
-  console.info("selectedDirectors", selectedDirectors);
-  console.info("selectedKinds", selectedKinds);
-  console.info("selectedCasting", selectedCasting);
-  console.info("selectedStudios", selectedStudios);
+  console.info("selectedDirectors in MovieCard", selectedDirectors);
+  console.info("selectedKinds in MovieCard", selectedKinds);
 
   // DATA
   const [movieData, setMovieData] = useState({
@@ -54,7 +52,7 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
     fileSize: movie.fileSize || "",
   });
 
-  console.info("movieData1", movieData);
+  // console.info("movieData1", movieData);
 
   // const {
   //   id,
@@ -71,7 +69,7 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
   //   multi,
   //   vostfr,
   // } = movie;
-  console.info("movie:", movie);
+  // console.info("movie:", movie);
 
   const {
     genres,
@@ -109,7 +107,7 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
           return response.json();
         })
         .then((data) => {
-          console.info("data in fetch:", data);
+          // console.info("data in fetch:", data);
           setMovieData(data);
         })
         .catch((error) => {
@@ -134,6 +132,10 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
     setIsModify(false);
   };
 
+  const handleUndo = () => {
+    closeModifyMode();
+  };
+
   // Utiliser useEffect pour mettre à jour movieData si movie change
   useEffect(() => {
     setMovieData(movie);
@@ -152,7 +154,7 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
   const [image, setImage] = useState(`${backendUrl}/images/${movie.cover}`);
   const [showUploadButton, setShowUploadButton] = useState(true);
   const fileInputRef = useRef(null);
-  console.info("image:", image);
+  // console.info("image:", image);
 
   useEffect(() => {
     if (isModify) {
@@ -201,7 +203,7 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
       if (imageResponse.ok) {
         const { movie: updatedMovie } = await imageResponse.json();
         setImage(`${backendUrl}/images/${updatedMovie.cover}`); // Utiliser la nouvelle URL de l'image
-        console.info("Image successfully updated", updatedMovie.cover);
+        // console.info("Image successfully updated", updatedMovie.cover);
       } else {
         console.error("Error updating item image");
       }
@@ -219,7 +221,7 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
         // Mettre à jour l'image (s'il y a un fichier sélectionné)
         if (fileInputRef.current.files[0]) {
           await handleUpdateImage(); // Attendre que l'image soit mise à jour avant de poursuivre
-          console.info("Image successfully updated");
+          // console.info("Image successfully updated");
         }
 
         // Mettre à jour les autres informations du film
@@ -284,7 +286,7 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
   const [openModal, setOpenModal] = useState(false);
   const [data, setData] = useState([]);
   const [dataType, setDataType] = useState("");
-  console.info("data", data);
+  console.info("data transmit a Transfert list", data);
 
   const style = {
     position: "absolute",
@@ -331,8 +333,10 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
     const fetchGenres = async () => {
       try {
         const genresArray = genres.split(", ").map(async (genreName) => {
-          console.info(`${backendUrl}/api/genres/${genreName}`);
-          const response = await fetch(`${backendUrl}/api/genres/${genreName}`);
+          // const response = await fetch(`${backendUrl}/api/genres/${genreName}`);
+          const response = await fetch(
+            `${backendUrl}/api/genre/byname/${genreName}`
+          );
 
           if (!response.ok) {
             throw new Error(
@@ -345,6 +349,7 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
         });
 
         const genresData = await Promise.all(genresArray);
+        console.info("genresData in fetchGenres MovieCard", genresData);
         setSelectedKinds(genresData); // Met à jour avec [{ id, name }]
       } catch (error) {
         console.error("Error fetching genres:", error);
@@ -369,7 +374,10 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
         const directorsArray = directors
           .split(", ")
           .map(async (directorName) => {
-            console.info(`${backendUrl}/api/director/byname/${directorName}`);
+            console.info(
+              "fetch directors in MovieCard: ",
+              `${backendUrl}/api/director/byname/${directorName}`
+            );
             const response = await fetch(
               `${backendUrl}/api/director/byname/${directorName}`
             );
@@ -407,7 +415,6 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
     const fetchCastings = async () => {
       try {
         const castingsArray = casting.split(", ").map(async (castingName) => {
-          console.info(`${backendUrl}/api/casting/byname/${castingName}`);
           const response = await fetch(
             `${backendUrl}/api/casting/byname/${castingName}`
           );
@@ -422,7 +429,6 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
         });
 
         const castingsData = await Promise.all(castingsArray);
-        console.info("castingsData", castingsData);
         setSelectedCasting(castingsData); // Met à jour avec [{ id, name }]
       } catch (error) {
         console.error("Error fetching castings:", error);
@@ -461,7 +467,6 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
           });
 
         const screenwritersData = await Promise.all(screenwritersArray);
-        console.info("screenwritersData", screenwritersData);
         setSelectedScreenwriters(screenwritersData); // Met à jour avec [{ id, name }]
       } catch (error) {
         console.error("Error fetching screenwriter:", error);
@@ -521,7 +526,6 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
     const fetchStudios = async () => {
       try {
         const studiosArray = studios.split(", ").map(async (studioName) => {
-          console.info(`${backendUrl}/api/studio/byname/${studioName}`);
           const response = await fetch(
             `${backendUrl}/api/studio/byname/${studioName}`
           );
@@ -532,12 +536,10 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
           }
 
           const studio = await response.json();
-          console.info("studio in fetch studio:", studio);
           return studio;
         });
 
         const studiosData = await Promise.all(studiosArray);
-        console.info("studiosData:", studiosData);
         setSelectedStudios(studiosData); // Met à jour avec [{ id, name }]
       } catch (error) {
         console.error("Error fetching studio:", error);
@@ -1366,7 +1368,7 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
               <>
                 <UndoIcon
                   className="item_movie_undo_ico"
-                  onClick={() => closeModifyMode()}
+                  onClick={() => handleUndo()}
                 />
                 <DoneOutlineIcon
                   className="item_movie_done_ico"

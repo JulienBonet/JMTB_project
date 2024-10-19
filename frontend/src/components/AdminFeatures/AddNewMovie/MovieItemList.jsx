@@ -177,7 +177,8 @@ export default function TransferList({
     );
     onSelectedItemsUpdate(updatedSelectedItems);
   };
-
+  console.info("rightChecked:", rightChecked);
+  console.info("selectedItems:", selectedItems);
   const handleCheckedLeft = () => {
     setLeft(left.concat(rightChecked));
     setRight(
@@ -198,10 +199,15 @@ export default function TransferList({
   // Fonction pour gérer l'ajout d'un nouvel élément
   const handleNewItem = async (name) => {
     try {
+      console.info(
+        "axios dans handleNewItem:",
+        `${import.meta.env.VITE_BACKEND_URL}/api/${getOriginFromDataType(dataType)}/byname/${name}`
+      );
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/api/${getOriginFromDataType(dataType)}/byname/${name}`
       );
       const newItem = response.data;
+      console.info(newItem);
 
       // Vérifie si l'item n'est pas déjà présent dans right
       if (!right.some((item) => item.id === newItem.id)) {

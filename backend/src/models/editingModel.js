@@ -234,7 +234,11 @@ const findGenreById = (id) =>
   db.query("SELECT * FROM genre WHERE id = ?", [id]).then(([rows]) => rows);
 
 const insertGenre = async (name) => {
-  const result = await db.query("INSERT INTO genre (name) VALUES (?);", [name]);
+  console.info("name in insert genre", name);
+  const [result] = await db.query("INSERT INTO genre (name) VALUES (?);", [
+    name,
+  ]);
+  console.info("Result from INSERT query:", result);
   return { insertId: result.insertId };
 };
 
