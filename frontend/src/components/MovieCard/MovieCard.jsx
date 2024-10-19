@@ -812,6 +812,7 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
                   <ReactPlayer
                     url={movieData.trailer}
                     className="video_player"
+                    controls
                   />
                 </div>
               ) : (
