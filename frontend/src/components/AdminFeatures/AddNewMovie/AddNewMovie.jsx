@@ -123,14 +123,8 @@ function AddNewMovie() {
   // GENRES SEARCH BY NAME METHOD
   const searchGenreInDatabase = async (genreName) => {
     try {
-      console.info("genreName in searchGenreInDatabase", genreName);
-      console.info(
-        `${import.meta.env.VITE_BACKEND_URL}/api/genres/${encodeURIComponent(
-          genreName
-        )}`
-      );
       const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/genres/${encodeURIComponent(
+        `${import.meta.env.VITE_BACKEND_URL}/api/kind/${encodeURIComponent(
           genreName
         )}`
       );

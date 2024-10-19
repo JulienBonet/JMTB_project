@@ -10,7 +10,10 @@ router.get("/kinds/:genre/sorted/1", kindsController.getAllSorted1);
 router.get("/kinds/:genre/sorted/2", kindsController.getAllSorted2);
 router.get("/kinds/:genre/sorted/3", kindsController.getAllSorted3);
 // ici il faut gérer une harmonisation genres, genre, kinds trés confusante
-router.get("/genres/:name", kindsController.getAllByName);
+// router.get("/genres/:name", kindsController.getAllByName);
+// router.get("/genre/byname/:name", kindsController.getAllByName);
+
+router.get("/kind/:name", kindsController.getAllByName);
 router.get("/genre/byname/:name", kindsController.getAllByName);
 
 module.exports = router;
