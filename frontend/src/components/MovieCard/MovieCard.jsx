@@ -31,8 +31,7 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
   const [selectedCountries, setSelectedCountries] = useState([]);
   // const [selectedLanguages, setSelectedLanguages] = useState([]);
   // const [selectedTags, setSelectedTags] = useState([]);
-  console.info("selectedDirectors in MovieCard", selectedDirectors);
-  console.info("selectedKinds in MovieCard", selectedKinds);
+  const [originalData, setOriginalData] = useState({});
 
   // DATA
   const [movieData, setMovieData] = useState({
@@ -125,6 +124,15 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
   // UPDATE MODE
 
   const isModifyMode = () => {
+    setOriginalData({
+      genres: selectedKinds,
+      directors: selectedDirectors,
+      castings: selectedCasting,
+      screenwriters: selectedScreenwriters,
+      music: selectedMusic,
+      studios: selectedStudios,
+      countries: selectedCountries,
+    });
     setIsModify(true);
   };
 
@@ -133,6 +141,13 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
   };
 
   const handleUndo = () => {
+    setSelectedKinds(originalData.genres);
+    setSelectedDirectors(originalData.directors);
+    setSelectedCasting(originalData.castings);
+    setSelectedScreenwriters(originalData.screenwriters);
+    setSelectedMusic(originalData.music);
+    setSelectedStudios(originalData.studios);
+    setSelectedCountries(originalData.countries);
     closeModifyMode();
   };
 
@@ -286,7 +301,6 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
   const [openModal, setOpenModal] = useState(false);
   const [data, setData] = useState([]);
   const [dataType, setDataType] = useState("");
-  console.info("data transmit a Transfert list", data);
 
   const style = {
     position: "absolute",
@@ -328,32 +342,33 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
     setData([]);
   };
 
-  // update les genres
+  // Update des genres
   useEffect(() => {
     const fetchGenres = async () => {
+      if (!genres) return; // Vérifie si genres est bien défini
       try {
         const genresArray = genres.split(", ").map(async (genreName) => {
-          console.info(
-            "fetchGenres in movieCard:",
-            `${backendUrl}/api/kind/byname/${genreName}`
-          );
-          const response = await fetch(
-            `${backendUrl}/api/kind/byname/${genreName}`
-          );
-
-          if (!response.ok) {
-            throw new Error(
-              `Error fetching genre ${genreName}: ${response.statusText}`
+          try {
+            const response = await fetch(
+              `${backendUrl}/api/kind/byname/${genreName}`
             );
-          }
 
-          const genre = await response.json();
-          console.info("genre in fetchgenre movieCard", genre);
-          return genre;
+            if (!response.ok) {
+              console.warn(
+                `Error fetching genre ${genreName}: ${response.statusText}`
+              );
+              return null; // Continue même si un genre échoue
+            }
+
+            const genre = await response.json();
+            return genre;
+          } catch (error) {
+            console.warn(`Error fetching genre ${genreName}:`, error);
+            return null; // Continue même si un genre échoue
+          }
         });
 
-        const genresData = await Promise.all(genresArray);
-        console.info("genresData in fetchGenres MovieCard", genresData);
+        const genresData = (await Promise.all(genresArray)).filter(Boolean); // Filtre les null (en cas d'erreur)
         setSelectedKinds(genresData); // Met à jour avec [{ id, name }]
       } catch (error) {
         console.error("Error fetching genres:", error);
@@ -374,29 +389,35 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
   // update les directors
   useEffect(() => {
     const fetchDirectors = async () => {
+      if (!directors) return; // Vérifie si directors est bien défini
+
       try {
         const directorsArray = directors
           .split(", ")
           .map(async (directorName) => {
-            console.info(
-              "fetch directors in MovieCard: ",
-              `${backendUrl}/api/director/byname/${directorName}`
-            );
-            const response = await fetch(
-              `${backendUrl}/api/director/byname/${directorName}`
-            );
-            if (!response.ok) {
-              throw new Error(
-                `Error fetching director ${directorName}: ${response.statusText}`
+            try {
+              const response = await fetch(
+                `${backendUrl}/api/director/byname/${directorName}`
               );
-            }
+              if (!response.ok) {
+                console.warn(
+                  `Error fetching director ${directorName}: ${response.statusText}`
+                );
+                return null;
+              }
 
-            const director = await response.json();
-            return director;
+              const director = await response.json();
+              return director;
+            } catch (error) {
+              console.warn(`Error fetching director ${directorName}:`, error);
+              return null; // Continue même si un director échoue
+            }
           });
 
-        const directorsData = await Promise.all(directorsArray);
-        console.info("directorsData", directorsData);
+        // Assure-toi que le tableau est résolu avant d'appliquer .filter
+        const directorsData = (await Promise.all(directorsArray)).filter(
+          Boolean
+        );
         setSelectedDirectors(directorsData); // Met à jour avec [{ id, name }]
       } catch (error) {
         console.error("Error fetching directors:", error);
@@ -414,25 +435,33 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
     setSelectedDirectors(updatedSelectedDirectors);
   };
 
-  // update les casting
+  // Update castings
   useEffect(() => {
     const fetchCastings = async () => {
+      if (!casting) return; // Vérifie si casting est bien défini
+
       try {
         const castingsArray = casting.split(", ").map(async (castingName) => {
-          const response = await fetch(
-            `${backendUrl}/api/casting/byname/${castingName}`
-          );
-          if (!response.ok) {
-            throw new Error(
-              `Error fetching casting ${castingName}: ${response.statusText}`
+          try {
+            const response = await fetch(
+              `${backendUrl}/api/casting/byname/${castingName}`
             );
-          }
+            if (!response.ok) {
+              console.warn(
+                `Error fetching casting ${castingName}: ${response.statusText}`
+              );
+              return null;
+            }
 
-          const castingN = await response.json();
-          return castingN;
+            const castingN = await response.json();
+            return castingN;
+          } catch (error) {
+            console.warn(`Error fetching casting ${castingName}:`, error);
+            return null; // Continue même si un casting échoue
+          }
         });
 
-        const castingsData = await Promise.all(castingsArray);
+        const castingsData = (await Promise.all(castingsArray)).filter(Boolean);
         setSelectedCasting(castingsData); // Met à jour avec [{ id, name }]
       } catch (error) {
         console.error("Error fetching castings:", error);
@@ -450,27 +479,40 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
     setSelectedCasting(updatedSelectedCasting);
   };
 
-  // update les screenwriters
+  // Update screenwriters
   useEffect(() => {
     const fetchScreenwriters = async () => {
+      if (!screenwriters) return; // Vérifie si screenwriters est bien défini
+
       try {
         const screenwritersArray = screenwriters
           .split(", ")
           .map(async (screenwriterName) => {
-            const response = await fetch(
-              `${backendUrl}/api/screenwriter/byname/${screenwriterName}`
-            );
-            if (!response.ok) {
-              throw new Error(
-                `Error fetching screenwriter ${screenwriterName}: ${response.statusText}`
+            try {
+              const response = await fetch(
+                `${backendUrl}/api/screenwriter/byname/${screenwriterName}`
               );
-            }
+              if (!response.ok) {
+                console.warn(
+                  `Error fetching screenwriter ${screenwriterName}: ${response.statusText}`
+                );
+                return null;
+              }
 
-            const screenwriter = await response.json();
-            return screenwriter;
+              const screenwriter = await response.json();
+              return screenwriter;
+            } catch (error) {
+              console.warn(
+                `Error fetching screenwriter ${screenwriterName}:`,
+                error
+              );
+              return null; // Continue même si un screenwriter échoue
+            }
           });
 
-        const screenwritersData = await Promise.all(screenwritersArray);
+        const screenwritersData = (
+          await Promise.all(screenwritersArray)
+        ).filter(Boolean);
         setSelectedScreenwriters(screenwritersData); // Met à jour avec [{ id, name }]
       } catch (error) {
         console.error("Error fetching screenwriter:", error);
@@ -492,22 +534,30 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
   // update les compositors
   useEffect(() => {
     const fetchMusics = async () => {
+      if (!music) return; // Vérifie si music est bien défini
+
       try {
         const musicsArray = music.split(", ").map(async (musicName) => {
-          const response = await fetch(
-            `${backendUrl}/api/music/byname/${musicName}`
-          );
-          if (!response.ok) {
-            throw new Error(
-              `Error fetching compositor ${musicName}: ${response.statusText}`
+          try {
+            const response = await fetch(
+              `${backendUrl}/api/music/byname/${musicName}`
             );
-          }
+            if (!response.ok) {
+              console.warn(
+                `Error fetching compositor ${musicName}: ${response.statusText}`
+              );
+              return null;
+            }
 
-          const musicN = await response.json();
-          return musicN;
+            const musicN = await response.json();
+            return musicN;
+          } catch (error) {
+            console.warn(`Error fetching compositor ${musicName}:`, error);
+            return null; // Continue même si un music échoue
+          }
         });
 
-        const musicsData = await Promise.all(musicsArray);
+        const musicsData = (await Promise.all(musicsArray)).filter(Boolean);
         setSelectedMusic(musicsData); // Met à jour avec [{ id, name }]
       } catch (error) {
         console.error("Error fetching compositor:", error);
@@ -525,63 +575,41 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
     setSelectedMusic(updatedSelectedMusic);
   };
 
-  // update les studios
+  // Update studios
   useEffect(() => {
     const fetchStudios = async () => {
+      if (!studios) return; // Vérifie si studios est bien défini
+
       try {
         const studiosArray = studios.split(", ").map(async (studioName) => {
-          const response = await fetch(
-            `${backendUrl}/api/studio/byname/${studioName}`
-          );
-          if (!response.ok) {
-            throw new Error(
-              `Error fetching studio ${studioName}: ${response.statusText}`
+          try {
+            const response = await fetch(
+              `${backendUrl}/api/studio/byname/${studioName}`
             );
-          }
+            if (!response.ok) {
+              console.warn(
+                `Error fetching studio ${studioName}: ${response.statusText}`
+              );
+              return null;
+            }
 
-          const studio = await response.json();
-          return studio;
+            const studio = await response.json();
+            return studio;
+          } catch (error) {
+            console.warn(`Error fetching studio ${studioName}:`, error);
+            return null; // Continue même si un studio échoue
+          }
         });
 
-        const studiosData = await Promise.all(studiosArray);
+        const studiosData = (await Promise.all(studiosArray)).filter(Boolean);
         setSelectedStudios(studiosData); // Met à jour avec [{ id, name }]
       } catch (error) {
-        console.error("Error fetching studio:", error);
+        console.error("Error fetching studios:", error);
       }
     };
 
     fetchStudios();
   }, [studios]);
-
-  // update les pays
-  useEffect(() => {
-    const fetchCountries = async () => {
-      try {
-        const countriesArray = countries
-          .split(", ")
-          .map(async (countryName) => {
-            const response = await fetch(
-              `${backendUrl}/api/country/byname/${countryName}`
-            );
-            if (!response.ok) {
-              throw new Error(
-                `Error fetching country ${countryName}: ${response.statusText}`
-              );
-            }
-
-            const country = await response.json();
-            return country;
-          });
-
-        const countriesData = await Promise.all(countriesArray);
-        setSelectedCountries(countriesData); // Met à jour avec [{ id, name }]
-      } catch (error) {
-        console.error("Error country studio:", error);
-      }
-    };
-
-    fetchCountries();
-  }, [countries]);
 
   const getSelectedStudiosNames = (selectStudios) => {
     return selectStudios.map((studio) => studio.name).join(", ");
@@ -590,6 +618,46 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
   const handleSelectedStudiosUpdate = (updatedSelectedStudios) => {
     setSelectedStudios(updatedSelectedStudios);
   };
+
+  // Update countries
+  useEffect(() => {
+    const fetchCountries = async () => {
+      if (!countries) return; // Vérifie si countries est bien défini
+
+      try {
+        const countriesArray = countries
+          .split(", ")
+          .map(async (countryName) => {
+            try {
+              const response = await fetch(
+                `${backendUrl}/api/country/byname/${countryName}`
+              );
+              if (!response.ok) {
+                console.warn(
+                  `Error fetching country ${countryName}: ${response.statusText}`
+                );
+                return null;
+              }
+
+              const country = await response.json();
+              return country;
+            } catch (error) {
+              console.warn(`Error fetching country ${countryName}:`, error);
+              return null; // Continue même si un country échoue
+            }
+          });
+
+        const countriesData = (await Promise.all(countriesArray)).filter(
+          Boolean
+        );
+        setSelectedCountries(countriesData); // Met à jour avec [{ id, name }]
+      } catch (error) {
+        console.error("Error fetching country:", error);
+      }
+    };
+
+    fetchCountries();
+  }, [countries]);
 
   const getSelectedCountriesNames = (selectCountries) => {
     return selectCountries.map((country) => country.name).join(", ");
