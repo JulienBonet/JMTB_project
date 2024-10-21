@@ -31,7 +31,6 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
   const [selectedCountries, setSelectedCountries] = useState([]);
   // const [selectedLanguages, setSelectedLanguages] = useState([]);
   // const [selectedTags, setSelectedTags] = useState([]);
-  const [originalData, setOriginalData] = useState({});
 
   // DATA
   const [movieData, setMovieData] = useState({
@@ -124,15 +123,6 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
   // UPDATE MODE
 
   const isModifyMode = () => {
-    setOriginalData({
-      genres: selectedKinds,
-      directors: selectedDirectors,
-      castings: selectedCasting,
-      screenwriters: selectedScreenwriters,
-      music: selectedMusic,
-      studios: selectedStudios,
-      countries: selectedCountries,
-    });
     setIsModify(true);
   };
 
@@ -141,13 +131,6 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
   };
 
   const handleUndo = () => {
-    setSelectedKinds(originalData.genres);
-    setSelectedDirectors(originalData.directors);
-    setSelectedCasting(originalData.castings);
-    setSelectedScreenwriters(originalData.screenwriters);
-    setSelectedMusic(originalData.music);
-    setSelectedStudios(originalData.studios);
-    setSelectedCountries(originalData.countries);
     closeModifyMode();
   };
 
