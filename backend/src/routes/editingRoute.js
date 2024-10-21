@@ -83,9 +83,9 @@ router.delete("/country/:id", editingController.eraseCountry);
 router.get("/country/byname/:name", editingController.getCountryByName);
 
 // GENRE ROUTES
-router.post("/genre", editingController.addGenre);
-router.put("/genre/:id", editingController.editingGenre);
-router.delete("/genre/:id", editingController.eraseGenre);
+router.post("/kind", editingController.addGenre);
+router.put("/kind/:id", editingController.editingGenre);
+router.delete("/kind/:id", editingController.eraseGenre);
 
 // LANGUAGE ROUTES
 router.post("/language", editingController.addLanguage);

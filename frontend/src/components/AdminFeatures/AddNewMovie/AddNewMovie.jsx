@@ -122,6 +122,12 @@ function AddNewMovie() {
 
   // GENRES SEARCH BY NAME METHOD
   const searchGenreInDatabase = async (genreName) => {
+    console.info(
+      "get in searchGenreInDatabase: ",
+      `${import.meta.env.VITE_BACKEND_URL}/api/kind/${encodeURIComponent(
+        genreName
+      )}`
+    );
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/api/kind/${encodeURIComponent(
@@ -143,9 +149,13 @@ function AddNewMovie() {
 
   // GENRES NEW INSERT METHOD
   const createGenreInDatabase = async (genreName) => {
+    console.info(
+      "post in createGenreInDatabase: ",
+      `${import.meta.env.VITE_BACKEND_URL}/api/kind`
+    );
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/genre`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/kind`,
         { name: genreName }
       );
 
@@ -1243,7 +1253,7 @@ function AddNewMovie() {
               </Box>
               <AddCircleOutlineIcon
                 className="Btn_Add_itemsPopUp"
-                onClick={() => handleOpenModal("kinds")}
+                onClick={() => handleOpenModal("kind")}
               />
             </div>
             {/* movie DIRECTOR */}

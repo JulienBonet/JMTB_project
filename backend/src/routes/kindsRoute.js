@@ -14,6 +14,6 @@ router.get("/kinds/:genre/sorted/3", kindsController.getAllSorted3);
 // router.get("/genre/byname/:name", kindsController.getAllByName);
 
 router.get("/kind/:name", kindsController.getAllByName);
-router.get("/genre/byname/:name", kindsController.getAllByName);
+router.get("/kind/byname/:name", kindsController.getAllByName);
 
 module.exports = router;

@@ -333,9 +333,12 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
     const fetchGenres = async () => {
       try {
         const genresArray = genres.split(", ").map(async (genreName) => {
-          // const response = await fetch(`${backendUrl}/api/genres/${genreName}`);
+          console.info(
+            "fetchGenres in movieCard:",
+            `${backendUrl}/api/kind/byname/${genreName}`
+          );
           const response = await fetch(
-            `${backendUrl}/api/genre/byname/${genreName}`
+            `${backendUrl}/api/kind/byname/${genreName}`
           );
 
           if (!response.ok) {
@@ -345,6 +348,7 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
           }
 
           const genre = await response.json();
+          console.info("genre in fetchgenre movieCard", genre);
           return genre;
         });
 

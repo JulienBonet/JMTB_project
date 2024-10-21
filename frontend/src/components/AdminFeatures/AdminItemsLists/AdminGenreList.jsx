@@ -22,7 +22,7 @@ function AdminGenreList() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [newKind, setNewKind] = useState(false);
 
-  const origin = "genre";
+  const origin = "kind";
 
   const openModal = (DataItem) => {
     setSelectedItem(DataItem);
@@ -99,7 +99,7 @@ function AdminGenreList() {
     if (confirmDelete) {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/genre/${id}`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/kinds/${id}`,
           {
             method: "delete",
           }

@@ -107,7 +107,7 @@ export default function TransferList({
       case "country":
         return "country";
       case "kinds":
-        return "genre";
+        return "kind";
       case "languages/sorted_id":
         return "language";
       case "tags/sorted_id":
