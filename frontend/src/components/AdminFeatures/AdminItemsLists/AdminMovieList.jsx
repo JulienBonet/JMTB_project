@@ -117,6 +117,7 @@ function AdminMovieList() {
       if (response.ok) {
         setData(data.filter((movie) => movie.id !== id)); // Met à jour la liste des films
         setFilteredData(filteredData.filter((movie) => movie.id !== id)); // Met à jour les données filtrées
+        setSelectedMovie(null);
         // Alerte pour confirmer la suppression
         window.alert("Film supprimé avec succès");
         console.info("Film supprimé avec succès");
@@ -179,9 +180,6 @@ function AdminMovieList() {
                     onClick={() => openModal(movieData)}
                   />
                 </td>
-                {/* <td>
-                  <ModeIcon className="admin_tools_ico" />
-                </td> */}
                 <td>
                   <DeleteIcon
                     className="admin_tools_ico"
@@ -223,6 +221,8 @@ function AdminMovieList() {
                 movie={selectedMovie}
                 origin={origin}
                 onUpdateMovie={updateMovieData}
+                onDeleteMovie={handleDeleteMovie}
+                closeModal={closeModal}
               />
             </Container>
           </Box>

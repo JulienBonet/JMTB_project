@@ -12,6 +12,7 @@ import UndoIcon from "@mui/icons-material/Undo";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import CachedIcon from "@mui/icons-material/Cached";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import DeleteIcon from "@mui/icons-material/Delete";
 import TextField from "@mui/material/TextField";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
@@ -19,7 +20,7 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import TransferList from "../AdminFeatures/AddNewMovie/MovieItemList";
 
-function MovieCard({ movie, origin, onUpdateMovie }) {
+function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
   const [isModify, setIsModify] = useState(false);
   const [selectedKinds, setSelectedKinds] = useState([]);
@@ -665,6 +666,13 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
   // const handleSelectedTagsUpdate = (updatedSelectedTags) => {
   //   setSelectedTags(updatedSelectedTags);
   // };
+
+  // Fonction pour supprimer un film
+  const handleDelete = () => {
+    if (onDeleteMovie) {
+      onDeleteMovie(movieData.id); // Appel de la fonction reçue via les props
+    }
+  };
 
   return (
     <article className="MovieCard">
@@ -1431,10 +1439,16 @@ function MovieCard({ movie, origin, onUpdateMovie }) {
                 />
               </>
             ) : (
-              <ModeIcon
-                className="item_movie_mode_ico"
-                onClick={() => isModifyMode()}
-              />
+              <>
+                <ModeIcon
+                  className="item_movie_mode_ico"
+                  onClick={() => isModifyMode()}
+                />
+                <DeleteIcon
+                  className="item_movie_delete_ico"
+                  onClick={() => handleDelete(movieData.id)}
+                />
+              </>
             )}
           </section>
         </section>

@@ -167,6 +167,7 @@
 }
 
 .item_movie_mode_ico,
+.item_movie_delete_ico,
 .item_movie_undo_ico,
 .item_movie_done_ico {
   cursor: pointer;
@@ -175,7 +176,8 @@
   border-radius: 10px;
 }
 
-.item_movie_mode_ico{
+.item_movie_mode_ico,
+.item_movie_delete_ico{
   color: var(--color-02);
 }
 
