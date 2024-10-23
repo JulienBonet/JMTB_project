@@ -7,45 +7,22 @@ import "./movieThumbnail.css";
 import "./movieThumbnailMediaQueries.css";
 import MovieCard from "../MovieCard/MovieCard";
 
-function MovieThumbnail({ data }) {
+function MovieThumbnail({ data, onDeleteMovie, onUpdateMovie }) {
   const origin = "movie";
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
 
-  // Initialisation des données du film à partir des props
-  const [movieData, setMovieData] = useState(data);
-
-  const { title, year, cover } = movieData;
+  const { title, year, cover } = data;
 
   const [selectedMovie, setSelectedMovie] = useState(null);
 
   // Ouvre le modal avec le film sélectionné
   const openModal = () => {
-    setSelectedMovie(movieData);
+    setSelectedMovie(data);
   };
 
   // Ferme le modal
   const closeModal = () => {
     setSelectedMovie(null);
-  };
-
-  // Fonction de callback pour mettre à jour les données après modification dans MovieCard
-  const handleUpdateMovie = async () => {
-    try {
-      const response = await fetch(`${backendUrl}/api/movies/${data.id}`);
-      if (response.ok) {
-        const updatedMovie = await response.json();
-        setMovieData(updatedMovie); // Met à jour les données du film
-      } else {
-        console.error(
-          "Erreur lors de la récupération des données mises à jour"
-        );
-      }
-    } catch (error) {
-      console.error(
-        "Erreur lors de la récupération des données mises à jour:",
-        error
-      );
-    }
   };
 
   return (
@@ -87,7 +64,8 @@ function MovieThumbnail({ data }) {
               <MovieCard
                 movie={selectedMovie}
                 origin={origin}
-                onUpdateMovie={handleUpdateMovie}
+                onUpdateMovie={onUpdateMovie}
+                onDeleteMovie={onDeleteMovie}
               />
             </Container>
           </Box>
