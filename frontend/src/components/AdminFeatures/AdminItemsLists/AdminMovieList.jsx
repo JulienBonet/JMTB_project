@@ -165,7 +165,11 @@ function AdminMovieList() {
         </thead>
         <tbody>
           {loading ? (
-            <div className="LoaderTemp">LOADING...</div>
+            <tr>
+              <td colSpan="6" className="LoaderTemp">
+                LOADING...
+              </td>
+            </tr>
           ) : (
             currentMovies.map((movieData) => (
               <tr key={movieData.id}>

@@ -209,7 +209,78 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
     }
   };
 
-  // Fonction pour soumettre les modifications
+  // // Fonction pour soumettre les modifications
+  // const handleUpdateMovie = async () => {
+  //   const confirmUpdate = window.confirm(
+  //     "Are you sure you want to update this film?"
+  //   );
+
+  //   if (confirmUpdate) {
+  //     try {
+  //       // Mettre à jour l'image (s'il y a un fichier sélectionné)
+  //       if (fileInputRef.current.files[0]) {
+  //         await handleUpdateImage(); // Attendre que l'image soit mise à jour avant de poursuivre
+  //         // console.info("Image successfully updated");
+  //       }
+
+  //       // Mettre à jour les autres informations du film
+  //       const response = await fetch(
+  //         `${import.meta.env.VITE_BACKEND_URL}/api/movie/${movieData.id}`,
+  //         {
+  //           method: "PUT",
+  //           headers: {
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify({
+  //             title: movieData.title,
+  //             altTitle: movieData.altTitle,
+  //             year: movieData.year,
+  //             duration: movieData.duration,
+  //             trailer: movieData.trailer,
+  //             story: movieData.story,
+  //             location: movieData.location,
+  //             videoFormat: movieData.videoFormat,
+  //             videoSupport: movieData.videoSupport,
+  //             fileSize: movieData.fileSize,
+  //             genres: selectedKinds.map((genre) => genre.id),
+  //             directors: selectedDirectors.map((director) => director.id),
+  //             castings: selectedCasting.map((cast) => cast.id),
+  //             screenwriters: selectedScreenwriters.map(
+  //               (screenwriter) => screenwriter.id
+  //             ),
+  //             musics: selectedMusic.map((compositor) => compositor.id),
+  //             studios: selectedStudios.map((studio) => studio.id),
+  //             countries: selectedCountries.map((country) => country.id),
+  //             // !!! ajouter les items que l'on met à jour !!!!
+  //           }),
+  //         }
+  //       );
+
+  //       if (response.ok) {
+  //         console.info("Film mis à jour avec succès");
+  //         const updatedMovie = await response.json();
+  //         console.info("updatedMovie", updatedMovie);
+  //         setMovieData(updatedMovie[0]);
+  //         onUpdateMovie(updatedMovie[0]);
+  //         closeModifyMode();
+
+  //         // Rafraîchir les genres après la mise à jour
+  //         const genresNames = updatedMovie[0].genres
+  //           .map((g) => g.name)
+  //           .join(", ");
+  //         setSelectedKinds(genresNames); // Mets à jour les genres avec les nouvelles données
+  //       } else {
+  //         console.error("Erreur lors de la mise à jour");
+  //       }
+  //     } catch (error) {
+  //       console.error(
+  //         "Erreur lors de la mise à jour du film et de l'image",
+  //         error
+  //       );
+  //     }
+  //   } // end confirm update
+  // };
+
   const handleUpdateMovie = async () => {
     const confirmUpdate = window.confirm(
       "Are you sure you want to update this film?"
@@ -264,10 +335,20 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
           onUpdateMovie(updatedMovie[0]);
           closeModifyMode();
 
+          // Vérifier si `genres` est une chaîne de caractères ou un tableau
+          let genresArray = [];
+          if (typeof updatedMovie[0].genres === "string") {
+            // Diviser la chaîne en un tableau en utilisant la virgule comme séparateur
+            genresArray = updatedMovie[0].genres
+              .split(",")
+              .map((genre) => genre.trim());
+          } else if (Array.isArray(updatedMovie[0].genres)) {
+            // Si c'est déjà un tableau, on le laisse tel quel
+            genresArray = updatedMovie[0].genres.map((g) => g.name);
+          }
+
           // Rafraîchir les genres après la mise à jour
-          const genresNames = updatedMovie[0].genres
-            .map((g) => g.name)
-            .join(", ");
+          const genresNames = genresArray.join(", ");
           setSelectedKinds(genresNames); // Mets à jour les genres avec les nouvelles données
         } else {
           console.error("Erreur lors de la mise à jour");
@@ -882,20 +963,20 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
                 </div>
               ) : (
                 <>
-                  <p className="MovieCard_info">{movieData.altTitle}</p>
+                  <p className="MovieCard_info">{movieData.altTitle || ""}</p>
                   <p className="MovieCard_info">
                     <span className="paraph_bolder">Genre:</span> {genres}
                   </p>
                   <p className="MovieCard_info">
                     <span className="paraph_bolder">Année:</span>{" "}
-                    {movieData.year}
+                    {movieData.year || ""}
                   </p>
                   <p className="MovieCard_info">
                     <span className="paraph_bolder">Pays:</span> {countries}
                   </p>
                   <p className="MovieCard_info">
                     <span className="paraph_bolder">Durée:</span>{" "}
-                    {movieData.duration}mn
+                    {movieData.duration || ""}mn
                   </p>
                   <div className="divider_dashed" />
                   {/* Autres détails du film */}
@@ -1331,7 +1412,7 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
               <TextField
                 label="trailer"
                 name="trailer"
-                value={movieData.trailer}
+                value={movieData.trailer || ""}
                 onChange={(e) => handleChange(e)}
                 fullWidth
                 sx={{

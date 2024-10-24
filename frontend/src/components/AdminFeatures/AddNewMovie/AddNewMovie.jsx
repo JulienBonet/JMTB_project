@@ -1253,7 +1253,7 @@ function AddNewMovie() {
               </Box>
               <AddCircleOutlineIcon
                 className="Btn_Add_itemsPopUp"
-                onClick={() => handleOpenModal("kind")}
+                onClick={() => handleOpenModal("kinds")}
               />
             </div>
             {/* movie DIRECTOR */}
