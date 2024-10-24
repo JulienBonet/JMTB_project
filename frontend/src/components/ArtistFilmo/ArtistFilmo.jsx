@@ -20,7 +20,10 @@ function ArtistFilmo({
   movieSortedYearDesc,
   movieSortedYear,
   movieAmount,
+  onUpdateMovie,
+  onDeleteMovie,
 }) {
+  console.info("data", data);
   return (
     <section className="filmo_artists">
       {selectedArtist === "" && (
@@ -98,7 +101,12 @@ function ArtistFilmo({
           <div className="scroll_zone scroll_zone_2">
             <div className="artists_filmo_thumbs">
               {data.map((filmo) => (
-                <MovieThumbnail key={filmo.id} data={filmo} />
+                <MovieThumbnail
+                  key={filmo.id}
+                  data={filmo}
+                  onUpdateMovie={onUpdateMovie}
+                  onDeleteMovie={onDeleteMovie}
+                />
               ))}
             </div>
           </div>

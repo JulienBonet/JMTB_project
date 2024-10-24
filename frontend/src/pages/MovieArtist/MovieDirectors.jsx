@@ -41,7 +41,26 @@ function MovieDirectors() {
   }, [selectedLetter]);
 
   // REQUEST ALL MOVIES by ARTIST
-  useEffect(() => {
+  // useEffect(() => {
+  //   fetch(
+  //     `${import.meta.env.VITE_BACKEND_URL}/api/directors/${selectedDirector.id}`
+  //   )
+  //     .then((response) => {
+  //       if (!response.ok) {
+  //         throw new Error("Network response was not ok");
+  //       }
+  //       return response.json();
+  //     })
+  //     .then((moviesData) => {
+  //       setMovies(moviesData);
+  //       setMovieAmount(moviesData.length);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching user data:", error);
+  //     });
+  // }, [selectedDirector]);
+
+  const fetchMoviesByDirector = () => {
     fetch(
       `${import.meta.env.VITE_BACKEND_URL}/api/directors/${selectedDirector.id}`
     )
@@ -58,6 +77,10 @@ function MovieDirectors() {
       .catch((error) => {
         console.error("Error fetching user data:", error);
       });
+  };
+
+  useEffect(() => {
+    fetchMoviesByDirector();
   }, [selectedDirector]);
 
   // SELECT LETTER
@@ -197,6 +220,43 @@ function MovieDirectors() {
   // PROPS FOR TEXTS & IMAGE
   const origin = "directors";
 
+  // DELETE MOVIE transmis en prop à MovieCard
+  const handleDeleteMovie = async (movieId) => {
+    console.info("Tentative de suppression du film avec ID:", movieId);
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this movie?"
+    );
+    if (!confirmDelete) {
+      console.info("Suppression annulée par l'utilisateur.");
+      return;
+    }
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/movie/${movieId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      console.info("Réponse du serveur:", response); // Log de la réponse du serveur
+
+      if (response.ok) {
+        fetchMoviesByDirector();
+        // Alerte pour confirmer la suppression
+        window.alert("Film supprimé avec succès");
+        console.info("Film supprimé avec succès");
+      } else {
+        window.alert("Erreur lors de la suppression du film");
+        console.error(
+          "Erreur lors de la suppression du film",
+          await response.text()
+        ); // Log l'erreur
+      }
+    } catch (error) {
+      console.error("Erreur durant la suppression:", error);
+    }
+  };
+
   return (
     <main>
       <section className="artists_content">
@@ -237,6 +297,8 @@ function MovieDirectors() {
               movieSortedYearDesc={movieSortedYearDesc}
               movieSortedYear={movieSortedYear}
               movieAmount={movieAmount}
+              onUpdateMovie={fetchMoviesByDirector}
+              onDeleteMovie={handleDeleteMovie}
             />
           </section>
         </section>

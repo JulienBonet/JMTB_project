@@ -56,24 +56,24 @@ const router = createBrowserRouter([
       {
         path: "/movie_directors",
         element: <MovieDirectors />,
-        loader: async () => {
-          try {
-            const response = await fetch(`${backendUrl}/api/directors`);
-            if (!response.ok) {
-              const text = await response.text(); // Lire la réponse comme texte
-              console.error("Response text: ", text); // Loguer le texte de la réponse
-              throw new Error("Network response was not ok");
-            }
-            const data = await response.json();
-            return data;
-          } catch (error) {
-            console.error("Fetch error: ", error);
-            throw error;
-          }
-        },
-        // loader: () => {
-        //   return fetch(`${backendUrl}/api/directors`);
+        // loader: async () => {
+        //   try {
+        //     const response = await fetch(`${backendUrl}/api/directors`);
+        //     if (!response.ok) {
+        //       const text = await response.text(); // Lire la réponse comme texte
+        //       console.error("Response text: ", text); // Loguer le texte de la réponse
+        //       throw new Error("Network response was not ok");
+        //     }
+        //     const data = await response.json();
+        //     return data;
+        //   } catch (error) {
+        //     console.error("Fetch error: ", error);
+        //     throw error;
+        //   }
         // },
+        loader: () => {
+          return fetch(`${backendUrl}/api/directors`);
+        },
       },
       {
         path: "/movie_casting",
