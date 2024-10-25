@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import "./movieCard.css";
 import ReactPlayer from "react-player";
 import Box from "@mui/material/Box";
+import { Container } from "@mui/material";
 import Modal from "@mui/material/Modal";
 import ModeIcon from "@mui/icons-material/Mode";
 import DoneOutlineIcon from "@mui/icons-material/DoneOutline";
@@ -215,7 +216,9 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
     bgcolor: "background.paper",
     border: "2px solid #000",
     boxShadow: 24,
-    p: 4,
+    pt: 0, // Padding top
+    pb: 4, // Padding bottom
+    px: 0, // Padding left and right, si besoin
   };
 
   const fetchData = (route) => {
@@ -1477,24 +1480,42 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
           aria-describedby="modal-modal-description"
         >
           <Box sx={style}>
-            <TransferList
-              dataType={dataType}
-              items={data}
-              selectedKinds={selectedKinds}
-              onSelectedKindsUpdate={handleSelectedKindsUpdate}
-              selectedDirectors={selectedDirectors}
-              onSelectedDirectorsUpdate={handleSelectedDirectorsUpdate}
-              selectedCasting={selectedCasting}
-              onSelectedCastingUpdate={handleSelectedCastingUpdate}
-              selectedScreenwriters={selectedScreenwriters}
-              onSelectedScreenwritersUpdate={handleSelectedScreenwritersUpdate}
-              selectedMusic={selectedMusic}
-              onSelectedMusicUpdate={handleSelectedMusicUpdate}
-              selectedStudios={selectedStudios}
-              onSelectedStudiosUpdate={handleSelectedStudiosUpdate}
-              selectedCountries={selectedCountries}
-              onSelectedCountriesUpdate={handleSelectedCountriesUpdate}
-            />
+            <div
+              onClick={handleCloseModal}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  handleCloseModal();
+                }
+              }}
+              role="button"
+              tabIndex={0}
+              className="modal_closed_btn_MovieItemList"
+            >
+              &#91; Fermer &#93;
+            </div>
+
+            <Container>
+              <TransferList
+                dataType={dataType}
+                items={data}
+                selectedKinds={selectedKinds}
+                onSelectedKindsUpdate={handleSelectedKindsUpdate}
+                selectedDirectors={selectedDirectors}
+                onSelectedDirectorsUpdate={handleSelectedDirectorsUpdate}
+                selectedCasting={selectedCasting}
+                onSelectedCastingUpdate={handleSelectedCastingUpdate}
+                selectedScreenwriters={selectedScreenwriters}
+                onSelectedScreenwritersUpdate={
+                  handleSelectedScreenwritersUpdate
+                }
+                selectedMusic={selectedMusic}
+                onSelectedMusicUpdate={handleSelectedMusicUpdate}
+                selectedStudios={selectedStudios}
+                onSelectedStudiosUpdate={handleSelectedStudiosUpdate}
+                selectedCountries={selectedCountries}
+                onSelectedCountriesUpdate={handleSelectedCountriesUpdate}
+              />
+            </Container>
           </Box>
         </Modal>
       </div>

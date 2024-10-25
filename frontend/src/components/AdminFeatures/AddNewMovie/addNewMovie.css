@@ -75,3 +75,13 @@
 .Btn_Add_itemsPopUp {
   cursor: pointer;
 }
+
+.modal_closed_btn_MovieItemList {
+  text-align: right;
+  font-family: var(--font-04);
+  font-weight: bold;
+  color: var(--color-05);
+  cursor: pointer;
+  padding: 1rem 1rem 1.5rem 0;
+  margin: 0 5% 0 0;
+}

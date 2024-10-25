@@ -4,7 +4,7 @@
 import { useState, useRef } from "react";
 import axios from "axios";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Button } from "@mui/material";
+import { Button, Container } from "@mui/material";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import InputLabel from "@mui/material/InputLabel";
@@ -1021,7 +1021,9 @@ function AddNewMovie() {
     bgcolor: "background.paper",
     border: "2px solid #000",
     boxShadow: 24,
-    p: 4,
+    pt: 0, // Padding top
+    pb: 4, // Padding bottom
+    px: 0, // Padding left and right, si besoin
   };
 
   const styleMIEmodal = {
@@ -1033,8 +1035,7 @@ function AddNewMovie() {
     bgcolor: "background.paper",
     border: "2px solid #000",
     boxShadow: 24,
-    p: 4,
-    padding: 0,
+    p: 0,
   };
 
   // -----------------------------/ RETURN /----------------------------- //
@@ -1593,28 +1594,44 @@ function AddNewMovie() {
         aria-describedby="modal-modal-description"
       >
         <Box sx={style}>
-          <TransferList
-            dataType={dataType}
-            items={data}
-            selectedKinds={selectedKinds}
-            onSelectedKindsUpdate={handleSelectedKindsUpdate}
-            selectedDirectors={selectedDirectors}
-            onSelectedDirectorsUpdate={handleSelectedDirectorsUpdate}
-            selectedScreenwriters={selectedScreenwriters}
-            onSelectedScreenwritersUpdate={handleSelectedScreenwritersUpdate}
-            selectedMusic={selectedMusic}
-            onSelectedMusicUpdate={handleSelectedMusicUpdate}
-            selectedCasting={selectedCasting}
-            onSelectedCastingUpdate={handleSelectedCastingUpdate}
-            selectedStudios={selectedStudios}
-            onSelectedStudiosUpdate={handleSelectedStudiosUpdate}
-            selectedCountries={selectedCountries}
-            onSelectedCountriesUpdate={handleSelectedCountriesUpdate}
-            selectedLanguages={selectedLanguages}
-            onSelectedLanguagesUpdate={handleSelectedLanguagesUpdate}
-            selectedTags={selectedTags}
-            onSelectedTagsUpdate={handleSelectedTagsUpdate}
-          />
+          <div
+            onClick={handleCloseModal}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                handleCloseModal();
+              }
+            }}
+            role="button"
+            tabIndex={0}
+            className="modal_closed_btn_MovieItemList"
+          >
+            &#91; Fermer &#93;
+          </div>
+
+          <Container>
+            <TransferList
+              dataType={dataType}
+              items={data}
+              selectedKinds={selectedKinds}
+              onSelectedKindsUpdate={handleSelectedKindsUpdate}
+              selectedDirectors={selectedDirectors}
+              onSelectedDirectorsUpdate={handleSelectedDirectorsUpdate}
+              selectedScreenwriters={selectedScreenwriters}
+              onSelectedScreenwritersUpdate={handleSelectedScreenwritersUpdate}
+              selectedMusic={selectedMusic}
+              onSelectedMusicUpdate={handleSelectedMusicUpdate}
+              selectedCasting={selectedCasting}
+              onSelectedCastingUpdate={handleSelectedCastingUpdate}
+              selectedStudios={selectedStudios}
+              onSelectedStudiosUpdate={handleSelectedStudiosUpdate}
+              selectedCountries={selectedCountries}
+              onSelectedCountriesUpdate={handleSelectedCountriesUpdate}
+              selectedLanguages={selectedLanguages}
+              onSelectedLanguagesUpdate={handleSelectedLanguagesUpdate}
+              selectedTags={selectedTags}
+              onSelectedTagsUpdate={handleSelectedTagsUpdate}
+            />
+          </Container>
         </Box>
       </Modal>
       <Modal
