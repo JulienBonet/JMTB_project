@@ -10,7 +10,11 @@ import Modal from "@mui/material/Modal";
 import InputLabel from "@mui/material/InputLabel";
 import InputAdornment from "@mui/material/InputAdornment";
 import MenuItem from "@mui/material/MenuItem";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
+import FormLabel from "@mui/material/FormLabel";
 import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
@@ -44,6 +48,7 @@ function AddNewMovie() {
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
   const [uploadLocal, setUploadLocal] = useState(false);
+  const [version, setVersion] = useState("none");
   const [movie, setMovie] = useState({
     title: "",
     altTitle: "",
@@ -60,7 +65,7 @@ function AddNewMovie() {
     idTheMovieDb: "",
   });
 
-  console.info("selectedKinds", selectedKinds);
+  console.info("version:", version);
 
   // -----------------/ SOURCE /----------------- //
 
@@ -930,6 +935,9 @@ function AddNewMovie() {
   const handleFormSubmit = async (event) => {
     event.preventDefault();
 
+    const vostfr = version === "VOSTFR" ? 1 : 0;
+    const multi = version === "MULTI" ? 1 : 0;
+
     // Récupérer toutes les données sélectionnées
     const selectedGenre = selectedKinds.map((kind) => kind);
     const selectedDirectorsName = selectedDirectors.map(
@@ -962,6 +970,8 @@ function AddNewMovie() {
       countries: selectedCountriesName,
       languages: selectedLanguagesName,
       tags: selectedTagsName,
+      vostfr, // Ajouter le champ vostfr
+      multi, // Ajouter le champ multi
     };
     console.info("requestBody:", requestBody);
 
@@ -1545,6 +1555,35 @@ function AddNewMovie() {
                     Sélectionner un fichier vidéo
                   </button>
                 </Box>
+
+                <FormControl sx={{ m: 1 }}>
+                  <FormLabel id="demo-row-radio-buttons-group-label">
+                    version:
+                  </FormLabel>
+                  <RadioGroup
+                    row
+                    aria-labelledby="demo-row-radio-buttons-group-label"
+                    name="row-radio-buttons-group"
+                    value={version} // Assurez-vous que la valeur sélectionnée soit affichée correctement
+                    onChange={(e) => setVersion(e.target.value)} // Met à jour l'état
+                  >
+                    <FormControlLabel
+                      value="none"
+                      control={<Radio />}
+                      label="none"
+                    />
+                    <FormControlLabel
+                      value="VOSTFR"
+                      control={<Radio />}
+                      label="VOSTFR"
+                    />
+                    <FormControlLabel
+                      value="MULTI"
+                      control={<Radio />}
+                      label="MULTI"
+                    />
+                  </RadioGroup>
+                </FormControl>
               </>
             )}
           </div>

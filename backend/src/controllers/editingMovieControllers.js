@@ -93,8 +93,10 @@ const addMovie = async (req, res) => {
       countries,
       languages,
       tags,
+      vostfr,
+      multi,
     } = req.body;
-    console.info("genres in create movie", req.body.genres);
+    console.info("genres in create movie", req.body);
 
     if (!title) {
       return res.status(400).json({ message: "Movie's title is required" });
@@ -126,6 +128,8 @@ const addMovie = async (req, res) => {
       fileSize: fileSize || null,
       idTheMovieDb: idTheMovieDb || null,
       idIMDb: idIMDb || null,
+      vostfr: vostfr || 0,
+      multi: multi || 0,
     };
 
     // Insertion des données dans la base
@@ -143,7 +147,9 @@ const addMovie = async (req, res) => {
       movieData.videoSupport,
       movieData.fileSize,
       movieData.idTheMovieDb,
-      movieData.idIMDb
+      movieData.idIMDb,
+      movieData.vostfr,
+      movieData.multi
     );
 
     const [[{ movieId }]] = await editingMovieModel.getLastInsertedMovieId();
@@ -736,6 +742,8 @@ const editMovieById = async (req, res) => {
       videoFormat,
       videoSupport,
       fileSize,
+      vostfr,
+      multi,
       genres,
       directors,
       castings,
@@ -745,7 +753,7 @@ const editMovieById = async (req, res) => {
       countries,
       // !!! ajouter les update item que l'on envoi par la route !!!
     } = req.body;
-    // console.info("req.body:", req.body);
+    console.info("req.body:", req.body);
 
     const { id } = req.params;
 
@@ -760,6 +768,8 @@ const editMovieById = async (req, res) => {
       videoFormat,
       videoSupport,
       fileSize,
+      vostfr,
+      multi,
       id
     );
 

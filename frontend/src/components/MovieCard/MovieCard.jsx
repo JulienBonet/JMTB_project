@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 /* eslint-disable no-alert */
 /* eslint-disable react/prop-types */
 /* eslint-disable camelcase */
@@ -17,6 +18,10 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import TextField from "@mui/material/TextField";
 import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
+import FormLabel from "@mui/material/FormLabel";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Radio from "@mui/material/Radio";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import TransferList from "../AdminFeatures/AddNewMovie/MovieItemList";
@@ -31,6 +36,9 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
   const [selectedMusic, setSelectedMusic] = useState([]);
   const [selectedStudios, setSelectedStudios] = useState([]);
   const [selectedCountries, setSelectedCountries] = useState([]);
+  const [version, setVersion] = useState(
+    movie.vostfr ? "VOSTFR" : movie.multi ? "MULTI" : "none"
+  );
   // const [selectedLanguages, setSelectedLanguages] = useState([]);
   // const [selectedTags, setSelectedTags] = useState([]);
 
@@ -45,8 +53,8 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
       movie.videoSupport === "Fichier multimédia"
         ? "FICHIER MULTIMEDIA"
         : movie.videoSupport || "",
-    multi: movie.multi || false,
-    vostfr: movie.vostfr || false,
+    multi: movie.multi || 0,
+    vostfr: movie.vostfr || 0,
     story: movie.story || "",
     location: movie.location || "",
     fileSize: movie.fileSize || "",
@@ -139,6 +147,19 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
     setMovieData((prevData) => ({
       ...prevData,
       [name]: value,
+    }));
+  };
+
+  // MODIFY MODE - modifier  version
+  const handleVersionChange = (event) => {
+    const selectedVersion = event.target.value;
+    setVersion(selectedVersion);
+
+    // Met à jour movieData en fonction de la version sélectionnée
+    setMovieData((prevData) => ({
+      ...prevData,
+      vostfr: selectedVersion === "VOSTFR" ? 1 : 0,
+      multi: selectedVersion === "MULTI" ? 1 : 0,
     }));
   };
 
@@ -645,6 +666,8 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
               videoFormat: movieData.videoFormat,
               videoSupport: movieData.videoSupport,
               fileSize: movieData.fileSize,
+              vostfr: movieData.vostfr,
+              multi: movieData.multi,
               genres: selectedKinds.map((genre) => genre.id),
               directors: selectedDirectors.map((director) => director.id),
               castings: selectedCasting.map((cast) => cast.id),
@@ -1345,6 +1368,35 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
                       },
                     }}
                   />
+
+                  <FormControl sx={{ m: 1 }}>
+                    <FormLabel id="demo-row-radio-buttons-group-label">
+                      version:
+                    </FormLabel>
+                    <RadioGroup
+                      row
+                      aria-labelledby="demo-row-radio-buttons-group-label"
+                      name="row-radio-buttons-group"
+                      value={version} // Assurez-vous que la valeur sélectionnée soit affichée correctement
+                      onChange={handleVersionChange}
+                    >
+                      <FormControlLabel
+                        value="none"
+                        control={<Radio />}
+                        label="none"
+                      />
+                      <FormControlLabel
+                        value="VOSTFR"
+                        control={<Radio />}
+                        label="VOSTFR"
+                      />
+                      <FormControlLabel
+                        value="MULTI"
+                        control={<Radio />}
+                        label="MULTI"
+                      />
+                    </RadioGroup>
+                  </FormControl>
                 </>
               )}
               <div className="divider" />
