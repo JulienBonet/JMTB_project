@@ -1369,8 +1369,19 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
                     }}
                   />
 
-                  <FormControl sx={{ m: 1 }}>
-                    <FormLabel id="demo-row-radio-buttons-group-label">
+                  <FormControl
+                    sx={{
+                      m: 1,
+                      color: "white",
+                    }}
+                  >
+                    <FormLabel
+                      id="demo-row-radio-buttons-group-label"
+                      sx={{
+                        color: "white", // couleur du texte
+                        "&.Mui-focused": { color: "white" }, // conserver la couleur quand le label est sélectionné
+                      }}
+                    >
                       version:
                     </FormLabel>
                     <RadioGroup
@@ -1382,18 +1393,30 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
                     >
                       <FormControlLabel
                         value="none"
-                        control={<Radio />}
+                        control={<Radio sx={{ color: "white" }} />}
                         label="none"
+                        sx={{
+                          color: "white",
+                          "& .MuiRadio-root.Mui-checked": { color: "cyan" }, // garder le bouton sélectionné en blanc
+                        }}
                       />
                       <FormControlLabel
                         value="VOSTFR"
-                        control={<Radio />}
+                        control={<Radio sx={{ color: "white" }} />}
                         label="VOSTFR"
+                        sx={{
+                          color: "white",
+                          "& .MuiRadio-root.Mui-checked": { color: "cyan" }, // garder le bouton sélectionné en blanc
+                        }}
                       />
                       <FormControlLabel
                         value="MULTI"
-                        control={<Radio />}
+                        control={<Radio sx={{ color: "white" }} />}
                         label="MULTI"
+                        sx={{
+                          color: "white",
+                          "& .MuiRadio-root.Mui-checked": { color: "cyan" }, // garder le bouton sélectionné en blanc
+                        }}
                       />
                     </RadioGroup>
                   </FormControl>

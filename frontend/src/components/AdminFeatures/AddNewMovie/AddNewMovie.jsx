@@ -111,12 +111,17 @@ function AddNewMovie() {
     setCoverPreview(`${backendUrl}/00_cover_default.jpg`);
     setSelectedCoverFile("");
     setUploadLocal(false);
+    setVersion("none");
   };
 
   // -----------------/ MOVIE INFO ENTRANCE MODAL /----------------- //
 
   const handleOpenModalMIE = () => {
-    setOpenModalMIE(true);
+    if (movie.title) {
+      setOpenModalMIE(true);
+    } else {
+      window.alert("Saisir un titre à rechercher");
+    }
   };
 
   const handleCloseModalMIE = () => {
@@ -933,80 +938,86 @@ function AddNewMovie() {
   };
 
   const handleFormSubmit = async (event) => {
-    event.preventDefault();
+    if (!videoSupport) {
+      alert("Merci de saisir un support");
+    } else {
+      event.preventDefault();
 
-    const vostfr = version === "VOSTFR" ? 1 : 0;
-    const multi = version === "MULTI" ? 1 : 0;
+      const vostfr = version === "VOSTFR" ? 1 : 0;
+      const multi = version === "MULTI" ? 1 : 0;
 
-    // Récupérer toutes les données sélectionnées
-    const selectedGenre = selectedKinds.map((kind) => kind);
-    const selectedDirectorsName = selectedDirectors.map(
-      (director) => director.name
-    );
-    const selectedCastingName = selectedCasting.map((casting) => casting.name);
-    const selectedScreenwritersName = selectedScreenwriters.map(
-      (screenwriter) => screenwriter.name
-    );
-    const selectedMusicName = selectedMusic.map((music) => music.name);
-    const selectedStudiosName = selectedStudios.map((studio) => studio.name);
-    const selectedCountriesName = selectedCountries.map(
-      (country) => country.name
-    );
-    const selectedLanguagesName = selectedLanguages.map(
-      (language) => language.name
-    );
-
-    const selectedTagsName = selectedTags.map((tag) => tag.name);
-
-    // Créer le corps de la requête
-    const requestBody = {
-      ...movie,
-      genres: selectedGenre,
-      directors: selectedDirectorsName,
-      castings: selectedCastingName,
-      screenwriters: selectedScreenwritersName,
-      compositors: selectedMusicName,
-      studios: selectedStudiosName,
-      countries: selectedCountriesName,
-      languages: selectedLanguagesName,
-      tags: selectedTagsName,
-      vostfr, // Ajouter le champ vostfr
-      multi, // Ajouter le champ multi
-    };
-    console.info("requestBody:", requestBody);
-
-    // Effectuer l'upload de l'image (que ce soit via API ou localement)
-    const coverFilename = await handleFileUpload(); // Attendre le résultat de l'upload
-
-    // Ajouter le nom du fichier de couverture au corps de la requête
-    requestBody.cover = coverFilename || "00_cover_default.jpg"; // Utiliser une valeur par défaut si pas d'upload
-
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/movie`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestBody),
-        }
+      // Récupérer toutes les données sélectionnées
+      const selectedGenre = selectedKinds.map((kind) => kind);
+      const selectedDirectorsName = selectedDirectors.map(
+        (director) => director.name
+      );
+      const selectedCastingName = selectedCasting.map(
+        (casting) => casting.name
+      );
+      const selectedScreenwritersName = selectedScreenwriters.map(
+        (screenwriter) => screenwriter.name
+      );
+      const selectedMusicName = selectedMusic.map((music) => music.name);
+      const selectedStudiosName = selectedStudios.map((studio) => studio.name);
+      const selectedCountriesName = selectedCountries.map(
+        (country) => country.name
+      );
+      const selectedLanguagesName = selectedLanguages.map(
+        (language) => language.name
       );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      const selectedTagsName = selectedTags.map((tag) => tag.name);
+
+      // Créer le corps de la requête
+      const requestBody = {
+        ...movie,
+        genres: selectedGenre,
+        directors: selectedDirectorsName,
+        castings: selectedCastingName,
+        screenwriters: selectedScreenwritersName,
+        compositors: selectedMusicName,
+        studios: selectedStudiosName,
+        countries: selectedCountriesName,
+        languages: selectedLanguagesName,
+        tags: selectedTagsName,
+        vostfr,
+        multi,
+      };
+      // console.info("requestBody:", requestBody);
+
+      // Effectuer l'upload de l'image (que ce soit via API ou localement)
+      const coverFilename = await handleFileUpload(); // Attendre le résultat de l'upload
+
+      // Ajouter le nom du fichier de couverture au corps de la requête
+      requestBody.cover = coverFilename || "00_cover_default.jpg"; // Utiliser une valeur par défaut si pas d'upload
+
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/movie`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestBody),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        // log verificication datas
+        const data = await response.json();
+        console.info("data:", data);
+
+        alert("Le film a été ajouté avec succès !");
+        resetStates(); // Réinitialiser les états du formulaire
+      } catch (error) {
+        console.error(error);
+        alert("Erreur lors de l'ajout du film. Veuillez réessayer.");
       }
-
-      // log verificication datas
-      const data = await response.json();
-      console.info("data:", data);
-
-      alert("Le film a été ajouté avec succès !");
-      resetStates(); // Réinitialiser les états du formulaire
-    } catch (error) {
-      console.error(error);
-      alert("Erreur lors de l'ajout du film. Veuillez réessayer.");
-    }
+    } // end else
   }; // end handleFormSubmit
 
   // -----------------/ BUTTON STYLE /----------------- //
