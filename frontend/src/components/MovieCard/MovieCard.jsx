@@ -51,7 +51,7 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
     fileSize: movie.fileSize || "",
   });
 
-  // console.info("movieData1", movieData);
+  console.info("movieData1", movieData);
 
   // const {
   //   id,
@@ -80,8 +80,9 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
     casting,
   } = movieData;
 
-  if (origin === "country") {
-    useEffect(() => {
+  // FETCH MOVIE DATAS
+  const fetchMovieData = () => {
+    if (origin === "country") {
       fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movies/${movie.movieId}`)
         .then((response) => {
           if (!response.ok) {
@@ -95,9 +96,11 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
         .catch((error) => {
           console.error("Error fetching user data:", error);
         });
-    }, [movie.id]);
-  } else {
-    useEffect(() => {
+    } else {
+      console.info(
+        "fetch",
+        `${import.meta.env.VITE_BACKEND_URL}/api/movies/${movieData.id}`
+      );
       fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movies/${movieData.id}`)
         .then((response) => {
           if (!response.ok) {
@@ -106,14 +109,22 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
           return response.json();
         })
         .then((data) => {
-          // console.info("data in fetch:", data);
+          console.info("data in fetch:", data);
           setMovieData(data);
         })
         .catch((error) => {
           console.error("Error fetching user data:", error);
         });
-    }, [movieData.id]);
-  }
+    }
+  };
+
+  useEffect(() => {
+    fetchMovieData();
+  }, [movie.id, movieData.id]);
+
+  useEffect(() => {
+    setMovieData(movie);
+  }, [movie]);
 
   // TOGGLE trailer
   const [isTrailerVisible, setIsTrailerVisible] = useState(false);
@@ -121,26 +132,7 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
     setIsTrailerVisible(!isTrailerVisible);
   };
 
-  // UPDATE MODE
-
-  const isModifyMode = () => {
-    setIsModify(true);
-  };
-
-  const closeModifyMode = () => {
-    setIsModify(false);
-  };
-
-  const handleUndo = () => {
-    closeModifyMode();
-  };
-
-  // Utiliser useEffect pour mettre à jour movieData si movie change
-  useEffect(() => {
-    setMovieData(movie);
-  }, [movie]);
-
-  // Fonction pour gérer les changements dans les champs TextField
+  // MODIFY MODE - modifier champs TextField
   const handleChange = (e) => {
     const { name, value } = e.target;
     setMovieData((prevData) => ({
@@ -149,11 +141,10 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
     }));
   };
 
-  // Fonctions pour modifier l'image
+  // MODIFY MODE - MODIFICATION DE L'AFFICHE
   const [image, setImage] = useState(`${backendUrl}/images/${movie.cover}`);
   const [showUploadButton, setShowUploadButton] = useState(true);
   const fileInputRef = useRef(null);
-  // console.info("image:", image);
 
   useEffect(() => {
     if (isModify) {
@@ -183,6 +174,7 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
     setShowUploadButton(true); // Remettre l'icône d'upload
   };
 
+  // Update Affiche
   const handleUpdateImage = async () => {
     const fileInput = fileInputRef.current;
     const file = fileInput.files[0];
@@ -202,85 +194,422 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
       if (imageResponse.ok) {
         const { movie: updatedMovie } = await imageResponse.json();
         setImage(`${backendUrl}/images/${updatedMovie.cover}`); // Utiliser la nouvelle URL de l'image
-        // console.info("Image successfully updated", updatedMovie.cover);
+        console.info("Image successfully updated", updatedMovie.cover);
       } else {
         console.error("Error updating item image");
       }
     }
   };
 
-  // // Fonction pour soumettre les modifications
-  // const handleUpdateMovie = async () => {
-  //   const confirmUpdate = window.confirm(
-  //     "Are you sure you want to update this film?"
-  //   );
+  // TRANSFERT LIST
+  const [openModal, setOpenModal] = useState(false);
+  const [data, setData] = useState([]);
+  const [dataType, setDataType] = useState("");
 
-  //   if (confirmUpdate) {
-  //     try {
-  //       // Mettre à jour l'image (s'il y a un fichier sélectionné)
-  //       if (fileInputRef.current.files[0]) {
-  //         await handleUpdateImage(); // Attendre que l'image soit mise à jour avant de poursuivre
-  //         // console.info("Image successfully updated");
-  //       }
+  const style = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "50%",
+    bgcolor: "background.paper",
+    border: "2px solid #000",
+    boxShadow: 24,
+    p: 4,
+  };
 
-  //       // Mettre à jour les autres informations du film
-  //       const response = await fetch(
-  //         `${import.meta.env.VITE_BACKEND_URL}/api/movie/${movieData.id}`,
-  //         {
-  //           method: "PUT",
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //           },
-  //           body: JSON.stringify({
-  //             title: movieData.title,
-  //             altTitle: movieData.altTitle,
-  //             year: movieData.year,
-  //             duration: movieData.duration,
-  //             trailer: movieData.trailer,
-  //             story: movieData.story,
-  //             location: movieData.location,
-  //             videoFormat: movieData.videoFormat,
-  //             videoSupport: movieData.videoSupport,
-  //             fileSize: movieData.fileSize,
-  //             genres: selectedKinds.map((genre) => genre.id),
-  //             directors: selectedDirectors.map((director) => director.id),
-  //             castings: selectedCasting.map((cast) => cast.id),
-  //             screenwriters: selectedScreenwriters.map(
-  //               (screenwriter) => screenwriter.id
-  //             ),
-  //             musics: selectedMusic.map((compositor) => compositor.id),
-  //             studios: selectedStudios.map((studio) => studio.id),
-  //             countries: selectedCountries.map((country) => country.id),
-  //             // !!! ajouter les items que l'on met à jour !!!!
-  //           }),
-  //         }
-  //       );
+  const fetchData = (route) => {
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/${route}`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then((datas) => {
+        setData(datas);
+      })
+      .catch((error) => {
+        console.error(`Error fetching ${route}:`, error);
+      });
+  };
 
-  //       if (response.ok) {
-  //         console.info("Film mis à jour avec succès");
-  //         const updatedMovie = await response.json();
-  //         console.info("updatedMovie", updatedMovie);
-  //         setMovieData(updatedMovie[0]);
-  //         onUpdateMovie(updatedMovie[0]);
-  //         closeModifyMode();
+  const handleOpenModal = (type) => {
+    setDataType(type);
+    setOpenModal(true);
+    fetchData(type);
+  };
 
-  //         // Rafraîchir les genres après la mise à jour
-  //         const genresNames = updatedMovie[0].genres
-  //           .map((g) => g.name)
-  //           .join(", ");
-  //         setSelectedKinds(genresNames); // Mets à jour les genres avec les nouvelles données
-  //       } else {
-  //         console.error("Erreur lors de la mise à jour");
-  //       }
-  //     } catch (error) {
-  //       console.error(
-  //         "Erreur lors de la mise à jour du film et de l'image",
-  //         error
-  //       );
-  //     }
-  //   } // end confirm update
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    setDataType("");
+    setData([]);
+  };
+
+  // Update genres
+  const fetchGenres = async () => {
+    if (!genres) return; // Vérifie si genres est bien défini
+    try {
+      const genresArray = genres.split(", ").map(async (genreName) => {
+        try {
+          const response = await fetch(
+            `${backendUrl}/api/kind/byname/${genreName}`
+          );
+
+          if (!response.ok) {
+            console.warn(
+              `Error fetching genre ${genreName}: ${response.statusText}`
+            );
+            return null; // Continue même si un genre échoue
+          }
+
+          const genre = await response.json();
+          return genre;
+        } catch (error) {
+          console.warn(`Error fetching genre ${genreName}:`, error);
+          return null; // Continue même si un genre échoue
+        }
+      });
+
+      const genresData = (await Promise.all(genresArray)).filter(Boolean); // Filtre les null (en cas d'erreur)
+      setSelectedKinds(genresData); // Met à jour avec [{ id, name }]
+    } catch (error) {
+      console.error("Error fetching genres:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchGenres();
+  }, [genres]);
+
+  const getSelectedKindsNames = (selectKinds) => {
+    return selectKinds.map((kind) => kind.name).join(", ");
+  };
+
+  const handleSelectedKindsUpdate = (updatedSelectedKinds) => {
+    setSelectedKinds(updatedSelectedKinds);
+  };
+
+  // update directors
+  const fetchDirectors = async () => {
+    if (!directors) return; // Vérifie si directors est bien défini
+
+    try {
+      const directorsArray = directors.split(", ").map(async (directorName) => {
+        try {
+          const response = await fetch(
+            `${backendUrl}/api/director/byname/${directorName}`
+          );
+          if (!response.ok) {
+            console.warn(
+              `Error fetching director ${directorName}: ${response.statusText}`
+            );
+            return null;
+          }
+
+          const director = await response.json();
+          return director;
+        } catch (error) {
+          console.warn(`Error fetching director ${directorName}:`, error);
+          return null; // Continue même si un director échoue
+        }
+      });
+
+      // Assure-toi que le tableau est résolu avant d'appliquer .filter
+      const directorsData = (await Promise.all(directorsArray)).filter(Boolean);
+      setSelectedDirectors(directorsData); // Met à jour avec [{ id, name }]
+    } catch (error) {
+      console.error("Error fetching directors:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchDirectors();
+  }, [directors]);
+
+  const getSelectedDirectorsNames = (selectDirectors) => {
+    return selectDirectors.map((director) => director.name).join(", ");
+  };
+
+  const handleSelectedDirectorsUpdate = (updatedSelectedDirectors) => {
+    setSelectedDirectors(updatedSelectedDirectors);
+  };
+
+  // Update castings
+  const fetchCastings = async () => {
+    if (!casting) return; // Vérifie si casting est bien défini
+
+    try {
+      const castingsArray = casting.split(", ").map(async (castingName) => {
+        try {
+          const response = await fetch(
+            `${backendUrl}/api/casting/byname/${castingName}`
+          );
+          if (!response.ok) {
+            console.warn(
+              `Error fetching casting ${castingName}: ${response.statusText}`
+            );
+            return null;
+          }
+
+          const castingN = await response.json();
+          return castingN;
+        } catch (error) {
+          console.warn(`Error fetching casting ${castingName}:`, error);
+          return null; // Continue même si un casting échoue
+        }
+      });
+
+      const castingsData = (await Promise.all(castingsArray)).filter(Boolean);
+      setSelectedCasting(castingsData); // Met à jour avec [{ id, name }]
+    } catch (error) {
+      console.error("Error fetching castings:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCastings();
+  }, [casting]);
+
+  const getSelectedCastingNames = (selectCasting) => {
+    return selectCasting.map((cast) => cast.name).join(", ");
+  };
+
+  const handleSelectedCastingUpdate = (updatedSelectedCasting) => {
+    setSelectedCasting(updatedSelectedCasting);
+  };
+
+  // Update screenwriters
+  const fetchScreenwriters = async () => {
+    if (!screenwriters) return; // Vérifie si screenwriters est bien défini
+
+    try {
+      const screenwritersArray = screenwriters
+        .split(", ")
+        .map(async (screenwriterName) => {
+          try {
+            const response = await fetch(
+              `${backendUrl}/api/screenwriter/byname/${screenwriterName}`
+            );
+            if (!response.ok) {
+              console.warn(
+                `Error fetching screenwriter ${screenwriterName}: ${response.statusText}`
+              );
+              return null;
+            }
+
+            const screenwriter = await response.json();
+            return screenwriter;
+          } catch (error) {
+            console.warn(
+              `Error fetching screenwriter ${screenwriterName}:`,
+              error
+            );
+            return null; // Continue même si un screenwriter échoue
+          }
+        });
+
+      const screenwritersData = (await Promise.all(screenwritersArray)).filter(
+        Boolean
+      );
+      setSelectedScreenwriters(screenwritersData); // Met à jour avec [{ id, name }]
+    } catch (error) {
+      console.error("Error fetching screenwriter:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchScreenwriters();
+  }, [screenwriters]);
+
+  const getSelectedScreenwritersNames = (selectScreenwriters) => {
+    return selectScreenwriters
+      .map((screenwriter) => screenwriter.name)
+      .join(", ");
+  };
+  const handleSelectedScreenwritersUpdate = (updatedSelectedScreenwriters) => {
+    setSelectedScreenwriters(updatedSelectedScreenwriters);
+  };
+
+  // update compositors
+  const fetchMusics = async () => {
+    if (!music) return; // Vérifie si music est bien défini
+
+    try {
+      const musicsArray = music.split(", ").map(async (musicName) => {
+        try {
+          const response = await fetch(
+            `${backendUrl}/api/music/byname/${musicName}`
+          );
+          if (!response.ok) {
+            console.warn(
+              `Error fetching compositor ${musicName}: ${response.statusText}`
+            );
+            return null;
+          }
+
+          const musicN = await response.json();
+          return musicN;
+        } catch (error) {
+          console.warn(`Error fetching compositor ${musicName}:`, error);
+          return null; // Continue même si un music échoue
+        }
+      });
+
+      const musicsData = (await Promise.all(musicsArray)).filter(Boolean);
+      setSelectedMusic(musicsData); // Met à jour avec [{ id, name }]
+    } catch (error) {
+      console.error("Error fetching compositor:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchMusics();
+  }, [music]);
+
+  const getSelectedMusicNames = (selectMusic) => {
+    return selectMusic.map((compositor) => compositor.name).join(", ");
+  };
+
+  const handleSelectedMusicUpdate = (updatedSelectedMusic) => {
+    setSelectedMusic(updatedSelectedMusic);
+  };
+
+  // Update studios
+  const fetchStudios = async () => {
+    if (!studios) return; // Vérifie si studios est bien défini
+
+    try {
+      const studiosArray = studios.split(", ").map(async (studioName) => {
+        try {
+          const response = await fetch(
+            `${backendUrl}/api/studio/byname/${studioName}`
+          );
+          if (!response.ok) {
+            console.warn(
+              `Error fetching studio ${studioName}: ${response.statusText}`
+            );
+            return null;
+          }
+
+          const studio = await response.json();
+          return studio;
+        } catch (error) {
+          console.warn(`Error fetching studio ${studioName}:`, error);
+          return null; // Continue même si un studio échoue
+        }
+      });
+
+      const studiosData = (await Promise.all(studiosArray)).filter(Boolean);
+      setSelectedStudios(studiosData); // Met à jour avec [{ id, name }]
+    } catch (error) {
+      console.error("Error fetching studios:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchStudios();
+  }, [studios]);
+
+  const getSelectedStudiosNames = (selectStudios) => {
+    return selectStudios.map((studio) => studio.name).join(", ");
+  };
+
+  const handleSelectedStudiosUpdate = (updatedSelectedStudios) => {
+    setSelectedStudios(updatedSelectedStudios);
+  };
+
+  // Update countries
+  const fetchCountries = async () => {
+    if (!countries) return; // Vérifie si countries est bien défini
+
+    try {
+      const countriesArray = countries.split(", ").map(async (countryName) => {
+        try {
+          const response = await fetch(
+            `${backendUrl}/api/country/byname/${countryName}`
+          );
+          if (!response.ok) {
+            console.warn(
+              `Error fetching country ${countryName}: ${response.statusText}`
+            );
+            return null;
+          }
+
+          const country = await response.json();
+          return country;
+        } catch (error) {
+          console.warn(`Error fetching country ${countryName}:`, error);
+          return null; // Continue même si un country échoue
+        }
+      });
+
+      const countriesData = (await Promise.all(countriesArray)).filter(Boolean);
+      setSelectedCountries(countriesData); // Met à jour avec [{ id, name }]
+    } catch (error) {
+      console.error("Error fetching country:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCountries();
+  }, [countries]);
+
+  const getSelectedCountriesNames = (selectCountries) => {
+    return selectCountries.map((country) => country.name).join(", ");
+  };
+
+  const handleSelectedCountriesUpdate = (updatedSelectedCountries) => {
+    setSelectedCountries(updatedSelectedCountries);
+  };
+
+  // ------------------------------------------------------------
+  // const getSelectedLanguagesNames = (selectedLanguages) => {
+  //   return selectedLanguages.map((language) => language.name).join(", ");
   // };
 
+  // const getSelectedTagsNames = (selectedTags) => {
+  //   return selectedTags.map((tag) => tag.name).join(", ");
+  // };
+
+  // const handleSelectedLanguagesUpdate = (updatedSelectedLanguages) => {
+  //   setSelectedLanguages(updatedSelectedLanguages);
+  // };
+
+  // const handleSelectedTagsUpdate = (updatedSelectedTags) => {
+  //   setSelectedTags(updatedSelectedTags);
+  // };
+  // --------------------------------------------------------------
+
+  // DELETE MOVIE
+  const handleDelete = () => {
+    if (onDeleteMovie) {
+      onDeleteMovie(movieData.id); // Appel de la fonction reçue via les props
+    }
+  };
+  // UPDATE MODE
+  const isModifyMode = () => {
+    setIsModify(true);
+  };
+
+  const closeModifyMode = () => {
+    setIsModify(false);
+  };
+
+  const handleUndo = () => {
+    fetchMovieData();
+    setImage(`${backendUrl}/images/${movie.cover}`);
+    fetchGenres();
+    fetchDirectors();
+    fetchCastings();
+    fetchScreenwriters();
+    fetchMusics();
+    fetchStudios();
+    fetchCountries();
+    closeModifyMode();
+  };
+
+  // UPDATE MOVIE
   const handleUpdateMovie = async () => {
     const confirmUpdate = window.confirm(
       "Are you sure you want to update this film?"
@@ -360,399 +689,6 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
         );
       }
     } // end confirm update
-  };
-
-  // TRANSFERT LIST
-  const [openModal, setOpenModal] = useState(false);
-  const [data, setData] = useState([]);
-  const [dataType, setDataType] = useState("");
-
-  const style = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: "50%",
-    bgcolor: "background.paper",
-    border: "2px solid #000",
-    boxShadow: 24,
-    p: 4,
-  };
-
-  const fetchData = (route) => {
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/${route}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((datas) => {
-        setData(datas);
-      })
-      .catch((error) => {
-        console.error(`Error fetching ${route}:`, error);
-      });
-  };
-
-  const handleOpenModal = (type) => {
-    setDataType(type);
-    setOpenModal(true);
-    fetchData(type);
-  };
-
-  const handleCloseModal = () => {
-    setOpenModal(false);
-    setDataType("");
-    setData([]);
-  };
-
-  // Update des genres
-  useEffect(() => {
-    const fetchGenres = async () => {
-      if (!genres) return; // Vérifie si genres est bien défini
-      try {
-        const genresArray = genres.split(", ").map(async (genreName) => {
-          try {
-            const response = await fetch(
-              `${backendUrl}/api/kind/byname/${genreName}`
-            );
-
-            if (!response.ok) {
-              console.warn(
-                `Error fetching genre ${genreName}: ${response.statusText}`
-              );
-              return null; // Continue même si un genre échoue
-            }
-
-            const genre = await response.json();
-            return genre;
-          } catch (error) {
-            console.warn(`Error fetching genre ${genreName}:`, error);
-            return null; // Continue même si un genre échoue
-          }
-        });
-
-        const genresData = (await Promise.all(genresArray)).filter(Boolean); // Filtre les null (en cas d'erreur)
-        setSelectedKinds(genresData); // Met à jour avec [{ id, name }]
-      } catch (error) {
-        console.error("Error fetching genres:", error);
-      }
-    };
-
-    fetchGenres();
-  }, [genres]);
-
-  const getSelectedKindsNames = (selectKinds) => {
-    return selectKinds.map((kind) => kind.name).join(", ");
-  };
-
-  const handleSelectedKindsUpdate = (updatedSelectedKinds) => {
-    setSelectedKinds(updatedSelectedKinds);
-  };
-
-  // update les directors
-  useEffect(() => {
-    const fetchDirectors = async () => {
-      if (!directors) return; // Vérifie si directors est bien défini
-
-      try {
-        const directorsArray = directors
-          .split(", ")
-          .map(async (directorName) => {
-            try {
-              const response = await fetch(
-                `${backendUrl}/api/director/byname/${directorName}`
-              );
-              if (!response.ok) {
-                console.warn(
-                  `Error fetching director ${directorName}: ${response.statusText}`
-                );
-                return null;
-              }
-
-              const director = await response.json();
-              return director;
-            } catch (error) {
-              console.warn(`Error fetching director ${directorName}:`, error);
-              return null; // Continue même si un director échoue
-            }
-          });
-
-        // Assure-toi que le tableau est résolu avant d'appliquer .filter
-        const directorsData = (await Promise.all(directorsArray)).filter(
-          Boolean
-        );
-        setSelectedDirectors(directorsData); // Met à jour avec [{ id, name }]
-      } catch (error) {
-        console.error("Error fetching directors:", error);
-      }
-    };
-
-    fetchDirectors();
-  }, [directors]);
-
-  const getSelectedDirectorsNames = (selectDirectors) => {
-    return selectDirectors.map((director) => director.name).join(", ");
-  };
-
-  const handleSelectedDirectorsUpdate = (updatedSelectedDirectors) => {
-    setSelectedDirectors(updatedSelectedDirectors);
-  };
-
-  // Update castings
-  useEffect(() => {
-    const fetchCastings = async () => {
-      if (!casting) return; // Vérifie si casting est bien défini
-
-      try {
-        const castingsArray = casting.split(", ").map(async (castingName) => {
-          try {
-            const response = await fetch(
-              `${backendUrl}/api/casting/byname/${castingName}`
-            );
-            if (!response.ok) {
-              console.warn(
-                `Error fetching casting ${castingName}: ${response.statusText}`
-              );
-              return null;
-            }
-
-            const castingN = await response.json();
-            return castingN;
-          } catch (error) {
-            console.warn(`Error fetching casting ${castingName}:`, error);
-            return null; // Continue même si un casting échoue
-          }
-        });
-
-        const castingsData = (await Promise.all(castingsArray)).filter(Boolean);
-        setSelectedCasting(castingsData); // Met à jour avec [{ id, name }]
-      } catch (error) {
-        console.error("Error fetching castings:", error);
-      }
-    };
-
-    fetchCastings();
-  }, [casting]);
-
-  const getSelectedCastingNames = (selectCasting) => {
-    return selectCasting.map((cast) => cast.name).join(", ");
-  };
-
-  const handleSelectedCastingUpdate = (updatedSelectedCasting) => {
-    setSelectedCasting(updatedSelectedCasting);
-  };
-
-  // Update screenwriters
-  useEffect(() => {
-    const fetchScreenwriters = async () => {
-      if (!screenwriters) return; // Vérifie si screenwriters est bien défini
-
-      try {
-        const screenwritersArray = screenwriters
-          .split(", ")
-          .map(async (screenwriterName) => {
-            try {
-              const response = await fetch(
-                `${backendUrl}/api/screenwriter/byname/${screenwriterName}`
-              );
-              if (!response.ok) {
-                console.warn(
-                  `Error fetching screenwriter ${screenwriterName}: ${response.statusText}`
-                );
-                return null;
-              }
-
-              const screenwriter = await response.json();
-              return screenwriter;
-            } catch (error) {
-              console.warn(
-                `Error fetching screenwriter ${screenwriterName}:`,
-                error
-              );
-              return null; // Continue même si un screenwriter échoue
-            }
-          });
-
-        const screenwritersData = (
-          await Promise.all(screenwritersArray)
-        ).filter(Boolean);
-        setSelectedScreenwriters(screenwritersData); // Met à jour avec [{ id, name }]
-      } catch (error) {
-        console.error("Error fetching screenwriter:", error);
-      }
-    };
-
-    fetchScreenwriters();
-  }, [screenwriters]);
-
-  const getSelectedScreenwritersNames = (selectScreenwriters) => {
-    return selectScreenwriters
-      .map((screenwriter) => screenwriter.name)
-      .join(", ");
-  };
-  const handleSelectedScreenwritersUpdate = (updatedSelectedScreenwriters) => {
-    setSelectedScreenwriters(updatedSelectedScreenwriters);
-  };
-
-  // update les compositors
-  useEffect(() => {
-    const fetchMusics = async () => {
-      if (!music) return; // Vérifie si music est bien défini
-
-      try {
-        const musicsArray = music.split(", ").map(async (musicName) => {
-          try {
-            const response = await fetch(
-              `${backendUrl}/api/music/byname/${musicName}`
-            );
-            if (!response.ok) {
-              console.warn(
-                `Error fetching compositor ${musicName}: ${response.statusText}`
-              );
-              return null;
-            }
-
-            const musicN = await response.json();
-            return musicN;
-          } catch (error) {
-            console.warn(`Error fetching compositor ${musicName}:`, error);
-            return null; // Continue même si un music échoue
-          }
-        });
-
-        const musicsData = (await Promise.all(musicsArray)).filter(Boolean);
-        setSelectedMusic(musicsData); // Met à jour avec [{ id, name }]
-      } catch (error) {
-        console.error("Error fetching compositor:", error);
-      }
-    };
-
-    fetchMusics();
-  }, [music]);
-
-  const getSelectedMusicNames = (selectMusic) => {
-    return selectMusic.map((compositor) => compositor.name).join(", ");
-  };
-
-  const handleSelectedMusicUpdate = (updatedSelectedMusic) => {
-    setSelectedMusic(updatedSelectedMusic);
-  };
-
-  // Update studios
-  useEffect(() => {
-    const fetchStudios = async () => {
-      if (!studios) return; // Vérifie si studios est bien défini
-
-      try {
-        const studiosArray = studios.split(", ").map(async (studioName) => {
-          try {
-            const response = await fetch(
-              `${backendUrl}/api/studio/byname/${studioName}`
-            );
-            if (!response.ok) {
-              console.warn(
-                `Error fetching studio ${studioName}: ${response.statusText}`
-              );
-              return null;
-            }
-
-            const studio = await response.json();
-            return studio;
-          } catch (error) {
-            console.warn(`Error fetching studio ${studioName}:`, error);
-            return null; // Continue même si un studio échoue
-          }
-        });
-
-        const studiosData = (await Promise.all(studiosArray)).filter(Boolean);
-        setSelectedStudios(studiosData); // Met à jour avec [{ id, name }]
-      } catch (error) {
-        console.error("Error fetching studios:", error);
-      }
-    };
-
-    fetchStudios();
-  }, [studios]);
-
-  const getSelectedStudiosNames = (selectStudios) => {
-    return selectStudios.map((studio) => studio.name).join(", ");
-  };
-
-  const handleSelectedStudiosUpdate = (updatedSelectedStudios) => {
-    setSelectedStudios(updatedSelectedStudios);
-  };
-
-  // Update countries
-  useEffect(() => {
-    const fetchCountries = async () => {
-      if (!countries) return; // Vérifie si countries est bien défini
-
-      try {
-        const countriesArray = countries
-          .split(", ")
-          .map(async (countryName) => {
-            try {
-              const response = await fetch(
-                `${backendUrl}/api/country/byname/${countryName}`
-              );
-              if (!response.ok) {
-                console.warn(
-                  `Error fetching country ${countryName}: ${response.statusText}`
-                );
-                return null;
-              }
-
-              const country = await response.json();
-              return country;
-            } catch (error) {
-              console.warn(`Error fetching country ${countryName}:`, error);
-              return null; // Continue même si un country échoue
-            }
-          });
-
-        const countriesData = (await Promise.all(countriesArray)).filter(
-          Boolean
-        );
-        setSelectedCountries(countriesData); // Met à jour avec [{ id, name }]
-      } catch (error) {
-        console.error("Error fetching country:", error);
-      }
-    };
-
-    fetchCountries();
-  }, [countries]);
-
-  const getSelectedCountriesNames = (selectCountries) => {
-    return selectCountries.map((country) => country.name).join(", ");
-  };
-
-  const handleSelectedCountriesUpdate = (updatedSelectedCountries) => {
-    setSelectedCountries(updatedSelectedCountries);
-  };
-
-  // const getSelectedLanguagesNames = (selectedLanguages) => {
-  //   return selectedLanguages.map((language) => language.name).join(", ");
-  // };
-
-  // const getSelectedTagsNames = (selectedTags) => {
-  //   return selectedTags.map((tag) => tag.name).join(", ");
-  // };
-
-  // const handleSelectedLanguagesUpdate = (updatedSelectedLanguages) => {
-  //   setSelectedLanguages(updatedSelectedLanguages);
-  // };
-
-  // const handleSelectedTagsUpdate = (updatedSelectedTags) => {
-  //   setSelectedTags(updatedSelectedTags);
-  // };
-
-  // Fonction pour supprimer un film
-  const handleDelete = () => {
-    if (onDeleteMovie) {
-      onDeleteMovie(movieData.id); // Appel de la fonction reçue via les props
-    }
   };
 
   return (
