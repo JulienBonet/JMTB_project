@@ -1,8 +1,9 @@
-/* eslint-disable no-nested-ternary */
 /* eslint-disable no-alert */
+/* eslint-disable no-nested-ternary */
 /* eslint-disable react/prop-types */
 /* eslint-disable camelcase */
 import { useState, useEffect, useRef } from "react";
+import { toast } from "react-toastify";
 import "./movieCard.css";
 import ReactPlayer from "react-player";
 import Box from "@mui/material/Box";
@@ -24,6 +25,8 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Radio from "@mui/material/Radio";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 import TransferList from "../AdminFeatures/AddNewMovie/MovieItemList";
 
 function MovieCard({ movie, origin, homepage, onUpdateMovie, onDeleteMovie }) {
@@ -245,7 +248,7 @@ function MovieCard({ movie, origin, homepage, onUpdateMovie, onDeleteMovie }) {
         fileSize: fileSizeInGigabytes.toFixed(2),
       }));
     } else {
-      alert("Veuillez sélectionner un fichier vidéo valide.");
+      toast.warn("Veuillez sélectionner un fichier vidéo valide.");
     }
   };
 
@@ -684,12 +687,16 @@ function MovieCard({ movie, origin, homepage, onUpdateMovie, onDeleteMovie }) {
   };
 
   // UPDATE MOVIE
+  const [isUpdating, setIsUpdating] = useState(false);
+
   const handleUpdateMovie = async () => {
     const confirmUpdate = window.confirm(
       "Are you sure you want to update this film?"
     );
 
     if (confirmUpdate) {
+      setIsUpdating(true); // Affiche le Backdrop
+
       try {
         // Mettre à jour l'image (s'il y a un fichier sélectionné)
         if (fileCoverRef.current.files[0]) {
@@ -763,6 +770,8 @@ function MovieCard({ movie, origin, homepage, onUpdateMovie, onDeleteMovie }) {
           "Erreur lors de la mise à jour du film et de l'image",
           error
         );
+      } finally {
+        setIsUpdating(false); // Masque le Backdrop une fois terminé
       }
     } // end confirm update
   };
@@ -1611,6 +1620,16 @@ function MovieCard({ movie, origin, homepage, onUpdateMovie, onDeleteMovie }) {
                   />
                 </>
               )}
+
+              <Backdrop
+                sx={(theme) => ({
+                  color: "#fff",
+                  zIndex: theme.zIndex.drawer + 1,
+                })}
+                open={isUpdating} // Contrôle l'affichage avec isUpdating
+              >
+                <CircularProgress color="inherit" />
+              </Backdrop>
             </section>
           </section>
         )}

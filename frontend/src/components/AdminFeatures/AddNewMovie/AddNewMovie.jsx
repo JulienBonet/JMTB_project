@@ -1,8 +1,8 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-shadow */
-/* eslint-disable no-alert */
 import { useState, useRef } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Button, Container } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -19,6 +19,8 @@ import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 import Stack from "@mui/material/Stack";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import Backdrop from "@mui/material/Backdrop";
+import CircularProgress from "@mui/material/CircularProgress";
 import TransferList from "./MovieItemList";
 import MovieInfosEntrance from "./MovieInfosEntrance";
 import "./addNewMovie.css";
@@ -122,7 +124,7 @@ function AddNewMovie() {
     if (movie.title) {
       setOpenModalMIE(true);
     } else {
-      window.alert("Saisir un titre à rechercher");
+      toast.warn("Saisir un titre à rechercher");
     }
   };
 
@@ -823,16 +825,16 @@ function AddNewMovie() {
       const fileSizeInGigabytes = fileSizeInBytes / (1024 * 1024 * 1024);
       setFileSize(fileSizeInGigabytes.toFixed(2));
       setFormat(fileExtension);
-      setvideoSupport("FICHIER MULTIMEDIA");
+      setvideoSupport("Fichier multimédia");
       setMovie((prevMovie) => ({
         ...prevMovie,
         location: event.target.value,
         videoFormat: fileExtension,
-        videoSupport: "FICHIER MULTIMEDIA",
+        videoSupport: "Fichier multimédia",
         fileSize: `${fileSizeInGigabytes.toFixed(2)} GB`,
       }));
     } else {
-      alert("Veuillez sélectionner un fichier vidéo valide.");
+      toast.warn("Veuillez sélectionner un fichier vidéo valide.");
     }
   };
 
@@ -941,11 +943,15 @@ function AddNewMovie() {
     }
   };
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleFormSubmit = async (event) => {
     if (!videoSupport) {
-      alert("Merci de saisir un support");
+      toast.warn("Merci de saisir un support");
     } else {
       event.preventDefault();
+
+      setIsSubmitting(true); // Affiche le Backdrop
 
       const vostfr = version === "VOSTFR" ? 1 : 0;
       const multi = version === "MULTI" ? 1 : 0;
@@ -1014,12 +1020,13 @@ function AddNewMovie() {
         // log verificication datas
         const data = await response.json();
         console.info("data:", data);
-
-        alert("Le film a été ajouté avec succès !");
+        toast.success("Le film a été ajouté avec succès !");
         resetStates(); // Réinitialiser les états du formulaire
       } catch (error) {
         console.error(error);
-        alert("Erreur lors de l'ajout du film. Veuillez réessayer.");
+        toast.error("Erreur lors de l'ajout du film. 😱 Veuillez réessayer. ");
+      } finally {
+        setIsSubmitting(false); // Masque le Backdrop une fois terminé
       }
     } // end else
   }; // end handleFormSubmit
@@ -1638,6 +1645,13 @@ function AddNewMovie() {
               </Button>
             </Stack>
           </ThemeProvider>
+
+          <Backdrop
+            sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+            open={isSubmitting} // Affiche le Backdrop pendant la soumission
+          >
+            <CircularProgress color="inherit" />
+          </Backdrop>
         </section>
       </section>
 

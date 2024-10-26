@@ -2,6 +2,7 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import Box from "@mui/material/Box";
 import Pagination from "@mui/material/Pagination";
 import { Button, Container } from "@mui/material";
@@ -119,10 +120,9 @@ function AdminMovieList() {
         setFilteredData(filteredData.filter((movie) => movie.id !== id)); // Met à jour les données filtrées
         setSelectedMovie(null);
         // Alerte pour confirmer la suppression
-        window.alert("Film supprimé avec succès");
-        console.info("Film supprimé avec succès");
+        toast.info("Film supprimé avec succès");
       } else {
-        window.alert("Erreur lors de la suppression du film");
+        toast.error("Erreur lors de la suppression du film");
         console.error(
           "Erreur lors de la suppression du film",
           await response.text()
