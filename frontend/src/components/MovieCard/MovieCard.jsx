@@ -26,7 +26,7 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import TransferList from "../AdminFeatures/AddNewMovie/MovieItemList";
 
-function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
+function MovieCard({ movie, origin, homepage, onUpdateMovie, onDeleteMovie }) {
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
   const [isModify, setIsModify] = useState(false);
   const [selectedKinds, setSelectedKinds] = useState([]);
@@ -166,7 +166,7 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
   // MODIFY MODE - MODIFICATION DE L'AFFICHE
   const [image, setImage] = useState(`${backendUrl}/images/${movie.cover}`);
   const [showUploadButton, setShowUploadButton] = useState(true);
-  const fileInputRef = useRef(null);
+  const fileCoverRef = useRef(null);
 
   useEffect(() => {
     if (isModify) {
@@ -179,8 +179,8 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
     }
   }, [isModify, image, movie.cover, backendUrl]);
 
-  // Handle File Upload
-  const handleFileUpload = (event) => {
+  // Handle Cover Upload
+  const handleCoverUpload = (event) => {
     const file = event.target.files[0];
     const newImageUrl = URL.createObjectURL(file);
     setImage(newImageUrl);
@@ -188,7 +188,7 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
   };
 
   const handleUploadClick = () => {
-    fileInputRef.current.click();
+    fileCoverRef.current.click();
   };
 
   const handleResetImage = () => {
@@ -198,7 +198,7 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
 
   // Update Affiche
   const handleUpdateImage = async () => {
-    const fileInput = fileInputRef.current;
+    const fileInput = fileCoverRef.current;
     const file = fileInput.files[0];
 
     if (file) {
@@ -221,6 +221,56 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
         console.error("Error updating item image");
       }
     }
+  };
+
+  // -----------------/ INPUT FILE /----------------- //
+  const fileInputRef = useRef(null); // Référence pour le fichier vidéo
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const fileExtension = file.name.split(".").pop().toLowerCase();
+    const videoFormats = ["avi", "mkv", "mp4"];
+
+    if (videoFormats.includes(fileExtension)) {
+      const fileSizeInBytes = file.size;
+      const fileSizeInGigabytes = fileSizeInBytes / (1024 * 1024 * 1024);
+
+      setMovieData((prevData) => ({
+        ...prevData,
+        location: file.name, // Ou un chemin approprié
+        videoFormat: fileExtension,
+        videoSupport: "Fichier multimédia",
+        fileSize: fileSizeInGigabytes.toFixed(2),
+      }));
+    } else {
+      alert("Veuillez sélectionner un fichier vidéo valide.");
+    }
+  };
+
+  const handleFormatSupportChange = (event) => {
+    const newSupport = event.target.value;
+
+    setMovieData((prevData) => {
+      // Si le support sélectionné est "DVD original" ou "DVD R/RW"
+      if (newSupport === "DVD original" || newSupport === "DVD R/RW") {
+        return {
+          ...prevData,
+          videoSupport: newSupport,
+          location: "", // Réinitialise location
+          videoFormat: "", // Réinitialise videoFormat
+          fileSize: "", // Réinitialise fileSize
+          vostfr: 0,
+          multi: 0,
+        };
+      }
+      // Sinon, on met juste à jour videoSupport
+      return {
+        ...prevData,
+        videoSupport: newSupport,
+      };
+    });
   };
 
   // TRANSFERT LIST
@@ -642,7 +692,7 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
     if (confirmUpdate) {
       try {
         // Mettre à jour l'image (s'il y a un fichier sélectionné)
-        if (fileInputRef.current.files[0]) {
+        if (fileCoverRef.current.files[0]) {
           await handleUpdateImage(); // Attendre que l'image soit mise à jour avant de poursuivre
           // console.info("Image successfully updated");
         }
@@ -733,8 +783,8 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
                   type="file"
                   name="cover"
                   accept="image/*"
-                  onChange={handleFileUpload}
-                  ref={fileInputRef}
+                  onChange={handleCoverUpload}
+                  ref={fileCoverRef}
                   style={{ display: "none" }}
                 />
                 {showUploadButton ? (
@@ -1300,7 +1350,7 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
                   name="videoSupport"
                   value={movieData.videoSupport || ""}
                   label="Support"
-                  onChange={(e) => handleChange(e)}
+                  onChange={handleFormatSupportChange}
                 >
                   <MenuItem value="DVD original">DVD original</MenuItem>
                   <MenuItem value="DVD R/RW">DVD R/RW</MenuItem>
@@ -1312,33 +1362,45 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
 
               {movieData.videoSupport === "Fichier multimédia" && (
                 <>
-                  <TextField
-                    label="Emplacement"
-                    name="location"
-                    value={movieData.location || ""}
-                    onChange={(e) => handleChange(e)}
-                    fullWidth
-                    sx={{
-                      width: "85%",
-                      "& .MuiInputLabel-root": {
-                        color: "white", // Couleur du label en blanc
-                      },
-                      "& .MuiInputBase-input": {
-                        color: "white", // Couleur du texte
-                      },
-                      "& .MuiOutlinedInput-root": {
-                        "& fieldset": {
-                          borderColor: "white", // Couleur de la bordure
+                  <div className="box_item_form">
+                    <TextField
+                      label="Emplacement"
+                      name="location"
+                      value={movieData.location || ""}
+                      onChange={(e) => handleChange(e)}
+                      fullWidth
+                      sx={{
+                        width: "85%",
+                        "& .MuiInputLabel-root": {
+                          color: "white", // Couleur du label en blanc
                         },
-                        "&:hover fieldset": {
-                          borderColor: "orange", // Couleur de la bordure au hover
+                        "& .MuiInputBase-input": {
+                          color: "white", // Couleur du texte
                         },
-                        "&.Mui-focused fieldset": {
-                          borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                        "& .MuiOutlinedInput-root": {
+                          "& fieldset": {
+                            borderColor: "white", // Couleur de la bordure
+                          },
+                          "&:hover fieldset": {
+                            borderColor: "orange", // Couleur de la bordure au hover
+                          },
+                          "&.Mui-focused fieldset": {
+                            borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                          },
                         },
-                      },
-                    }}
-                  />
+                      }}
+                    />
+                    <FileUploadIcon
+                      className="Btn_upload_File_MovieCard"
+                      onClick={() => fileInputRef.current.click()}
+                    />
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      style={{ display: "none" }}
+                      onChange={handleFileChange}
+                    />
+                  </div>
 
                   <TextField
                     label="Taille du fichier"
@@ -1480,14 +1542,18 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
                   {(movieData.videoSupport === "Fichier multimédia" ||
                     movieData.videoSupport === "FICHIER MULTIMEDIA") && (
                     <>
-                      <p className="MovieCard_info paraph_height">
-                        <span className="paraph_bolder">Emplacement:</span>{" "}
-                        {movieData.location}
-                      </p>
-                      <p className="MovieCard_info">
-                        <span className="paraph_bolder">Size:</span>{" "}
-                        {movieData.fileSize}
-                      </p>
+                      {movieData.location && (
+                        <p className="MovieCard_info paraph_height">
+                          <span className="paraph_bolder">Emplacement:</span>{" "}
+                          {movieData.location}
+                        </p>
+                      )}
+                      {movieData.fileSize && (
+                        <p className="MovieCard_info">
+                          <span className="paraph_bolder">Size:</span>{" "}
+                          {movieData.fileSize}
+                        </p>
+                      )}
                     </>
                   )}
                 </>
@@ -1519,34 +1585,35 @@ function MovieCard({ movie, origin, onUpdateMovie, onDeleteMovie }) {
           )}
           {/* fin info bloc 2 */}
         </section>
-
-        <section className="Movie_editing_btn-container">
-          <section className="Item_Movie_Editing_Buttons">
-            {isModify ? (
-              <>
-                <UndoIcon
-                  className="item_movie_undo_ico"
-                  onClick={() => handleUndo()}
-                />
-                <DoneOutlineIcon
-                  className="item_movie_done_ico"
-                  onClick={() => handleUpdateMovie()}
-                />
-              </>
-            ) : (
-              <>
-                <ModeIcon
-                  className="item_movie_mode_ico"
-                  onClick={() => isModifyMode()}
-                />
-                <DeleteIcon
-                  className="item_movie_delete_ico"
-                  onClick={() => handleDelete(movieData.id)}
-                />
-              </>
-            )}
+        {!homepage && (
+          <section className="Movie_editing_btn-container">
+            <section className="Item_Movie_Editing_Buttons">
+              {isModify ? (
+                <>
+                  <UndoIcon
+                    className="item_movie_undo_ico"
+                    onClick={() => handleUndo()}
+                  />
+                  <DoneOutlineIcon
+                    className="item_movie_done_ico"
+                    onClick={() => handleUpdateMovie()}
+                  />
+                </>
+              ) : (
+                <>
+                  <ModeIcon
+                    className="item_movie_mode_ico"
+                    onClick={() => isModifyMode()}
+                  />
+                  <DeleteIcon
+                    className="item_movie_delete_ico"
+                    onClick={() => handleDelete(movieData.id)}
+                  />
+                </>
+              )}
+            </section>
           </section>
-        </section>
+        )}
 
         <Modal
           open={openModal}

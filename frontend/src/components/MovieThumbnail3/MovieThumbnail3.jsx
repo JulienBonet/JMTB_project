@@ -10,6 +10,7 @@ import MovieCard from "../MovieCard/MovieCard";
 
 function MovieThumbnail3({ data }) {
   const origin = "movie";
+  const homepage = true;
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
 
   // Initialisation des données du film à partir des props
@@ -96,6 +97,7 @@ function MovieThumbnail3({ data }) {
                 movie={selectedMovie}
                 origin={origin}
                 onUpdateMovie={handleUpdateMovie}
+                homepage={homepage}
               />
             </Container>
           </Box>

@@ -63,8 +63,9 @@ function AddNewMovie() {
     videoSupport: "",
     fileSize: "",
     idTheMovieDb: "",
+    idIMDB: "",
   });
-
+  console.info("data", data);
   console.info("version:", version);
 
   // -----------------/ SOURCE /----------------- //
@@ -93,6 +94,7 @@ function AddNewMovie() {
       videoSupport: "",
       fileSize: null,
       idTheMovieDb: "",
+      idIMDB: "",
     });
     // Réinitialiser valeur par défaut
     setFormat("");
@@ -467,6 +469,7 @@ function AddNewMovie() {
 
       const response = await axios(options);
       const movieData = response.data;
+      console.info("movieData", movieData);
 
       setMovie({
         ...movie,
@@ -480,6 +483,7 @@ function AddNewMovie() {
         pitch: movieData.tagline || "",
         story: movieData.overview,
         idTheMovieDb: movieData.id,
+        idIMDB: movieData.imdb_id,
       });
 
       // Fetch GENRES

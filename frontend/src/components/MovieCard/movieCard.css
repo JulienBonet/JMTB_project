@@ -64,6 +64,14 @@
   color: whitesmoke;
 }
 
+.Btn_upload_File_MovieCard{
+  cursor: pointer;
+  color: whitesmoke;
+  padding: 0.2rem;
+  border: solid 1px;
+  border-radius: 10px;
+}
+
 .divider {
   background-color: whitesmoke;
   width: 100%;
