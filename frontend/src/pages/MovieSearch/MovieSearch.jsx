@@ -3,6 +3,7 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable no-undef */
 import { useState, useEffect } from "react";
+// import { toast } from "react-toastify";
 import "./movieSearch.css";
 import "./movieSearchMediaQueries.css";
 import "../../assets/css/scrollButton.css";
@@ -181,65 +182,11 @@ function MovieSearch() {
     setFilteredMovies(updatedMovies); // Mettez à jour la liste filtrée si nécessaire
   };
 
-  //   const handleUpdateMovie = async (updatedMovieData) => {
-  //   // Début de l'opération, changer le curseur en sablier
-  //   document.body.style.cursor = 'wait';
-
-  //   try {
-  //     // Simule l'opération de mise à jour (par exemple un fetch ou une modification locale)
-  //     const updatedMovies = data.map((movie) =>
-  //       movie.id === updatedMovieData.id ? updatedMovieData : movie
-  //     );
-  //     setData(updatedMovies);
-  //     setFilteredMovies(updatedMovies); // Mettez à jour la liste filtrée si nécessaire
-
-  //     // Logique additionnelle si besoin (comme une confirmation visuelle)
-  //     console.info("Mise à jour réussie", updatedMovieData);
-  //   } catch (error) {
-  //     console.error("Erreur lors de la mise à jour:", error);
-  //   } finally {
-  //     // Retour au curseur normal après la mise à jour
-  //     document.body.style.cursor = 'default';
-  //   }
-  // };
-
-  // DELETE MOVIE transmis en prop à MovieCard vi MovieThumbnail
-  const handleDeleteMovie = async (movieId) => {
-    console.info("Tentative de suppression du film avec ID:", movieId);
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this movie?"
-    );
-    if (!confirmDelete) {
-      console.info("Suppression annulée par l'utilisateur.");
-      return;
-    }
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/movie/${movieId}`,
-        {
-          method: "DELETE",
-        }
-      );
-
-      console.info("Réponse du serveur:", response); // Log de la réponse du serveur
-
-      if (response.ok) {
-        const updatedData = data.filter((movie) => movie.id !== movieId);
-        setData(updatedData);
-        setFilteredMovies(updatedData); // Mettez à jour la liste filtrée si nécessaire
-        // Alerte pour confirmer la suppression
-        window.alert("Film supprimé avec succès");
-        console.info("Film supprimé avec succès");
-      } else {
-        window.alert("Erreur lors de la suppression du film");
-        console.error(
-          "Erreur lors de la suppression du film",
-          await response.text()
-        ); // Log l'erreur
-      }
-    } catch (error) {
-      console.error("Erreur durant la suppression:", error);
-    }
+  // MISE A JOUR AFFICHAGE SI DELETE MOVIE DANS MOVIECARD
+  const handleDeleteMovie = (movieId) => {
+    const updatedMovies = data.filter((movie) => movie.id !== movieId);
+    setData(updatedMovies);
+    setFilteredMovies(updatedMovies); // Mettez à jour la liste filtrée
   };
 
   return (

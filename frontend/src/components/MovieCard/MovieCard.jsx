@@ -27,9 +27,22 @@ import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogActions from "@mui/material/DialogActions";
+import Button from "@mui/material/Button";
 import TransferList from "../AdminFeatures/AddNewMovie/MovieItemList";
 
-function MovieCard({ movie, origin, homepage, onUpdateMovie, onDeleteMovie }) {
+function MovieCard({
+  movie,
+  origin,
+  homepage,
+  closeModal,
+  onUpdateMovie,
+  onDeleteMovie,
+}) {
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
   const [isModify, setIsModify] = useState(false);
   const [selectedKinds, setSelectedKinds] = useState([]);
@@ -61,6 +74,7 @@ function MovieCard({ movie, origin, homepage, onUpdateMovie, onDeleteMovie }) {
     story: movie.story || "",
     location: movie.location || "",
     fileSize: movie.fileSize || "",
+    comment: movie.comment || "",
   });
 
   console.info("movieData1", movieData);
@@ -139,9 +153,20 @@ function MovieCard({ movie, origin, homepage, onUpdateMovie, onDeleteMovie }) {
   }, [movie]);
 
   // TOGGLE trailer
+  // const [isTrailerVisible, setIsTrailerVisible] = useState(false);
+  // const toggleTrailerVideo = () => {
+  //   setIsTrailerVisible(!isTrailerVisible);
+  // };
   const [isTrailerVisible, setIsTrailerVisible] = useState(false);
+  const [isTrailerLoading, setIsTrailerLoading] = useState(false);
+
   const toggleTrailerVideo = () => {
     setIsTrailerVisible(!isTrailerVisible);
+    setIsTrailerLoading(true); // Active le chargement lors de l'ouverture du trailer
+  };
+
+  const handleTrailerReady = () => {
+    setIsTrailerLoading(false); // Cache le loader quand la vidéo est prête
   };
 
   // MODIFY MODE - modifier champs TextField
@@ -658,12 +683,6 @@ function MovieCard({ movie, origin, homepage, onUpdateMovie, onDeleteMovie }) {
   // };
   // --------------------------------------------------------------
 
-  // DELETE MOVIE
-  const handleDelete = () => {
-    if (onDeleteMovie) {
-      onDeleteMovie(movieData.id); // Appel de la fonction reçue via les props
-    }
-  };
   // UPDATE MODE
   const isModifyMode = () => {
     setIsModify(true);
@@ -687,93 +706,139 @@ function MovieCard({ movie, origin, homepage, onUpdateMovie, onDeleteMovie }) {
   };
 
   // UPDATE MOVIE
+  const [isConfirmUpdateOpen, setIsConfirmUpdateOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
+  const handleOpenUpdateConfirm = () => setIsConfirmUpdateOpen(true);
+  const handleCloseUpdateConfirm = () => setIsConfirmUpdateOpen(false);
+
   const handleUpdateMovie = async () => {
-    const confirmUpdate = window.confirm(
-      "Are you sure you want to update this film?"
-    );
+    setIsConfirmUpdateOpen(false);
 
-    if (confirmUpdate) {
-      setIsUpdating(true); // Affiche le Backdrop
+    setIsUpdating(true); // Affiche le Backdrop
 
-      try {
-        // Mettre à jour l'image (s'il y a un fichier sélectionné)
-        if (fileCoverRef.current.files[0]) {
-          await handleUpdateImage(); // Attendre que l'image soit mise à jour avant de poursuivre
-          // console.info("Image successfully updated");
-        }
-
-        // Mettre à jour les autres informations du film
-        const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/movie/${movieData.id}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              title: movieData.title,
-              altTitle: movieData.altTitle,
-              year: movieData.year,
-              duration: movieData.duration,
-              trailer: movieData.trailer,
-              story: movieData.story,
-              location: movieData.location,
-              videoFormat: movieData.videoFormat,
-              videoSupport: movieData.videoSupport,
-              fileSize: movieData.fileSize,
-              vostfr: movieData.vostfr,
-              multi: movieData.multi,
-              genres: selectedKinds.map((genre) => genre.id),
-              directors: selectedDirectors.map((director) => director.id),
-              castings: selectedCasting.map((cast) => cast.id),
-              screenwriters: selectedScreenwriters.map(
-                (screenwriter) => screenwriter.id
-              ),
-              musics: selectedMusic.map((compositor) => compositor.id),
-              studios: selectedStudios.map((studio) => studio.id),
-              countries: selectedCountries.map((country) => country.id),
-              // !!! ajouter les items que l'on met à jour !!!!
-            }),
-          }
-        );
-
-        if (response.ok) {
-          console.info("Film mis à jour avec succès");
-          const updatedMovie = await response.json();
-          console.info("updatedMovie", updatedMovie);
-          setMovieData(updatedMovie[0]);
-          onUpdateMovie(updatedMovie[0]);
-          closeModifyMode();
-
-          // Vérifier si `genres` est une chaîne de caractères ou un tableau
-          let genresArray = [];
-          if (typeof updatedMovie[0].genres === "string") {
-            // Diviser la chaîne en un tableau en utilisant la virgule comme séparateur
-            genresArray = updatedMovie[0].genres
-              .split(",")
-              .map((genre) => genre.trim());
-          } else if (Array.isArray(updatedMovie[0].genres)) {
-            // Si c'est déjà un tableau, on le laisse tel quel
-            genresArray = updatedMovie[0].genres.map((g) => g.name);
-          }
-
-          // Rafraîchir les genres après la mise à jour
-          const genresNames = genresArray.join(", ");
-          setSelectedKinds(genresNames); // Mets à jour les genres avec les nouvelles données
-        } else {
-          console.error("Erreur lors de la mise à jour");
-        }
-      } catch (error) {
-        console.error(
-          "Erreur lors de la mise à jour du film et de l'image",
-          error
-        );
-      } finally {
-        setIsUpdating(false); // Masque le Backdrop une fois terminé
+    try {
+      // Mettre à jour l'image (s'il y a un fichier sélectionné)
+      if (fileCoverRef.current.files[0]) {
+        await handleUpdateImage(); // Attendre que l'image soit mise à jour avant de poursuivre
+        // console.info("Image successfully updated");
       }
-    } // end confirm update
+
+      // Mettre à jour les autres informations du film
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/movie/${movieData.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            title: movieData.title,
+            altTitle: movieData.altTitle,
+            year: movieData.year,
+            duration: movieData.duration,
+            trailer: movieData.trailer,
+            story: movieData.story,
+            location: movieData.location,
+            videoFormat: movieData.videoFormat,
+            videoSupport: movieData.videoSupport,
+            fileSize: movieData.fileSize,
+            vostfr: movieData.vostfr,
+            multi: movieData.multi,
+            comment: movieData.comment,
+            genres: selectedKinds.map((genre) => genre.id),
+            directors: selectedDirectors.map((director) => director.id),
+            castings: selectedCasting.map((cast) => cast.id),
+            screenwriters: selectedScreenwriters.map(
+              (screenwriter) => screenwriter.id
+            ),
+            musics: selectedMusic.map((compositor) => compositor.id),
+            studios: selectedStudios.map((studio) => studio.id),
+            countries: selectedCountries.map((country) => country.id),
+            // !!! ajouter les items que l'on met à jour !!!!
+          }),
+        }
+      );
+
+      if (response.ok) {
+        toast.success("Film mis à jour avec succès");
+        console.info("Film mis à jour avec succès");
+        const updatedMovie = await response.json();
+        console.info("updatedMovie", updatedMovie);
+        setMovieData(updatedMovie[0]);
+        onUpdateMovie(updatedMovie[0]);
+        closeModifyMode();
+        closeModal();
+
+        // // Vérifier si `genres` est une chaîne de caractères ou un tableau
+        // let genresArray = [];
+        // if (typeof updatedMovie[0].genres === "string") {
+        //   // Diviser la chaîne en un tableau en utilisant la virgule comme séparateur
+        //   genresArray = updatedMovie[0].genres
+        //     .split(",")
+        //     .map((genre) => genre.trim());
+        // } else if (Array.isArray(updatedMovie[0].genres)) {
+        //   // Si c'est déjà un tableau, on le laisse tel quel
+        //   genresArray = updatedMovie[0].genres.map((g) => g.name);
+        // }
+
+        // // Rafraîchir les genres après la mise à jour
+        // const genresNames = genresArray.join(", ");
+        // setSelectedKinds(genresNames); // Mets à jour les genres avec les nouvelles données
+      } else {
+        console.error("Erreur lors de la mise à jour");
+      }
+    } catch (error) {
+      console.error(
+        "Erreur lors de la mise à jour du film et de l'image",
+        error
+      );
+    } finally {
+      setIsUpdating(false); // Masque le Backdrop une fois terminé
+    }
+  };
+
+  // DELETE MOVIE
+  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
+  const [movieIdToDelete, setMovieIdToDelete] = useState(null);
+
+  const handleOpenDeleteConfirm = (id) => {
+    setMovieIdToDelete(id); // Stocke l'ID du film à supprimer
+    setIsConfirmDeleteOpen(true); // Ouvre le dialogue
+  };
+
+  const handleCloseDeleteConfirm = () => {
+    setIsConfirmDeleteOpen(false);
+    setMovieIdToDelete(null); // Réinitialise l'ID du film
+  };
+
+  const handleDeleteMovie = async () => {
+    if (!movieIdToDelete) return; // Vérifie si un ID est bien défini
+
+    console.info("Tentative de suppression du film avec ID:", movieIdToDelete);
+    setIsConfirmDeleteOpen(false);
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/movie/${movieData.id}`,
+        { method: "DELETE" }
+      );
+
+      if (response.ok) {
+        toast.info("Film supprimé avec succès");
+        console.info("Film supprimé avec succès");
+        onDeleteMovie(movieData.id); // Appeler la fonction de rappel
+        closeModal();
+      } else {
+        toast.error("Erreur lors de la suppression du film");
+        console.error(
+          "Erreur lors de la suppression du film",
+          await response.text()
+        );
+      }
+    } catch (error) {
+      console.error("Erreur durant la suppression:", error);
+    }
   };
 
   return (
@@ -975,13 +1040,26 @@ function MovieCard({ movie, origin, homepage, onUpdateMovie, onDeleteMovie }) {
               <p className="MovieCard_title">{movieData.title}</p>
               <div className="divider" />
               {isTrailerVisible ? (
-                <div className="MovieCard_trailer">
-                  <ReactPlayer
-                    url={movieData.trailer}
-                    className="video_player"
-                    controls
-                  />
-                </div>
+                <>
+                  <Backdrop
+                    sx={{
+                      color: "#fff",
+                      zIndex: (theme) => theme.zIndex.drawer + 1,
+                    }}
+                    open={isTrailerLoading}
+                  >
+                    <CircularProgress color="inherit" />
+                  </Backdrop>
+                  <div className="MovieCard_trailer">
+                    <ReactPlayer
+                      url={movieData.trailer}
+                      className="video_player"
+                      controls
+                      onReady={handleTrailerReady} // Appelé quand la vidéo est prête
+                      onStart={() => setIsTrailerLoading(false)}
+                    />
+                  </div>
+                </>
               ) : (
                 <>
                   <p className="MovieCard_info">{movieData.altTitle || ""}</p>
@@ -1521,6 +1599,35 @@ function MovieCard({ movie, origin, homepage, onUpdateMovie, onDeleteMovie }) {
                   },
                 }}
               />
+              <div className="divider" />
+              <TextField
+                label="Commentaire"
+                name="comment"
+                value={movieData.comment}
+                onChange={(e) => handleChange(e)}
+                multiline
+                fullWidth
+                sx={{
+                  width: "85%",
+                  "& .MuiInputLabel-root": {
+                    color: "white", // Couleur du label en blanc
+                  },
+                  "& .MuiInputBase-input": {
+                    color: "white", // Couleur du texte
+                  },
+                  "& .MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: "white", // Couleur de la bordure
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "orange", // Couleur de la bordure au hover
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                    },
+                  },
+                }}
+              />
             </div>
           ) : (
             <div className="MC_line2">
@@ -1565,6 +1672,15 @@ function MovieCard({ movie, origin, homepage, onUpdateMovie, onDeleteMovie }) {
                       )}
                     </>
                   )}
+                  {movieData.comment && (
+                    <>
+                      <div className="divider_dashed" />
+                      <p className="MovieCard_info">
+                        <span className="paraph_bolder">Commentaire:</span>{" "}
+                        {movieData.comment}
+                      </p>
+                    </>
+                  )}
                 </>
               )}
 
@@ -1605,7 +1721,7 @@ function MovieCard({ movie, origin, homepage, onUpdateMovie, onDeleteMovie }) {
                   />
                   <DoneOutlineIcon
                     className="item_movie_done_ico"
-                    onClick={() => handleUpdateMovie()}
+                    onClick={handleOpenUpdateConfirm}
                   />
                 </>
               ) : (
@@ -1616,10 +1732,50 @@ function MovieCard({ movie, origin, homepage, onUpdateMovie, onDeleteMovie }) {
                   />
                   <DeleteIcon
                     className="item_movie_delete_ico"
-                    onClick={() => handleDelete(movieData.id)}
+                    onClick={() => handleOpenDeleteConfirm(movieData.id)}
                   />
                 </>
               )}
+
+              <Dialog
+                open={isConfirmUpdateOpen}
+                onClose={handleCloseUpdateConfirm}
+              >
+                <DialogTitle>Confirmer la mise à jour</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    Es-tu sûr de vouloir mettre à jour ce film ?
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleCloseUpdateConfirm} color="primary">
+                    Annuler
+                  </Button>
+                  <Button onClick={handleUpdateMovie} color="primary" autoFocus>
+                    Confirmer
+                  </Button>
+                </DialogActions>
+              </Dialog>
+
+              <Dialog
+                open={isConfirmDeleteOpen}
+                onClose={handleCloseDeleteConfirm}
+              >
+                <DialogTitle>Confirmer Delete</DialogTitle>
+                <DialogContent>
+                  <DialogContentText>
+                    Es-tu sûr de vouloir effacer ce film ?
+                  </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={handleCloseDeleteConfirm} color="primary">
+                    Annuler
+                  </Button>
+                  <Button onClick={handleDeleteMovie} color="primary" autoFocus>
+                    Confirmer
+                  </Button>
+                </DialogActions>
+              </Dialog>
 
               <Backdrop
                 sx={(theme) => ({

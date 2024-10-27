@@ -95,6 +95,7 @@ const addMovie = async (req, res) => {
       tags,
       vostfr,
       multi,
+      comment,
     } = req.body;
     console.info("genres in create movie", req.body);
 
@@ -130,6 +131,7 @@ const addMovie = async (req, res) => {
       idIMDb: idIMDb || null,
       vostfr: vostfr || 0,
       multi: multi || 0,
+      comment: comment || null,
     };
 
     // Insertion des données dans la base
@@ -149,7 +151,8 @@ const addMovie = async (req, res) => {
       movieData.idTheMovieDb,
       movieData.idIMDb,
       movieData.vostfr,
-      movieData.multi
+      movieData.multi,
+      movieData.comment
     );
 
     const [[{ movieId }]] = await editingMovieModel.getLastInsertedMovieId();
@@ -751,6 +754,7 @@ const editMovieById = async (req, res) => {
       musics,
       studios,
       countries,
+      comment,
       // !!! ajouter les update item que l'on envoi par la route !!!
     } = req.body;
     console.info("req.body:", req.body);
@@ -770,6 +774,7 @@ const editMovieById = async (req, res) => {
       fileSize,
       vostfr,
       multi,
+      comment,
       id
     );
 

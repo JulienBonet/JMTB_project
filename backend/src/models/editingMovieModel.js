@@ -16,10 +16,11 @@ const insertMovie = (
   idTheMovieDb,
   idIMDb,
   vostfr,
-  multi
+  multi,
+  comment
 ) =>
   db.query(
-    "INSERT INTO movies (title, altTitle, year, duration, cover, trailer, pitch, story, location, videoFormat, videoSupport, fileSize, idTheMovieDb, idIMDb, vostfr, multi) VALUES (?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+    "INSERT INTO movies (title, altTitle, year, duration, cover, trailer, pitch, story, location, videoFormat, videoSupport, fileSize, idTheMovieDb, idIMDb, vostfr, multi, comment) VALUES (?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
     [
       title,
       altTitle,
@@ -37,6 +38,7 @@ const insertMovie = (
       idIMDb,
       vostfr,
       multi,
+      comment,
     ]
   );
 
@@ -53,10 +55,11 @@ const updateMovie = (
   fileSize,
   vostfr,
   multi,
+  comment,
   id
 ) =>
   db.query(
-    "UPDATE movies SET title = ?, altTitle = ?, year = ?, duration = ?, trailer = ?, story = ?, location = ?, videoFormat = ?, videoSupport = ?, fileSize = ?, vostfr = ?, multi = ? WHERE id = ?",
+    "UPDATE movies SET title = ?, altTitle = ?, year = ?, duration = ?, trailer = ?, story = ?, location = ?, videoFormat = ?, videoSupport = ?, fileSize = ?, vostfr = ?, multi = ?, comment = ? WHERE id = ?",
     [
       title,
       altTitle,
@@ -70,6 +73,7 @@ const updateMovie = (
       fileSize,
       vostfr,
       multi,
+      comment,
       id,
     ]
   );

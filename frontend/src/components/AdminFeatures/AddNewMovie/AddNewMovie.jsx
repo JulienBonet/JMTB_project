@@ -58,6 +58,7 @@ function AddNewMovie() {
     duration: "",
     pitch: "",
     story: "",
+    comment: "",
     posterUrl: "",
     trailer: "",
     location: "",
@@ -1236,32 +1237,28 @@ function AddNewMovie() {
                 variant="outlined"
               />
             </Box>
-            {/* movie TAG */}
-            <div className="adm-l1_item">
-              <Box
-                component="form"
-                sx={{ "& > :not(style)": { width: "88ch" } }}
-                noValidate
-                autoComplete="off"
-                display="flex"
-                alignItems="center"
-                gap={4}
-                p={2}
-              >
-                <TextField
-                  id="outlined-read-only-input"
-                  label="Tags"
-                  value={getSelectedTagsNames(selectedTags)}
-                  InputProps={{
-                    readOnly: true,
-                  }}
-                />
-              </Box>
-              <AddCircleOutlineIcon
-                className="Btn_Add_itemsPopUp"
-                onClick={() => handleOpenModal("tags/sorted_id")}
+            {/* movie COMMENTAIRE */}
+            <Box
+              component="form"
+              sx={{ "& > :not(style)": { width: "100ch" } }}
+              noValidate
+              autoComplete="off"
+              display="flex"
+              alignItems="center"
+              gap={4}
+              p={2}
+              onSubmit={handleFormSubmit}
+            >
+              <TextField
+                name="comment"
+                value={movie.comment} // Assurez-vous que ça soit `movie.comment`
+                onChange={handleInputChange} // Utiliser la même fonction pour gérer les changements
+                id="outlined-multiline-static"
+                label="Commentaire"
+                multiline
+                rows={4}
               />
-            </div>
+            </Box>
           </div>
 
           <div className="Adm_l1b">
@@ -1469,6 +1466,32 @@ function AddNewMovie() {
               <AddCircleOutlineIcon
                 className="Btn_Add_itemsPopUp"
                 onClick={() => handleOpenModal("languages/sorted_id")}
+              />
+            </div>
+            {/* movie TAG */}
+            <div className="adm-l1_item">
+              <Box
+                component="form"
+                sx={{ "& > :not(style)": { width: "75ch" } }}
+                noValidate
+                autoComplete="off"
+                display="flex"
+                alignItems="center"
+                gap={4}
+                p={2}
+              >
+                <TextField
+                  id="outlined-read-only-input"
+                  label="Tags"
+                  value={getSelectedTagsNames(selectedTags)}
+                  InputProps={{
+                    readOnly: true,
+                  }}
+                />
+              </Box>
+              <AddCircleOutlineIcon
+                className="Btn_Add_itemsPopUp"
+                onClick={() => handleOpenModal("tags/sorted_id")}
               />
             </div>
           </div>

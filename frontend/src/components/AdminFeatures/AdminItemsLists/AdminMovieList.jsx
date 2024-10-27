@@ -7,6 +7,11 @@ import Box from "@mui/material/Box";
 import Pagination from "@mui/material/Pagination";
 import { Button, Container } from "@mui/material";
 import Modal from "@mui/material/Modal";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogActions from "@mui/material/DialogActions";
 import "./adminLists.css";
 import PreviewIcon from "@mui/icons-material/Preview";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -94,20 +99,29 @@ function AdminMovieList() {
     }
   };
 
-  // Fonction pour supprimer un film
-  const handleDeleteMovie = async (id) => {
-    console.info("Tentative de suppression du film avec ID:", id);
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this movie?"
-    );
-    if (!confirmDelete) {
-      console.info("Suppression annulée par l'utilisateur.");
-      return;
-    }
+  // DELETE MOVIE
+  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
+  const [movieIdToDelete, setMovieIdToDelete] = useState(null);
+
+  const handleOpenDeleteConfirm = (id) => {
+    setMovieIdToDelete(id); // Stocke l'ID du film à supprimer
+    setIsConfirmDeleteOpen(true); // Ouvre le dialogue
+  };
+
+  const handleCloseDeleteConfirm = () => {
+    setIsConfirmDeleteOpen(false);
+    setMovieIdToDelete(null); // Réinitialise l'ID du film
+  };
+
+  const handleDeleteMovie = async () => {
+    if (!movieIdToDelete) return; // Vérifie si un ID est bien défini
+
+    console.info("Tentative de suppression du film avec ID:", movieIdToDelete);
+    setIsConfirmDeleteOpen(false);
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/movie/${id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/api/movie/${movieIdToDelete}`,
         {
           method: "DELETE",
         }
@@ -116,8 +130,10 @@ function AdminMovieList() {
       console.info("Réponse du serveur:", response); // Log de la réponse du serveur
 
       if (response.ok) {
-        setData(data.filter((movie) => movie.id !== id)); // Met à jour la liste des films
-        setFilteredData(filteredData.filter((movie) => movie.id !== id)); // Met à jour les données filtrées
+        setData(data.filter((movie) => movie.id !== movieIdToDelete)); // Met à jour la liste des films
+        setFilteredData(
+          filteredData.filter((movie) => movie.id !== movieIdToDelete)
+        ); // Met à jour les données filtrées
         setSelectedMovie(null);
         // Alerte pour confirmer la suppression
         toast.info("Film supprimé avec succès");
@@ -131,6 +147,11 @@ function AdminMovieList() {
     } catch (error) {
       console.error("Erreur durant la suppression:", error);
     }
+  };
+
+  const handleDeleteMovieFromMovieCard = (movieId) => {
+    const updatedMovies = data.filter((movie) => movie.id !== movieId);
+    setData(updatedMovies);
   };
 
   return (
@@ -187,7 +208,7 @@ function AdminMovieList() {
                 <td>
                   <DeleteIcon
                     className="admin_tools_ico"
-                    onClick={() => handleDeleteMovie(movieData.id)}
+                    onClick={() => handleOpenDeleteConfirm(movieData.id)}
                   />
                 </td>
               </tr>
@@ -195,6 +216,22 @@ function AdminMovieList() {
           )}
         </tbody>
       </table>
+      <Dialog open={isConfirmDeleteOpen} onClose={handleCloseDeleteConfirm}>
+        <DialogTitle>Confirmer Delete</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Es-tu sûr de vouloir effacer ce film ?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDeleteConfirm} color="primary">
+            Annuler
+          </Button>
+          <Button onClick={handleDeleteMovie} color="primary" autoFocus>
+            Confirmer
+          </Button>
+        </DialogActions>
+      </Dialog>
       <Box
         sx={{ display: "flex", justifyContent: "center", marginTop: "20px" }}
       >
@@ -225,7 +262,7 @@ function AdminMovieList() {
                 movie={selectedMovie}
                 origin={origin}
                 onUpdateMovie={updateMovieData}
-                onDeleteMovie={handleDeleteMovie}
+                onDeleteMovie={handleDeleteMovieFromMovieCard}
                 closeModal={closeModal}
               />
             </Container>
