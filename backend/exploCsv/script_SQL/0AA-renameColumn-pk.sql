@@ -25,8 +25,25 @@ CHANGE COLUMN `id` id INT AUTO_INCREMENT PRIMARY KEY;
 ALTER TABLE studio
 CHANGE COLUMN `id` id INT AUTO_INCREMENT PRIMARY KEY;
 
-ALTER TABLE tag
-CHANGE COLUMN `id` id INT AUTO_INCREMENT PRIMARY KEY;
+-- ALTER TABLE tag
+-- CHANGE COLUMN `id` id INT AUTO_INCREMENT PRIMARY KEY;
+
+CREATE TABLE tag (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name TEXT NULL DEFAULT NULL
+);
+
+SELECT * FROM tag;
+
+CREATE TABLE movie_tag (
+    tagId INT NOT NULL,
+    movieId INT NOT NULL,
+    PRIMARY KEY (tagId, movieId),
+    FOREIGN KEY (tagId) REFERENCES tag(id) ON DELETE CASCADE,
+    FOREIGN KEY (movieId) REFERENCES movies(id) ON DELETE CASCADE
+);
+
+SELECT * FROM movie_tag;
 
 ALTER TABLE country
 CHANGE COLUMN `id` id INT AUTO_INCREMENT PRIMARY KEY;
@@ -130,16 +147,17 @@ CHANGE COLUMN `Numéro` `movieId` INT;
 
 SELECT * FROM movie_studio;
 
-ALTER TABLE tag
-CHANGE COLUMN `Etiquettes` name TEXT NULL DEFAULT NULL;
+-- commentaire : souci avec l'export EMDB, plus d'étiquettes :( donc a la place on les crée ici
+-- ALTER TABLE tag
+-- CHANGE COLUMN `Etiquettes` name TEXT NULL DEFAULT NULL;
 
-SELECT * FROM tag;
+-- SELECT * FROM tag;
 
-ALTER TABLE movie_tag
-CHANGE COLUMN `id` `tagId` INT,
-CHANGE COLUMN `Numéro` `movieId` INT;
+-- ALTER TABLE movie_tag
+-- CHANGE COLUMN `id` `tagId` INT,
+-- CHANGE COLUMN `Numéro` `movieId` INT;
 
-SELECT * FROM movie_tag;
+
 
 ALTER TABLE country
 CHANGE COLUMN `Pays` name TEXT NULL DEFAULT NULL;

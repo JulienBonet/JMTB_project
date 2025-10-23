@@ -1,0 +1,8 @@
+use jmdb2;
+
+ALTER TABLE movies 
+CHANGE COLUMN `Chemin de l'affiche` cover TEXT NULL DEFAULT NULL;
+ALTER TABLE movies 
+CHANGE COLUMN `ID IMDb` idIMDb DOUBLE NULL DEFAULT NULL;
+DESCRIBE movies;
+

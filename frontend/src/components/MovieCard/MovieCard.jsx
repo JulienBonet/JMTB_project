@@ -106,6 +106,8 @@ function MovieCard({
     casting,
   } = movieData;
 
+  console.info("movieData", movieData);
+
   // FETCH MOVIE DATAS
   const fetchMovieData = () => {
     if (origin === "country") {

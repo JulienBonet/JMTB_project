@@ -1,7 +1,7 @@
 USE jmdb2;
 
 -- DIRECTOR TABLE
-DELETE FROM director WHERE id = 1832;
+DELETE FROM director WHERE id = 1919;
 
 SET @maxId = (SELECT MAX(id) FROM director);
 SET @alterStmt = CONCAT('ALTER TABLE director AUTO_INCREMENT = ', @maxId + 1);
@@ -12,7 +12,7 @@ DEALLOCATE PREPARE stmt;
 SELECT * FROM director;
 
 -- CASTING TABLE
-DELETE FROM casting WHERE id = 10157;
+DELETE FROM casting WHERE id = 10147;
 
 SET @maxId = (SELECT MAX(id) FROM casting);
 SET @alterStmt = CONCAT('ALTER TABLE casting AUTO_INCREMENT = ', @maxId + 1);
@@ -23,7 +23,7 @@ DEALLOCATE PREPARE stmt;
 SELECT * FROM casting;
 
 -- SCREENWRITER TABLE
-DELETE FROM screenwriter WHERE id = 3996;
+DELETE FROM screenwriter WHERE id = 4133;
 
 SET @maxId = (SELECT MAX(id) FROM screenwriter);
 SET @alterStmt = CONCAT('ALTER TABLE screenwriter AUTO_INCREMENT = ', @maxId + 1);
@@ -34,7 +34,7 @@ DEALLOCATE PREPARE stmt;
 SELECT * FROM screenwriter;
 
 -- MUSIC TABLE
-DELETE FROM music WHERE id = 1318;
+DELETE FROM music WHERE id = 1376;
 
 SET @maxId = (SELECT MAX(id) FROM music);
 SET @alterStmt = CONCAT('ALTER TABLE music AUTO_INCREMENT = ', @maxId + 1);
@@ -45,7 +45,7 @@ DEALLOCATE PREPARE stmt;
 SELECT * FROM music;
 
 -- STUDIO TABLE
-DELETE FROM studio WHERE id = 1003;
+DELETE FROM studio WHERE id = 1052;
 
 SET @maxId = (SELECT MAX(id) FROM studio);
 SET @alterStmt = CONCAT('ALTER TABLE studio AUTO_INCREMENT = ', @maxId + 1);
@@ -78,7 +78,7 @@ DEALLOCATE PREPARE stmt;
 SELECT * FROM language;
 
 -- COUNTRY TABLE
-DELETE FROM country WHERE id = 47;
+DELETE FROM country WHERE id = 49;
 
 SET @maxId = (SELECT MAX(id) FROM country);
 SET @alterStmt = CONCAT('ALTER TABLE country AUTO_INCREMENT = ', @maxId + 1);
@@ -88,13 +88,13 @@ DEALLOCATE PREPARE stmt;
 
 SELECT * FROM country;
 
--- TAG TABLE
-DELETE FROM tag WHERE id = 208;
+-- TAG TABLE (mis en commentaire car inutile si la table tag est vide)
+-- DELETE FROM tag WHERE id = 209;
 
-SET @maxId = (SELECT MAX(id) FROM tag);
-SET @alterStmt = CONCAT('ALTER TABLE tag AUTO_INCREMENT = ', @maxId + 1);
-PREPARE stmt FROM @alterStmt;
-EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
+-- SET @maxId = (SELECT MAX(id) FROM tag);
+-- SET @alterStmt = CONCAT('ALTER TABLE tag AUTO_INCREMENT = ', @maxId + 1);
+-- PREPARE stmt FROM @alterStmt;
+-- EXECUTE stmt;
+-- DEALLOCATE PREPARE stmt;
 
-SELECT * FROM tag;
+-- SELECT * FROM tag;
