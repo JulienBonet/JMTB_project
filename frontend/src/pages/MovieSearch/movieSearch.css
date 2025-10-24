@@ -1,3 +1,14 @@
+main {
+  display: flex;
+  flex-direction: column;
+  height: 90vh;
+  overflow: hidden;
+}
+
+.search_bar_contents {
+  flex: 0 0 auto; /* prend juste sa hauteur */
+}
+
 .search_bar_position {
   display: flex;
   justify-content: center;
@@ -57,29 +68,23 @@
 }
 
 .search_bear_position {
+  flex: 1 1 auto;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  min-height: calc(100vh - 180px);
-}
-.MovieThumbnails_container,
-.search_bear_background_container {
-  display: flex;
-  justify-content: space-evenly;
-  border: solid 1px white;
-  border-radius: 25px;
-  padding: 2rem 0;
-  width: 95%;
-  height: 568px;
 }
 
 .MovieThumbnails_container {
+  width: 95%;
+  display: flex;
   justify-content: center;
-  overflow: auto;
+  padding-top: 2rem;
 }
+
 .MovieThumbnails_Loader {
   align-items: center;
+  justify-content: center;
 }
 .Search_pitch_container {
   display: flex;
@@ -103,12 +108,19 @@
   width: 0;
   height: 0;
 }
-.MovieThumbnails {
+/* .MovieThumbnails {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-start;
   width: 90%;
+} */
+
+.MovieThumbnails {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
 }
+
 .NoMovieMessageContainer {
   width: 100%;
   height: 100%;
