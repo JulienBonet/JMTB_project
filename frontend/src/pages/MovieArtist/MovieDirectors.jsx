@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useLoaderData } from "react-router-dom";
 import { createTheme } from "@mui/material/styles";
 import "./movieArtist.css";
-import "./movieArtistMediaQueries.css";
+// import "./movieArtistMediaQueries.css";
 import ArtistList from "../../components/ArtistList/ArtistList";
 import ArtistFilmo from "../../components/ArtistFilmo/ArtistFilmo";
 import MovieArtistSearchBar from "../../components/MovieArtistSearchBar/MovieArtistSearchBar";
@@ -218,7 +218,7 @@ function MovieDirectors() {
   };
 
   return (
-    <main>
+    <main className="Main_movieArtistPage">
       <section className="artists_content">
         <section className="search_bar_contents">
           {/* <section className="search_bar_position">

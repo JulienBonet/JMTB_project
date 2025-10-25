@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import MovieCount from "../MovieCount/MovieCount";
+import MovieCountArtistMovie from "../MovieCountArtistMovie/MovieCountArtistMovie";
 import MovieThumbnail from "../MovieThumbnail/MovieThumbnail";
 import DirectorBear from "../../assets/ico/director_bear_01.jpeg";
 import ActorBear from "../../assets/ico/actor-bear.jpg";
@@ -90,17 +90,18 @@ function ArtistFilmo({
       )}
       {selectedArtist !== "" && (
         <section className="artists_filmo">
-          <div className="scroll_zone scroll_zone_2">
-            <div className="artists_filmo_thumbs">
-              {data.map((filmo) => (
-                <MovieThumbnail
-                  key={filmo.id}
-                  data={filmo}
-                  onUpdateMovie={onUpdateMovie}
-                  onDeleteMovie={onDeleteMovie}
-                />
-              ))}
-            </div>
+          <div className="MovieCountArtistMovie_container">
+            <MovieCountArtistMovie movieAmount={movieAmount} />
+          </div>
+          <div className="artists_filmo_thumbs">
+            {data.map((filmo) => (
+              <MovieThumbnail
+                key={filmo.id}
+                data={filmo}
+                onUpdateMovie={onUpdateMovie}
+                onDeleteMovie={onDeleteMovie}
+              />
+            ))}
           </div>
         </section>
       )}
