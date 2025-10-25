@@ -17,5 +17,5 @@
 }
 
 .alphabetic_btn:disabled svg {
-  color: gray;
+  color: var(--color-04);
 }
