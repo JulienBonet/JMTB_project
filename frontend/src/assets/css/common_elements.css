@@ -34,9 +34,16 @@
   border-radius: 10px;
   border: 0px groove #ffffff;
 }
-.scroll_zone {
+/* .scroll_zone {
   display: flex;
   justify-content: center;
   overflow: auto;
+  width: 100%;
+} */
+
+.scroll_zone {
+  display: flex;
+  justify-content: center;
+  overflow: hidden !important;
   width: 100%;
 }

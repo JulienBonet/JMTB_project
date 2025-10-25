@@ -190,7 +190,7 @@ function MovieSearch() {
   };
 
   return (
-    <main>
+    <main className="Main_movieSearchPage">
       <section className="search_bar_contents">
         <section className="search_bar_position">
           <div className="search_bar_container">
@@ -217,6 +217,8 @@ function MovieSearch() {
               search={search}
               selectedYearData={selectedYear}
             />
+            <AlphabeticBtn onClick={handleAlphabeticBtnClick} />
+            <ChronologicBtn onClick={handleChronologicBtnClick} />
             <CachedIcon
               className="reset_search_btn"
               onClick={handleResetSearch}
@@ -226,6 +228,7 @@ function MovieSearch() {
       </section>
 
       <div className="dashed_secondary_bar" />
+      <MovieCount movieAmount={movieAmount} />
 
       <section className="search_bear_position">
         {isLoading && (
@@ -235,36 +238,28 @@ function MovieSearch() {
         )}
         {!isLoading && (
           <div className="MovieThumbnails_container">
-            <div className="scroll_zone">
-              <div className="MovieThumbnails">
-                {filteredMovies.length > 0 ? (
-                  filteredMovies.map((movieData) => (
-                    <MovieThumbnail
-                      key={movieData.id}
-                      data={movieData}
-                      onDeleteMovie={handleDeleteMovie}
-                      onUpdateMovie={handleUpdateMovie}
-                    />
-                  ))
-                ) : (
-                  <div className="NoMovieMessageContainer">
-                    <p>NO MOVIE FOUND ...</p>
-                    <CachedIcon
-                      className="reset_search_btn_NoMovie"
-                      onClick={handleResetSearch}
-                    />
-                  </div>
-                )}
-              </div>
+            <div className="MovieThumbnails">
+              {filteredMovies.length > 0 ? (
+                filteredMovies.map((movieData) => (
+                  <MovieThumbnail
+                    key={movieData.id}
+                    data={movieData}
+                    onDeleteMovie={handleDeleteMovie}
+                    onUpdateMovie={handleUpdateMovie}
+                  />
+                ))
+              ) : (
+                <div className="NoMovieMessageContainer">
+                  <p>NO MOVIE FOUND ...</p>
+                  <CachedIcon
+                    className="reset_search_btn_NoMovie"
+                    onClick={handleResetSearch}
+                  />
+                </div>
+              )}
             </div>
           </div>
         )}
-
-        {/* <div className="btn_sort_container_search">
-          <AlphabeticBtn onClick={handleAlphabeticBtnClick} />
-          <MovieCount movieAmount={movieAmount} />
-          <ChronologicBtn onClick={handleChronologicBtnClick} />
-        </div> */}
       </section>
     </main>
   ); // return

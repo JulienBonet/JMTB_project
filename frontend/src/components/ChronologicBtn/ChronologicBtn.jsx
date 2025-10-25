@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Button from "@mui/material/Button";
+import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
 import "./chronologicBtn.css";
 
 function ChronologicBtn({ onClick, origin, selectedItems }) {
@@ -15,14 +16,11 @@ function ChronologicBtn({ onClick, origin, selectedItems }) {
       },
     },
   });
+
   const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
-    if (selectedItems !== "") {
-      setExpanded(true);
-    } else {
-      setExpanded(false);
-    }
+    setExpanded(selectedItems !== "");
   }, [selectedItems]);
 
   return (
@@ -31,12 +29,14 @@ function ChronologicBtn({ onClick, origin, selectedItems }) {
         variant="outlined"
         color="sortedBtn"
         className={
-          origin !== "artists" ? "alphabetic_btn" : "alphabetic_btn_artists"
+          origin !== "artists"
+            ? `chronologic_btn ${expanded ? "active" : ""}`
+            : `chronologic_btn_artists ${expanded ? "active" : ""}`
         }
         onClick={onClick}
         disabled={!expanded}
       >
-        TRI CHRONOLOGIQUE
+        <AccessTimeFilledIcon />
       </Button>
     </ThemeProvider>
   );

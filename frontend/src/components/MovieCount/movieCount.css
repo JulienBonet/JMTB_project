@@ -7,25 +7,26 @@
   font-family: var(--font-06);
   font-size: 1rem;
   text-align: center;
-  color: var(--color-02);
-  padding: 10px 1rem;
+  color: var(--color-01);
+  padding: 10px 0;
   border: solid 1px white;
   border-top: 0;
   border-radius: 0 0 20px 20px;
+  width: 15%;
 }
 
-.whiteString {
-  color: var(--color-02);
+.movieAmountColor {
+  color: var(--color-06);
 }
 
 @media (min-width: 1024px) and (max-width: 1279px) {
   .Amount_info {
-      font-size: small !important;
+    font-size: small !important;
   }
 }
 
 @media (min-width: 768px) and (max-width: 1023px) {
   .Amount_info {
-      font-size: small !important;
-    }
+    font-size: small !important;
+  }
 }

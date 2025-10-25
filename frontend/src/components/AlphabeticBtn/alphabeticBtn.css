@@ -1,24 +1,21 @@
-.alphabetic_btn,
-.alphabetic_btn_artists {
-  font-family: var(--font-06);
-  text-align: center;
+.alphabetic_btn svg,
+.alphabetic_btn_artists svg {
   color: var(--color-01);
-  border-radius: 0 0 15px 15px;
-  width: min(13%);
-  cursor: pointer;
-  transition: height 0.3s ease-in-out;
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
 }
 
-.alphabetic_btn_artists {
-  width: 15%;
-  line-height: 0;
+.alphabetic_btn:hover svg,
+.alphabetic_btn_artists:hover svg {
+  color: var(--color-06);
 }
 
-.alphabetic_btn:hover,
-.alphabetic_btn_artists:hover {
-  color: var(--color-03);
+.alphabetic_btn:active svg {
+  color: var(--color-02);
+  transform: rotate(20deg);
 }
-.alphabetic_btn:active {
-  border: solid 1px var(--color-03);
-  border-top: 0;
+
+.alphabetic_btn:disabled svg {
+  color: gray;
 }
