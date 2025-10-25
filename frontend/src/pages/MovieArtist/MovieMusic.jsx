@@ -5,6 +5,7 @@ import "./movieArtist.css";
 import "./movieArtistMediaQueries.css";
 import ArtistList from "../../components/ArtistList/ArtistList";
 import ArtistFilmo from "../../components/ArtistFilmo/ArtistFilmo";
+import MovieArtistSearchBar from "../../components/MovieArtistSearchBar/MovieArtistSearchBar";
 
 function MovieCasting() {
   // DATAS
@@ -202,20 +203,33 @@ function MovieCasting() {
     fetchMoviesByMusic();
   };
 
+  // FONCTION POUR BTN RESET SEARCH
+  const handleResetSearch = () => {
+    setSearch("");
+    SetSelectedLetter("a"); // lettre par défaut
+    setselectedMusic("");
+    setMovies([]);
+    setData([]);
+    setMovieAmount(0);
+  };
+
   return (
     <main>
       <section className="artists_content">
         <section className="search_bar_contents">
-          <section className="search_bar_position">
-            <div className="search_bar_container">
-              <input
-                value={search}
-                onChange={handleTyping}
-                className="search_bar"
-                placeholder="recherche compositeur"
-              />
-            </div>
-          </section>
+          <MovieArtistSearchBar
+            placeholder="recherche compositeur"
+            search={search}
+            onSearchChange={handleTyping}
+            onReset={handleResetSearch}
+            selectedItem={selectedMusic}
+            sortOrderA={sortOrderA}
+            sortOrderY={sortOrderY}
+            movieSortedA={movieSortedA}
+            movieSortedZ={movieSortedZ}
+            movieSortedYear={movieSortedYear}
+            movieSortedYearDesc={movieSortedYearDesc}
+          />
         </section>
         <div className="dashed_secondary_bar" />
         <section>

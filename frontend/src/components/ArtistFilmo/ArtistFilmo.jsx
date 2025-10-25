@@ -1,7 +1,5 @@
 /* eslint-disable react/prop-types */
 import MovieCount from "../MovieCount/MovieCount";
-import AlphabeticBtn from "../AlphabeticBtn/AlphabeticBtn";
-import ChronologicBtn from "../ChronologicBtn/ChronologicBtn";
 import MovieThumbnail from "../MovieThumbnail/MovieThumbnail";
 import DirectorBear from "../../assets/ico/director_bear_01.jpeg";
 import ActorBear from "../../assets/ico/actor-bear.jpg";
@@ -13,12 +11,6 @@ function ArtistFilmo({
   selectedArtist,
   origin,
   data,
-  sortOrderA,
-  movieSortedZ,
-  movieSortedA,
-  sortOrderY,
-  movieSortedYearDesc,
-  movieSortedYear,
   movieAmount,
   onUpdateMovie,
   onDeleteMovie,
@@ -112,19 +104,9 @@ function ArtistFilmo({
           </div>
         </section>
       )}
-      <div className="btn_sort_container_search">
-        <AlphabeticBtn
-          selectedItems={selectedArtist}
-          origin="artists"
-          onClick={sortOrderA === "asc" ? movieSortedZ : movieSortedA}
-        />
+      {/* <div className="btn_sort_container_search">
         <MovieCount movieAmount={movieAmount} />
-        <ChronologicBtn
-          selectedItems={selectedArtist}
-          origin="artists"
-          onClick={sortOrderY === "asc" ? movieSortedYearDesc : movieSortedYear}
-        />
-      </div>
+      </div> */}
     </section>
   );
 }
