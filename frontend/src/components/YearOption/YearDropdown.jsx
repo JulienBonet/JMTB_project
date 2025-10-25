@@ -4,6 +4,7 @@ import "./yearDropdown.css";
 
 function YearDropdown({ onYearChange, selectedYearData, search }) {
   const [decades, setDecades] = useState([]);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1200);
 
   // REQUEST ALL YEAR
   useEffect(() => {
@@ -20,6 +21,11 @@ function YearDropdown({ onYearChange, selectedYearData, search }) {
       .catch((error) => {
         console.error("Error fetching user data:", error);
       });
+
+    // 🔹 Gérer le passage desktop ↔ mobile dynamiquement
+    const handleResize = () => setIsMobile(window.innerWidth <= 1200);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [search]);
 
   const handleChange = (event) => {
@@ -40,7 +46,7 @@ function YearDropdown({ onYearChange, selectedYearData, search }) {
       className="YearsDropdown"
       value={selectedYearData}
     >
-      <option value="">PÉRIODE</option>
+      <option value="">{isMobile ? "📅" : "PERIODE"}</option>
       {options}
     </select>
   );

@@ -4,6 +4,7 @@ import "./countryDropdown.css";
 
 function CountryDropdown({ onCountryChange, selectedCountryData, search }) {
   const [countries, setCountries] = useState([]);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1200);
 
   // REQUEST ALL COUNTRIES
   useEffect(() => {
@@ -20,6 +21,11 @@ function CountryDropdown({ onCountryChange, selectedCountryData, search }) {
       .catch((error) => {
         console.error("Error fetching user data:", error);
       });
+
+    // 🔹 Gérer le passage desktop ↔ mobile dynamiquement
+    const handleResize = () => setIsMobile(window.innerWidth <= 1200);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [search]);
 
   const handleChange = (event) => {
@@ -39,7 +45,7 @@ function CountryDropdown({ onCountryChange, selectedCountryData, search }) {
       className="countryDropdown"
       value={selectedCountryData}
     >
-      <option value="">PAYS</option>
+      <option value="">{isMobile ? "🌍" : "PAYS"}</option>
       {options}
     </select>
   );
