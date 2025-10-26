@@ -5,6 +5,7 @@
 import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import "./movieCard.css";
+import "./movieCard_videoPlayer_MediaQueries.css";
 import ReactPlayer from "react-player";
 import Box from "@mui/material/Box";
 import { Container } from "@mui/material";

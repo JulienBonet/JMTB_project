@@ -19,17 +19,16 @@
 
 .MC_line1 {
   display: flex;
-  /* flex-wrap: wrap; */
 }
 
 .MovieCard_Cover_Position {
   margin: 0 2rem 1rem 0;
 }
-.MovieCard_cover{
+.MovieCard_cover {
   width: 233px;
   height: 350px;
 }
-.movie_cover_modify_button{
+.movie_cover_modify_button {
   display: flex;
   justify-content: center;
   margin-top: 0.5rem;
@@ -37,13 +36,11 @@
 .infos_bloc_1 {
   display: flex;
   flex-direction: column;
-  /* justify-content: center; */
   gap: 0.5rem;
 }
 .infos_bloc_1_modify {
   display: flex;
   flex-direction: column;
-  /* justify-content: center; */
   gap: 1.3rem;
   width: 100%;
 }
@@ -53,7 +50,7 @@
   font-size: x-large;
   margin-bottom: 0.5rem;
 }
-.box_item_form{
+.box_item_form {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -64,7 +61,7 @@
   color: whitesmoke;
 }
 
-.Btn_upload_File_MovieCard{
+.Btn_upload_File_MovieCard {
   cursor: pointer;
   color: whitesmoke;
   padding: 0.2rem;
@@ -91,7 +88,7 @@
   gap: 5px;
 }
 
-.MC_line2_modify{
+.MC_line2_modify {
   display: flex;
   flex-direction: column;
   margin-top: 1rem;
@@ -121,6 +118,7 @@
   flex-direction: column;
   align-items: center;
 }
+
 .MovieCard_trailer > p {
   margin-bottom: 1rem;
 }
@@ -162,9 +160,8 @@
   opacity: 0;
 }
 
-.Movie_editing_btn-container{
+.Movie_editing_btn-container {
   margin-top: 1rem;
-  
 }
 
 .Item_Movie_Editing_Buttons {
@@ -185,15 +182,15 @@
 }
 
 .item_movie_mode_ico,
-.item_movie_delete_ico{
+.item_movie_delete_ico {
   color: var(--color-02);
 }
 
-.item_movie_undo_ico{
+.item_movie_undo_ico {
   color: whitesmoke;
 }
 
-.item_movie_done_ico{
+.item_movie_done_ico {
   color: greenyellow;
 }
 

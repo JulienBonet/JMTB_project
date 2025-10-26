@@ -1,0 +1,88 @@
+@media (max-width: 1106px) {
+  .video_player {
+    width: 550px !important;
+    height: auto !important;
+    aspect-ratio: 16/9 !important;
+  }
+}
+
+@media (max-width: 994px) {
+  .video_player {
+    width: 500px !important;
+    height: auto !important;
+    aspect-ratio: 16/9 !important;
+  }
+}
+
+@media (max-width: 950px) {
+  .video_player {
+    width: 450px !important;
+    height: auto !important;
+    aspect-ratio: 16/9 !important;
+  }
+}
+
+@media (max-width: 896px) {
+  .video_player {
+    width: 400px !important;
+    height: auto !important;
+    aspect-ratio: 16/9 !important;
+  }
+}
+
+@media (max-width: 840px) {
+  .video_player {
+    width: 350px !important;
+    height: auto !important;
+    aspect-ratio: 16/9 !important;
+  }
+}
+
+@media (max-width: 786px) {
+  .video_player {
+    width: 300px !important;
+    height: auto !important;
+    aspect-ratio: 16/9 !important;
+  }
+}
+
+@media (max-width: 732px) {
+  .video_player {
+    width: 280px !important;
+    height: auto !important;
+    aspect-ratio: 16/9 !important;
+  }
+}
+@media (max-width: 704px) {
+  .video_player {
+    width: 250px !important;
+    height: auto !important;
+    aspect-ratio: 16/9 !important;
+  }
+}
+@media (max-width: 672px) {
+  .video_player {
+    width: 200px !important;
+    height: auto !important;
+    aspect-ratio: 16/9 !important;
+  }
+}
+@media (max-width: 618px) {
+  .video_player {
+    width: 180px !important;
+    height: auto !important;
+    aspect-ratio: 16/9 !important;
+  }
+}
+@media (max-width: 578px) {
+  .video_player {
+    width: 150px !important;
+    height: auto !important;
+    aspect-ratio: 16/9 !important;
+  }
+}
+@media (max-width: 538px) {
+  .video_player {
+    display:none;
+  }
+}
