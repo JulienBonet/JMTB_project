@@ -1,60 +1,30 @@
-/* @media (min-width: 1440px) and (max-width: 1902px) {
-    .artists_bear {
-        height: 540px;
-    }
-    .artists_filmo {
-        height: 540px;
-    }
-    .artists_groups {
-        width: 25%;
-    }
-    .artists_groups_content {
-        height: 520px;
-    }
+@media (max-width: 1280px) {
+  .MuiButton-root.artists_button {
+    font-size: small;
   }
+}
 
-  @media (min-width: 1280px) and (max-width: 1439px) {
-    .artists_bear {
-        height: 440px;
-    }
-    .artists_filmo {
-        height: 440px;
-
-    }
-    .artists_groups {
-        width: 25%;
-    }
-    .artists_groups_content {
-        height: 386px;
-        width: 70%;
-    }
+@media (max-width: 1024px) {
+  .artists_bear_container {
+    width: 100%;
+    gap: 2rem;
+    flex-direction: column;
+    align-items: center;
   }
+  .artists_pitch_container {
+    font-size: 1.6rem;
+    width: 72%;
+  }
+  .artists_groups {
+    width: 30%;
+}
 
-  @media (min-width: 1024px) and (max-width: 1279px) {
-    .artists_bear {
-        height: 300px;
-    }
-    .artists_filmo {
-        height: 300px;
+.artists_groups_content{
+    height: 75vh;
+}
 
-    }
-    .artists_groups {
-        width: 25%;
-    }
-    .artists_groups_content {
-        height: 257px;
-        width: 70%;
-    }
-    .AlphabetDropdown {
-        font-size: small !important;
-    }
-    .Amount_info_counter {
-        font-size: small !important;
-    }
-    .Amount_info {
-        font-size: small !important;
-    }
-    .MuiButton-root.artists_button {
-        font-size: small;
-      }
-  } */
+.filmo_artists {
+    width: 70%;
+    height: 80vh;
+}
+}

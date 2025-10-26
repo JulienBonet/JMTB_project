@@ -1,3 +1,4 @@
+
 .artists_section {
   display: flex;
   align-items: center;
@@ -20,7 +21,7 @@
 
 .artists_groups_content {
   width: 100%;
-  height: 66vh;
+  height: 70vh;
   overflow: auto;
   padding-top: 1rem;
 }
@@ -53,7 +54,7 @@
 
 .artists_bear {
   width: 90%;
-  height: 72vh;
+  height: 75vh;
   padding: 2rem;
   display: flex;
   align-items: center;
@@ -90,27 +91,12 @@
   width: 100%;
   overflow: auto;
 }
-
-.MovieCountArtistMovie_container {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
 .artists_filmo_thumbs {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  height: 72vh;
+  height: 75vh;
   padding-top: 1rem;
-}
-.scroll_zone {
-  display: flex;
-  justify-content: center;
-  overflow: auto;
-}
-.scroll_zone_2 {
-  justify-content: flex-start;
-  height: 100%;
 }
 .css-18l2pqx-MuiButtonBase-root-MuiButton-root .Btn_artists {
   width: 15%;

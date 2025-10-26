@@ -37,3 +37,24 @@
 .reset_search_btn:hover {
   transform: rotate(-90deg);
 }
+
+@media (max-width: 1280px) {
+  .search_bar_position {
+    gap: 2rem;
+  }
+
+  .search_bar_container {
+    padding: 5px 1rem;
+  }
+}
+
+@media (max-width: 1000px) {
+  .search_bar_position {
+    gap: 1rem;
+  }
+
+  .search_bar_container {
+    border-radius: 0.8rem;
+    padding: 2px 1rem;
+  }
+}

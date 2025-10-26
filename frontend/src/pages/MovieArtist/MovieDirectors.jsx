@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useLoaderData } from "react-router-dom";
 import { createTheme } from "@mui/material/styles";
 import "./movieArtist.css";
-// import "./movieArtistMediaQueries.css";
+import "./movieArtistMediaQueries.css";
 import ArtistList from "../../components/ArtistList/ArtistList";
 import ArtistFilmo from "../../components/ArtistFilmo/ArtistFilmo";
 import MovieArtistSearchBar from "../../components/MovieArtistSearchBar/MovieArtistSearchBar";
@@ -220,7 +220,7 @@ function MovieDirectors() {
   return (
     <main className="Main_movieArtistPage">
       <section className="artists_content">
-        <section className="search_bar_contents">
+        <section className="artists_search_bar_contents">
           <MovieArtistSearchBar
             placeholder="recherche réalisateur"
             search={search}
@@ -235,35 +235,35 @@ function MovieDirectors() {
             movieSortedYearDesc={movieSortedYearDesc}
           />
         </section>
-      </section>
-      <div className="dashed_secondary_bar" />
-      <section>
-        <section className="artists_seach_container">
-          <ArtistList
-            handleLetterChange={handleLetterChange}
-            search={search}
-            theme={theme}
-            selectedByLetter={selectedDirectorByLetter}
-            filteredArtist={filteredDirectors}
-            handleArtistClick={handleArtistClick}
-            origin={origin}
-            artistAmount={directorsAmount}
-            selectedArtistAmount={selectedDirectorAmount}
-          />
-          <ArtistFilmo
-            selectedArtist={selectedDirector}
-            origin={origin}
-            data={data}
-            sortOrderA={sortOrderA}
-            movieSortedZ={movieSortedZ}
-            movieSortedA={movieSortedA}
-            sortOrderY={sortOrderY}
-            movieSortedYearDesc={movieSortedYearDesc}
-            movieSortedYear={movieSortedYear}
-            movieAmount={movieAmount}
-            onUpdateMovie={fetchMoviesByDirector}
-            onDeleteMovie={handleDeleteMovie}
-          />
+        <div className="dashed_secondary_bar" />
+        <section>
+          <section className="artists_seach_container">
+            <ArtistList
+              handleLetterChange={handleLetterChange}
+              search={search}
+              theme={theme}
+              selectedByLetter={selectedDirectorByLetter}
+              filteredArtist={filteredDirectors}
+              handleArtistClick={handleArtistClick}
+              origin={origin}
+              artistAmount={directorsAmount}
+              selectedArtistAmount={selectedDirectorAmount}
+            />
+            <ArtistFilmo
+              selectedArtist={selectedDirector}
+              origin={origin}
+              data={data}
+              sortOrderA={sortOrderA}
+              movieSortedZ={movieSortedZ}
+              movieSortedA={movieSortedA}
+              sortOrderY={sortOrderY}
+              movieSortedYearDesc={movieSortedYearDesc}
+              movieSortedYear={movieSortedYear}
+              movieAmount={movieAmount}
+              onUpdateMovie={fetchMoviesByDirector}
+              onDeleteMovie={handleDeleteMovie}
+            />
+          </section>
         </section>
       </section>
     </main>

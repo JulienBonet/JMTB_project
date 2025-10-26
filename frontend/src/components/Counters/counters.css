@@ -16,3 +16,9 @@
 .whiteString_counter {
   color: var(--color-01);
 }
+
+@media (max-width: 1280px) {
+  .Amount_info_counter {
+    font-size: small;
+}
+}
