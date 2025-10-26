@@ -1,98 +1,35 @@
-@media (min-width: 1440px) and (max-width: 1740px) {
-    .thumbail_container {
-        width: 14rem;
-        height: 16rem;
-    }
-
-    .thumbail_cover {
-        height: 12rem;
-      }
+@media (max-width: 1280px) {
+.thumbail_container {
+    width: 11rem;
 }
 
-@media (min-width: 1280px) and (max-width: 1439px){
-    .thumbail_container {
-        width: 12rem;
-        height: 13rem;
-    }
-
-    .thumbail_cover {
-        height: 10rem;
-      }
-    
-      .thumbail_title {
-        font-size: small;
-    }
-  }
-
-  @media (min-width: 1180px) and (max-width: 1279px) {
-    .thumbail_container {
-        width: 11rem;
-        height: 10rem;
-    }
-
-    .thumbail_cover {
-        height: 8rem;
-      }
-    
-      .thumbail_title {
-        font-size: small;
-    }
-  }
-
-  @media (min-width: 1024px) and (max-width: 1179px) {
-    .thumbail_container {
-        width: 10rem;
-        height: 10rem;
-    }
-
-    .thumbail_cover {
-        height: 8rem;
-      }
-    
-      .thumbail_title {
-        font-size: small;
-    }
-  }
-
-  @media (min-width: 950px) and (max-width: 1023px) {
-    .thumbail_container {
-        width: 11rem;
-        height: 18rem;
-        margin: min(12px);
-        gap: 15px;
-    }
+.thumbail_cover {
+    height: 13rem;
+}
 }
 
-  @media (min-width: 850px) and (max-width: 920px) {
-    .thumbail_container {
-        width: 13rem;
-        height: 12rem;
-        margin: min(12px);
-        gap: 15px;
-    }
+@media (max-width: 1024px) {
+.thumbail_container {
+    width: 9rem;
+   height: 17rem;
+}
 
-    .thumbail_cover {
-        height: 10rem;
-      }
-    
-      .thumbail_title {
-        font-size: small;
-    }
-  }
+.thumbail_cover {
+    height: 12rem;
+}
 
-  @media (min-width: 768px) and (max-width: 849px) {
-    .thumbail_container {
-        width: 12rem;
-        height: 12rem;
-        margin: min(12px);
-        gap:15px;
-    }
+.thumbail_title {
+    font-size: small;
+}
+}
 
-    .thumbail_cover {
-        height: 10rem;
-      }
-    
-      .thumbail_title {
-        font-size: small;
-    }
-  }
+@media (max-width: 970px) {
+.thumbail_container {
+    width: 8rem;
+   height: 16rem;
+}
+
+.thumbail_cover {
+    height: 11rem;
+}
+}

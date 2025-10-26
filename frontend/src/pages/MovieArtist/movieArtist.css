@@ -89,7 +89,6 @@
 }
 .artists_filmo {
   width: 100%;
-  overflow: auto;
 }
 .artists_filmo_thumbs {
   display: flex;
@@ -97,6 +96,7 @@
   justify-content: center;
   height: 75vh;
   padding-top: 1rem;
+  overflow: auto;
 }
 .css-18l2pqx-MuiButtonBase-root-MuiButton-root .Btn_artists {
   width: 15%;

@@ -27,6 +27,16 @@
   }
 }
 
+@media (max-width: 1000px) {
+  .Amount_info {
+    width: 30%;
+  }
+}
+@media (max-width: 840px) {
+  .Amount_info {
+    width: 40%;
+  }
+}
 @media (max-width: 720px) {
   .Amount_info {
     width: 50%;
