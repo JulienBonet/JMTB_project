@@ -21,6 +21,10 @@ function ArtistList({
 }) {
   return (
     <section className="artists_groups">
+      {search === "" && <Counter origin={origin} countAmount={artistAmount} />}
+      {search !== "" && (
+        <Counter origin={origin} countAmount={selectedArtistAmount} />
+      )}
       <AlphabetDropdown
         onLetterChange={handleLetterChange}
         origin="artistlist"
@@ -65,10 +69,6 @@ function ArtistList({
             </Stack>
           </ThemeProvider>
         </div>
-      )}
-      {search === "" && <Counter origin={origin} countAmount={artistAmount} />}
-      {search !== "" && (
-        <Counter origin={origin} countAmount={selectedArtistAmount} />
       )}
     </section>
   );

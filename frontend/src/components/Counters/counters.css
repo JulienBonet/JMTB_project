@@ -10,9 +10,7 @@
   color: var(--color-02);
   padding: 10px 1rem;
   border: solid 1px white;
-  border-top: solid 1px white;
-  border-bottom: 0;
-  border-radius: 20px 20px 0 0;
+  border-top: 0;
 }
 
 .whiteString_counter {
