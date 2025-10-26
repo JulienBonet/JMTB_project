@@ -221,61 +221,49 @@ function MovieDirectors() {
     <main className="Main_movieArtistPage">
       <section className="artists_content">
         <section className="search_bar_contents">
-          {/* <section className="search_bar_position">
-            <div className="search_bar_container">
-              <input
-                value={search}
-                onChange={handleTyping}
-                className="search_bar"
-                placeholder="recherche réalisateur"
-              />
-            </div>
-          </section> */}
-          <section className="search_bar_contents">
-            <MovieArtistSearchBar
-              placeholder="recherche réalisateur"
-              search={search}
-              onSearchChange={handleTyping}
-              onReset={handleResetSearch}
-              selectedItem={selectedDirector}
-              sortOrderA={sortOrderA}
-              sortOrderY={sortOrderY}
-              movieSortedA={movieSortedA}
-              movieSortedZ={movieSortedZ}
-              movieSortedYear={movieSortedYear}
-              movieSortedYearDesc={movieSortedYearDesc}
-            />
-          </section>
+          <MovieArtistSearchBar
+            placeholder="recherche réalisateur"
+            search={search}
+            onSearchChange={handleTyping}
+            onReset={handleResetSearch}
+            selectedItem={selectedDirector}
+            sortOrderA={sortOrderA}
+            sortOrderY={sortOrderY}
+            movieSortedA={movieSortedA}
+            movieSortedZ={movieSortedZ}
+            movieSortedYear={movieSortedYear}
+            movieSortedYearDesc={movieSortedYearDesc}
+          />
         </section>
-        <div className="dashed_secondary_bar" />
-        <section>
-          <section className="artists_seach_container">
-            <ArtistList
-              handleLetterChange={handleLetterChange}
-              search={search}
-              theme={theme}
-              selectedByLetter={selectedDirectorByLetter}
-              filteredArtist={filteredDirectors}
-              handleArtistClick={handleArtistClick}
-              origin={origin}
-              artistAmount={directorsAmount}
-              selectedArtistAmount={selectedDirectorAmount}
-            />
-            <ArtistFilmo
-              selectedArtist={selectedDirector}
-              origin={origin}
-              data={data}
-              sortOrderA={sortOrderA}
-              movieSortedZ={movieSortedZ}
-              movieSortedA={movieSortedA}
-              sortOrderY={sortOrderY}
-              movieSortedYearDesc={movieSortedYearDesc}
-              movieSortedYear={movieSortedYear}
-              movieAmount={movieAmount}
-              onUpdateMovie={fetchMoviesByDirector}
-              onDeleteMovie={handleDeleteMovie}
-            />
-          </section>
+      </section>
+      <div className="dashed_secondary_bar" />
+      <section>
+        <section className="artists_seach_container">
+          <ArtistList
+            handleLetterChange={handleLetterChange}
+            search={search}
+            theme={theme}
+            selectedByLetter={selectedDirectorByLetter}
+            filteredArtist={filteredDirectors}
+            handleArtistClick={handleArtistClick}
+            origin={origin}
+            artistAmount={directorsAmount}
+            selectedArtistAmount={selectedDirectorAmount}
+          />
+          <ArtistFilmo
+            selectedArtist={selectedDirector}
+            origin={origin}
+            data={data}
+            sortOrderA={sortOrderA}
+            movieSortedZ={movieSortedZ}
+            movieSortedA={movieSortedA}
+            sortOrderY={sortOrderY}
+            movieSortedYearDesc={movieSortedYearDesc}
+            movieSortedYear={movieSortedYear}
+            movieAmount={movieAmount}
+            onUpdateMovie={fetchMoviesByDirector}
+            onDeleteMovie={handleDeleteMovie}
+          />
         </section>
       </section>
     </main>
