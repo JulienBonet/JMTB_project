@@ -42,7 +42,9 @@ function Home() {
 
   // Fonction pour mettre à jour le nombre de films en fonction de la taille de l'écran
   const updateMoviesToShow = () => {
-    if (
+    if (window.matchMedia("(max-width: 767px)").matches) {
+      setMoviesToShow(1);
+    } else if (
       window.matchMedia("(min-width: 1024px) and (max-width: 1279px)").matches
     ) {
       setMoviesToShow(4);
