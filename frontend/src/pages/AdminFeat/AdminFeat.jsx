@@ -1,10 +1,10 @@
 import * as React from "react";
 import { useState } from "react";
 import Button from "@mui/material/Button";
-import ButtonGroup from "@mui/material/ButtonGroup";
 import Box from "@mui/material/Box";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import "./adminFeat.css";
+
 import AdminMovieList from "../../components/AdminFeatures/AdminItemsLists/AdminMovieList";
 import AdminDirectorList from "../../components/AdminFeatures/AdminItemsLists/AdminDirectorList";
 import AdminCastingList from "../../components/AdminFeatures/AdminItemsLists/AdminCastingList";
@@ -26,10 +26,8 @@ function AdminFeat() {
       secondary: {
         main: "#ffebaa",
       },
-    }, // end palette
-  }); // end const theme
-
-  // ADMIN NAV
+    },
+  });
 
   const [selectedItem, setSelectedItem] = useState("FILMS");
 
@@ -63,8 +61,22 @@ function AdminFeat() {
         return <AdminThemaList />;
       default:
         return null;
-    } // end switch (selectedItem)
-  }; // const renderSelectedItem
+    }
+  };
+
+  const navItems = [
+    "FILMS",
+    "REALISATEURS",
+    "CASTING",
+    "SCENARISTES",
+    "COMPOSITEURS",
+    "STUDIO",
+    "GENRES",
+    "PAYS",
+    "LANGUES",
+    "TAGS",
+    "THEMAS",
+  ];
 
   return (
     <main>
@@ -73,48 +85,37 @@ function AdminFeat() {
           <Box
             sx={{
               display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              "& > *": {
-                m: 1,
-              },
-            }} // end sx
+              flexWrap: "wrap",
+              justifyContent: "center",
+              gap: 1,
+              width: "90%",
+              margin: "auto",
+            }}
           >
-            <ButtonGroup
-              variant="outlined"
-              color="primary"
-              aria-label="Basic button group"
-            >
-              <Button onClick={() => handleItemClick("FILMS")}>FILMS</Button>
-              <Button onClick={() => handleItemClick("REALISATEURS")}>
-                REALISATEURS
+            {navItems.map((item) => (
+              <Button
+                key={item}
+                variant={selectedItem === item ? "contained" : "outlined"}
+                color="primary"
+                onClick={() => handleItemClick(item)}
+                sx={{
+                  flex: "1 1 140px", // chaque bouton prend au moins 140px, puis s’ajuste
+                  minWidth: "120px",
+                  maxWidth: "200px",
+                }}
+              >
+                {item}
               </Button>
-              <Button onClick={() => handleItemClick("CASTING")}>
-                CASTING
-              </Button>
-              <Button onClick={() => handleItemClick("SCENARISTES")}>
-                SCENARISTES
-              </Button>
-              <Button onClick={() => handleItemClick("COMPOSITEURS")}>
-                COMPOSITEURS
-              </Button>
-              <Button onClick={() => handleItemClick("STUDIO")}>STUDIO</Button>
-              <Button onClick={() => handleItemClick("GENRES")}>GENRES</Button>
-              <Button onClick={() => handleItemClick("PAYS")}>PAYS</Button>
-              <Button onClick={() => handleItemClick("LANGUES")}>
-                LANGUES
-              </Button>
-              <Button onClick={() => handleItemClick("TAGS")}>TAGS</Button>
-              <Button onClick={() => handleItemClick("THEMAS")}>THEMAS</Button>
-            </ButtonGroup>
+            ))}
           </Box>
         </ThemeProvider>
       </section>
+
       <section className="AdminFeatContainer">
         <div className="AdminFeatContent">{renderSelectedItem()}</div>
       </section>
     </main>
-  ); // end return
-} // function AdminFeat()
+  );
+}
 
 export default AdminFeat;
