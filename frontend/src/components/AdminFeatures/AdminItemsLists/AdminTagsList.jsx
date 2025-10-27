@@ -139,7 +139,7 @@ function AdminTagsList() {
             <input
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="search_bar"
+              className="search_bar admin_search_bar"
               placeholder="recherche"
             />
           </div>
