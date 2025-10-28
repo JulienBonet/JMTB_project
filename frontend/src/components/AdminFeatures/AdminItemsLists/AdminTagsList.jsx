@@ -77,7 +77,7 @@ function AdminTagsList() {
       });
   };
 
-  // DELETE LANGUAGE
+  // DELETE TAS
   const handleDelete = async (id) => {
     // Display confirmation dialog
     const confirmDelete = window.confirm(

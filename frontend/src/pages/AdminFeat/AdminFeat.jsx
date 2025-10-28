@@ -99,7 +99,7 @@ function AdminFeat() {
                 color="primary"
                 onClick={() => handleItemClick(item)}
                 sx={{
-                  flex: "1 1 140px", // chaque bouton prend au moins 140px, puis s’ajuste
+                  flex: "1 1 140px",
                   minWidth: "120px",
                   maxWidth: "200px",
                 }}

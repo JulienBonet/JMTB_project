@@ -106,48 +106,6 @@ const uploadDirectorImage = async (req, res) => {
   }
 };
 
-// const eraseDirector = async (req, res, next) => {
-//   try {
-//     const directorId = req.params.id;
-
-//     // Find the director by ID
-//     const directors = await editingModel.findDirectorById(directorId);
-//     if (!directors || directors.length === 0) {
-//       return res.status(404).json({ message: "director non trouvé" });
-//     }
-
-//     const director = directors[0];
-//     const imageUrl = director.image;
-//     if (imageUrl && imageUrl !== "00_item_default.png") {
-//       try {
-//         // Correct the usage of imageUrl in path.basename
-//         const fullPath = path.join(
-//           __dirname,
-//           "../../public/images",
-//           path.basename(imageUrl) // Use imageUrl to get the filename
-//         );
-//         if (fs.existsSync(fullPath)) {
-//           fs.unlinkSync(fullPath);
-//         } else {
-//           console.info(`Le fichier n'existe pas : ${fullPath}`);
-//         }
-//       } catch (unlinkError) {
-//         console.error(
-//           "Erreur lors de la suppression du fichier :",
-//           unlinkError
-//         );
-//       }
-//     }
-
-//     // Delete the director from the database
-//     await editingModel.deleteDirector(directorId);
-//     res.sendStatus(204);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
-// version de eraseDirector pour eviter conflit avec editingMovieController.deleteMovie
 const eraseDirector = async (req, res = null) => {
   try {
     const directorId = req.params.id;
@@ -157,7 +115,7 @@ const eraseDirector = async (req, res = null) => {
       if (res) {
         return res.status(404).json({ message: "Director non trouvé" });
       }
-      return; // Si pas de res, on arrête là
+      return;
     }
 
     const director = directors[0];
@@ -294,45 +252,6 @@ const uploadCastingImage = async (req, res) => {
   }
 };
 
-// const eraseCasting = async (req, res, next) => {
-//   try {
-//     const castingId = req.params.id;
-
-//     const castings = await editingModel.findCastingById(castingId);
-//     if (!castings || castings.length === 0) {
-//       return res.status(404).json({ message: "Casting non trouvé" });
-//     }
-
-//     const casting = castings[0];
-//     const imageUrl = casting.image;
-//     if (imageUrl && imageUrl !== "00_item_default.png") {
-//       try {
-//         const fullPath = path.join(
-//           __dirname,
-//           "../../public/images",
-//           path.basename(imageUrl)
-//         );
-//         if (fs.existsSync(fullPath)) {
-//           fs.unlinkSync(fullPath);
-//         } else {
-//           console.info(`Le fichier n'existe pas : ${fullPath}`);
-//         }
-//       } catch (unlinkError) {
-//         console.error(
-//           "Erreur lors de la suppression du fichier :",
-//           unlinkError
-//         );
-//       }
-//     }
-
-//     await editingModel.deleteCasting(castingId);
-//     res.sendStatus(204);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
-// version de eraseCasting pour eviter conflit avec editingMovieController.deleteMovie
 const eraseCasting = async (req, res = null) => {
   try {
     const castingId = req.params.id;
@@ -485,46 +404,6 @@ const uploadScreenwriterImage = async (req, res) => {
   }
 };
 
-// const eraseScreenwriter = async (req, res, next) => {
-//   try {
-//     const screenwriterId = req.params.id;
-
-//     const screenwriters =
-//       await editingModel.findScreenwriterById(screenwriterId);
-//     if (!screenwriters || screenwriters.length === 0) {
-//       return res.status(404).json({ message: "Casting non trouvé" });
-//     }
-
-//     const screenwriter = screenwriters[0];
-//     const imageUrl = screenwriter.image;
-//     if (imageUrl && imageUrl !== "00_item_default.png") {
-//       try {
-//         const fullPath = path.join(
-//           __dirname,
-//           "../../public/images",
-//           path.basename(imageUrl)
-//         );
-//         if (fs.existsSync(fullPath)) {
-//           fs.unlinkSync(fullPath);
-//         } else {
-//           console.info(`Le fichier n'existe pas : ${fullPath}`);
-//         }
-//       } catch (unlinkError) {
-//         console.error(
-//           "Erreur lors de la suppression du fichier :",
-//           unlinkError
-//         );
-//       }
-//     }
-
-//     await editingModel.deleteScreenwriter(screenwriterId);
-//     res.sendStatus(204);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
-// version de eraseScreenwriter pour eviter conflit avec editingMovieController.deleteMovie
 const eraseScreenwriter = async (req, res = null) => {
   try {
     const screenwriterId = req.params.id;
@@ -675,45 +554,6 @@ const uploadCompositorImage = async (req, res) => {
   }
 };
 
-// const eraseCompositor = async (req, res, next) => {
-//   try {
-//     const compositorId = req.params.id;
-
-//     const compositors = await editingModel.findCompositorById(compositorId);
-//     if (!compositors || compositors.length === 0) {
-//       return res.status(404).json({ message: "compositor non trouvé" });
-//     }
-
-//     const compositor = compositors[0];
-//     const imageUrl = compositor.image;
-//     if (imageUrl && imageUrl !== "00_item_default.png") {
-//       try {
-//         const fullPath = path.join(
-//           __dirname,
-//           "../../public/images",
-//           path.basename(imageUrl)
-//         );
-//         if (fs.existsSync(fullPath)) {
-//           fs.unlinkSync(fullPath);
-//         } else {
-//           console.info(`Le fichier n'existe pas : ${fullPath}`);
-//         }
-//       } catch (unlinkError) {
-//         console.error(
-//           "Erreur lors de la suppression du fichier :",
-//           unlinkError
-//         );
-//       }
-//     }
-
-//     await editingModel.deleteCompositor(compositorId);
-//     res.sendStatus(204);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
-// version de eraseCompositor pour eviter conflit avec editingMovieController.deleteMovie
 const eraseCompositor = async (req, res = null) => {
   try {
     const compositorId = req.params.id;
@@ -861,45 +701,6 @@ const uploadStudioImage = async (req, res) => {
   }
 };
 
-// const eraseStudio = async (req, res, next) => {
-//   try {
-//     const studioId = req.params.id;
-
-//     const studios = await editingModel.findStudioById(studioId);
-//     if (!studios || studios.length === 0) {
-//       return res.status(404).json({ message: "Studio non trouvé" });
-//     }
-
-//     const studio = studios[0];
-//     const imageUrl = studio.image;
-//     if (imageUrl && imageUrl !== "00_jmtb_item_default.jpg") {
-//       try {
-//         const fullPath = path.join(
-//           __dirname,
-//           "../../public/images",
-//           path.basename(imageUrl)
-//         );
-//         if (fs.existsSync(fullPath)) {
-//           fs.unlinkSync(fullPath);
-//         } else {
-//           console.info(`Le fichier n'existe pas : ${fullPath}`);
-//         }
-//       } catch (unlinkError) {
-//         console.error(
-//           "Erreur lors de la suppression du fichier :",
-//           unlinkError
-//         );
-//       }
-//     }
-
-//     await editingModel.deleteStudio(studioId);
-//     res.sendStatus(204);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
-// version de eraseStudio pour eviter conflit avec editingMovieController.deleteMovie
 const eraseStudio = async (req, res = null) => {
   try {
     const studioId = req.params.id;
@@ -1036,45 +837,6 @@ const uploadThemaImage = async (req, res) => {
   }
 };
 
-// const eraseThema = async (req, res, next) => {
-//   try {
-//     const themaId = req.params.id;
-
-//     const themas = await editingModel.findThemaById(themaId);
-//     if (!themas || themas.length === 0) {
-//       return res.status(404).json({ message: "thema non trouvé" });
-//     }
-
-//     const thema = themas[0];
-//     const imageUrl = thema.image;
-//     if (imageUrl && imageUrl !== "00_jmtb_item_default.jpg") {
-//       try {
-//         const fullPath = path.join(
-//           __dirname,
-//           "../../public/images",
-//           path.basename(imageUrl)
-//         );
-//         if (fs.existsSync(fullPath)) {
-//           fs.unlinkSync(fullPath);
-//         } else {
-//           console.info(`Le fichier n'existe pas : ${fullPath}`);
-//         }
-//       } catch (unlinkError) {
-//         console.error(
-//           "Erreur lors de la suppression du fichier :",
-//           unlinkError
-//         );
-//       }
-//     }
-
-//     await editingModel.deleteThema(themaId);
-//     res.sendStatus(204);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
-// version de eraseThema pour eviter conflit avec editingMovieController.deleteMovie
 const eraseThema = async (req, res = null) => {
   try {
     const themaId = req.params.id;
@@ -1211,45 +973,6 @@ const uploadCountryImage = async (req, res) => {
   }
 };
 
-// const eraseCountry = async (req, res, next) => {
-//   try {
-//     const countryId = req.params.id;
-
-//     const countries = await editingModel.findCountryById(countryId);
-//     if (!countries || countries.length === 0) {
-//       return res.status(404).json({ message: "Country non trouvé" });
-//     }
-
-//     const country = countries[0];
-//     const imageUrl = country.image;
-//     if (imageUrl && imageUrl !== "00_jmtb_flag_item_default.jpg") {
-//       try {
-//         const fullPath = path.join(
-//           __dirname,
-//           "../../public/images",
-//           path.basename(imageUrl)
-//         );
-//         if (fs.existsSync(fullPath)) {
-//           fs.unlinkSync(fullPath);
-//         } else {
-//           console.info(`Le fichier n'existe pas : ${fullPath}`);
-//         }
-//       } catch (unlinkError) {
-//         console.error(
-//           "Erreur lors de la suppression du fichier :",
-//           unlinkError
-//         );
-//       }
-//     }
-
-//     await editingModel.deleteCountry(countryId);
-//     res.sendStatus(204);
-//   } catch (error) {
-//     next(error);
-//   }
-// };
-
-// version de eraseCountry pour eviter conflit avec editingMovieController.deleteMovie
 const eraseCountry = async (req, res = null) => {
   try {
     const countryId = req.params.id;
