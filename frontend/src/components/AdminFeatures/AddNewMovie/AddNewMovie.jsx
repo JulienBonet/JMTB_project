@@ -71,6 +71,13 @@ function AddNewMovie() {
   });
   console.info("data", data);
   console.info("version:", version);
+  // -----------------/ ANNULATION - RETOUR VERS ADMIN MOVIE LIST /----------------- //
+
+  const navigate = useNavigate();
+
+  const handleReturn = () => {
+    navigate("/admin_feat");
+  };
 
   // -----------------/ SOURCE /----------------- //
 
@@ -1023,7 +1030,8 @@ function AddNewMovie() {
         const data = await response.json();
         console.info("data:", data);
         toast.success("Le film a été ajouté avec succès !");
-        resetStates(); // Réinitialiser les états du formulaire
+        // resetStates(); // Réinitialiser les états du formulaire
+        handleReturn(); // Retour vers MovieItemList
       } catch (error) {
         console.error(error);
         toast.error("Erreur lors de l'ajout du film. 😱 Veuillez réessayer. ");
@@ -1032,14 +1040,6 @@ function AddNewMovie() {
       }
     } // end else
   }; // end handleFormSubmit
-
-  // -----------------/ ANNULATION - RETOUR VERS ADMIN MOVIE LIST /----------------- //
-
-  const navigate = useNavigate();
-
-  const handleReturn = () => {
-    navigate("/admin_feat");
-  };
 
   // -----------------/ BUTTON STYLE /----------------- //
   const theme = createTheme({
