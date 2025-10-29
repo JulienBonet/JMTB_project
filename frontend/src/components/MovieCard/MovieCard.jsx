@@ -56,8 +56,8 @@ function MovieCard({
   const [version, setVersion] = useState(
     movie.vostfr ? "VOSTFR" : movie.multi ? "MULTI" : "none"
   );
+  const [selectedTags, setSelectedTags] = useState([]);
   // const [selectedLanguages, setSelectedLanguages] = useState([]);
-  // const [selectedTags, setSelectedTags] = useState([]);
 
   // DATA
   const [movieData, setMovieData] = useState({
@@ -80,23 +80,6 @@ function MovieCard({
 
   console.info("movieData1", movieData);
 
-  // const {
-  //   id,
-  //   title,
-  //   altTitle,
-  //   year,
-  //   duration,
-  //   cover,
-  //   trailer,
-  //   story,
-  //   location,
-  //   videoSupport,
-  //   fileSize,
-  //   multi,
-  //   vostfr,
-  // } = movie;
-  // console.info("movie:", movie);
-
   const {
     genres,
     countries,
@@ -105,9 +88,8 @@ function MovieCard({
     music,
     studios,
     casting,
+    tags,
   } = movieData;
-
-  console.info("movieData", movieData);
 
   // FETCH MOVIE DATAS
   const fetchMovieData = () => {
@@ -155,11 +137,6 @@ function MovieCard({
     setMovieData(movie);
   }, [movie]);
 
-  // TOGGLE trailer
-  // const [isTrailerVisible, setIsTrailerVisible] = useState(false);
-  // const toggleTrailerVideo = () => {
-  //   setIsTrailerVisible(!isTrailerVisible);
-  // };
   const [isTrailerVisible, setIsTrailerVisible] = useState(false);
   const [isTrailerLoading, setIsTrailerLoading] = useState(false);
 
@@ -668,22 +645,59 @@ function MovieCard({
     setSelectedCountries(updatedSelectedCountries);
   };
 
+  // Update tags
+  const fetchTags = async () => {
+    if (!tags) return; // Vérifie si tags est bien défini
+
+    try {
+      const tagsArray = tags.split(", ").map(async (tagName) => {
+        try {
+          const response = await fetch(
+            `${backendUrl}/api/tags/byname/${tagName}`
+          );
+          if (!response.ok) {
+            console.warn(
+              `Error fetching tags ${tagName}: ${response.statusText}`
+            );
+            return null;
+          }
+
+          const tag = await response.json();
+          return tag;
+        } catch (error) {
+          console.warn(`Error fetching tag ${tagName}:`, error);
+          return null; // Continue même si un country échoue
+        }
+      });
+
+      const tagsData = (await Promise.all(tagsArray)).filter(Boolean);
+      setSelectedTags(tagsData); // Met à jour avec [{ id, name }]
+    } catch (error) {
+      console.error("Error fetching country:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTags();
+  }, [tags]);
+
+  const getSelectedTagsNames = (selectTags) => {
+    return selectTags.map((tag) => tag.name).join(", ");
+  };
+
+  const handleSelectedTagsUpdate = (updatedSelectedTags) => {
+    setSelectedTags(updatedSelectedTags);
+  };
+
   // ------------------------------------------------------------
   // const getSelectedLanguagesNames = (selectedLanguages) => {
   //   return selectedLanguages.map((language) => language.name).join(", ");
-  // };
-
-  // const getSelectedTagsNames = (selectedTags) => {
-  //   return selectedTags.map((tag) => tag.name).join(", ");
   // };
 
   // const handleSelectedLanguagesUpdate = (updatedSelectedLanguages) => {
   //   setSelectedLanguages(updatedSelectedLanguages);
   // };
 
-  // const handleSelectedTagsUpdate = (updatedSelectedTags) => {
-  //   setSelectedTags(updatedSelectedTags);
-  // };
   // --------------------------------------------------------------
 
   // UPDATE MODE
@@ -705,6 +719,7 @@ function MovieCard({
     fetchMusics();
     fetchStudios();
     fetchCountries();
+    fetchTags();
     closeModifyMode();
   };
 
@@ -758,6 +773,7 @@ function MovieCard({
             musics: selectedMusic.map((compositor) => compositor.id),
             studios: selectedStudios.map((studio) => studio.id),
             countries: selectedCountries.map((country) => country.id),
+            tags: selectedTags.map((tag) => tag.id),
             // !!! ajouter les items que l'on met à jour !!!!
           }),
         }
@@ -772,22 +788,6 @@ function MovieCard({
         onUpdateMovie(updatedMovie[0]);
         closeModifyMode();
         closeModal();
-
-        // // Vérifier si `genres` est une chaîne de caractères ou un tableau
-        // let genresArray = [];
-        // if (typeof updatedMovie[0].genres === "string") {
-        //   // Diviser la chaîne en un tableau en utilisant la virgule comme séparateur
-        //   genresArray = updatedMovie[0].genres
-        //     .split(",")
-        //     .map((genre) => genre.trim());
-        // } else if (Array.isArray(updatedMovie[0].genres)) {
-        //   // Si c'est déjà un tableau, on le laisse tel quel
-        //   genresArray = updatedMovie[0].genres.map((g) => g.name);
-        // }
-
-        // // Rafraîchir les genres après la mise à jour
-        // const genresNames = genresArray.join(", ");
-        // setSelectedKinds(genresNames); // Mets à jour les genres avec les nouvelles données
       } else {
         console.error("Erreur lors de la mise à jour");
       }
@@ -1381,6 +1381,47 @@ function MovieCard({
                   onClick={() => handleOpenModal("casting")}
                 />
               </div>
+              <div className="box_item_form">
+                <Box
+                  component="form"
+                  sx={{
+                    width: "80%",
+                    "& .MuiInputLabel-root": {
+                      color: "white", // Couleur du label en blanc
+                    },
+                    "& .MuiInputBase-input": {
+                      color: "white", // Couleur du texte
+                    },
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": {
+                        borderColor: "white", // Couleur de la bordure
+                      },
+                      "&:hover fieldset": {
+                        borderColor: "orange", // Couleur de la bordure au hover
+                      },
+                      "&.Mui-focused fieldset": {
+                        borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
+                      },
+                    },
+                  }}
+                  noValidate
+                  autoComplete="off"
+                  display="flex"
+                  alignItems="center"
+                >
+                  <TextField
+                    id="outlined-read-only-input"
+                    label="Tag"
+                    value={getSelectedTagsNames(selectedTags)}
+                    InputProps={{ readOnly: true }}
+                    fullWidth
+                  />
+                </Box>
+                <AddCircleOutlineIcon
+                  className="Btn_Add_itemsPopUp_MovieCard"
+                  onClick={() => handleOpenModal("tags")}
+                />
+              </div>
               <div className="divider" />
               <TextField
                 label="Résumé"
@@ -1834,6 +1875,8 @@ function MovieCard({
                 onSelectedStudiosUpdate={handleSelectedStudiosUpdate}
                 selectedCountries={selectedCountries}
                 onSelectedCountriesUpdate={handleSelectedCountriesUpdate}
+                selectedTags={selectedTags}
+                onSelectedTagsUpdate={handleSelectedTagsUpdate}
               />
             </Container>
           </Box>

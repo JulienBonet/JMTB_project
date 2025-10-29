@@ -755,6 +755,7 @@ const editMovieById = async (req, res) => {
       studios,
       countries,
       comment,
+      tags,
       // !!! ajouter les update item que l'on envoi par la route !!!
     } = req.body;
     console.info("req.body:", req.body);
@@ -840,6 +841,15 @@ const editMovieById = async (req, res) => {
 
       for (const countryId of countries) {
         await editingMovieModel.addMovieCountry(id, countryId);
+      }
+    }
+
+    // Mettre à jour les tags dans la table intermédiaire
+    if (tags && tags.length > 0) {
+      await editingMovieModel.eraseTagByMovieId(id);
+
+      for (const tagId of tags) {
+        await editingMovieModel.addMovieTag(id, tagId);
       }
     }
 
