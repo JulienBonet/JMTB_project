@@ -1,6 +1,7 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-shadow */
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -1032,6 +1033,14 @@ function AddNewMovie() {
     } // end else
   }; // end handleFormSubmit
 
+  // -----------------/ ANNULATION - RETOUR VERS ADMIN MOVIE LIST /----------------- //
+
+  const navigate = useNavigate();
+
+  const handleReturn = () => {
+    navigate("/admin_feat");
+  };
+
   // -----------------/ BUTTON STYLE /----------------- //
   const theme = createTheme({
     palette: {
@@ -1040,6 +1049,12 @@ function AddNewMovie() {
       },
       secondary: {
         main: "#00d9c0",
+      },
+      validBtn: {
+        main: "#076834",
+      },
+      abortBtn: {
+        main: "#ad1f2b",
       },
     },
   });
@@ -1662,9 +1677,17 @@ function AddNewMovie() {
                 onClick={handleFormSubmit}
                 size="large"
                 variant="outlined"
-                color="primary"
+                color="validBtn"
               >
                 VALIDER
+              </Button>
+              <Button
+                onClick={handleReturn}
+                size="large"
+                variant="outlined"
+                color="abortBtn"
+              >
+                ANNULER
               </Button>
             </Stack>
           </ThemeProvider>

@@ -82,6 +82,10 @@ export default function TransferList({
       selectedItems = selectedLanguages;
       onSelectedItemsUpdate = onSelectedLanguagesUpdate;
       break;
+    case "tags/sorted_id":
+      selectedItems = selectedTags;
+      onSelectedItemsUpdate = onSelectedTagsUpdate;
+      break;
     case "tags":
       selectedItems = selectedTags;
       onSelectedItemsUpdate = onSelectedTagsUpdate;
