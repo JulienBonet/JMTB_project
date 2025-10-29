@@ -1,6 +1,14 @@
+/* eslint-disable no-shadow */
+/* eslint-disable no-promise-executor-return */
+/* eslint-disable no-continue */
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-await-in-loop */
 require("dotenv").config();
 const mysql = require("mysql2/promise");
-const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fetch(...args));
+
+// eslint-disable-next-line no-shadow
+const fetch = (...args) =>
+  import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
 (async () => {
   const db = await mysql.createConnection({
@@ -10,7 +18,7 @@ const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fet
     database: process.env.DB_NAME,
   });
 
-// pour reste les tables movie_tag et tag. s'enclenche ds node avec> npm run db:import-tags:reset
+  // pour reste les tables movie_tag et tag. s'enclenche ds node avec> npm run db:import-tags:reset
   const shouldReset = process.argv.includes("--reset");
 
   if (shouldReset) {
@@ -41,7 +49,9 @@ const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fet
         const res = await fetch(
           `https://api.themoviedb.org/3/${type}/${tmdbId}/keywords`,
           {
-            headers: { Authorization: `Bearer ${process.env.VITE_APP_TMDB_AUTH_TOKEN}` },
+            headers: {
+              Authorization: `Bearer ${process.env.VITE_APP_TMDB_AUTH_TOKEN}`,
+            },
           }
         );
 
@@ -56,7 +66,9 @@ const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fet
         }
 
         const keywords = data.keywords ?? data.results ?? [];
-        console.log(`${movie.idTheMovieDb} - ${keywords.length} mots-clés trouvés`);
+        console.log(
+          `${movie.idTheMovieDb} - ${keywords.length} mots-clés trouvés`
+        );
 
         // 3️⃣ On insère chaque tag s’il n’existe pas encore
         for (const kw of keywords) {
@@ -84,11 +96,12 @@ const fetch = (...args) => import("node-fetch").then(({ default: fetch }) => fet
           );
         }
 
-        console.log(`✅ Tags ajoutés pour ${movie.idTheMovieDb} (${keywords.length} tags)`);
+        console.log(
+          `✅ Tags ajoutés pour ${movie.idTheMovieDb} (${keywords.length} tags)`
+        );
 
         // Petite pause pour ne pas surcharger l’API
         await new Promise((r) => setTimeout(r, 300));
-
       } catch (err) {
         console.error(`❌ Erreur sur ${movie.idTheMovieDb}:`, err.message);
       }
