@@ -31,6 +31,11 @@ function Counters({ countAmount, origin }) {
           <span className="whiteString_counter">{countAmount}</span> studios
         </p>
       )}
+      {origin === "tags" && (
+        <p className="Amount_info_counter">
+          <span className="whiteString_counter">{countAmount}</span> tags
+        </p>
+      )}
     </section>
   );
 }
