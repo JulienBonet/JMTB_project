@@ -27,7 +27,8 @@ function ArtistList({
       )}
       <AlphabetDropdown
         onLetterChange={handleLetterChange}
-        origin="artistlist"
+        origin={origin}
+        AlphabetDropdownClassName="artistlist"
         search={search}
       />
       {search === "" && (

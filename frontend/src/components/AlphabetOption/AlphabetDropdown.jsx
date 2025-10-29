@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import "./alphabetDropdown.css";
 
-// GENERATE ALPHABET
+// Génère A-Z
 function generateAlphabet() {
   const alphabet = [];
   for (let i = 0; i < 26; i++) {
@@ -12,29 +12,50 @@ function generateAlphabet() {
   return alphabet;
 }
 
-function AlphabetDropdown({ onLetterChange, origin, search }) {
+// Génère 0-9
+function generateNumbers() {
+  const numbers = [];
+  for (let i = 0; i <= 9; i++) {
+    numbers.push(i.toString());
+  }
+  return numbers;
+}
+
+function AlphabetDropdown({
+  onLetterChange,
+  origin,
+  AlphabetDropdownClassName,
+  search,
+}) {
   const [options, setOptions] = useState([]);
-  const letters = generateAlphabet();
 
   const handleChange = (event) => {
-    const selectedLetter = event.target.value;
-    onLetterChange(selectedLetter);
+    onLetterChange(event.target.value);
   };
 
   useEffect(() => {
-    const generatedOptions = letters.map((letter) => (
-      <option key={letter} value={letter}>
-        {letter}
+    const letters = generateAlphabet();
+    const numbers = generateNumbers();
+
+    // Si origin === "tag", on ajoute les chiffres
+    const allOptions = origin === "tags" ? [...numbers, ...letters] : letters;
+
+    const generatedOptions = allOptions.map((char) => (
+      <option key={char} value={char}>
+        {char}
       </option>
     ));
+
     setOptions(generatedOptions);
-  }, [search]);
+  }, [search, origin]);
 
   return (
     <select
       onChange={handleChange}
       className={
-        origin === "artistlist" ? "AlphabetDropdown" : "AlphabetDropdown2"
+        AlphabetDropdownClassName === "artistlist"
+          ? "AlphabetDropdown"
+          : "AlphabetDropdown2"
       }
     >
       {search !== "" && <option value="">-</option>}

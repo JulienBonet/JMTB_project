@@ -17,10 +17,10 @@ function MovieTag() {
   const [sortOrderY, setSortOrderY] = useState("desc");
   const [movieAmount, setMovieAmount] = useState(0);
   const [selectedLetter, SetSelectedLetter] = useState("a");
-  const [selectedStudio, setselectedStudio] = useState("");
-  const [selectedStudioByLetter, setSelectedStudioByLetter] = useState([]);
+  const [selectedTag, setselectedTag] = useState("");
+  const [selectedTagByLetter, setSelectedStudioByLetter] = useState([]);
 
-  // REQUEST ALL STUDIOS BY LETTER
+  // REQUEST ALL TAGS BY LETTER
   useEffect(() => {
     fetch(
       `${import.meta.env.VITE_BACKEND_URL}/api/tags/sorted/${selectedLetter}`
@@ -39,9 +39,9 @@ function MovieTag() {
       });
   }, [selectedLetter]);
 
-  // REQUEST ALL MOVIES by STUDIO
-  const fetchMoviesByStudio = () => {
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/tags/${selectedStudio.id}`)
+  // REQUEST ALL MOVIES by TAG
+  const fetchMoviesByTag = () => {
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/tags/${selectedTag.id}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -58,8 +58,8 @@ function MovieTag() {
   };
 
   useEffect(() => {
-    fetchMoviesByStudio();
-  }, [selectedStudio]);
+    fetchMoviesByTag();
+  }, [selectedTag]);
 
   // SELECT LETTER
   const handleLetterChange = (letter) => {
@@ -67,9 +67,9 @@ function MovieTag() {
     setSearch("");
   };
 
-  // SELECT STUDIO
+  // SELECT TAG
   const handleArtistClick = (tags) => {
-    setselectedStudio(tags);
+    setselectedTag(tags);
   };
 
   // SEARCH BAR
@@ -80,7 +80,7 @@ function MovieTag() {
     SetSelectedLetter("");
   };
 
-  const filteredStudio = tagsData
+  const filteredTag = tagsData
     ? tagsData.filter(
         (dataItem) =>
           dataItem.name &&
@@ -93,8 +93,8 @@ function MovieTag() {
     : [];
 
   // AFFICHER LE NOMBRE D'ARTISTES
-  const tagsAmount = selectedStudioByLetter.length;
-  const selectedStudioAmount = filteredStudio.length;
+  const tagsAmount = selectedTagByLetter.length;
+  const selectedTagAmount = filteredTag.length;
 
   // SORTED BTN
   useEffect(() => {
@@ -106,7 +106,7 @@ function MovieTag() {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/api/tags/${
-          selectedStudio.id
+          selectedTag.id
         }/sorted/0`
       );
       if (!response.ok) {
@@ -125,7 +125,7 @@ function MovieTag() {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/api/tags/${
-          selectedStudio.id
+          selectedTag.id
         }/sorted/1`
       );
       if (!response.ok) {
@@ -144,7 +144,7 @@ function MovieTag() {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/api/tags/${
-          selectedStudio.id
+          selectedTag.id
         }/sorted/2`
       );
       if (!response.ok) {
@@ -163,7 +163,7 @@ function MovieTag() {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/api/tags/${
-          selectedStudio.id
+          selectedTag.id
         }/sorted/3`
       );
       if (!response.ok) {
@@ -200,14 +200,14 @@ function MovieTag() {
 
   // MISE A JOUR AFFICHAGE SI DELETE MOVIE DANS MOVIECARD
   const handleDeleteMovie = () => {
-    fetchMoviesByStudio();
+    fetchMoviesByTag();
   };
 
   // FONCTION POUR BTN RESET SEARCH
   const handleResetSearch = () => {
     setSearch("");
     SetSelectedLetter("a"); // lettre par défaut
-    setselectedStudio("");
+    setselectedTag("");
     setMovies([]);
     setData([]);
     setMovieAmount(0);
@@ -222,7 +222,7 @@ function MovieTag() {
             search={search}
             onSearchChange={handleTyping}
             onReset={handleResetSearch}
-            selectedItem={selectedStudio}
+            selectedItem={selectedTag}
             sortOrderA={sortOrderA}
             sortOrderY={sortOrderY}
             movieSortedA={movieSortedA}
@@ -238,15 +238,15 @@ function MovieTag() {
               handleLetterChange={handleLetterChange}
               search={search}
               theme={theme}
-              selectedByLetter={selectedStudioByLetter}
-              filteredArtist={filteredStudio}
+              selectedByLetter={selectedTagByLetter}
+              filteredArtist={filteredTag}
               handleArtistClick={handleArtistClick}
               origin={origin}
               artistAmount={tagsAmount}
-              selectedArtistAmount={selectedStudioAmount}
+              selectedArtistAmount={selectedTagAmount}
             />
             <ArtistFilmo
-              selectedArtist={selectedStudio}
+              selectedArtist={selectedTag}
               origin={origin}
               data={data}
               sortOrderA={sortOrderA}
@@ -256,7 +256,7 @@ function MovieTag() {
               movieSortedYearDesc={movieSortedYearDesc}
               movieSortedYear={movieSortedYear}
               movieAmount={movieAmount}
-              onUpdateMovie={fetchMoviesByStudio}
+              onUpdateMovie={fetchMoviesByTag}
               onDeleteMovie={handleDeleteMovie}
             />
           </section>

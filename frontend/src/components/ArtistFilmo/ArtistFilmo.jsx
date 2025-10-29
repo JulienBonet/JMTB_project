@@ -16,7 +16,6 @@ function ArtistFilmo({
   onUpdateMovie,
   onDeleteMovie,
 }) {
-  console.info("data", data);
   return (
     <section className="filmo_artists">
       {selectedArtist === "" && (
