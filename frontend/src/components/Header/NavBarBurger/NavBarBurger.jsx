@@ -129,6 +129,14 @@ export default function BasicMenu() {
           STUDIO
         </MenuItem>
 
+        <MenuItem
+          onClick={handleClose}
+          component={Link}
+          to="/movie_tag"
+          sx={{ justifyContent: "center" }}
+        >
+          TAGS
+        </MenuItem>
         <Divider sx={{ backgroundColor: "var(--color-02)", marginY: 1 }} />
 
         {/* ADMIN */}

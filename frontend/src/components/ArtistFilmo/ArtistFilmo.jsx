@@ -6,6 +6,7 @@ import ActorBear from "../../assets/ico/actor-bear.jpg";
 import ScreenwriterBear from "../../assets/ico/screenwiter-bear.jpeg";
 import MusicBear from "../../assets/ico/compositor-bear.jpeg";
 import StudioBear from "../../assets/ico/studio_bear.jpeg";
+import TagBear from "../../assets/ico/search_Bear_02.jpeg";
 
 function ArtistFilmo({
   selectedArtist,
@@ -81,6 +82,20 @@ function ArtistFilmo({
                 <img
                   src={StudioBear}
                   alt="a Bear MUSIC COMPOSITOR"
+                  className="artists_bear_illustr"
+                />
+              </div>
+            )}
+            {origin === "tags" && (
+              <div className="artists_bear_container">
+                <div className="artists_pitch_container">
+                  <p className="artists_pitch">
+                    AVEC QUEL TAG CHERCHONS NOUS ?
+                  </p>
+                </div>
+                <img
+                  src={TagBear}
+                  alt="a Bear searching movie"
                   className="artists_bear_illustr"
                 />
               </div>

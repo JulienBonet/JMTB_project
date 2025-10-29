@@ -94,6 +94,9 @@ export default function BasicButtons() {
               >
                 STUDIOS
               </MenuItem>
+              <MenuItem component={Link} to="/movie_tag" onClick={handleClose}>
+                TAGS
+              </MenuItem>
             </Menu>
           </div>
 

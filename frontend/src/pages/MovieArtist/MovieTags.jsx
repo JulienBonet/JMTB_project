@@ -7,9 +7,9 @@ import ArtistList from "../../components/ArtistList/ArtistList";
 import ArtistFilmo from "../../components/ArtistFilmo/ArtistFilmo";
 import MovieArtistSearchBar from "../../components/MovieArtistSearchBar/MovieArtistSearchBar";
 
-function MovieStudio() {
+function MovieTag() {
   // DATAS
-  const studioData = useLoaderData();
+  const tagsData = useLoaderData();
   const [movies, setMovies] = useState([]);
   const [data, setData] = useState(movies);
   const [search, setSearch] = useState("");
@@ -23,7 +23,7 @@ function MovieStudio() {
   // REQUEST ALL STUDIOS BY LETTER
   useEffect(() => {
     fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/studio/sorted/${selectedLetter}`
+      `${import.meta.env.VITE_BACKEND_URL}/api/tags/sorted/${selectedLetter}`
     )
       .then((response) => {
         if (!response.ok) {
@@ -31,8 +31,8 @@ function MovieStudio() {
         }
         return response.json();
       })
-      .then((studioDataLetter) => {
-        setSelectedStudioByLetter(studioDataLetter);
+      .then((tagsDataLetter) => {
+        setSelectedStudioByLetter(tagsDataLetter);
       })
       .catch((error) => {
         console.error("Error fetching user data:", error);
@@ -41,7 +41,7 @@ function MovieStudio() {
 
   // REQUEST ALL MOVIES by STUDIO
   const fetchMoviesByStudio = () => {
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/studio/${selectedStudio.id}`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/tags/${selectedStudio.id}`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -68,8 +68,8 @@ function MovieStudio() {
   };
 
   // SELECT STUDIO
-  const handleArtistClick = (studio) => {
-    setselectedStudio(studio);
+  const handleArtistClick = (tags) => {
+    setselectedStudio(tags);
   };
 
   // SEARCH BAR
@@ -80,8 +80,8 @@ function MovieStudio() {
     SetSelectedLetter("");
   };
 
-  const filteredStudio = studioData
-    ? studioData.filter(
+  const filteredStudio = tagsData
+    ? tagsData.filter(
         (dataItem) =>
           dataItem.name &&
           dataItem.name
@@ -93,7 +93,7 @@ function MovieStudio() {
     : [];
 
   // AFFICHER LE NOMBRE D'ARTISTES
-  const studioAmount = selectedStudioByLetter.length;
+  const tagsAmount = selectedStudioByLetter.length;
   const selectedStudioAmount = filteredStudio.length;
 
   // SORTED BTN
@@ -105,7 +105,7 @@ function MovieStudio() {
   const movieSortedA = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/studio/${
+        `${import.meta.env.VITE_BACKEND_URL}/api/tags/${
           selectedStudio.id
         }/sorted/0`
       );
@@ -124,7 +124,7 @@ function MovieStudio() {
   const movieSortedZ = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/studio/${
+        `${import.meta.env.VITE_BACKEND_URL}/api/tags/${
           selectedStudio.id
         }/sorted/1`
       );
@@ -143,7 +143,7 @@ function MovieStudio() {
   const movieSortedYear = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/studio/${
+        `${import.meta.env.VITE_BACKEND_URL}/api/tags/${
           selectedStudio.id
         }/sorted/2`
       );
@@ -162,7 +162,7 @@ function MovieStudio() {
   const movieSortedYearDesc = async () => {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/studio/${
+        `${import.meta.env.VITE_BACKEND_URL}/api/tags/${
           selectedStudio.id
         }/sorted/3`
       );
@@ -196,7 +196,7 @@ function MovieStudio() {
   });
 
   // PROPS FOR TEXTS & IMAGE
-  const origin = "studio";
+  const origin = "tags";
 
   // MISE A JOUR AFFICHAGE SI DELETE MOVIE DANS MOVIECARD
   const handleDeleteMovie = () => {
@@ -218,7 +218,7 @@ function MovieStudio() {
       <section className="artists_content">
         <section className="search_bar_contents">
           <MovieArtistSearchBar
-            placeholder="recherche studio"
+            placeholder="recherche tags"
             search={search}
             onSearchChange={handleTyping}
             onReset={handleResetSearch}
@@ -242,7 +242,7 @@ function MovieStudio() {
               filteredArtist={filteredStudio}
               handleArtistClick={handleArtistClick}
               origin={origin}
-              artistAmount={studioAmount}
+              artistAmount={tagsAmount}
               selectedArtistAmount={selectedStudioAmount}
             />
             <ArtistFilmo
@@ -264,6 +264,6 @@ function MovieStudio() {
       </section>
     </main>
   ); // end return
-} // function MovieStudio()
+} // function MovieCasting()
 
-export default MovieStudio;
+export default MovieTag;

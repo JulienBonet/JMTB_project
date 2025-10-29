@@ -20,8 +20,6 @@ function MovieDirectors() {
   const [selectedLetter, SetSelectedLetter] = useState("a");
   const [selectedDirectorByLetter, setSelectedDirectorByLetter] = useState([]);
 
-  console.info("directorsData", directorsData);
-
   // REQUEST ALL ARTIST BY LETTER
   useEffect(() => {
     fetch(
