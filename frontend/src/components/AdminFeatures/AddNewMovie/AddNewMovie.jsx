@@ -466,12 +466,14 @@ function AddNewMovie() {
 
   // -----------------/ MOVIE DATA FETCH /----------------- //
 
-  const handleMovieClick = async (movieId) => {
+  const handleMovieClick = async (movieId, mediaType = "movie") => {
     resetStates();
+
     try {
       const options = {
         method: "GET",
-        url: `https://api.themoviedb.org/3/movie/${movieId}?language=fr-FR`,
+        // <-- ici on remplace "movie" en dur par la variable mediaType
+        url: `https://api.themoviedb.org/3/${mediaType}/${movieId}?language=fr-FR`,
         headers: {
           accept: "application/json",
           Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
@@ -482,19 +484,35 @@ function AddNewMovie() {
       const movieData = response.data;
       console.info("movieData", movieData);
 
+      // On détecte si c’est une série ou un film pour mapper correctement les champs
+      const isTV = mediaType === "tv";
+
+      let altTitle = "";
+      const originalTitle = isTV
+        ? movieData.original_name
+        : movieData.original_title;
+      const displayTitle = isTV ? movieData.name : movieData.title;
+
+      if (originalTitle && originalTitle !== displayTitle) {
+        altTitle = originalTitle;
+      }
       setMovie({
         ...movie,
-        title: movieData.title,
-        altTitle:
-          movieData.original_title !== movieData.title
-            ? movieData.original_title
-            : "",
-        year: movieData.release_date.substring(0, 4),
-        duration: movieData.runtime,
+        title: displayTitle,
+        altTitle,
+        year: (isTV ? movieData.first_air_date : movieData.release_date)
+          ? (isTV
+              ? movieData.first_air_date
+              : movieData.release_date
+            ).substring(0, 4)
+          : "",
+        duration: isTV
+          ? movieData.episode_run_time?.[0] || ""
+          : movieData.runtime,
         pitch: movieData.tagline || "",
-        story: movieData.overview,
+        story: movieData.overview || "",
         idTheMovieDb: movieData.id,
-        idIMDB: movieData.imdb_id,
+        idIMDB: movieData.imdb_id || "",
       });
 
       // Fetch GENRES
@@ -568,7 +586,7 @@ function AddNewMovie() {
       // CREDITS FETCH (cast & crew)
       const options2 = {
         method: "GET",
-        url: `https://api.themoviedb.org/3/movie/${movieId}/credits?language=fr-FR`,
+        url: `https://api.themoviedb.org/3/${mediaType}/${movieId}/credits?language=fr-FR`,
         headers: {
           accept: "application/json",
           Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
@@ -589,17 +607,37 @@ function AddNewMovie() {
       };
 
       // Fetch DIRECTORS
-      const directorsData = await Promise.all(
-        crewData
-          .filter((crewMember) => crewMember.job === "Director")
-          .map((director) =>
-            fetchOrCreateEntity(
-              director,
-              searchDirectorInDatabase,
-              createDirectorInDatabase
+      // ---- DIRECTORS / CREATORS ----
+      let directorsData = [];
+
+      if (isTV) {
+        // Pour les séries : récupérer les créateurs
+        if (movieData.created_by && movieData.created_by.length > 0) {
+          directorsData = await Promise.all(
+            movieData.created_by.map((creator) =>
+              fetchOrCreateEntity(
+                { name: creator.name },
+                searchDirectorInDatabase,
+                createDirectorInDatabase
+              )
             )
-          )
-      );
+          );
+        }
+      } else {
+        // Pour les films : récupérer les réalisateurs depuis crewData
+        directorsData = await Promise.all(
+          crewData
+            .filter((crewMember) => crewMember.job === "Director")
+            .map((director) =>
+              fetchOrCreateEntity(
+                director,
+                searchDirectorInDatabase,
+                createDirectorInDatabase
+              )
+            )
+        );
+      }
+
       setSelectedDirectors(directorsData);
 
       // Fetch SCREENWRITERS
@@ -652,11 +690,12 @@ function AddNewMovie() {
           )
       );
       setSelectedCasting(castingsData);
+      console.info("castingsData", castingsData);
 
       // Fetch trailer
       const trailerOptions = {
         method: "GET",
-        url: `https://api.themoviedb.org/3/movie/${movieId}/videos?language=fr-FR`,
+        url: `https://api.themoviedb.org/3/${mediaType}/${movieId}/videos?language=fr-FR`,
         headers: {
           accept: "application/json",
           Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
@@ -676,10 +715,13 @@ function AddNewMovie() {
         trailer: videoUrl,
       }));
 
+      console.info("videoUrl", videoUrl);
+
+      // Fetch keywords (tags)
       // Fetch keywords (tags)
       const keywordsOptions = {
         method: "GET",
-        url: `https://api.themoviedb.org/3/movie/${movieId}/keywords`,
+        url: `https://api.themoviedb.org/3/${mediaType}/${movieId}/keywords`,
         headers: {
           accept: "application/json",
           Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
@@ -687,7 +729,14 @@ function AddNewMovie() {
       };
 
       const keywordsResponse = await axios(keywordsOptions);
-      const keywordsData = keywordsResponse.data.keywords;
+
+      // TMDB renvoie `keywords` pour les films, et `results` pour les séries
+      const keywordsData =
+        mediaType === "tv"
+          ? keywordsResponse.data.results
+          : keywordsResponse.data.keywords;
+
+      console.info("keywordsData:", keywordsData);
 
       // Fetch or create tags in database
       const tagsData = await Promise.all(
@@ -1757,7 +1806,7 @@ function AddNewMovie() {
         <Box sx={styleMIEmodal}>
           <MovieInfosEntrance
             title={movie.title}
-            onMovieClick={handleMovieClick}
+            onMovieClick={(id, type) => handleMovieClick(id, type)}
             handleCloseModalMIE={handleCloseModalMIE}
           />
         </Box>

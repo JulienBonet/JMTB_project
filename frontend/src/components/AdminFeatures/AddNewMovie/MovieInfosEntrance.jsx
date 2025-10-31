@@ -61,54 +61,93 @@ function MovieInfosEntrance({ title, onMovieClick, handleCloseModalMIE }) {
   useEffect(() => {
     setError(null);
     setData([]);
+    setGenresLoaded(false);
 
-    const options = {
-      method: "GET",
-      url: `https://api.themoviedb.org/3/search/movie`,
+    const headers = {
+      accept: "application/json",
+      Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
+    };
+
+    // Requête pour les films
+    const movieRequest = axios.get(
+      "https://api.themoviedb.org/3/search/movie",
+      {
+        params: {
+          query: encodedTitle,
+          include_adult: adult,
+          language: "fr-FR",
+          page,
+        },
+        headers,
+      }
+    );
+
+    // Requête pour les séries
+    const tvRequest = axios.get("https://api.themoviedb.org/3/search/tv", {
       params: {
         query: encodedTitle,
         include_adult: adult,
         language: "fr-FR",
         page,
       },
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
-      },
-    };
+      headers,
+    });
 
-    axios
-      .request(options)
-      .then((response) => {
-        setData(response.data.results);
-        setFullData(response.data);
+    // On lance les deux en parallèle
+    Promise.all([movieRequest, tvRequest])
+      .then(([movieRes, tvRes]) => {
+        // Ajouter un champ "type" pour distinguer films/séries
+        const movieResults = movieRes.data.results.map((m) => ({
+          ...m,
+          media_type: "movie",
+        }));
+        const tvResults = tvRes.data.results.map((t) => ({
+          ...t,
+          media_type: "tv",
+        }));
 
-        const genresOptions = {
-          method: "GET",
-          url: "https://api.themoviedb.org/3/genre/movie/list",
-          headers: {
-            accept: "application/json",
-            Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
-          },
-          params: {
-            language: "fr-FR",
-          },
-        };
+        // Fusionner les deux tableaux
+        const combined = [...movieResults, ...tvResults];
 
-        axios
-          .request(genresOptions)
-          .then((response) => {
-            setGenres(response.data.genres);
-            setGenresLoaded(true); // Marquer les genres comme chargés
+        // Trier les résultats par popularité (optionnel)
+        combined.sort((a, b) => b.popularity - a.popularity);
+
+        setData(combined);
+
+        // Pour la pagination (on peut choisir celle avec le plus de pages)
+        setFullData({
+          total_results: movieRes.data.total_results + tvRes.data.total_results,
+          total_pages: Math.max(
+            movieRes.data.total_pages,
+            tvRes.data.total_pages
+          ),
+        });
+
+        // Charger les genres (films + séries)
+        const genresMovie = axios.get(
+          "https://api.themoviedb.org/3/genre/movie/list",
+          { headers, params: { language: "fr-FR" } }
+        );
+        const genresTV = axios.get(
+          "https://api.themoviedb.org/3/genre/tv/list",
+          { headers, params: { language: "fr-FR" } }
+        );
+
+        Promise.all([genresMovie, genresTV])
+          .then(([movieGenres, tvGenres]) => {
+            setGenres([
+              ...movieGenres.data.genres,
+              ...tvGenres.data.genres.filter(
+                (tvG) => !movieGenres.data.genres.some((mG) => mG.id === tvG.id)
+              ),
+            ]);
+            setGenresLoaded(true);
           })
-          .catch((error) => {
-            console.error(error);
-            setError("Erreur lors de la récupération des genres");
-          });
+          .catch(() => setError("Erreur lors de la récupération des genres"));
       })
       .catch((error) => {
         console.error(error);
-        setError("Erreur lors de la récupération des films");
+        setError("Erreur lors de la récupération des données");
       });
   }, [page, adult, encodedTitle]);
 
@@ -186,44 +225,52 @@ function MovieInfosEntrance({ title, onMovieClick, handleCloseModalMIE }) {
           </FormGroup>
         </div>
         <ul>
-          {data.map((movie) => (
-            <li key={movie.id} className="MIE_movie_bloc">
+          {data.map((item) => (
+            <li
+              key={`${item.media_type}-${item.id}`}
+              className="MIE_movie_bloc"
+            >
               <div className="MIE_movie_bloc_A1">
-                {movie.poster_path && (
+                {item.poster_path && (
                   <img
-                    src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                    alt={movie.title}
+                    src={`https://image.tmdb.org/t/p/w500${item.poster_path}`}
+                    alt={item.title || item.name}
                     className="MIE_movie_image"
                   />
                 )}
               </div>
               <div className="MIE_movie_bloc_A2">
-                <h2 className="MIE_movie_title">{movie.title}</h2>
-                {movie.original_title && (
+                <h2 className="MIE_movie_title">
+                  {item.title || item.name}{" "}
+                  <span className="MIE_type_tag">
+                    [{item.media_type === "movie" ? "Film" : "Série"}]
+                  </span>
+                </h2>
+                {(item.original_title || item.original_name) && (
                   <h3 className="MIE_movie_alt_title">
-                    <span className="MIE_italic">{movie.original_title}</span>
+                    <span className="MIE_italic">
+                      {item.original_title || item.original_name}
+                    </span>
                   </h3>
                 )}
-                {movie.adult === true && (
-                  <p className="MIE_adult">X ADULTE X</p>
-                )}
+                {item.adult && <p className="MIE_adult">X ADULTE X</p>}
                 <p className="MIE_movie_genre">
                   <span className="MIE_bold">Genre : </span>
-                  {getMovieGenres(movie)}
+                  {getMovieGenres(item)}
                 </p>
                 <p className="MIE_movie_release">
                   <span className="MIE_bold">Sortie : </span>
-                  {getYear(movie.release_date)}
+                  {getYear(item.release_date || item.first_air_date)}
                 </p>
                 <p className="MIE_movie_synopsis">
                   <span className="MIE_bold">Synopsis : </span>
-                  {movie.overview}
+                  {item.overview}
                 </p>
               </div>
               <div className="MIE_movie_bloc_A3">
                 <button
                   onClick={() => {
-                    onMovieClick(movie.id);
+                    onMovieClick(item.id, item.media_type);
                     handleCloseModalMIE();
                   }}
                 >
