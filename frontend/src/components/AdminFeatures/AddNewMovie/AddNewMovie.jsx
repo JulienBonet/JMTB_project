@@ -5,8 +5,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Button, Container, IconButton, Tooltip } from "@mui/material";
-
+import { Button, Container, IconButton } from "@mui/material";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import InputLabel from "@mui/material/InputLabel";
@@ -62,7 +61,6 @@ function AddNewMovie() {
   const [seasonsInfo, setSeasonsInfo] = useState([]);
   const [selectedSeasons, setSelectedSeasons] = useState([]); // saison choisie
   const [nbTvEpisodes, setNbTvEpisodes] = useState(0);
-  const [totalDuration, setTotalDuration] = useState("");
   const [movie, setMovie] = useState({
     title: "",
     altTitle: "",
@@ -114,17 +112,14 @@ function AddNewMovie() {
     if (!movie.isTvShow) return; // ne rien faire pour les films
 
     if (!movie.episodeDuration || movie.episodeDuration === 0) {
-      setTotalDuration("");
       setMovie((prev) => ({ ...prev, duration: "" }));
       return;
     }
 
     if (nbTvEpisodes > 0) {
       const total = nbTvEpisodes * movie.episodeDuration;
-      setTotalDuration(total);
       setMovie((prev) => ({ ...prev, duration: total }));
     } else {
-      setTotalDuration("");
       setMovie((prev) => ({ ...prev, duration: "" }));
     }
   }, [nbTvEpisodes, movie.episodeDuration, movie.isTvShow]);
@@ -199,11 +194,7 @@ function AddNewMovie() {
         <TextField
           name="duration"
           label="Durée totale (minutes)"
-          value={
-            nbTvEpisodes && movie.episodeDuration
-              ? nbTvEpisodes * movie.episodeDuration
-              : ""
-          }
+          value={movie.duration || ""}
           InputProps={{ readOnly: true }}
           sx={{ width: "25ch" }}
         />
