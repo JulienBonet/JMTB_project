@@ -25,6 +25,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 import Checkbox from "@mui/material/Checkbox";
 import ListItemText from "@mui/material/ListItemText";
 import OutlinedInput from "@mui/material/OutlinedInput";
+import Switch from "@mui/material/Switch";
 import TransferList from "./MovieItemList";
 import MovieInfosEntrance from "./MovieInfosEntrance";
 import "./addNewMovie.css";
@@ -76,7 +77,7 @@ function AddNewMovie() {
     fileSize: "",
     idTheMovieDb: "",
     idIMDB: "",
-    isTvShow: "",
+    isTvShow: false,
     nbTvSeasons: "",
     tvSeasons: "",
     nbTvEpisodes: "",
@@ -84,7 +85,6 @@ function AddNewMovie() {
   });
   console.info("data", data);
   console.info("movie", movie);
-  console.info("tvSeasons", tvSeasons);
 
   // -- TVSHOW Mettre à jour le nombre d'épisodes en fonction des saisons sélectionnées
   useEffect(() => {
@@ -1286,6 +1286,20 @@ function AddNewMovie() {
                 />
               </Box>
               <Stack spacing={2} direction="row">
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={movie.isTvShow}
+                      onChange={(e) =>
+                        setMovie((prev) => ({
+                          ...prev,
+                          isTvShow: e.target.checked,
+                        }))
+                      }
+                    />
+                  }
+                  label="Série TV"
+                />
                 <Button
                   variant="contained"
                   size="large"
