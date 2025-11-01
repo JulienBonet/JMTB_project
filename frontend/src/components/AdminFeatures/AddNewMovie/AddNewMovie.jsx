@@ -1104,25 +1104,28 @@ function AddNewMovie() {
   // -----------------/ INPUT FILE /----------------- //
   const fileInputRef = useRef(null); // Référence pour le fichier vidéo
 
-  const handleFileChange = (event) => {
-    const file = event.target.files[0];
-    const fileExtension = file.name.split(".").pop().toLowerCase();
-    const videoFormats = ["avi", "mkv", "mp4"];
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-    if (videoFormats.includes(fileExtension)) {
-      setSelectedFile(file);
-      const fileSizeInBytes = file.size;
-      const fileSizeInGigabytes = fileSizeInBytes / (1024 * 1024 * 1024);
-      setFileSize(fileSizeInGigabytes.toFixed(2));
-      setFormat(fileExtension);
+    setSelectedFile(file);
+
+    const cleanedPath = movie.path
+      ? movie.path.replace(/^[A-Za-z]:[\\/]+/, "").replace(/[\\/]+$/, "")
+      : "";
+    const fullPath = cleanedPath ? `${cleanedPath}\\${file.name}` : file.name;
+
+    setMovie((prev) => ({
+      ...prev,
+      location: fullPath,
+    }));
+
+    const ext = file.name.split(".").pop().toLowerCase();
+    const validFormats = ["avi", "mkv", "mp4"];
+    if (validFormats.includes(ext)) {
+      setFormat(ext);
       setvideoSupport("Fichier multimédia");
-      setMovie((prevMovie) => ({
-        ...prevMovie,
-        location: event.target.value,
-        videoFormat: fileExtension,
-        videoSupport: "Fichier multimédia",
-        fileSize: `${fileSizeInGigabytes.toFixed(2)} GB`,
-      }));
+      setFileSize((file.size / (1024 * 1024 * 1024)).toFixed(2));
     } else {
       toast.warn("Veuillez sélectionner un fichier vidéo valide.");
     }
@@ -1886,37 +1889,71 @@ function AddNewMovie() {
                     />
                   </Box>
                 </div>
-
-                {/* movie LOCAL FILE */}
+                {/* movie LOCAL PATH */}
                 <Box
                   component="form"
-                  sx={{ "& > :not(style)": { width: "75ch" } }}
+                  sx={{ "& > :not(style)": { width: "90ch" } }}
                   noValidate
                   autoComplete="off"
                   display="flex"
-                  alignItems="center"
-                  gap={4}
+                  flexDirection="column"
+                  gap={2}
                   p={1}
                 >
+                  {/* Champ pour le chemin du dossier */}
                   <TextField
-                    id="filled-basic"
-                    label="fichier Local"
+                    label="Chemin du dossier"
                     variant="outlined"
-                    value={selectedFile ? selectedFile.name : ""}
+                    value={movie.path || ""}
+                    onChange={(e) => {
+                      const userPathInput = e.target.value;
+                      const cleanedPath = userPathInput
+                        .replace(/^[A-Za-z]:[\\/]+/, "")
+                        .replace(/[\\/]+$/, "");
+
+                      setMovie((prev) => ({
+                        ...prev,
+                        path: userPathInput,
+                        location: selectedFile
+                          ? `${cleanedPath}\\${selectedFile.name}`
+                          : "",
+                      }));
+                    }}
+                    sx={{ width: "75ch" }}
                   />
+
+                  {/* Champ pour le fichier sélectionné */}
+                  <Box display="flex" alignItems="center" gap={2}>
+                    <TextField
+                      label="Fichier sélectionné"
+                      variant="outlined"
+                      value={selectedFile ? selectedFile.name : ""}
+                      sx={{ width: "60ch" }}
+                      InputProps={{ readOnly: true }}
+                    />
+                    <Button
+                      variant="outlined"
+                      onClick={() => {
+                        if (fileInputRef.current) {
+                          fileInputRef.current.click();
+                        } else {
+                          console.warn(
+                            "fileInputRef is not attached to any input element"
+                          );
+                        }
+                      }}
+                    >
+                      Sélectionner un fichier vidéo
+                    </Button>
+                  </Box>
+
+                  {/* Input caché pour le vrai fichier */}
                   <input
                     type="file"
                     style={{ display: "none" }}
-                    onChange={handleFileChange}
                     ref={fileInputRef}
+                    onChange={handleFileChange}
                   />
-                  <button
-                    type="button"
-                    className="input_file_btn"
-                    onClick={() => fileInputRef.current.click()}
-                  >
-                    Sélectionner un fichier vidéo
-                  </button>
                 </Box>
 
                 <FormControl sx={{ m: 1 }}>
