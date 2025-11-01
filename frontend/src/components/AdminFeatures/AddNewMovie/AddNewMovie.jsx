@@ -5,7 +5,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { Button, Container } from "@mui/material";
+import { Button, Container, IconButton, Tooltip } from "@mui/material";
+
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import InputLabel from "@mui/material/InputLabel";
@@ -26,6 +27,7 @@ import Checkbox from "@mui/material/Checkbox";
 import ListItemText from "@mui/material/ListItemText";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import Switch from "@mui/material/Switch";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import TransferList from "./MovieItemList";
 import MovieInfosEntrance from "./MovieInfosEntrance";
 import "./addNewMovie.css";
@@ -85,6 +87,8 @@ function AddNewMovie() {
   });
   console.info("data", data);
   console.info("movie", movie);
+
+  // -----------------/ GESTION DES FIELDS SAISONS - EPISODES - DUREE /----------------- //
 
   // -- TVSHOW Mettre à jour le nombre d'épisodes en fonction des saisons sélectionnées
   useEffect(() => {
@@ -159,6 +163,119 @@ function AddNewMovie() {
     setMovie((prev) => ({ ...prev, tvSeasons: displayValue }));
   }, [selectedSeasons, movie.isTvShow]);
 
+  // -- Rendus Front des Fields Saisons / episodes / durée
+  const renderTvSeasonEpisodeDurationFields = () => {
+    const renderEpisodeAndDurationFields = (
+      isReadOnly = false // on garde cette option si on veut bloquer certains champs plus tard
+    ) => (
+      <>
+        <TextField
+          name="nbTvEpisodes"
+          label="Nombre d’épisodes"
+          type="number"
+          value={nbTvEpisodes || ""}
+          onChange={(e) => {
+            const value = Number(e.target.value);
+            setNbTvEpisodes(value);
+            setMovie((prev) => ({ ...prev, nbTvEpisodes: value }));
+          }}
+          InputProps={{ readOnly: isReadOnly }}
+          sx={{ width: "25ch" }}
+        />
+        <TextField
+          name="episodeDuration"
+          type="number"
+          label="Durée d’un épisode (min)"
+          value={movie.episodeDuration || ""}
+          onChange={(e) =>
+            setMovie((prev) => ({
+              ...prev,
+              episodeDuration: Number(e.target.value),
+            }))
+          }
+          InputProps={{ readOnly: isReadOnly }}
+          sx={{ width: "25ch" }}
+        />
+        <TextField
+          name="duration"
+          label="Durée totale (minutes)"
+          value={
+            nbTvEpisodes && movie.episodeDuration
+              ? nbTvEpisodes * movie.episodeDuration
+              : ""
+          }
+          InputProps={{ readOnly: true }}
+          sx={{ width: "25ch" }}
+        />
+      </>
+    );
+
+    // --- Mode API ---
+    if (seasonsInfo.length > 0) {
+      return (
+        <>
+          <FormControl sx={{ width: "25ch" }}>
+            <InputLabel id="season-select-label">Saisons</InputLabel>
+            <Select
+              labelId="season-select-label"
+              multiple
+              value={Array.isArray(selectedSeasons) ? selectedSeasons : []}
+              onChange={(e) => {
+                let { value } = e.target;
+                if (!Array.isArray(value)) value = [value];
+                value = value.map((v) => Number(v));
+                setSelectedSeasons(value);
+
+                const totalEpisodes = value.reduce((sum, seasonNumber) => {
+                  const season = seasonsInfo.find(
+                    (s) => s.season_number === seasonNumber
+                  );
+                  return sum + (season ? season.episode_count : 0);
+                }, 0);
+
+                setMovie((prev) => ({ ...prev, nbTvEpisodes: totalEpisodes }));
+              }}
+              input={<OutlinedInput label="Saisons" />}
+              renderValue={(selected) => selected.join(", ")}
+            >
+              {Array.from({ length: movie.nbTvSeasons || 0 }, (_, i) => (
+                <MenuItem key={i + 1} value={i + 1}>
+                  <Checkbox
+                    checked={
+                      Array.isArray(selectedSeasons) &&
+                      selectedSeasons.includes(i + 1)
+                    }
+                  />
+                  <ListItemText primary={`Saison ${i + 1}`} />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {renderEpisodeAndDurationFields()}
+        </>
+      );
+    }
+
+    // --- Mode manuel ---
+    return (
+      <>
+        <TextField
+          name="tvSeasons"
+          label="Saisons sélectionnées"
+          value={tvSeasons || ""}
+          onChange={(e) => {
+            const { value } = e.target;
+            setTvSeasons(value);
+            setMovie((prev) => ({ ...prev, tvSeasons: value }));
+          }}
+          sx={{ width: "25ch" }}
+        />
+        {renderEpisodeAndDurationFields()}
+      </>
+    );
+  };
+
   // -----------------/ ANNULATION - RETOUR VERS ADMIN MOVIE LIST /----------------- //
 
   const navigate = useNavigate();
@@ -177,7 +294,7 @@ function AddNewMovie() {
   };
 
   // -----------------/ RESET FORM /----------------- //
-  const resetStates = () => {
+  const resetStates = (isTvShow = false) => {
     // Vider le formulaire
     setMovie({
       title: "",
@@ -194,6 +311,7 @@ function AddNewMovie() {
       fileSize: null,
       idTheMovieDb: "",
       idIMDB: "",
+      isTvShow,
       nbTvSeasons: "",
       tvSeasons: "",
       nbTvEpisodes: "",
@@ -1290,16 +1408,21 @@ function AddNewMovie() {
                   control={
                     <Switch
                       checked={movie.isTvShow}
-                      onChange={(e) =>
-                        setMovie((prev) => ({
-                          ...prev,
-                          isTvShow: e.target.checked,
-                        }))
-                      }
+                      onChange={(e) => {
+                        const isChecked = e.target.checked;
+                        resetStates(isChecked);
+                      }}
                     />
                   }
                   label="Série TV"
                 />
+                <IconButton
+                  color="warning"
+                  onClick={() => resetStates()}
+                  sx={{ alignSelf: "flex-end" }} // pour le placer joliment à droite si tu veux
+                >
+                  <RestartAltIcon />
+                </IconButton>
                 <Button
                   variant="contained"
                   size="large"
@@ -1367,98 +1490,9 @@ function AddNewMovie() {
                 label="Année"
                 variant="outlined"
               />
-
+              {/* rendus des fields saisons - episodes - durée gérée en amont du Return par la fonction renderTvSeasonEpisodeDurationFields */}
               {movie.isTvShow ? (
-                <>
-                  <FormControl sx={{ width: "25ch" }}>
-                    <InputLabel id="season-select-label">Saisons</InputLabel>
-                    <Select
-                      labelId="season-select-label"
-                      multiple
-                      value={
-                        Array.isArray(selectedSeasons) ? selectedSeasons : []
-                      }
-                      onChange={(e) => {
-                        let { value } = e.target;
-                        if (!Array.isArray(value)) value = [value];
-                        value = value.map((v) => Number(v));
-                        setSelectedSeasons(value);
-
-                        // Calcul du nombre total d'épisodes pour les saisons choisies
-                        const totalEpisodes = value.reduce(
-                          (sum, seasonNumber) => {
-                            const season = seasonsInfo.find(
-                              (s) => s.season_number === seasonNumber
-                            );
-                            return sum + (season ? season.episode_count : 0);
-                          },
-                          0
-                        );
-
-                        // Mise à jour du nombre total d'épisodes dans l'état movie
-                        setMovie((prev) => ({
-                          ...prev,
-                          nbTvEpisodes: totalEpisodes,
-                        }));
-                      }}
-                      input={<OutlinedInput label="Saisons" />}
-                      renderValue={(selected) => selected.join(", ")}
-                    >
-                      {Array.from(
-                        { length: movie.nbTvSeasons || 0 },
-                        (_, i) => (
-                          <MenuItem key={i + 1} value={i + 1}>
-                            <Checkbox
-                              checked={
-                                Array.isArray(selectedSeasons) &&
-                                selectedSeasons.includes(i + 1)
-                              }
-                            />
-                            <ListItemText primary={`Saison ${i + 1}`} />
-                          </MenuItem>
-                        )
-                      )}
-                    </Select>
-                  </FormControl>
-                  <TextField
-                    name="tvSeasons"
-                    label="Saisons sélectionnées"
-                    value={tvSeasons || ""}
-                    variant="outlined"
-                    InputProps={{ readOnly: true }}
-                    sx={{ width: "25ch" }}
-                  />
-
-                  <TextField
-                    name:nbTvEpisodes
-                    label="Nombre d’épisodes"
-                    value={nbTvEpisodes}
-                    variant="outlined"
-                    InputProps={{ readOnly: true }}
-                    sx={{ width: "25ch" }}
-                  />
-
-                  <TextField
-                    name:episodeDuration
-                    type="number"
-                    label="Durée d’un épisode (min)"
-                    value={movie.episodeDuration || ""}
-                    onChange={(e) =>
-                      setMovie({
-                        ...movie,
-                        episodeDuration: Number(e.target.value),
-                      })
-                    }
-                  />
-                  <TextField
-                    name="duration"
-                    label="Durée totale (minutes)"
-                    value={totalDuration || ""}
-                    variant="outlined"
-                    InputProps={{ readOnly: true }}
-                    sx={{ width: "25ch" }}
-                  />
-                </>
+                renderTvSeasonEpisodeDurationFields()
               ) : (
                 <TextField
                   name="duration"
