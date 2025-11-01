@@ -85,6 +85,7 @@ function AddNewMovie() {
   });
   console.info("data", data);
   console.info("movie", movie);
+  console.info("isTvShow", movie.isTvShow);
 
   // -----------------/ GESTION DES FIELDS SAISONS - EPISODES - DUREE /----------------- //
 
@@ -1115,20 +1116,78 @@ function AddNewMovie() {
       : "";
     const fullPath = cleanedPath ? `${cleanedPath}\\${file.name}` : file.name;
 
-    setMovie((prev) => ({
-      ...prev,
-      location: fullPath,
-    }));
+    const fileSizeGB = file.size / (1024 * 1024 * 1024);
+    const fileSizeDisplay =
+      fileSizeGB < 1
+        ? `${(file.size / (1024 * 1024)).toFixed(2)} MB`
+        : `${fileSizeGB.toFixed(2)} GB`;
 
     const ext = file.name.split(".").pop().toLowerCase();
     const validFormats = ["avi", "mkv", "mp4"];
-    if (validFormats.includes(ext)) {
-      setFormat(ext);
-      setvideoSupport("Fichier multimédia");
-      setFileSize((file.size / (1024 * 1024 * 1024)).toFixed(2));
-    } else {
+
+    if (!validFormats.includes(ext)) {
       toast.warn("Veuillez sélectionner un fichier vidéo valide.");
+      return;
     }
+
+    setFormat(ext);
+    setvideoSupport("Fichier multimédia");
+    setFileSize(fileSizeDisplay); // valeur affichée locale
+
+    setMovie((prev) => ({
+      ...prev,
+      location: fullPath,
+      fileSize: fileSizeDisplay, // valeur dans l'objet movie
+      videoFormat: ext,
+      videoSupport: "Fichier multimédia",
+    }));
+
+    toast.success(`fichier "${fullPath}" chargé, ${fileSizeDisplay})`);
+  };
+
+  const handleFolderChange = (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+
+    // Filtrer uniquement les fichiers vidéo
+    const videoExtensions = ["avi", "mkv", "mp4"];
+    const videoFiles = files.filter((f) =>
+      videoExtensions.includes(f.name.split(".").pop().toLowerCase())
+    );
+
+    if (videoFiles.length === 0) {
+      toast.warn("Aucun fichier vidéo trouvé dans ce dossier.");
+      return;
+    }
+
+    // Calcul du poids total
+    const totalBytes = videoFiles.reduce((acc, file) => acc + file.size, 0);
+    const totalGB = totalBytes / (1024 * 1024 * 1024);
+    const totalSizeDisplay =
+      totalGB < 1
+        ? `${(totalBytes / (1024 * 1024)).toFixed(2)} MB`
+        : `${totalGB.toFixed(2)} GB`;
+
+    // Détermination du chemin commun de base
+    const firstPath = videoFiles[0].webkitRelativePath; // ex: "MaSerie/S01/Episode1.mkv"
+    const rootPath = firstPath.split("/")[0]; // => "MaSerie"
+
+    console.info("firstPath", firstPath);
+    console.info("rootPath", rootPath);
+
+    // Mise à jour du state
+    setFileSize(totalSizeDisplay);
+    setMovie((prev) => ({
+      ...prev,
+      path: rootPath,
+      location: rootPath, // chemin relatif principal
+      videoSupport: "Fichiers multimédia (série)",
+      fileSize: totalSizeDisplay,
+    }));
+
+    toast.success(
+      `Dossier "${rootPath}" chargé (${videoFiles.length} vidéos, ${totalSizeDisplay})`
+    );
   };
 
   const supportsHandleChange = (event) => {
@@ -1890,45 +1949,80 @@ function AddNewMovie() {
                   </Box>
                 </div>
                 {/* movie LOCAL PATH */}
-                <Box
-                  component="form"
-                  sx={{ "& > :not(style)": { width: "90ch" } }}
-                  noValidate
-                  autoComplete="off"
-                  display="flex"
-                  flexDirection="column"
-                  gap={2}
-                  p={1}
-                >
-                  {/* Champ pour le chemin du dossier */}
-                  <TextField
-                    label="Chemin du dossier"
-                    variant="outlined"
-                    value={movie.path || ""}
-                    onChange={(e) => {
-                      const userPathInput = e.target.value;
-                      const cleanedPath = userPathInput
-                        .replace(/^[A-Za-z]:[\\/]+/, "")
-                        .replace(/[\\/]+$/, "");
+                {movie.isTvShow ? (
+                  <>
+                    {/* Sélection d’un dossier complet */}
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      gap={2}
+                      p={1}
+                      sx={{ "& > :not(style)": { width: "75ch" } }}
+                    >
+                      <TextField
+                        label="Dossier sélectionné"
+                        variant="outlined"
+                        value={movie.path || ""}
+                        InputProps={{ readOnly: true }}
+                        sx={{ width: "60ch" }}
+                      />
 
-                      setMovie((prev) => ({
-                        ...prev,
-                        path: userPathInput,
-                        location: selectedFile
-                          ? `${cleanedPath}\\${selectedFile.name}`
-                          : "",
-                      }));
-                    }}
-                    sx={{ width: "75ch" }}
-                  />
+                      {/* Input caché pour sélectionner un dossier */}
+                      <input
+                        type="file"
+                        style={{ display: "none" }}
+                        ref={fileInputRef}
+                        webkitdirectory="true"
+                        multiple
+                        onChange={handleFolderChange}
+                      />
 
-                  {/* Champ pour le fichier sélectionné */}
-                  <Box display="flex" alignItems="center" gap={2}>
+                      <Button
+                        variant="outlined"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        Sélectionner un dossier
+                      </Button>
+                    </Box>
+                  </>
+                ) : (
+                  <Box
+                    component="form"
+                    // sx={{ "& > :not(style)": { width: "75ch" } }}
+                    noValidate
+                    autoComplete="off"
+                    display="flex"
+                    flexDirection="column"
+                    gap={2}
+                    p={1}
+                  >
+                    {/* Champ pour le chemin du dossier */}
+                    <TextField
+                      label="Chemin du dossier"
+                      variant="outlined"
+                      value={movie.path || ""}
+                      onChange={(e) => {
+                        const userPathInput = e.target.value;
+                        const cleanedPath = userPathInput
+                          .replace(/^[A-Za-z]:[\\/]+/, "")
+                          .replace(/[\\/]+$/, "");
+
+                        setMovie((prev) => ({
+                          ...prev,
+                          path: userPathInput,
+                          location: selectedFile
+                            ? `${cleanedPath}\\${selectedFile.name}`
+                            : "",
+                        }));
+                      }}
+                      // sx={{ width: "75ch" }}
+                    />
+                    {/* Sélection d’un fichier unique */}{" "}
                     <TextField
                       label="Fichier sélectionné"
                       variant="outlined"
                       value={selectedFile ? selectedFile.name : ""}
-                      sx={{ width: "60ch" }}
+                      // sx={{ width: "60ch" }}
                       InputProps={{ readOnly: true }}
                     />
                     <Button
@@ -1945,16 +2039,15 @@ function AddNewMovie() {
                     >
                       Sélectionner un fichier vidéo
                     </Button>
+                    {/* Input caché pour le vrai fichier */}
+                    <input
+                      type="file"
+                      style={{ display: "none" }}
+                      ref={fileInputRef}
+                      onChange={handleFileChange}
+                    />
                   </Box>
-
-                  {/* Input caché pour le vrai fichier */}
-                  <input
-                    type="file"
-                    style={{ display: "none" }}
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                  />
-                </Box>
+                )}
 
                 <FormControl sx={{ m: 1 }}>
                   <FormLabel id="demo-row-radio-buttons-group-label">
