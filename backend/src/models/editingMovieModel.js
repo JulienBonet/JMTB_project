@@ -17,10 +17,14 @@ const insertMovie = (
   idIMDb,
   vostfr,
   multi,
+  isTvShow,
+  TvSeasons,
+  nbTvEpisodes,
+  episodeDuration,
   comment
 ) =>
   db.query(
-    "INSERT INTO movies (title, altTitle, year, duration, cover, trailer, pitch, story, location, videoFormat, videoSupport, fileSize, idTheMovieDb, idIMDb, vostfr, multi, comment) VALUES (?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);",
+    "INSERT INTO movies (title, altTitle, year, duration, cover, trailer, pitch, story, location, videoFormat, videoSupport, fileSize, idTheMovieDb, idIMDb, vostfr, multi, isTvShow, TvSeasons, nbTvEpisodes, episodeDuration, comment) VALUES (?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,? );",
     [
       title,
       altTitle,
@@ -38,6 +42,10 @@ const insertMovie = (
       idIMDb,
       vostfr,
       multi,
+      isTvShow,
+      TvSeasons,
+      nbTvEpisodes,
+      episodeDuration,
       comment,
     ]
   );
@@ -56,10 +64,14 @@ const updateMovie = (
   vostfr,
   multi,
   comment,
+  isTvShow,
+  TvSeasons,
+  nbTvEpisodes,
+  episodeDuration,
   id
 ) =>
   db.query(
-    "UPDATE movies SET title = ?, altTitle = ?, year = ?, duration = ?, trailer = ?, story = ?, location = ?, videoFormat = ?, videoSupport = ?, fileSize = ?, vostfr = ?, multi = ?, comment = ? WHERE id = ?",
+    "UPDATE movies SET title = ?, altTitle = ?, year = ?, duration = ?, trailer = ?, story = ?, location = ?, videoFormat = ?, videoSupport = ?, fileSize = ?, vostfr = ?, multi = ?, isTvShow = ?, TvSeasons = ?, nbTvEpisodes = ?, episodeDuration = ?,comment = ? WHERE id = ?",
     [
       title,
       altTitle,
@@ -73,6 +85,10 @@ const updateMovie = (
       fileSize,
       vostfr,
       multi,
+      isTvShow,
+      TvSeasons,
+      nbTvEpisodes,
+      episodeDuration,
       comment,
       id,
     ]

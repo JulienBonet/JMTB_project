@@ -1,6 +1,6 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-shadow */
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -22,6 +22,9 @@ import Stack from "@mui/material/Stack";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
+import Checkbox from "@mui/material/Checkbox";
+import ListItemText from "@mui/material/ListItemText";
+import OutlinedInput from "@mui/material/OutlinedInput";
 import TransferList from "./MovieItemList";
 import MovieInfosEntrance from "./MovieInfosEntrance";
 import "./addNewMovie.css";
@@ -52,6 +55,11 @@ function AddNewMovie() {
   const [selectedTags, setSelectedTags] = useState([]);
   const [uploadLocal, setUploadLocal] = useState(false);
   const [version, setVersion] = useState("none");
+  const [tvSeasons, setTvSeasons] = useState("");
+  const [seasonsInfo, setSeasonsInfo] = useState([]);
+  const [selectedSeasons, setSelectedSeasons] = useState([]); // saison choisie
+  const [nbTvEpisodes, setNbTvEpisodes] = useState(0);
+  const [totalDuration, setTotalDuration] = useState("");
   const [movie, setMovie] = useState({
     title: "",
     altTitle: "",
@@ -68,9 +76,89 @@ function AddNewMovie() {
     fileSize: "",
     idTheMovieDb: "",
     idIMDB: "",
+    isTvShow: "",
+    nbTvSeasons: "",
+    tvSeasons: "",
+    nbTvEpisodes: "",
+    episodeDuration: "",
   });
   console.info("data", data);
-  console.info("version:", version);
+  console.info("movie", movie);
+  console.info("tvSeasons", tvSeasons);
+
+  // -- TVSHOW Mettre à jour le nombre d'épisodes en fonction des saisons sélectionnées
+  useEffect(() => {
+    if (!movie.isTvShow) return; // ne rien faire si ce n'est pas une série TV
+
+    if (!Array.isArray(selectedSeasons) || selectedSeasons.length === 0) {
+      setNbTvEpisodes(0);
+      setMovie((prev) => ({ ...prev, nbTvEpisodes: 0 }));
+      return;
+    }
+
+    const totalEpisodes = selectedSeasons.reduce((sum, seasonNumber) => {
+      const season = seasonsInfo.find((s) => s.season_number === seasonNumber);
+      return sum + (season ? season.episode_count : 0);
+    }, 0);
+
+    setNbTvEpisodes(totalEpisodes);
+    setMovie((prev) => ({ ...prev, nbTvEpisodes: totalEpisodes }));
+  }, [selectedSeasons, seasonsInfo, movie.isTvShow]);
+
+  // -- TVSHOW Mettre à jour la durée totale
+  useEffect(() => {
+    if (!movie.isTvShow) return; // ne rien faire pour les films
+
+    if (!movie.episodeDuration || movie.episodeDuration === 0) {
+      setTotalDuration("");
+      setMovie((prev) => ({ ...prev, duration: "" }));
+      return;
+    }
+
+    if (nbTvEpisodes > 0) {
+      const total = nbTvEpisodes * movie.episodeDuration;
+      setTotalDuration(total);
+      setMovie((prev) => ({ ...prev, duration: total }));
+    } else {
+      setTotalDuration("");
+      setMovie((prev) => ({ ...prev, duration: "" }));
+    }
+  }, [nbTvEpisodes, movie.episodeDuration, movie.isTvShow]);
+
+  // -- TVSHOW Mettre à jour la plage de saisons sélectionnées
+  useEffect(() => {
+    if (!movie.isTvShow) return; // ne rien faire pour les films
+
+    if (!Array.isArray(selectedSeasons) || selectedSeasons.length === 0) {
+      setTvSeasons("");
+      setMovie((prev) => ({ ...prev, tvSeasons: "" }));
+      return;
+    }
+
+    // Trie les saisons sélectionnées
+    const sortedSeasons = [...selectedSeasons].sort((a, b) => a - b);
+
+    let displayValue = "";
+
+    // Si elles sont consécutives → format "1-3"
+    const isConsecutive = sortedSeasons.every(
+      (num, i, arr) => i === 0 || num === arr[i - 1] + 1
+    );
+
+    if (isConsecutive) {
+      displayValue =
+        sortedSeasons.length === 1
+          ? `${sortedSeasons[0]}`
+          : `${sortedSeasons[0]}-${sortedSeasons[sortedSeasons.length - 1]}`;
+    } else {
+      // Saisons non consécutives → "1, 3, 5"
+      displayValue = sortedSeasons.join(", ");
+    }
+
+    setTvSeasons(displayValue);
+    setMovie((prev) => ({ ...prev, tvSeasons: displayValue }));
+  }, [selectedSeasons, movie.isTvShow]);
+
   // -----------------/ ANNULATION - RETOUR VERS ADMIN MOVIE LIST /----------------- //
 
   const navigate = useNavigate();
@@ -106,6 +194,10 @@ function AddNewMovie() {
       fileSize: null,
       idTheMovieDb: "",
       idIMDB: "",
+      nbTvSeasons: "",
+      tvSeasons: "",
+      nbTvEpisodes: "",
+      episodeDuration: "",
     });
     // Réinitialiser valeur par défaut
     setFormat("");
@@ -124,6 +216,10 @@ function AddNewMovie() {
     setCoverPreview(`${backendUrl}/00_cover_default.jpg`);
     setSelectedCoverFile("");
     setUploadLocal(false);
+    setSeasonsInfo([]);
+    setSelectedSeasons([]);
+    setTvSeasons("");
+    setNbTvEpisodes("");
     setVersion("none");
   };
 
@@ -466,13 +562,12 @@ function AddNewMovie() {
 
   // -----------------/ MOVIE DATA FETCH /----------------- //
 
-  const handleMovieClick = async (movieId, mediaType = "movie") => {
+  const handleMovieClick = async (movieId, mediaType) => {
     resetStates();
 
     try {
       const options = {
         method: "GET",
-        // <-- ici on remplace "movie" en dur par la variable mediaType
         url: `https://api.themoviedb.org/3/${mediaType}/${movieId}?language=fr-FR`,
         headers: {
           accept: "application/json",
@@ -482,37 +577,65 @@ function AddNewMovie() {
 
       const response = await axios(options);
       const movieData = response.data;
+      console.info("response", response);
       console.info("movieData", movieData);
 
-      // On détecte si c’est une série ou un film pour mapper correctement les champs
+      // Variables spécifiques TV
       const isTV = mediaType === "tv";
+      const nbTvSeasons = isTV ? movieData.number_of_seasons : null;
+      const nbTvEpisodes = isTV ? movieData.number_of_episodes : null;
+      const episodeDuration =
+        isTV && movieData.episode_run_time?.length > 0
+          ? movieData.episode_run_time[0]
+          : null;
 
+      // Si c'est une série, on récupère la liste des saisons
+      const seasonsInfo = isTV
+        ? movieData.seasons.map((s) => ({
+            season_number: s.season_number,
+            episode_count: s.episode_count,
+          }))
+        : [];
+
+      setSeasonsInfo(seasonsInfo);
+      console.info("seasonsInfo", seasonsInfo);
+
+      // Gestion du titre alternatif sans ternaires imbriqués
       let altTitle = "";
-      const originalTitle = isTV
-        ? movieData.original_name
-        : movieData.original_title;
-      const displayTitle = isTV ? movieData.name : movieData.title;
-
-      if (originalTitle && originalTitle !== displayTitle) {
-        altTitle = originalTitle;
+      if (isTV) {
+        if (
+          movieData.original_name &&
+          movieData.original_name !== movieData.name
+        ) {
+          altTitle = movieData.original_name;
+        }
+      } else if (
+        movieData.original_title &&
+        movieData.original_title !== movieData.title
+      ) {
+        altTitle = movieData.original_title;
       }
+
+      // Mise à jour de l’état du film
       setMovie({
         ...movie,
-        title: displayTitle,
+        title: isTV ? movieData.name : movieData.title,
         altTitle,
-        year: (isTV ? movieData.first_air_date : movieData.release_date)
-          ? (isTV
-              ? movieData.first_air_date
-              : movieData.release_date
-            ).substring(0, 4)
-          : "",
-        duration: isTV
-          ? movieData.episode_run_time?.[0] || ""
-          : movieData.runtime,
+        year:
+          (isTV ? movieData.first_air_date : movieData.release_date)?.substring(
+            0,
+            4
+          ) || "",
         pitch: movieData.tagline || "",
         story: movieData.overview || "",
-        idTheMovieDb: movieData.id,
-        idIMDB: movieData.imdb_id || "",
+        idTheMovieDb: `${mediaType}/${movieData.id}`,
+        idIMDB: isTV ? null : movieData.imdb_id,
+        isTvShow: isTV,
+        duration: movieData.runtime,
+        nbTvSeasons,
+        tvSeasons,
+        nbTvEpisodes,
+        episodeDuration,
       });
 
       // Fetch GENRES
@@ -680,7 +803,8 @@ function AddNewMovie() {
       // Fetch CASTING
       const castingsData = await Promise.all(
         castData
-          .filter((castMember) => castMember.order <= 5)
+          .sort((a, b) => a.order - b.order) // trier par ordre croissant
+          .slice(0, 5) // ne prendre que les 5 premiers
           .map((casting) =>
             fetchOrCreateEntity(
               casting,
@@ -717,7 +841,6 @@ function AddNewMovie() {
 
       console.info("videoUrl", videoUrl);
 
-      // Fetch keywords (tags)
       // Fetch keywords (tags)
       const keywordsOptions = {
         method: "GET",
@@ -1219,26 +1342,118 @@ function AddNewMovie() {
               noValidate
               autoComplete="off"
               display="flex"
-              alignItems="center"
-              gap={4}
+              flexDirection="column"
+              gap={2}
               p={2}
             >
               <TextField
                 name="year"
                 value={movie.year}
                 onChange={handleInputChange}
-                id="filled-basic"
                 label="Année"
                 variant="outlined"
               />
-              <TextField
-                name="duration"
-                value={movie.duration}
-                onChange={handleInputChange}
-                id="filled-basic"
-                label="Durée"
-                variant="outlined"
-              />
+
+              {movie.isTvShow ? (
+                <>
+                  <FormControl sx={{ width: "25ch" }}>
+                    <InputLabel id="season-select-label">Saisons</InputLabel>
+                    <Select
+                      labelId="season-select-label"
+                      multiple
+                      value={
+                        Array.isArray(selectedSeasons) ? selectedSeasons : []
+                      }
+                      onChange={(e) => {
+                        let { value } = e.target;
+                        if (!Array.isArray(value)) value = [value];
+                        value = value.map((v) => Number(v));
+                        setSelectedSeasons(value);
+
+                        // Calcul du nombre total d'épisodes pour les saisons choisies
+                        const totalEpisodes = value.reduce(
+                          (sum, seasonNumber) => {
+                            const season = seasonsInfo.find(
+                              (s) => s.season_number === seasonNumber
+                            );
+                            return sum + (season ? season.episode_count : 0);
+                          },
+                          0
+                        );
+
+                        // Mise à jour du nombre total d'épisodes dans l'état movie
+                        setMovie((prev) => ({
+                          ...prev,
+                          nbTvEpisodes: totalEpisodes,
+                        }));
+                      }}
+                      input={<OutlinedInput label="Saisons" />}
+                      renderValue={(selected) => selected.join(", ")}
+                    >
+                      {Array.from(
+                        { length: movie.nbTvSeasons || 0 },
+                        (_, i) => (
+                          <MenuItem key={i + 1} value={i + 1}>
+                            <Checkbox
+                              checked={
+                                Array.isArray(selectedSeasons) &&
+                                selectedSeasons.includes(i + 1)
+                              }
+                            />
+                            <ListItemText primary={`Saison ${i + 1}`} />
+                          </MenuItem>
+                        )
+                      )}
+                    </Select>
+                  </FormControl>
+                  <TextField
+                    name="tvSeasons"
+                    label="Saisons sélectionnées"
+                    value={tvSeasons || ""}
+                    variant="outlined"
+                    InputProps={{ readOnly: true }}
+                    sx={{ width: "25ch" }}
+                  />
+
+                  <TextField
+                    name:nbTvEpisodes
+                    label="Nombre d’épisodes"
+                    value={nbTvEpisodes}
+                    variant="outlined"
+                    InputProps={{ readOnly: true }}
+                    sx={{ width: "25ch" }}
+                  />
+
+                  <TextField
+                    name:episodeDuration
+                    type="number"
+                    label="Durée d’un épisode (min)"
+                    value={movie.episodeDuration || ""}
+                    onChange={(e) =>
+                      setMovie({
+                        ...movie,
+                        episodeDuration: Number(e.target.value),
+                      })
+                    }
+                  />
+                  <TextField
+                    name="duration"
+                    label="Durée totale (minutes)"
+                    value={totalDuration || ""}
+                    variant="outlined"
+                    InputProps={{ readOnly: true }}
+                    sx={{ width: "25ch" }}
+                  />
+                </>
+              ) : (
+                <TextField
+                  name="duration"
+                  value={movie.duration}
+                  onChange={handleInputChange}
+                  label="Durée"
+                  variant="outlined"
+                />
+              )}
             </Box>
             {/* movie PITCH */}
             <Box

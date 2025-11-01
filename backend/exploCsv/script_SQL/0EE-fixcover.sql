@@ -1,4 +1,4 @@
-use jmdb;
+use jmdb2;
 
 UPDATE movies
 SET cover = '00_cover_default.jpg'

@@ -95,6 +95,10 @@ const addMovie = async (req, res) => {
       tags,
       vostfr,
       multi,
+      isTvShow,
+      tvSeasons,
+      nbTvEpisodes,
+      episodeDuration,
       comment,
     } = req.body;
     console.info("genres in create movie", req.body);
@@ -131,6 +135,10 @@ const addMovie = async (req, res) => {
       idIMDb: idIMDb || null,
       vostfr: vostfr || 0,
       multi: multi || 0,
+      isTvShow: isTvShow || 0,
+      tvSeasons: tvSeasons || null,
+      nbTvEpisodes: nbTvEpisodes || null,
+      episodeDuration: episodeDuration || null,
       comment: comment || null,
     };
 
@@ -152,6 +160,10 @@ const addMovie = async (req, res) => {
       movieData.idIMDb,
       movieData.vostfr,
       movieData.multi,
+      movieData.isTvShow,
+      movieData.tvSeasons,
+      movieData.nbTvEpisodes,
+      movieData.episodeDuration,
       movieData.comment
     );
 
@@ -756,6 +768,10 @@ const editMovieById = async (req, res) => {
       countries,
       comment,
       tags,
+      isTvShow,
+      TvSeasons,
+      nbTvEpisodes,
+      episodeDuration,
       // !!! ajouter les update item que l'on envoi par la route !!!
     } = req.body;
     console.info("req.body:", req.body);
@@ -776,6 +792,10 @@ const editMovieById = async (req, res) => {
       vostfr,
       multi,
       comment,
+      isTvShow,
+      TvSeasons,
+      nbTvEpisodes,
+      episodeDuration,
       id
     );
 
