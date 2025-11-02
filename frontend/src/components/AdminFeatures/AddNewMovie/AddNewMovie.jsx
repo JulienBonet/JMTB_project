@@ -8,7 +8,6 @@ import { Button, Container, IconButton } from "@mui/material";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import InputLabel from "@mui/material/InputLabel";
-import InputAdornment from "@mui/material/InputAdornment";
 import MenuItem from "@mui/material/MenuItem";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
@@ -196,7 +195,7 @@ function AddNewMovie() {
             setMovie((prev) => ({ ...prev, nbTvEpisodes: value }));
           }}
           InputProps={{ readOnly: isReadOnly }}
-          sx={{ width: "25ch" }}
+          sx={{ flexGrow: 1 }}
         />
         <TextField
           name="episodeDuration"
@@ -210,14 +209,14 @@ function AddNewMovie() {
             }))
           }
           InputProps={{ readOnly: isReadOnly }}
-          sx={{ width: "25ch" }}
+          sx={{ flexGrow: 1 }}
         />
         <TextField
           name="duration"
           label="Durée totale (minutes)"
           value={movie.duration || ""}
           InputProps={{ readOnly: true }}
-          sx={{ width: "25ch" }}
+          sx={{ flexGrow: 1 }}
         />
       </>
     );
@@ -226,7 +225,7 @@ function AddNewMovie() {
     if (seasonsInfo.length > 0) {
       return (
         <>
-          <FormControl sx={{ width: "25ch" }}>
+          <FormControl sx={{ flexGrow: 1 }}>
             <InputLabel id="season-select-label">Saisons</InputLabel>
             <Select
               labelId="season-select-label"
@@ -281,7 +280,7 @@ function AddNewMovie() {
             setTvSeasons(value);
             setMovie((prev) => ({ ...prev, tvSeasons: value }));
           }}
-          sx={{ width: "25ch" }}
+          sx={{ flexGrow: 1 }}
         />
         {renderEpisodeAndDurationFields()}
       </>
@@ -803,448 +802,483 @@ function AddNewMovie() {
   return (
     <main>
       <section className="Adm_form_box">
-        <section className="Adm_l1">
-          <div className="Adm_l1a">
-            <h1 className="AdM_main_title">ADD NEW MOVIE</h1>
-            {/* movie idTheMovieDb */}
-            <div className="SourceResearchItems">
-              <Box
-                component="form"
-                sx={{ "& > :not(style)": { width: "15ch" } }}
-                noValidate
-                autoComplete="off"
-                display="flex"
-                alignItems="center"
-                gap={4}
-                p={2}
-              >
-                <TextField
-                  id="filled-basic"
-                  label="Id MovieDb"
-                  variant="outlined"
-                  value={movie.idTheMovieDb}
-                  onChange={handleChangeMovieDb}
-                />
-              </Box>
-              <Stack spacing={2} direction="row">
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={movie.isTvShow}
-                      onChange={(e) => {
-                        const isChecked = e.target.checked;
-                        resetStates(isChecked);
-                      }}
-                    />
-                  }
-                  label="Série TV"
-                />
-                <IconButton
-                  color="warning"
-                  onClick={() => resetStates()}
-                  sx={{ alignSelf: "flex-end" }} // pour le placer joliment à droite si tu veux
-                >
-                  <RestartAltIcon />
-                </IconButton>
+        <section className="Adm_l0">
+          <h1 className="AdM_main_title">ADD NEW MOVIE</h1>
+          <div className="AdM_main_title_bar" />
+          <section className="Adm_l1">
+            <div className="Adm_l1a">
+              {/* Control Admin Buttons */}
+              <div className="SourceResearchItems">
                 <Button
                   variant="contained"
                   size="large"
                   onClick={() => handleOpenModalMIE()}
+                  sx={{ flexGrow: 0.5 }}
                 >
                   RECHERCHE
                 </Button>
-              </Stack>
-            </div>
-            {/* movie TITLE */}
-            <Box
-              component="form"
-              sx={{ "& > :not(style)": { width: "150ch" } }}
-              noValidate
-              autoComplete="off"
-              display="flex"
-              alignItems="center"
-              gap={4}
-              p={2}
-            >
-              <TextField
-                name="title"
-                value={movie.title}
-                onChange={handleInputChange}
-                id="filled-basic"
-                label="Titre du film"
-                variant="outlined"
-              />
-            </Box>
-            {/* movie alt TITLE */}
-            <Box
-              component="form"
-              sx={{ "& > :not(style)": { width: "100ch" } }}
-              noValidate
-              autoComplete="off"
-              display="flex"
-              alignItems="center"
-              gap={4}
-              p={2}
-            >
-              <TextField
-                name="altTitle"
-                value={movie.altTitle}
-                onChange={handleInputChange}
-                id="filled-basic"
-                label="Titre alternatif"
-                variant="outlined"
-              />
-            </Box>
-            {/* movie YEAR - DURATION */}
-            <Box
-              component="form"
-              sx={{ "& > :not(style)": { width: "25ch" } }}
-              noValidate
-              autoComplete="off"
-              display="flex"
-              flexDirection="column"
-              gap={2}
-              p={2}
-            >
-              <TextField
-                name="year"
-                value={movie.year}
-                onChange={handleInputChange}
-                label="Année"
-                variant="outlined"
-              />
-              {/* rendus des fields saisons - episodes - durée gérée en amont du Return par la fonction renderTvSeasonEpisodeDurationFields */}
-              {movie.isTvShow ? (
-                renderTvSeasonEpisodeDurationFields()
-              ) : (
+                <div className="SourceResearchItems_2">
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={movie.isTvShow}
+                        onChange={(e) => {
+                          const isChecked = e.target.checked;
+                          resetStates(isChecked);
+                        }}
+                      />
+                    }
+                    label="Série TV"
+                  />
+                  <IconButton
+                    onClick={() => resetStates()}
+                    sx={{
+                      color: "#ff9900",
+                      "&:hover": {
+                        color: "#00d9c0",
+                        backgroundColor: "rgba(255, 170, 0, 0.1)",
+                      },
+                      border: "solid 1px grey",
+                      alignSelf: "flex-end",
+                    }}
+                  >
+                    <RestartAltIcon />
+                  </IconButton>
+                </div>
+              </div>
+              {/* movie TITLE */}
+              <Box
+                component="form"
+                sx={{ "& > :not(style)": { width: "150ch" } }}
+                noValidate
+                autoComplete="off"
+                display="flex"
+                alignItems="center"
+                gap={4}
+                p={2}
+              >
                 <TextField
-                  name="duration"
-                  value={movie.duration}
+                  name="title"
+                  value={movie.title}
                   onChange={handleInputChange}
-                  label="Durée"
+                  id="filled-basic"
+                  label="Titre du film"
                   variant="outlined"
                 />
-              )}
-            </Box>
-            {/* movie PITCH */}
-            <Box
-              component="form"
-              sx={{ "& > :not(style)": { width: "100ch" } }}
-              noValidate
-              autoComplete="off"
-              display="flex"
-              alignItems="center"
-              gap={4}
-              p={2}
-            >
-              <TextField
-                name="pitch"
-                value={movie.pitch}
-                onChange={handleInputChange}
-                id="filled-basic"
-                label="pitch"
-                variant="outlined"
-              />
-            </Box>
-            {/* movie STORY */}
-            <Box
-              component="form"
-              sx={{ "& > :not(style)": { width: "100ch" } }}
-              noValidate
-              autoComplete="off"
-              display="flex"
-              alignItems="center"
-              gap={4}
-              p={2}
-            >
-              <TextField
-                name="story"
-                value={movie.story}
-                onChange={handleInputChange}
-                id="outlined-multiline-static"
-                label="story"
-                multiline
-                rows={4}
-              />
-            </Box>
-            {/* movie TRAILER */}
-            <Box
-              component="form"
-              sx={{ "& > :not(style)": { width: "100ch" } }}
-              noValidate
-              autoComplete="off"
-              display="flex"
-              alignItems="center"
-              gap={4}
-              p={2}
-            >
-              <TextField
-                name="trailer"
-                value={movie.trailer}
-                onChange={handleInputChange}
-                id="filled-basic"
-                label="trailer"
-                variant="outlined"
-              />
-            </Box>
-            {/* movie COMMENTAIRE */}
-            <Box
-              component="form"
-              sx={{ "& > :not(style)": { width: "100ch" } }}
-              noValidate
-              autoComplete="off"
-              display="flex"
-              alignItems="center"
-              gap={4}
-              p={2}
-              onSubmit={handleFormSubmit}
-            >
-              <TextField
-                name="comment"
-                value={movie.comment} // Assurez-vous que ça soit `movie.comment`
-                onChange={handleInputChange} // Utiliser la même fonction pour gérer les changements
-                id="outlined-multiline-static"
-                label="Commentaire"
-                multiline
-                rows={4}
-              />
-            </Box>
-          </div>
+              </Box>
+              {/* movie alt TITLE */}
+              <Box
+                component="form"
+                sx={{ "& > :not(style)": { width: "100ch" } }}
+                noValidate
+                autoComplete="off"
+                display="flex"
+                alignItems="center"
+                gap={4}
+                p={2}
+              >
+                <TextField
+                  name="altTitle"
+                  sx={{ flexGrow: 1 }}
+                  value={movie.altTitle}
+                  onChange={handleInputChange}
+                  id="filled-basic"
+                  label="Titre alternatif"
+                  variant="outlined"
+                />
+              </Box>
+              {/* movie YEAR - DURATION */}
+              <Box
+                component="form"
+                sx={{ flexGrow: 1 }}
+                noValidate
+                autoComplete="off"
+                display="flex"
+                flexDirection="column"
+                gap={2}
+                p={2}
+              >
+                <div
+                  className={
+                    movie.isTvShow
+                      ? "year_duration_Btn_AddNewtvShow"
+                      : "year_duration_Btn_AddNewMovie"
+                  }
+                >
+                  {/* movie idTheMovieDb */}
+                  <TextField
+                    id="filled-basic"
+                    label="Id MovieDb"
+                    variant="outlined"
+                    sx={{ flexGrow: 1 }}
+                    value={movie.idTheMovieDb}
+                    onChange={handleChangeMovieDb}
+                  />
+                  {/* movie year */}
+                  <TextField
+                    name="year"
+                    value={movie.year}
+                    onChange={handleInputChange}
+                    label="Année"
+                    variant="outlined"
+                    sx={{ flexGrow: 1 }}
+                  />
+                  {/* movie duration */}
+                  {!movie?.isTvShow && (
+                    <TextField
+                      name="duration"
+                      value={movie.duration}
+                      onChange={handleInputChange}
+                      label="Durée"
+                      variant="outlined"
+                      sx={{ flexGrow: 1 }}
+                    />
+                  )}
+                  {/* Tv saison - epidsode - duration rendu la fonction renderTvSeasonEpisodeDurationFields */}
+                  {movie?.isTvShow && renderTvSeasonEpisodeDurationFields()}
+                </div>
+              </Box>
+              {/* movie PITCH */}
+              <Box
+                component="form"
+                sx={{ "& > :not(style)": { width: "100ch" } }}
+                noValidate
+                autoComplete="off"
+                display="flex"
+                alignItems="center"
+                gap={4}
+                p={2}
+              >
+                <TextField
+                  name="pitch"
+                  value={movie.pitch}
+                  onChange={handleInputChange}
+                  id="filled-basic"
+                  label="pitch"
+                  variant="outlined"
+                />
+              </Box>
+              {/* movie STORY */}
+              <Box
+                component="form"
+                sx={{ "& > :not(style)": { width: "100ch" } }}
+                noValidate
+                autoComplete="off"
+                display="flex"
+                alignItems="center"
+                gap={4}
+                p={2}
+              >
+                <TextField
+                  name="story"
+                  value={movie.story}
+                  onChange={handleInputChange}
+                  id="outlined-multiline-static"
+                  label="story"
+                  multiline
+                  rows={4}
+                />
+              </Box>
+              {/* movie TRAILER */}
+              <Box
+                component="form"
+                sx={{ "& > :not(style)": { width: "100ch" } }}
+                noValidate
+                autoComplete="off"
+                display="flex"
+                alignItems="center"
+                gap={4}
+                p={2}
+              >
+                <TextField
+                  name="trailer"
+                  value={movie.trailer}
+                  onChange={handleInputChange}
+                  id="filled-basic"
+                  label="trailer"
+                  variant="outlined"
+                />
+              </Box>
+              {/* movie COMMENTAIRE */}
+              <Box
+                component="form"
+                sx={{ "& > :not(style)": { width: "100ch" } }}
+                noValidate
+                autoComplete="off"
+                display="flex"
+                alignItems="center"
+                gap={4}
+                p={2}
+                onSubmit={handleFormSubmit}
+              >
+                <TextField
+                  name="comment"
+                  value={movie.comment} // Assurez-vous que ça soit `movie.comment`
+                  onChange={handleInputChange} // Utiliser la même fonction pour gérer les changements
+                  id="outlined-multiline-static"
+                  label="Commentaire"
+                  multiline
+                  rows={4}
+                />
+              </Box>
+            </div>
 
-          <div className="Adm_l1b">
-            {/* movie KINDS */}
-            <div className="adm-l1_item">
-              <Box
-                component="form"
-                sx={{ "& > :not(style)": { width: "75ch" } }}
-                noValidate
-                autoComplete="off"
-                display="flex"
-                alignItems="center"
-                gap={4}
-                p={2}
-              >
-                <TextField
-                  id="outlined-read-only-input"
-                  label="Genre(s)"
-                  value={getSelectedKindsNames(selectedKinds)}
-                  InputProps={{ readOnly: true }}
+            <div className="Adm_l1b">
+              {/* movie KINDS */}
+              <div className="adm-l1_item">
+                <Box
+                  component="form"
+                  sx={{ flexGrow: 1 }}
+                  noValidate
+                  autoComplete="off"
+                  display="flex"
+                  alignItems="center"
+                  gap={4}
+                  p={2}
+                >
+                  <TextField
+                    id="outlined-read-only-input"
+                    label="Genre(s)"
+                    value={getSelectedKindsNames(selectedKinds)}
+                    InputProps={{ readOnly: true }}
+                    fullWidth
+                  />
+                </Box>
+                <AddCircleOutlineIcon
+                  className="Btn_Add_itemsPopUp"
+                  onClick={() => handleOpenModal("kinds")}
                 />
-              </Box>
-              <AddCircleOutlineIcon
-                className="Btn_Add_itemsPopUp"
-                onClick={() => handleOpenModal("kinds")}
-              />
-            </div>
-            {/* movie DIRECTOR */}
-            <div className="adm-l1_item">
-              <Box
-                component="form"
-                sx={{ "& > :not(style)": { width: "75ch" } }}
-                noValidate
-                autoComplete="off"
-                display="flex"
-                alignItems="center"
-                gap={4}
-                p={2}
-              >
-                <TextField
-                  id="outlined-read-only-input"
-                  label="Réalisateur(s)"
-                  value={getSelectedDirectorsNames(selectedDirectors)}
-                  InputProps={{
-                    readOnly: true,
-                  }}
+              </div>
+              {/* movie DIRECTOR */}
+              <div className="adm-l1_item">
+                <Box
+                  component="form"
+                  sx={{ flexGrow: 1 }}
+                  noValidate
+                  autoComplete="off"
+                  display="flex"
+                  alignItems="center"
+                  gap={4}
+                  p={2}
+                >
+                  {movie.isTvShow ? (
+                    <TextField
+                      id="outlined-read-only-input"
+                      label="Créateur(s)"
+                      value={getSelectedDirectorsNames(selectedDirectors)}
+                      InputProps={{
+                        readOnly: true,
+                      }}
+                      fullWidth
+                    />
+                  ) : (
+                    <TextField
+                      id="outlined-read-only-input"
+                      label="Réalisateur(s)"
+                      value={getSelectedDirectorsNames(selectedDirectors)}
+                      InputProps={{
+                        readOnly: true,
+                      }}
+                      fullWidth
+                    />
+                  )}
+                </Box>
+                <AddCircleOutlineIcon
+                  className="Btn_Add_itemsPopUp"
+                  onClick={() => handleOpenModal("directors")}
                 />
-              </Box>
-              <AddCircleOutlineIcon
-                className="Btn_Add_itemsPopUp"
-                onClick={() => handleOpenModal("directors")}
-              />
-            </div>
-            {/* movie SCREENWRITERS */}
-            <div className="adm-l1_item">
-              <Box
-                component="form"
-                sx={{ "& > :not(style)": { width: "75ch" } }}
-                noValidate
-                autoComplete="off"
-                display="flex"
-                alignItems="center"
-                gap={4}
-                p={2}
-              >
-                <TextField
-                  id="outlined-read-only-input"
-                  label="Scénariste(s)"
-                  value={getSelectedScreenwritersNames(selectedScreenwriters)}
-                  InputProps={{
-                    readOnly: true,
-                  }}
+              </div>
+              {/* movie SCREENWRITERS */}
+              <div className="adm-l1_item">
+                <Box
+                  component="form"
+                  sx={{ flexGrow: 1 }}
+                  noValidate
+                  autoComplete="off"
+                  display="flex"
+                  alignItems="center"
+                  gap={4}
+                  p={2}
+                >
+                  <TextField
+                    id="outlined-read-only-input"
+                    label="Scénariste(s)"
+                    value={getSelectedScreenwritersNames(selectedScreenwriters)}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    fullWidth
+                  />
+                </Box>
+                <AddCircleOutlineIcon
+                  className="Btn_Add_itemsPopUp"
+                  onClick={() => handleOpenModal("screenwriters")}
                 />
-              </Box>
-              <AddCircleOutlineIcon
-                className="Btn_Add_itemsPopUp"
-                onClick={() => handleOpenModal("screenwriters")}
-              />
-            </div>
-            {/* movie COMPOSITOR */}
-            <div className="adm-l1_item">
-              <Box
-                component="form"
-                sx={{ "& > :not(style)": { width: "75ch" } }}
-                noValidate
-                autoComplete="off"
-                display="flex"
-                alignItems="center"
-                gap={4}
-                p={2}
-              >
-                <TextField
-                  id="outlined-read-only-input"
-                  label="Compositeur(s)"
-                  value={getSelectedMusicNames(selectedMusic)}
-                  InputProps={{
-                    readOnly: true,
-                  }}
+              </div>
+              {/* movie COMPOSITOR */}
+              <div className="adm-l1_item">
+                <Box
+                  component="form"
+                  sx={{ flexGrow: 1 }}
+                  noValidate
+                  autoComplete="off"
+                  display="flex"
+                  alignItems="center"
+                  gap={4}
+                  p={2}
+                >
+                  <TextField
+                    id="outlined-read-only-input"
+                    label="Compositeur(s)"
+                    value={getSelectedMusicNames(selectedMusic)}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    fullWidth
+                  />
+                </Box>
+                <AddCircleOutlineIcon
+                  className="Btn_Add_itemsPopUp"
+                  onClick={() => handleOpenModal("music")}
                 />
-              </Box>
-              <AddCircleOutlineIcon
-                className="Btn_Add_itemsPopUp"
-                onClick={() => handleOpenModal("music")}
-              />
-            </div>
-            {/* movie CASTING */}
-            <div className="adm-l1_item">
-              <Box
-                component="form"
-                sx={{ "& > :not(style)": { width: "75ch" } }}
-                noValidate
-                autoComplete="off"
-                display="flex"
-                alignItems="center"
-                gap={4}
-                p={2}
-              >
-                <TextField
-                  id="outlined-read-only-input"
-                  label="Casting"
-                  value={getSelectedCastingNames(selectedCasting)}
-                  InputProps={{
-                    readOnly: true,
-                  }}
+              </div>
+              {/* movie CASTING */}
+              <div className="adm-l1_item">
+                <Box
+                  component="form"
+                  sx={{ flexGrow: 1 }}
+                  noValidate
+                  autoComplete="off"
+                  display="flex"
+                  alignItems="center"
+                  gap={4}
+                  p={2}
+                >
+                  <TextField
+                    id="outlined-read-only-input"
+                    label="Casting"
+                    value={getSelectedCastingNames(selectedCasting)}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    fullWidth
+                  />
+                </Box>
+                <AddCircleOutlineIcon
+                  className="Btn_Add_itemsPopUp"
+                  onClick={() => handleOpenModal("casting")}
                 />
-              </Box>
-              <AddCircleOutlineIcon
-                className="Btn_Add_itemsPopUp"
-                onClick={() => handleOpenModal("casting")}
-              />
-            </div>
-            {/* movie STUDIO */}
-            <div className="adm-l1_item">
-              <Box
-                component="form"
-                sx={{ "& > :not(style)": { width: "75ch" } }}
-                noValidate
-                autoComplete="off"
-                display="flex"
-                alignItems="center"
-                gap={4}
-                p={2}
-              >
-                <TextField
-                  id="outlined-read-only-input"
-                  label="Studio"
-                  value={getSelectedStudiosNames(selectedStudios)}
-                  InputProps={{
-                    readOnly: true,
-                  }}
+              </div>
+              {/* movie STUDIO */}
+              <div className="adm-l1_item">
+                <Box
+                  component="form"
+                  sx={{ flexGrow: 1 }}
+                  noValidate
+                  autoComplete="off"
+                  display="flex"
+                  alignItems="center"
+                  gap={4}
+                  p={2}
+                >
+                  <TextField
+                    id="outlined-read-only-input"
+                    label="Studio"
+                    value={getSelectedStudiosNames(selectedStudios)}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    fullWidth
+                  />
+                </Box>
+                <AddCircleOutlineIcon
+                  className="Btn_Add_itemsPopUp"
+                  onClick={() => handleOpenModal("studio")}
                 />
-              </Box>
-              <AddCircleOutlineIcon
-                className="Btn_Add_itemsPopUp"
-                onClick={() => handleOpenModal("studio")}
-              />
-            </div>
-            {/* movie COUNTRY */}
-            <div className="adm-l1_item">
-              <Box
-                component="form"
-                sx={{ "& > :not(style)": { width: "75ch" } }}
-                noValidate
-                autoComplete="off"
-                display="flex"
-                alignItems="center"
-                gap={4}
-                p={2}
-              >
-                <TextField
-                  id="outlined-read-only-input"
-                  label="Pays"
-                  value={getSelectedCountriesNames(selectedCountries)}
-                  InputProps={{
-                    readOnly: true,
-                  }}
+              </div>
+              {/* movie COUNTRY */}
+              <div className="adm-l1_item">
+                <Box
+                  component="form"
+                  sx={{ flexGrow: 1 }}
+                  noValidate
+                  autoComplete="off"
+                  display="flex"
+                  alignItems="center"
+                  gap={4}
+                  p={2}
+                >
+                  <TextField
+                    id="outlined-read-only-input"
+                    label="Pays"
+                    value={getSelectedCountriesNames(selectedCountries)}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    fullWidth
+                  />
+                </Box>
+                <AddCircleOutlineIcon
+                  className="Btn_Add_itemsPopUp"
+                  onClick={() => handleOpenModal("country")}
                 />
-              </Box>
-              <AddCircleOutlineIcon
-                className="Btn_Add_itemsPopUp"
-                onClick={() => handleOpenModal("country")}
-              />
-            </div>
-            {/* movie LANGUAGES */}
-            <div className="adm-l1_item">
-              <Box
-                component="form"
-                sx={{ "& > :not(style)": { width: "75ch" } }}
-                noValidate
-                autoComplete="off"
-                display="flex"
-                alignItems="center"
-                gap={4}
-                p={2}
-              >
-                <TextField
-                  id="outlined-read-only-input"
-                  label="Langues"
-                  value={getSelectedLanguagesNames(selectedLanguages)}
-                  InputProps={{
-                    readOnly: true,
-                  }}
+              </div>
+              {/* movie LANGUAGES */}
+              <div className="adm-l1_item">
+                <Box
+                  component="form"
+                  sx={{ flexGrow: 1 }}
+                  noValidate
+                  autoComplete="off"
+                  display="flex"
+                  alignItems="center"
+                  gap={4}
+                  p={2}
+                >
+                  <TextField
+                    id="outlined-read-only-input"
+                    label="Langues"
+                    value={getSelectedLanguagesNames(selectedLanguages)}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    fullWidth
+                  />
+                </Box>
+                <AddCircleOutlineIcon
+                  className="Btn_Add_itemsPopUp"
+                  onClick={() => handleOpenModal("languages/sorted_id")}
                 />
-              </Box>
-              <AddCircleOutlineIcon
-                className="Btn_Add_itemsPopUp"
-                onClick={() => handleOpenModal("languages/sorted_id")}
-              />
-            </div>
-            {/* movie TAG */}
-            <div className="adm-l1_item">
-              <Box
-                component="form"
-                sx={{ "& > :not(style)": { width: "75ch" } }}
-                noValidate
-                autoComplete="off"
-                display="flex"
-                alignItems="center"
-                gap={4}
-                p={2}
-              >
-                <TextField
-                  id="outlined-read-only-input"
-                  label="Tags"
-                  value={getSelectedTagsNames(selectedTags)}
-                  InputProps={{
-                    readOnly: true,
-                  }}
+              </div>
+              {/* movie TAG */}
+              <div className="adm-l1_item">
+                <Box
+                  component="form"
+                  sx={{ flexGrow: 1 }}
+                  noValidate
+                  autoComplete="off"
+                  display="flex"
+                  alignItems="center"
+                  gap={4}
+                  p={2}
+                >
+                  <TextField
+                    id="outlined-read-only-input"
+                    label="Tags"
+                    value={getSelectedTagsNames(selectedTags)}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    fullWidth
+                  />
+                </Box>
+                <AddCircleOutlineIcon
+                  className="Btn_Add_itemsPopUp"
+                  onClick={() => handleOpenModal("tags/sorted_id")}
                 />
-              </Box>
-              <AddCircleOutlineIcon
-                className="Btn_Add_itemsPopUp"
-                onClick={() => handleOpenModal("tags/sorted_id")}
-              />
+              </div>
             </div>
-          </div>
+          </section>
         </section>
         <div className="dashed_secondary_bar" />
 
@@ -1285,9 +1319,7 @@ function AddNewMovie() {
                     gap={4}
                   >
                     <FormControl sx={{ m: 1, minWidth: 120 }}>
-                      <InputLabel id="demo-select-small-label">
-                        format
-                      </InputLabel>
+                      <InputLabel>format</InputLabel>
                       <Select
                         labelId="demo-select-small-label"
                         id="demo-select-small"
@@ -1310,11 +1342,6 @@ function AddNewMovie() {
                       sx={{ m: 1, width: "25ch" }}
                       value={fileSize || ""}
                       onChange={(event) => setFileSize(event.target.value)}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">Go</InputAdornment>
-                        ),
-                      }}
                     />
                   </Box>
                 </div>
@@ -1327,14 +1354,14 @@ function AddNewMovie() {
                       alignItems="center"
                       gap={2}
                       p={1}
-                      sx={{ "& > :not(style)": { width: "75ch" } }}
+                      sx={{ flexGrow: 1 }}
                     >
                       <TextField
                         label="Dossier sélectionné"
                         variant="outlined"
                         value={movie.path || ""}
                         InputProps={{ readOnly: true }}
-                        sx={{ width: "60ch" }}
+                        fullWidth
                       />
 
                       {/* Input caché pour sélectionner un dossier */}
@@ -1358,7 +1385,7 @@ function AddNewMovie() {
                 ) : (
                   <Box
                     component="form"
-                    // sx={{ "& > :not(style)": { width: "75ch" } }}
+                    sx={{ flexgrow: 1 }}
                     noValidate
                     autoComplete="off"
                     display="flex"
@@ -1385,14 +1412,14 @@ function AddNewMovie() {
                             : "",
                         }));
                       }}
-                      // sx={{ width: "75ch" }}
+                      fullWidth
                     />
                     {/* Sélection d’un fichier unique */}{" "}
                     <TextField
                       label="Fichier sélectionné"
                       variant="outlined"
                       value={selectedFile ? selectedFile.name : ""}
-                      // sx={{ width: "60ch" }}
+                      fullWidth
                       InputProps={{ readOnly: true }}
                     />
                     <Button
