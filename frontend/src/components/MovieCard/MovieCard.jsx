@@ -91,6 +91,8 @@ function MovieCard({
     tags,
   } = movieData;
 
+  const isTvShow = movieData.isTvShow === 1;
+
   // FETCH MOVIE DATAS
   const fetchMovieData = () => {
     if (origin === "country") {
@@ -1085,7 +1087,7 @@ function MovieCard({
                   {directors && (
                     <p className="MovieCard_info">
                       <span className="paraph_bolder paraph_color_2">
-                        Réalisateur:
+                        {isTvShow ? "Créateur:" : "Réalisateur:"}
                       </span>{" "}
                       {directors}
                     </p>
