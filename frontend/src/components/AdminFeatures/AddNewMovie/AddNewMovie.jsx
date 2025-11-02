@@ -25,6 +25,7 @@ import ListItemText from "@mui/material/ListItemText";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import Switch from "@mui/material/Switch";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import CloseIcon from "@mui/icons-material/Close";
 import TransferList from "./MovieItemList";
 import MovieInfosEntrance from "./MovieInfosEntrance";
 import handleMovieClick from "./AddNewMovie_Script/handleMovieClick";
@@ -742,7 +743,6 @@ function AddNewMovie() {
         const data = await response.json();
         console.info("data:", data);
         toast.success("Le film a été ajouté avec succès !");
-        // resetStates(); // Réinitialiser les états du formulaire
         handleReturn(); // Retour vers MovieItemList
       } catch (error) {
         console.error(error);
@@ -802,6 +802,11 @@ function AddNewMovie() {
   return (
     <main>
       <section className="Adm_form_box">
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          <IconButton onClick={handleReturn}>
+            <CloseIcon />
+          </IconButton>
+        </div>
         <section className="Adm_l0">
           <h1 className="AdM_main_title">ADD NEW MOVIE</h1>
           <div className="AdM_main_title_bar" />
