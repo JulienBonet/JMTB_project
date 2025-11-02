@@ -2,7 +2,6 @@
 /* eslint-disable no-shadow */
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Button, Container, IconButton } from "@mui/material";
@@ -29,6 +28,27 @@ import Switch from "@mui/material/Switch";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import TransferList from "./MovieItemList";
 import MovieInfosEntrance from "./MovieInfosEntrance";
+import handleMovieClick from "./AddNewMovie_Script/handleMovieClick";
+import {
+  searchGenreInDatabase,
+  createGenreInDatabase,
+  createStudioInDatabase,
+  searchStudioInDatabase,
+  searchCountryInDatabase,
+  createCountryInDatabase,
+  searchLanguageInDatabase,
+  createLanguageInDatabase,
+  searchDirectorInDatabase,
+  createDirectorInDatabase,
+  searchScreenwriterInDatabase,
+  createScreenwriterInDatabase,
+  searchCompositorInDatabase,
+  createCompositorInDatabase,
+  searchCastingInDatabase,
+  createCastingInDatabase,
+  searchTagInDatabase,
+  createTagInDatabase,
+} from "./AddNewMovie_Script/movieEntranceSearchInsert";
 import "./addNewMovie.css";
 
 function AddNewMovie() {
@@ -345,656 +365,6 @@ function AddNewMovie() {
 
   const handleCloseModalMIE = () => {
     setOpenModalMIE(false);
-  };
-
-  // -----------------/ MOVIE ENTRANCE SEARCH & INSERT FUNC /----------------- //
-
-  // GENRES SEARCH BY NAME METHOD
-  const searchGenreInDatabase = async (genreName) => {
-    console.info(
-      "get in searchGenreInDatabase: ",
-      `${import.meta.env.VITE_BACKEND_URL}/api/kind/${encodeURIComponent(
-        genreName
-      )}`
-    );
-    try {
-      const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/api/kind/${encodeURIComponent(
-          genreName
-        )}`
-      );
-
-      if (response.status === 200 && response.data) {
-        console.info("genre cherché:", response.data);
-        return response.data;
-      }
-      return null;
-    } catch (error) {
-      throw new Error(
-        `Error searching for genre in database: ${error.message}`
-      );
-    }
-  };
-
-  // GENRES NEW INSERT METHOD
-  const createGenreInDatabase = async (genreName) => {
-    console.info(
-      "post in createGenreInDatabase: ",
-      `${import.meta.env.VITE_BACKEND_URL}/api/kind`
-    );
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/kind`,
-        { name: genreName }
-      );
-
-      console.info("genre crée:", response.data);
-
-      if (response.status === 201 && response.data) {
-        return response.data;
-      }
-      throw new Error("Failed to create genre in database");
-    } catch (error) {
-      throw new Error(`Error creating genre in database: ${error.message}`);
-    }
-  };
-
-  // STUDIO SEARCH BY NAME METHOD
-  const searchStudioInDatabase = async (studioName) => {
-    try {
-      // Remplacer les slashes par des tirets
-      const regexStudioName = studioName.replace(/\//g, "-");
-      const url = `${
-        import.meta.env.VITE_BACKEND_URL
-      }/api/studio/byname/${encodeURIComponent(regexStudioName)}`;
-      const response = await axios.get(url);
-
-      if (response.status === 200 && response.data) {
-        return response.data;
-      }
-      return null;
-    } catch (error) {
-      throw new Error(
-        `Error searching for studio in database: ${error.message}`
-      );
-    }
-  };
-
-  // STUDIO NEW INSERT METHOD
-  const createStudioInDatabase = async (studioName) => {
-    try {
-      // Remplacer les slashes par des tirets
-      const regexStudioName = studioName.replace(/\//g, "-");
-
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/studio`,
-        { name: regexStudioName }
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error creating studio:", error);
-      throw error;
-    }
-  };
-
-  // COUNTRY SEARCH BY NAME METHOD
-  const searchCountryInDatabase = async (countryName) => {
-    try {
-      const url = `${
-        import.meta.env.VITE_BACKEND_URL
-      }/api/country/byname/${encodeURIComponent(countryName)}`;
-      const response = await axios.get(url);
-      if (response.status === 200 && response.data) {
-        return response.data;
-      }
-      return null;
-    } catch (error) {
-      throw new Error(
-        `Error searching for country in database: ${error.message}`
-      );
-    }
-  };
-
-  // COUNTRY NEW INSERT METHOD
-  const createCountryInDatabase = async (countryName) => {
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/country`,
-        { name: countryName }
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error creating country:", error);
-      throw error;
-    }
-  };
-
-  // LANGUAGE SEARCH BY NAME METHOD
-  const searchLanguageInDatabase = async (languageName) => {
-    try {
-      const url = `${
-        import.meta.env.VITE_BACKEND_URL
-      }/api/language/byname/${encodeURIComponent(languageName)}`;
-      const response = await axios.get(url);
-
-      if (response.status === 200 && response.data) {
-        return response.data;
-      }
-      return null;
-    } catch (error) {
-      throw new Error(
-        `Error searching for language in database: ${error.message}`
-      );
-    }
-  };
-
-  // LANGUAGE NEW INSERT METHOD
-  const createLanguageInDatabase = async (languageName) => {
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/language`,
-        { name: languageName }
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error creating language:", error);
-      throw error;
-    }
-  };
-
-  // DIRECTOR SEARCH BY NAME METHOD
-  const searchDirectorInDatabase = async (directorsNames) => {
-    try {
-      const url = `${
-        import.meta.env.VITE_BACKEND_URL
-      }/api/director/byname/${encodeURIComponent(directorsNames)}`;
-
-      const response = await axios.get(url);
-
-      if (response.status === 200 && response.data) {
-        return response.data;
-      }
-      return null;
-    } catch (error) {
-      throw new Error(
-        `Error searching for director in database: ${error.message}`
-      );
-    }
-  };
-
-  // DIRECTORS NEW INSERT METHOD
-  const createDirectorInDatabase = async (directorName) => {
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/director`,
-        { name: directorName }
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error creating director:", error);
-      throw error;
-    }
-  };
-
-  // SCREENWRITER SEARCH BY NAME METHOD
-  const searchScreenwriterInDatabase = async (screenwritersNames) => {
-    try {
-      const response = await axios.get(
-        `${
-          import.meta.env.VITE_BACKEND_URL
-        }/api/screenwriter/byname/${encodeURIComponent(screenwritersNames)}`
-      );
-
-      if (response.status === 200 && response.data) {
-        return response.data;
-      }
-      return null;
-    } catch (error) {
-      throw new Error(
-        `Error searching for screenwriter in database: ${error.message}`
-      );
-    }
-  };
-
-  // SCREENWRITER NEW INSERT METHOD
-  const createScreenwriterInDatabase = async (screenwriterName) => {
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/screenwriter`,
-        { name: screenwriterName }
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error creating screenwriter:", error);
-      throw error;
-    }
-  };
-
-  // COMPOSITOR SEARCH BY NAME METHOD
-  const searchCompositorInDatabase = async (compositorsNames) => {
-    try {
-      const response = await axios.get(
-        `${
-          import.meta.env.VITE_BACKEND_URL
-        }/api/music/byname/${encodeURIComponent(compositorsNames)}`
-      );
-
-      if (response.status === 200 && response.data) {
-        return response.data;
-      }
-      return null;
-    } catch (error) {
-      throw new Error(
-        `Error searching for compositor in database: ${error.message}`
-      );
-    }
-  };
-
-  // COMPOSITOR NEW INSERT METHOD
-  const createCompositorInDatabase = async (compositorName) => {
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/compositor`,
-        { name: compositorName }
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error creating compositor:", error);
-      throw error;
-    }
-  };
-
-  // CASTING SEARCH BY NAME METHOD
-  const searchCastingInDatabase = async (castingsNames) => {
-    try {
-      const response = await axios.get(
-        `${
-          import.meta.env.VITE_BACKEND_URL
-        }/api/casting/byname/${encodeURIComponent(castingsNames)}`
-      );
-
-      if (response.status === 200 && response.data) {
-        return response.data;
-      }
-      return null;
-    } catch (error) {
-      throw new Error(
-        `Error searching for compositor in database: ${error.message}`
-      );
-    }
-  };
-
-  // CASTINGG NEW INSERT METHOD
-  const createCastingInDatabase = async (castingName) => {
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/casting`,
-        { name: castingName }
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error creating casting:", error);
-      throw error;
-    }
-  };
-
-  // TAG SEARCH BY NAME METHOD
-  const searchTagInDatabase = async (tagsNames) => {
-    try {
-      const response = await axios.get(
-        `${
-          import.meta.env.VITE_BACKEND_URL
-        }/api/tag/byname/${encodeURIComponent(tagsNames)}`
-      );
-
-      if (response.status === 200 && response.data) {
-        return response.data;
-      }
-      return null;
-    } catch (error) {
-      throw new Error(`Error searching for tag in database: ${error.message}`);
-    }
-  };
-
-  // TAG NEW INSERT METHOD
-  const createTagInDatabase = async (TagName) => {
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/api/tag`,
-        { name: TagName }
-      );
-      return response.data;
-    } catch (error) {
-      console.error("Error tag casting:", error);
-      throw error;
-    }
-  };
-
-  // -----------------/ MOVIE DATA FETCH /----------------- //
-
-  const handleMovieClick = async (movieId, mediaType) => {
-    resetStates();
-
-    try {
-      const options = {
-        method: "GET",
-        url: `https://api.themoviedb.org/3/${mediaType}/${movieId}?language=fr-FR`,
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
-        },
-      };
-
-      const response = await axios(options);
-      const movieData = response.data;
-      console.info("response", response);
-      console.info("movieData", movieData);
-
-      // Variables spécifiques TV
-      const isTV = mediaType === "tv";
-      const nbTvSeasons = isTV ? movieData.number_of_seasons : null;
-      const nbTvEpisodes = isTV ? movieData.number_of_episodes : null;
-      const episodeDuration =
-        isTV && movieData.episode_run_time?.length > 0
-          ? movieData.episode_run_time[0]
-          : null;
-
-      // Si c'est une série, on récupère la liste des saisons
-      const seasonsInfo = isTV
-        ? movieData.seasons.map((s) => ({
-            season_number: s.season_number,
-            episode_count: s.episode_count,
-          }))
-        : [];
-
-      setSeasonsInfo(seasonsInfo);
-      console.info("seasonsInfo", seasonsInfo);
-
-      // Gestion du titre alternatif sans ternaires imbriqués
-      let altTitle = "";
-      if (isTV) {
-        if (
-          movieData.original_name &&
-          movieData.original_name !== movieData.name
-        ) {
-          altTitle = movieData.original_name;
-        }
-      } else if (
-        movieData.original_title &&
-        movieData.original_title !== movieData.title
-      ) {
-        altTitle = movieData.original_title;
-      }
-
-      // Mise à jour de l’état du film
-      setMovie({
-        ...movie,
-        title: isTV ? movieData.name : movieData.title,
-        altTitle,
-        year:
-          (isTV ? movieData.first_air_date : movieData.release_date)?.substring(
-            0,
-            4
-          ) || "",
-        pitch: movieData.tagline || "",
-        story: movieData.overview || "",
-        idTheMovieDb: `${mediaType}/${movieData.id}`,
-        idIMDB: isTV ? null : movieData.imdb_id,
-        isTvShow: isTV,
-        duration: movieData.runtime,
-        nbTvSeasons,
-        tvSeasons,
-        nbTvEpisodes,
-        episodeDuration,
-      });
-
-      // Fetch GENRES
-      const fetchGenre = async (genreName) => {
-        const genreData = await searchGenreInDatabase(genreName);
-        if (genreData) {
-          return { id: genreData.id, name: genreData.name };
-        }
-        const newGenreData = await createGenreInDatabase(genreName);
-        return { id: newGenreData.id, name: genreName };
-      };
-
-      // Fetch genres and add "adulte" genre if the movie is for adults
-      const genresToFetch = movieData.genres.map((genre) => genre.name);
-      if (movieData.adult) {
-        genresToFetch.push("adulte");
-      }
-
-      const genresData = await Promise.all(genresToFetch.map(fetchGenre));
-      setSelectedKinds(genresData);
-
-      // Fetch STUDIO
-      const fetchStudio = async (studio) => {
-        const studioData = await searchStudioInDatabase(studio.name);
-        if (studioData) {
-          return { id: studioData.id, name: studioData.name };
-        }
-        const newStudioData = await createStudioInDatabase(studio.name);
-        return { id: newStudioData.id, name: studio.name };
-      };
-
-      const studiosData = await Promise.all(
-        movieData.production_companies.map(fetchStudio)
-      );
-      setSelectedStudios(studiosData);
-
-      // Fetch COUNTRY
-      const fetchCountry = async (country) => {
-        const countryData = await searchCountryInDatabase(country.name);
-        if (countryData) {
-          return { id: countryData.id, name: countryData.name };
-        }
-        const newCountryData = await createCountryInDatabase(country.name);
-        return { id: newCountryData.id, name: country.name };
-      };
-
-      const countriesData = await Promise.all(
-        movieData.production_countries.map(fetchCountry)
-      );
-      setSelectedCountries(countriesData);
-
-      // Fetch LANGUAGE
-      const fetchLanguage = async (language) => {
-        const languageData = await searchLanguageInDatabase(
-          language.english_name
-        );
-        if (languageData) {
-          return { id: languageData.id, name: languageData.name };
-        }
-        const newLanguageData = await createLanguageInDatabase(
-          language.english_name
-        );
-        return { id: newLanguageData.id, name: language.english_name };
-      };
-
-      const languagesData = await Promise.all(
-        movieData.spoken_languages.map(fetchLanguage)
-      );
-      setSelectedLanguages(languagesData);
-
-      // CREDITS FETCH (cast & crew)
-      const options2 = {
-        method: "GET",
-        url: `https://api.themoviedb.org/3/${mediaType}/${movieId}/credits?language=fr-FR`,
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
-        },
-      };
-
-      const response2 = await axios(options2);
-      const crewData = response2.data.crew;
-      const castData = response2.data.cast;
-
-      // Utility function to fetch or create entity in database
-      const fetchOrCreateEntity = async (entity, searchFunc, createFunc) => {
-        let entityData = await searchFunc(entity.name);
-        if (!entityData) {
-          entityData = await createFunc(entity.name);
-        }
-        return { id: entityData.id, name: entity.name };
-      };
-
-      // Fetch DIRECTORS
-      // ---- DIRECTORS / CREATORS ----
-      let directorsData = [];
-
-      if (isTV) {
-        // Pour les séries : récupérer les créateurs
-        if (movieData.created_by && movieData.created_by.length > 0) {
-          directorsData = await Promise.all(
-            movieData.created_by.map((creator) =>
-              fetchOrCreateEntity(
-                { name: creator.name },
-                searchDirectorInDatabase,
-                createDirectorInDatabase
-              )
-            )
-          );
-        }
-      } else {
-        // Pour les films : récupérer les réalisateurs depuis crewData
-        directorsData = await Promise.all(
-          crewData
-            .filter((crewMember) => crewMember.job === "Director")
-            .map((director) =>
-              fetchOrCreateEntity(
-                director,
-                searchDirectorInDatabase,
-                createDirectorInDatabase
-              )
-            )
-        );
-      }
-
-      setSelectedDirectors(directorsData);
-
-      // Fetch SCREENWRITERS
-      const screenwritersData = await Promise.all(
-        crewData
-          .filter(
-            (crewMember) =>
-              crewMember.job === "Screenplay" ||
-              crewMember.job === "Writer" ||
-              crewMember.job === "Author"
-          )
-          .map((screenwriter) =>
-            fetchOrCreateEntity(
-              screenwriter,
-              searchScreenwriterInDatabase,
-              createScreenwriterInDatabase
-            )
-          )
-      );
-      setSelectedScreenwriters(screenwritersData);
-
-      // Fetch COMPOSITORS
-      const compositorsData = await Promise.all(
-        crewData
-          .filter(
-            (crewMember) =>
-              crewMember.job === "Original Music Composer" ||
-              crewMember.job === "Music"
-          )
-          .map((compositor) =>
-            fetchOrCreateEntity(
-              compositor,
-              searchCompositorInDatabase,
-              createCompositorInDatabase
-            )
-          )
-      );
-      setSelectedMusic(compositorsData);
-
-      // Fetch CASTING
-      const castingsData = await Promise.all(
-        castData
-          .sort((a, b) => a.order - b.order) // trier par ordre croissant
-          .slice(0, 5) // ne prendre que les 5 premiers
-          .map((casting) =>
-            fetchOrCreateEntity(
-              casting,
-              searchCastingInDatabase,
-              createCastingInDatabase
-            )
-          )
-      );
-      setSelectedCasting(castingsData);
-      console.info("castingsData", castingsData);
-
-      // Fetch trailer
-      const trailerOptions = {
-        method: "GET",
-        url: `https://api.themoviedb.org/3/${mediaType}/${movieId}/videos?language=fr-FR`,
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
-        },
-      };
-
-      const trailerResponse = await axios(trailerOptions);
-      const trailerData = trailerResponse.data.results.find(
-        (video) => video.type === "Trailer" && video.site === "YouTube"
-      );
-      const videoUrl = trailerData
-        ? `https://www.youtube.com/watch?v=${trailerData.key}`
-        : "";
-
-      setMovie((prevMovie) => ({
-        ...prevMovie,
-        trailer: videoUrl,
-      }));
-
-      console.info("videoUrl", videoUrl);
-
-      // Fetch keywords (tags)
-      const keywordsOptions = {
-        method: "GET",
-        url: `https://api.themoviedb.org/3/${mediaType}/${movieId}/keywords`,
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
-        },
-      };
-
-      const keywordsResponse = await axios(keywordsOptions);
-
-      // TMDB renvoie `keywords` pour les films, et `results` pour les séries
-      const keywordsData =
-        mediaType === "tv"
-          ? keywordsResponse.data.results
-          : keywordsResponse.data.keywords;
-
-      console.info("keywordsData:", keywordsData);
-
-      // Fetch or create tags in database
-      const tagsData = await Promise.all(
-        keywordsData.map((keyword) =>
-          fetchOrCreateEntity(
-            { name: keyword.name },
-            searchTagInDatabase,
-            createTagInDatabase
-          )
-        )
-      );
-      setSelectedTags(tagsData);
-
-      // fetch movie cover
-      const posterUrl = movieData.poster_path
-        ? `https://image.tmdb.org/t/p/original${movieData.poster_path}`
-        : null;
-      setCoverPreview(posterUrl);
-      setMovie((prevMovie) => ({
-        ...prevMovie,
-        posterUrl,
-      }));
-    } catch (error) {
-      console.error("Error:", error);
-    }
   };
 
   // -----------------/ ITEMS MODAL FETCH /----------------- //
@@ -2190,7 +1560,43 @@ function AddNewMovie() {
         <Box sx={styleMIEmodal}>
           <MovieInfosEntrance
             title={movie.title}
-            onMovieClick={(id, type) => handleMovieClick(id, type)}
+            onMovieClick={(id, type) =>
+              handleMovieClick(id, type, {
+                resetStates,
+                setSeasonsInfo,
+                setMovie,
+                movie,
+                tvSeasons,
+                searchGenreInDatabase,
+                createGenreInDatabase,
+                setSelectedKinds,
+                searchStudioInDatabase,
+                createStudioInDatabase,
+                setSelectedStudios,
+                searchCountryInDatabase,
+                createCountryInDatabase,
+                setSelectedCountries,
+                searchLanguageInDatabase,
+                createLanguageInDatabase,
+                setSelectedLanguages,
+                searchDirectorInDatabase,
+                createDirectorInDatabase,
+                setSelectedDirectors,
+                searchScreenwriterInDatabase,
+                createScreenwriterInDatabase,
+                setSelectedScreenwriters,
+                searchCompositorInDatabase,
+                createCompositorInDatabase,
+                setSelectedMusic,
+                searchCastingInDatabase,
+                createCastingInDatabase,
+                setSelectedCasting,
+                searchTagInDatabase,
+                createTagInDatabase,
+                setSelectedTags,
+                setCoverPreview,
+              })
+            }
             handleCloseModalMIE={handleCloseModalMIE}
           />
         </Box>
