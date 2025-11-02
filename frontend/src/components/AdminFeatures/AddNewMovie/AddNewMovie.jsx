@@ -49,6 +49,7 @@ import {
   searchTagInDatabase,
   createTagInDatabase,
 } from "./AddNewMovie_Script/movieEntranceSearchInsert";
+import purgeOrphanRecords from "../AdminFeatures_Script/purgeOrphanRecords";
 import "./addNewMovie.css";
 
 function AddNewMovie() {
@@ -292,8 +293,15 @@ function AddNewMovie() {
 
   const navigate = useNavigate();
 
-  const handleReturn = () => {
+  const handleReturn = async () => {
     navigate("/admin_feat");
+    // 🧹 Appeler la purge
+    try {
+      await purgeOrphanRecords(); // ✅ on attend que la purge se termine
+      console.info("Purge exécutée avec succès après le reset.");
+    } catch (error) {
+      console.error("Erreur lors de la purge :", error);
+    }
   };
 
   // -----------------/ SOURCE /----------------- //
@@ -306,7 +314,7 @@ function AddNewMovie() {
   };
 
   // -----------------/ RESET FORM /----------------- //
-  const resetStates = (isTvShow = false) => {
+  const resetStates = async (isTvShow = false) => {
     // Vider le formulaire
     setMovie({
       title: "",
@@ -329,7 +337,8 @@ function AddNewMovie() {
       nbTvEpisodes: "",
       episodeDuration: "",
     });
-    // Réinitialiser valeur par défaut
+
+    // Réinitialiser les états du front
     setFormat("");
     setvideoSupport("");
     setFileSize(null);
@@ -351,6 +360,14 @@ function AddNewMovie() {
     setTvSeasons("");
     setNbTvEpisodes("");
     setVersion("none");
+
+    // 🧹 Appeler la purge
+    try {
+      await purgeOrphanRecords(); // ✅ on attend que la purge se termine
+      console.info("Purge exécutée avec succès après le reset.");
+    } catch (error) {
+      console.error("Erreur lors de la purge :", error);
+    }
   };
 
   // -----------------/ MOVIE INFO ENTRANCE MODAL /----------------- //
