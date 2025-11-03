@@ -51,49 +51,48 @@ export default function TransferList({
 
   switch (dataType) {
     case "kinds":
-      selectedItems = selectedKinds;
-      onSelectedItemsUpdate = onSelectedKindsUpdate;
+      selectedItems = selectedKinds || [];
+      onSelectedItemsUpdate = onSelectedKindsUpdate || (() => {});
       break;
     case "directors":
-      selectedItems = selectedDirectors;
-      onSelectedItemsUpdate = onSelectedDirectorsUpdate;
+      selectedItems = selectedDirectors || [];
+      onSelectedItemsUpdate = onSelectedDirectorsUpdate || (() => {});
       break;
     case "screenwriters":
-      selectedItems = selectedScreenwriters;
-      onSelectedItemsUpdate = onSelectedScreenwritersUpdate;
+      selectedItems = selectedScreenwriters || [];
+      onSelectedItemsUpdate = onSelectedScreenwritersUpdate || (() => {});
       break;
     case "music":
-      selectedItems = selectedMusic;
-      onSelectedItemsUpdate = onSelectedMusicUpdate;
+      selectedItems = selectedMusic || [];
+      onSelectedItemsUpdate = onSelectedMusicUpdate || (() => {});
       break;
     case "casting":
-      selectedItems = selectedCasting;
-      onSelectedItemsUpdate = onSelectedCastingUpdate;
+      selectedItems = selectedCasting || [];
+      onSelectedItemsUpdate = onSelectedCastingUpdate || (() => {});
       break;
     case "studio":
-      selectedItems = selectedStudios;
-      onSelectedItemsUpdate = onSelectedStudiosUpdate;
+    case "studios":
+      selectedItems = selectedStudios || [];
+      onSelectedItemsUpdate = onSelectedStudiosUpdate || (() => {});
       break;
     case "country":
-      selectedItems = selectedCountries;
-      onSelectedItemsUpdate = onSelectedCountriesUpdate;
+    case "countries":
+      selectedItems = selectedCountries || [];
+      onSelectedItemsUpdate = onSelectedCountriesUpdate || (() => {});
       break;
     case "languages/sorted_id":
-      selectedItems = selectedLanguages;
-      onSelectedItemsUpdate = onSelectedLanguagesUpdate;
+    case "languages":
+      selectedItems = selectedLanguages || [];
+      onSelectedItemsUpdate = onSelectedLanguagesUpdate || (() => {});
       break;
     case "tags/sorted_id":
-      selectedItems = selectedTags;
-      onSelectedItemsUpdate = onSelectedTagsUpdate;
-      break;
     case "tags":
-      selectedItems = selectedTags;
-      onSelectedItemsUpdate = onSelectedTagsUpdate;
+      selectedItems = selectedTags || [];
+      onSelectedItemsUpdate = onSelectedTagsUpdate || (() => {});
       break;
     default:
       selectedItems = [];
       onSelectedItemsUpdate = () => {};
-      break;
   }
 
   const getOriginFromDataType = (dataType) => {
@@ -138,16 +137,20 @@ export default function TransferList({
   // Item List
   const [checked, setChecked] = useState([]);
 
-  const [left, setLeft] = useState(selectedItems);
+  const [left, setLeft] = useState(selectedItems || []);
   const [right, setRight] = useState(
-    items.filter((item) => !selectedItems.some((kind) => kind.id === item.id))
+    (items || []).filter(
+      (item) => !(selectedItems || []).some((kind) => kind.id === item.id)
+    )
   );
 
   useEffect(() => {
     setRight(
-      items.filter(
+      (items || []).filter(
         (item) =>
-          !selectedItems.some((selectedItem) => selectedItem.id === item.id)
+          !(selectedItems || []).some(
+            (selectedItem) => selectedItem.id === item.id
+          )
       )
     );
   }, [items, selectedItems]);

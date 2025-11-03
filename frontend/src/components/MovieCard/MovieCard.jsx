@@ -306,7 +306,7 @@ function MovieCard({
     px: 0,
   };
 
-  // --- FONCTION GÉNÉRIQUE FETCH DE LISTE --- //
+  // FONCTION GÉNÉRIQUE FETCH DE LISTE
   const fetchData = async (route) => {
     try {
       const response = await fetch(
@@ -320,7 +320,7 @@ function MovieCard({
     }
   };
 
-  // --- MODAL HANDLERS --- //
+  // MODAL HANDLERS
   const handleOpenModal = (type) => {
     setDataType(type);
     setOpenModal(true);
@@ -333,7 +333,7 @@ function MovieCard({
     setData([]);
   };
 
-  // --- FONCTION GÉNÉRIQUE FETCH PAR NOM --- //
+  // FONCTION GÉNÉRIQUE FETCH PAR NOM
   const fetchByNames = async (namesString, endpoint, setter) => {
     if (!namesString) return;
     try {
@@ -362,17 +362,17 @@ function MovieCard({
     }
   };
 
-  // --- FONCTION GÉNÉRIQUE POUR NOMS --- //
+  // FONCTION GÉNÉRIQUE POUR NOMS
   const getSelectedNames = (list) => list.map((item) => item.name).join(", ");
 
-  // --- UTILITAIRE POUR CRÉER UN HOOK DE FETCH AUTOMATIQUE --- //
+  // UTILITAIRE POUR CRÉER UN HOOK DE FETCH AUTOMATIQUE
   const useAutoFetch = (value, endpoint, setter) => {
     useEffect(() => {
       fetchByNames(value, endpoint, setter);
     }, [value]);
   };
 
-  // --- UTILISATION POUR CHAQUE TYPE --- //
+  // UTILISATION POUR CHAQUE TYPE
   useAutoFetch(genres, "kind", setSelectedKinds);
   useAutoFetch(directors, "director", setSelectedDirectors);
   useAutoFetch(casting, "casting", setSelectedCasting);
@@ -382,7 +382,7 @@ function MovieCard({
   useAutoFetch(countries, "country", setSelectedCountries);
   useAutoFetch(tags, "tags", setSelectedTags);
 
-  // --- HANDLERS POUR CHAQUE TYPE --- //
+  // HANDLERS POUR CHAQUE TYPE
   const handleSelectedKindsUpdate = setSelectedKinds;
   const handleSelectedDirectorsUpdate = setSelectedDirectors;
   const handleSelectedCastingUpdate = setSelectedCasting;
@@ -392,7 +392,7 @@ function MovieCard({
   const handleSelectedCountriesUpdate = setSelectedCountries;
   const handleSelectedTagsUpdate = setSelectedTags;
 
-  // UPDATE MODE
+  // -----------------/ UPDATE MODE /----------------- //
   const isModifyMode = () => {
     setIsModify(true);
   };
@@ -538,88 +538,6 @@ function MovieCard({
       console.error("Erreur durant la suppression:", error);
     }
   };
-
-  // MODIFY BY theMovieDB FETCH //
-  // const [theMovieDbNewDatas, setTheMovieDbNewDatas] = useState({});
-  // const [theMovieDbNewDatasTvCredits, setTheMovieDbNewDatasTvCredits] =
-  //   useState({});
-
-  // const { idTheMovieDb } = movieData;
-
-  // console.info("theMovieDbNewDatas", theMovieDbNewDatas);
-  // console.info("theMovieDbNewDatasTvCredits", theMovieDbNewDatasTvCredits);
-
-  // const fetchApiMovieDB = async () => {
-  //   try {
-  //      // 1️⃣ Fetch principal
-  //     const options = {
-  //       method: "GET",
-  //       url: `https://api.themoviedb.org/3/${idTheMovieDb}?language=fr-FR`,
-  //       headers: {
-  //         accept: "application/json",
-  //         Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
-  //       },
-  //     };
-
-  //     const response = await axios(options);
-  //     setTheMovieDbNewDatas(response.data);
-  //     console.info("Main TMDB data:", response.data);
-
-  //     // 2️⃣ Fetch des crédits si c'est une série
-  //     if (isTvShow) {
-  //       const creditsResponse = await axios({
-  //         method: "GET",
-  //         url: `https://api.themoviedb.org/3/${idTheMovieDb}/credits?language=fr-FR`,
-  //         headers: {
-  //           accept: "application/json",
-  //           Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
-  //         },
-  //       });
-  //       setTheMovieDbNewDatasTvCredits(creditsResponse.data);
-  //       console.info("setTheMovieDbNewDatasTvCredits:", creditsResponse.data);
-  //     }
-  //   } catch (error) {
-  //     console.error("Error:", error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   const fetchApiMovieDB = async () => {
-  //     try {
-  //       // 1️⃣ Fetch principal
-  //       const options = {
-  //         method: "GET",
-  //         url: `https://api.themoviedb.org/3/${idTheMovieDb}?language=fr-FR`,
-  //         headers: {
-  //           accept: "application/json",
-  //           Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
-  //         },
-  //       };
-
-  //       const response = await axios(options);
-  //       setTheMovieDbNewDatas(response.data);
-  //       console.info("Main TMDB data:", response.data);
-
-  //       // 2️⃣ Fetch des crédits si c'est une série
-  //       if (isTvShow) {
-  //         const creditsResponse = await axios({
-  //           method: "GET",
-  //           url: `https://api.themoviedb.org/3/${idTheMovieDb}/credits?language=fr-FR`,
-  //           headers: {
-  //             accept: "application/json",
-  //             Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
-  //           },
-  //         });
-  //         setTheMovieDbNewDatasTvCredits(creditsResponse.data);
-  //         console.info("TV credits:", creditsResponse.data);
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching TMDB:", error);
-  //     }
-  //   };
-
-  //   if (idTheMovieDb) fetchApiMovieDB();
-  // }, [idTheMovieDb, isTvShow]);
 
   return (
     <article className="MovieCard">

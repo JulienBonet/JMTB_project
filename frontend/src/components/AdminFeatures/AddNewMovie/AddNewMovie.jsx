@@ -407,108 +407,36 @@ function AddNewMovie() {
 
   // -----------------/ ITEMS MODAL FETCH /----------------- //
 
-  const fetchData = (route) => {
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/${route}`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((datas) => {
-        setData(datas);
-      })
-      .catch((error) => {
-        console.error(`Error fetching ${route}:`, error);
-      });
+  // --- FETCH DATA GENERIQUE ---
+  const fetchData = async (route) => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/${route}`
+      );
+      if (!response.ok) throw new Error("Network response was not ok");
+      const datas = await response.json();
+      setData(datas);
+    } catch (error) {
+      console.error(`Error fetching ${route}:`, error);
+    }
   };
 
+  // --- HANDLER OUVERTURE MODAL ---
   const handleOpenModal = (type) => {
     setDataType(type);
     setOpenModal(true);
     fetchData(type);
   };
 
+  // --- HANDLER FERMETURE MODAL ---
   const handleCloseModal = () => {
-    setOpenModal(false);
     setDataType("");
+    setOpenModal(false);
     setData([]);
   };
 
-  const handleSelectedKindsUpdate = (updatedSelectedKinds) => {
-    setSelectedKinds(updatedSelectedKinds);
-  };
-
-  const handleSelectedDirectorsUpdate = (updatedSelectedDirectors) => {
-    setSelectedDirectors(updatedSelectedDirectors);
-  };
-
-  const handleSelectedScreenwritersUpdate = (updatedSelectedScreenwriters) => {
-    setSelectedScreenwriters(updatedSelectedScreenwriters);
-  };
-
-  const handleSelectedMusicUpdate = (updatedSelectedMusic) => {
-    setSelectedMusic(updatedSelectedMusic);
-  };
-
-  const handleSelectedStudiosUpdate = (updatedSelectedStudios) => {
-    setSelectedStudios(updatedSelectedStudios);
-  };
-
-  const handleSelectedCastingUpdate = (updatedSelectedCasting) => {
-    setSelectedCasting(updatedSelectedCasting);
-  };
-
-  const handleSelectedCountriesUpdate = (updatedSelectedCountries) => {
-    setSelectedCountries(updatedSelectedCountries);
-  };
-
-  const handleSelectedLanguagesUpdate = (updatedSelectedLanguages) => {
-    setSelectedLanguages(updatedSelectedLanguages);
-  };
-
-  const handleSelectedTagsUpdate = (updatedSelectedTags) => {
-    setSelectedTags(updatedSelectedTags);
-  };
-
-  // extract names from objects
-  const getSelectedKindsNames = (selectedKinds) => {
-    return selectedKinds.map((kind) => kind.name).join(", ");
-  };
-
-  const getSelectedDirectorsNames = (selectedDirectors) => {
-    return selectedDirectors.map((director) => director.name).join(", ");
-  };
-
-  const getSelectedScreenwritersNames = (selectedScreenwriters) => {
-    return selectedScreenwriters
-      .map((screenwriter) => screenwriter.name)
-      .join(", ");
-  };
-
-  const getSelectedMusicNames = (selectedMusic) => {
-    return selectedMusic.map((compositor) => compositor.name).join(", ");
-  };
-
-  const getSelectedCastingNames = (selectedCasting) => {
-    return selectedCasting.map((casting) => casting.name).join(", ");
-  };
-
-  const getSelectedStudiosNames = (selectedStudios) => {
-    return selectedStudios.map((studio) => studio.name).join(", ");
-  };
-
-  const getSelectedCountriesNames = (selectedCountries) => {
-    return selectedCountries.map((country) => country.name).join(", ");
-  };
-
-  const getSelectedLanguagesNames = (selectedLanguages) => {
-    return selectedLanguages.map((language) => language.name).join(", ");
-  };
-
-  const getSelectedTagsNames = (selectedTags) => {
-    return selectedTags.map((tag) => tag.name).join(", ");
-  };
+  // --- GENERER LES NOMS
+  const getSelectedNames = (items) => items.map((item) => item.name).join(", ");
 
   // -----------------/ INPUT FILE /----------------- //
   const fileInputRef = useRef(null); // Référence pour le fichier vidéo
@@ -1084,7 +1012,7 @@ function AddNewMovie() {
                   <TextField
                     id="outlined-read-only-input"
                     label="Genre(s)"
-                    value={getSelectedKindsNames(selectedKinds)}
+                    value={getSelectedNames(selectedKinds)}
                     InputProps={{ readOnly: true }}
                     fullWidth
                   />
@@ -1110,7 +1038,7 @@ function AddNewMovie() {
                     <TextField
                       id="outlined-read-only-input"
                       label="Créateur(s)"
-                      value={getSelectedDirectorsNames(selectedDirectors)}
+                      value={getSelectedNames(selectedDirectors)}
                       InputProps={{
                         readOnly: true,
                       }}
@@ -1120,7 +1048,7 @@ function AddNewMovie() {
                     <TextField
                       id="outlined-read-only-input"
                       label="Réalisateur(s)"
-                      value={getSelectedDirectorsNames(selectedDirectors)}
+                      value={getSelectedNames(selectedDirectors)}
                       InputProps={{
                         readOnly: true,
                       }}
@@ -1148,7 +1076,7 @@ function AddNewMovie() {
                   <TextField
                     id="outlined-read-only-input"
                     label="Scénariste(s)"
-                    value={getSelectedScreenwritersNames(selectedScreenwriters)}
+                    value={getSelectedNames(selectedScreenwriters)}
                     InputProps={{
                       readOnly: true,
                     }}
@@ -1175,7 +1103,7 @@ function AddNewMovie() {
                   <TextField
                     id="outlined-read-only-input"
                     label="Compositeur(s)"
-                    value={getSelectedMusicNames(selectedMusic)}
+                    value={getSelectedNames(selectedMusic)}
                     InputProps={{
                       readOnly: true,
                     }}
@@ -1202,7 +1130,7 @@ function AddNewMovie() {
                   <TextField
                     id="outlined-read-only-input"
                     label="Casting"
-                    value={getSelectedCastingNames(selectedCasting)}
+                    value={getSelectedNames(selectedCasting)}
                     InputProps={{
                       readOnly: true,
                     }}
@@ -1229,7 +1157,7 @@ function AddNewMovie() {
                   <TextField
                     id="outlined-read-only-input"
                     label="Studio"
-                    value={getSelectedStudiosNames(selectedStudios)}
+                    value={getSelectedNames(selectedStudios)}
                     InputProps={{
                       readOnly: true,
                     }}
@@ -1256,7 +1184,7 @@ function AddNewMovie() {
                   <TextField
                     id="outlined-read-only-input"
                     label="Pays"
-                    value={getSelectedCountriesNames(selectedCountries)}
+                    value={getSelectedNames(selectedCountries)}
                     InputProps={{
                       readOnly: true,
                     }}
@@ -1283,7 +1211,7 @@ function AddNewMovie() {
                   <TextField
                     id="outlined-read-only-input"
                     label="Langues"
-                    value={getSelectedLanguagesNames(selectedLanguages)}
+                    value={getSelectedNames(selectedLanguages)}
                     InputProps={{
                       readOnly: true,
                     }}
@@ -1310,7 +1238,7 @@ function AddNewMovie() {
                   <TextField
                     id="outlined-read-only-input"
                     label="Tags"
-                    value={getSelectedTagsNames(selectedTags)}
+                    value={getSelectedNames(selectedTags)}
                     InputProps={{
                       readOnly: true,
                     }}
@@ -1598,28 +1526,30 @@ function AddNewMovie() {
           </div>
 
           <Container>
-            <TransferList
-              dataType={dataType}
-              items={data}
-              selectedKinds={selectedKinds}
-              onSelectedKindsUpdate={handleSelectedKindsUpdate}
-              selectedDirectors={selectedDirectors}
-              onSelectedDirectorsUpdate={handleSelectedDirectorsUpdate}
-              selectedScreenwriters={selectedScreenwriters}
-              onSelectedScreenwritersUpdate={handleSelectedScreenwritersUpdate}
-              selectedMusic={selectedMusic}
-              onSelectedMusicUpdate={handleSelectedMusicUpdate}
-              selectedCasting={selectedCasting}
-              onSelectedCastingUpdate={handleSelectedCastingUpdate}
-              selectedStudios={selectedStudios}
-              onSelectedStudiosUpdate={handleSelectedStudiosUpdate}
-              selectedCountries={selectedCountries}
-              onSelectedCountriesUpdate={handleSelectedCountriesUpdate}
-              selectedLanguages={selectedLanguages}
-              onSelectedLanguagesUpdate={handleSelectedLanguagesUpdate}
-              selectedTags={selectedTags}
-              onSelectedTagsUpdate={handleSelectedTagsUpdate}
-            />
+            {openModal && dataType && (
+              <TransferList
+                dataType={dataType}
+                items={data || []}
+                selectedKinds={selectedKinds}
+                onSelectedKindsUpdate={setSelectedKinds}
+                selectedDirectors={selectedDirectors}
+                onSelectedDirectorsUpdate={setSelectedDirectors}
+                selectedScreenwriters={selectedScreenwriters}
+                onSelectedScreenwritersUpdate={setSelectedScreenwriters}
+                selectedMusic={selectedMusic}
+                onSelectedMusicUpdate={setSelectedMusic}
+                selectedCasting={selectedCasting}
+                onSelectedCastingUpdate={setSelectedCasting}
+                selectedStudios={selectedStudios}
+                onSelectedStudiosUpdate={setSelectedStudios}
+                selectedCountries={selectedCountries}
+                onSelectedCountriesUpdate={setSelectedCountries}
+                selectedLanguages={selectedLanguages}
+                onSelectedLanguagesUpdate={setSelectedLanguages}
+                selectedTags={selectedTags}
+                onSelectedTagsUpdate={setSelectedTags}
+              />
+            )}
           </Container>
         </Box>
       </Modal>
