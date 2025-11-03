@@ -877,10 +877,12 @@ function MovieCard({
                         {movieData.episodeDuration || ""}
                       </p>
                     )}
-                  <p className="MovieCard_info">
-                    <span className="paraph_bolder">Durée:</span>{" "}
-                    {movieData.duration || ""}mn
-                  </p>
+                  {!isTvShow && (
+                    <p className="MovieCard_info">
+                      <span className="paraph_bolder">Durée:</span>{" "}
+                      {movieData.duration || ""}mn
+                    </p>
+                  )}
                   <div className="divider_dashed" />
                   {/* Autres détails du film */}
                   {directors && (

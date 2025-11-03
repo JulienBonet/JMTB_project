@@ -38,7 +38,7 @@ const handleMovieClick = async (movieId, mediaType, deps) => {
     setCoverPreview,
   } = deps;
 
-  resetStates();
+  await resetStates(undefined, false);
 
   try {
     const options = {
@@ -52,8 +52,8 @@ const handleMovieClick = async (movieId, mediaType, deps) => {
 
     const response = await axios(options);
     const movieData = response.data;
-    console.info("response", response);
-    console.info("movieData", movieData);
+    console.info("responseApiTMDB", response);
+    console.info("movieDataApiTMDB", movieData);
 
     // Variables spécifiques TV
     const isTV = mediaType === "tv";

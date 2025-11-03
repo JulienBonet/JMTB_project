@@ -104,9 +104,11 @@ function AddNewMovie() {
     nbTvEpisodes: "",
     episodeDuration: "",
   });
-  console.info("data", data);
-  console.info("movie", movie);
-  console.info("isTvShow", movie.isTvShow);
+  useEffect(() => {
+    console.info("data", data);
+    console.info("movie", movie);
+    console.info("isTvShow", movie.isTvShow);
+  }, [data, movie.isTvShow]);
 
   // -----------------/ GESTION DES FIELDS SAISONS - EPISODES - DUREE /----------------- //
 
@@ -330,7 +332,7 @@ function AddNewMovie() {
   };
 
   // -----------------/ RESET FORM /----------------- //
-  const resetStates = async (isTvShow = false) => {
+  const resetStates = async (isTvShow = false, withPurge = true) => {
     // Vider le formulaire
     setMovie({
       title: "",
@@ -378,11 +380,14 @@ function AddNewMovie() {
     setVersion("none");
 
     // 🧹 Appeler la purge
-    try {
-      await purgeOrphanRecords(); // ✅ on attend que la purge se termine
-      console.info("Purge exécutée avec succès après le reset.");
-    } catch (error) {
-      console.error("Erreur lors de la purge :", error);
+    // 🧹 Purge conditionnelle
+    if (withPurge) {
+      try {
+        await purgeOrphanRecords();
+        console.info("Purge exécutée avec succès après le reset.");
+      } catch (error) {
+        console.error("Erreur lors de la purge :", error);
+      }
     }
   };
 
@@ -856,6 +861,7 @@ function AddNewMovie() {
                   RECHERCHE
                 </Button>
                 <div className="SourceResearchItems_2">
+                  {/* isTvShow Switch */}
                   <FormControlLabel
                     control={
                       <Switch
@@ -868,6 +874,7 @@ function AddNewMovie() {
                     }
                     label="Série TV"
                   />
+                  {/* resest feild button */}
                   <IconButton
                     onClick={() => resetStates()}
                     sx={{
@@ -1492,8 +1499,8 @@ function AddNewMovie() {
                     row
                     aria-labelledby="demo-row-radio-buttons-group-label"
                     name="row-radio-buttons-group"
-                    value={version} // Assurez-vous que la valeur sélectionnée soit affichée correctement
-                    onChange={(e) => setVersion(e.target.value)} // Met à jour l'état
+                    value={version}
+                    onChange={(e) => setVersion(e.target.value)}
                   >
                     <FormControlLabel
                       value="none"

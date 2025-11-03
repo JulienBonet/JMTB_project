@@ -152,9 +152,6 @@ export default function TransferList({
     );
   }, [items, selectedItems]);
 
-  console.info("left: ", left);
-  console.info("right: ", right);
-
   const leftChecked = intersection(checked, left);
   const rightChecked = intersection(checked, right);
 
@@ -181,8 +178,7 @@ export default function TransferList({
     );
     onSelectedItemsUpdate(updatedSelectedItems);
   };
-  console.info("rightChecked:", rightChecked);
-  console.info("selectedItems:", selectedItems);
+
   const handleCheckedLeft = () => {
     setLeft(left.concat(rightChecked));
     setRight(
