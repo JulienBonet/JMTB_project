@@ -187,6 +187,17 @@ function AddNewMovie() {
     ) => (
       <>
         <TextField
+          name="tvSeasons"
+          label="Saisons sélectionnées"
+          value={tvSeasons || ""}
+          onChange={(e) => {
+            const { value } = e.target;
+            setTvSeasons(value);
+            setMovie((prev) => ({ ...prev, tvSeasons: value }));
+          }}
+          sx={{ flexGrow: 1 }}
+        />
+        <TextField
           name="nbTvEpisodes"
           label="Nombre d’épisodes"
           type="number"
@@ -204,15 +215,20 @@ function AddNewMovie() {
           type="number"
           label="Durée d’un épisode (min)"
           value={movie.episodeDuration || ""}
-          onChange={(e) =>
-            setMovie((prev) => ({
-              ...prev,
-              episodeDuration: Number(e.target.value),
-            }))
-          }
+          onChange={(e) => {
+            const value = Number(e.target.value);
+            setMovie((prev) => {
+              const newMovie = { ...prev, episodeDuration: value };
+              if (nbTvEpisodes > 0) {
+                newMovie.duration = nbTvEpisodes * value;
+              }
+              return newMovie;
+            });
+          }}
           InputProps={{ readOnly: isReadOnly }}
           sx={{ flexGrow: 1 }}
         />
+
         <TextField
           name="duration"
           label="Durée totale (minutes)"
