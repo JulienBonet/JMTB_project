@@ -210,6 +210,7 @@ function MovieCard({
   const [image, setImage] = useState(`${backendUrl}/images/${movie.cover}`);
   const [showUploadButton, setShowUploadButton] = useState(true);
   const fileCoverRef = useRef(null);
+  console.info("image", image);
 
   useEffect(() => {
     if (isModify) {
@@ -672,7 +673,8 @@ function MovieCard({
                     searchTagInDatabase,
                     createTagInDatabase,
                     setSelectedTags,
-                    // setCoverPreview,
+                    setImage,
+                    setShowUploadButton,
                   })
                 }
               />
