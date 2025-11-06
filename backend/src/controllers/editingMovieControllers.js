@@ -818,7 +818,7 @@ const editMovieById = async (req, res) => {
       comment,
       tags,
       isTvShow,
-      TvSeasons,
+      tvSeasons,
       nbTvEpisodes,
       episodeDuration,
       // !!! ajouter les update item que l'on envoi par la route !!!
@@ -842,7 +842,7 @@ const editMovieById = async (req, res) => {
       multi,
       comment,
       isTvShow,
-      TvSeasons,
+      tvSeasons,
       nbTvEpisodes,
       episodeDuration,
       id

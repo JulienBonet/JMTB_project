@@ -3,7 +3,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable camelcase */
 import { useState, useEffect, useRef } from "react";
-// import axios from "axios";
+import axios from "axios";
 import { toast } from "react-toastify";
 import "./movieCard.css";
 import "./movieCard_videoPlayer_MediaQueries.css";
@@ -36,6 +36,9 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
 import CloudSyncIcon from "@mui/icons-material/CloudSync";
+import Checkbox from "@mui/material/Checkbox";
+import ListItemText from "@mui/material/ListItemText";
+import OutlinedInput from "@mui/material/OutlinedInput";
 import TransferList from "../AdminFeatures/AddNewMovie/MovieItemList";
 import refetchMovieTMDB from "../../utils/refetchMovieTMDB";
 import {
@@ -45,8 +48,8 @@ import {
   searchStudioInDatabase,
   searchCountryInDatabase,
   createCountryInDatabase,
-  searchLanguageInDatabase,
-  createLanguageInDatabase,
+  // searchLanguageInDatabase,
+  // createLanguageInDatabase,
   searchDirectorInDatabase,
   createDirectorInDatabase,
   searchScreenwriterInDatabase,
@@ -98,6 +101,7 @@ function MovieCard({
     location: movie.location || "",
     fileSize: movie.fileSize || "",
     comment: movie.comment || "",
+    isTvShow: movie.isTvShow || "",
     tvSeasons: movie.tvSeasons || "",
     nbTvEpisodes: movie.nbTvEpisodes || "",
     episodeDuration: movie.episodeDuration || "",
@@ -123,15 +127,283 @@ function MovieCard({
     tags,
   } = movieData;
 
+  const { idTheMovieDb } = movie;
   const isTvShow = movieData.isTvShow === 1;
+
+  // -- UX FIELDS
+
+  const textFieldSx = {
+    width: "80%",
+    "& .MuiInputLabel-root": {
+      color: "white",
+    },
+    "& .MuiInputBase-input": {
+      color: "white",
+    },
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": {
+        borderColor: "white",
+      },
+      "&:hover fieldset": {
+        borderColor: "orange",
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: "cyan",
+      },
+    },
+  };
+
+  // ------/ GESTION DES FIELDS SAISONS - EPISODES - DUREE /------- //
+  // États spécifiques aux séries TV
+  const [selectedSeasons, setSelectedSeasons] = useState([]);
+  const [seasonsInfo, setSeasonsInfo] = useState([]);
+  const [tvSeasons, setTvSeasons] = useState(movieData.tvSeasons || "");
+  const [nbTvEpisodes, setNbTvEpisodes] = useState(movieData.nbTvEpisodes || 0);
+
+  console.info("selectedSeasons", selectedSeasons);
+  console.info("seasonsInfo", seasonsInfo);
+  console.info("tvSeasons", tvSeasons);
+  console.info("nbTvEpisodes", nbTvEpisodes);
+
+  // -------- Parse tvSeasons de movieData dès le mode modify --------
+  useEffect(() => {
+    if (!isModify || !isTvShow) return;
+
+    // On attend que movieData.tvSeasons soit défini (et non vide)
+    if (!movieData.tvSeasons) return;
+
+    const parsed = movieData.tvSeasons
+      .split(",") // ex: "1-3,5"
+      .map((block) => block.trim())
+      .flatMap((block) => {
+        if (block.includes("-")) {
+          const [start, end] = block.split("-").map(Number);
+          return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+        }
+        return [Number(block)];
+      });
+
+    console.info("✅ tvSeasons parsé depuis movieData:", parsed);
+    setSelectedSeasons(parsed);
+  }, [isModify, isTvShow, movieData.tvSeasons]);
+
+  // -------- Récupération des infos TMDB --------
+  useEffect(() => {
+    if (isModify && isTvShow && idTheMovieDb) {
+      setSeasonsInfo([]); // nettoie avant fetch
+
+      const fetchSeasonsInfo = async () => {
+        try {
+          const [mediaType, movieId] = idTheMovieDb.split("/");
+
+          const options = {
+            method: "GET",
+            url: `https://api.themoviedb.org/3/${mediaType}/${movieId}?language=fr-FR`,
+            headers: {
+              accept: "application/json",
+              Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
+            },
+          };
+
+          const res = await axios.request(options);
+
+          if (res.data && res.data.seasons) {
+            setSeasonsInfo(
+              res.data.seasons
+                .filter((s) => s.season_number > 0)
+                .map((s) => ({
+                  season_number: s.season_number,
+                  episode_count: s.episode_count,
+                }))
+            );
+          }
+        } catch (error) {
+          console.error(
+            "Erreur lors de la récupération des saisons TMDB :",
+            error.response?.status,
+            error.response?.data || error
+          );
+        }
+      };
+
+      fetchSeasonsInfo();
+    }
+  }, [isModify, isTvShow, idTheMovieDb]);
+
+  // -------- Mise à jour du nombre total d’épisodes --------
+  useEffect(() => {
+    if (!isTvShow) return;
+
+    if (!Array.isArray(selectedSeasons) || selectedSeasons.length === 0) {
+      setNbTvEpisodes(0);
+      setMovieData((prev) => ({ ...prev, nbTvEpisodes: 0 }));
+      return;
+    }
+
+    const totalEpisodes = selectedSeasons.reduce((sum, seasonNumber) => {
+      const season = seasonsInfo.find((s) => s.season_number === seasonNumber);
+      return sum + (season ? season.episode_count : 0);
+    }, 0);
+
+    setNbTvEpisodes(totalEpisodes);
+    setMovieData((prev) => ({ ...prev, nbTvEpisodes: totalEpisodes }));
+  }, [selectedSeasons, seasonsInfo, isTvShow]);
+
+  // -------- Mise à jour de la durée totale --------
+  useEffect(() => {
+    if (!isTvShow) return;
+
+    if (!movieData.episodeDuration || movieData.episodeDuration === 0) {
+      setMovieData((prev) => ({ ...prev, duration: "" }));
+      return;
+    }
+
+    if (nbTvEpisodes > 0) {
+      const total = nbTvEpisodes * movieData.episodeDuration;
+      setMovieData((prev) => ({ ...prev, duration: total }));
+    } else {
+      setMovieData((prev) => ({ ...prev, duration: "" }));
+    }
+  }, [nbTvEpisodes, movieData.episodeDuration, isTvShow]);
+
+  // -------- Mise à jour automatique de tvSeasons selon les saisons sélectionnées --------
+  useEffect(() => {
+    if (!isTvShow) return;
+
+    if (!Array.isArray(selectedSeasons) || selectedSeasons.length === 0) {
+      setTvSeasons("");
+      setMovieData((prev) => ({ ...prev, tvSeasons: "" }));
+      return;
+    }
+
+    // Trie les saisons sélectionnées
+    const sortedSeasons = [...selectedSeasons].sort((a, b) => a - b);
+
+    let displayValue = "";
+
+    // Si elles sont consécutives → format "1-3"
+    const isConsecutive = sortedSeasons.every(
+      (num, i, arr) => i === 0 || num === arr[i - 1] + 1
+    );
+
+    if (isConsecutive) {
+      displayValue =
+        sortedSeasons.length === 1
+          ? `${sortedSeasons[0]}`
+          : `${sortedSeasons[0]}-${sortedSeasons[sortedSeasons.length - 1]}`;
+    } else {
+      // Saisons non consécutives → "1, 3, 5"
+      displayValue = sortedSeasons.join(", ");
+    }
+
+    setTvSeasons(displayValue);
+    setMovieData((prev) => ({ ...prev, tvSeasons: displayValue }));
+  }, [selectedSeasons, isTvShow]);
+
+  // fonction de rendu des items TV seasons - episodes - duration
+  const renderTvShowFields = () => {
+    const renderEpisodeDurationFields = () => (
+      <>
+        <TextField
+          name="tvSeasons"
+          label="Saisons sélectionnées"
+          value={tvSeasons}
+          onChange={(e) => {
+            const { value } = e.target;
+            setTvSeasons(value);
+            setMovieData((prev) => ({ ...prev, tvSeasons: value }));
+          }}
+          sx={textFieldSx}
+        />
+        <TextField
+          name="nbTvEpisodes"
+          label="Nombre d’épisodes"
+          type="number"
+          value={nbTvEpisodes || ""}
+          onChange={(e) => {
+            const value = Number(e.target.value);
+            setNbTvEpisodes(value);
+            setMovieData((prev) => ({ ...prev, nbTvEpisodes: value }));
+          }}
+          sx={textFieldSx}
+        />
+        <TextField
+          name="episodeDuration"
+          label="Durée d’un épisode (min)"
+          type="number"
+          value={movieData.episodeDuration || ""}
+          onChange={(e) => {
+            const value = Number(e.target.value);
+            setMovieData((prev) => {
+              const updated = { ...prev, episodeDuration: value };
+              if (nbTvEpisodes > 0) {
+                updated.duration = nbTvEpisodes * value;
+              }
+              return updated;
+            });
+          }}
+          sx={textFieldSx}
+        />
+        <TextField
+          name="duration"
+          label="Durée totale (minutes)"
+          value={movieData.duration || ""}
+          InputProps={{ readOnly: true }}
+          sx={textFieldSx}
+        />
+      </>
+    );
+
+    if (seasonsInfo.length > 0) {
+      return (
+        <>
+          <FormControl sx={textFieldSx}>
+            <InputLabel id="season-select-label">Saisons</InputLabel>
+            <Select
+              labelId="season-select-label"
+              multiple
+              value={Array.isArray(selectedSeasons) ? selectedSeasons : []}
+              onChange={(e) => {
+                let { value } = e.target;
+                if (!Array.isArray(value)) value = [value];
+                value = value.map((v) => Number(v));
+                setSelectedSeasons(value);
+              }}
+              input={<OutlinedInput label="Saisons" />}
+              renderValue={(selected) => selected.join(", ")}
+            >
+              {seasonsInfo.map((season) => (
+                <MenuItem
+                  key={season.season_number}
+                  value={season.season_number}
+                >
+                  <Checkbox
+                    checked={
+                      Array.isArray(selectedSeasons) &&
+                      selectedSeasons.includes(season.season_number)
+                    }
+                  />
+                  <ListItemText
+                    primary={`Saison ${season.season_number} (${season.episode_count} épisodes)`}
+                  />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {renderEpisodeDurationFields()}
+        </>
+      );
+    }
+
+    return renderEpisodeDurationFields();
+  };
 
   // --------- REFRESH WITH API TMDB ------------ //
   // const [newDataMovie, setNewDataMovie] = useState([]);
   // console.info("newDataMovie", newDataMovie);
 
-  const { idTheMovieDb } = movie;
-
-  // FETCH MOVIE DATAS
+  // --------- FETCH MOVIE DATAS ------------ //
   const fetchMovieData = () => {
     if (origin === "country") {
       fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movies/${movie.movieId}`)
@@ -210,7 +482,6 @@ function MovieCard({
   const [image, setImage] = useState(`${backendUrl}/images/${movie.cover}`);
   const [showUploadButton, setShowUploadButton] = useState(true);
   const fileCoverRef = useRef(null);
-  console.info("image", image);
 
   useEffect(() => {
     if (isModify) {
@@ -499,7 +770,10 @@ function MovieCard({
             studios: selectedStudios.map((studio) => studio.id),
             countries: selectedCountries.map((country) => country.id),
             tags: selectedTags.map((tag) => tag.id),
-            // !!! ajouter les items que l'on met à jour !!!!
+            isTvShow: movieData.isTvShow,
+            tvSeasons: movieData.tvSeasons,
+            nbTvEpisodes: movieData.nbTvEpisodes,
+            episodeDuration: movieData.episodeDuration,
           }),
         }
       );
@@ -508,9 +782,12 @@ function MovieCard({
         toast.success("Film mis à jour avec succès");
         console.info("Film mis à jour avec succès");
         const updatedMovie = await response.json();
+        const newMovie = Array.isArray(updatedMovie)
+          ? updatedMovie[0]
+          : updatedMovie;
         console.info("updatedMovie", updatedMovie);
-        setMovieData(updatedMovie[0]);
-        onUpdateMovie(updatedMovie[0]);
+        setMovieData(newMovie);
+        onUpdateMovie(newMovie);
         closeModifyMode();
         closeModal();
       } else {
@@ -569,29 +846,6 @@ function MovieCard({
     }
   };
 
-  // -- UX FIELDS
-
-  const textFieldSx = {
-    width: "80%",
-    "& .MuiInputLabel-root": {
-      color: "white",
-    },
-    "& .MuiInputBase-input": {
-      color: "white",
-    },
-    "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        borderColor: "white",
-      },
-      "&:hover fieldset": {
-        borderColor: "orange",
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: "cyan",
-      },
-    },
-  };
-
   return (
     <article className="MovieCard">
       <div className="MovieCard_container">
@@ -639,8 +893,6 @@ function MovieCard({
                 onClick={() =>
                   refetchMovieTMDB(idTheMovieDb, {
                     // setSeasonsInfo,
-                    // setMovie,
-                    movie,
                     // tvSeasons,
                     // newDataMovie,
                     // setNewDataMovie,
@@ -655,8 +907,8 @@ function MovieCard({
                     searchCountryInDatabase,
                     createCountryInDatabase,
                     setSelectedCountries,
-                    searchLanguageInDatabase,
-                    createLanguageInDatabase,
+                    // searchLanguageInDatabase,
+                    // createLanguageInDatabase,
                     // setSelectedLanguages,
                     searchDirectorInDatabase,
                     createDirectorInDatabase,
@@ -726,15 +978,24 @@ function MovieCard({
                 type="number"
                 sx={textFieldSx}
               />
-              <TextField
-                label="Duration"
-                name="duration"
-                value={movieData.duration}
-                onChange={(e) => handleChange(e)}
-                fullWidth
-                type="number"
-                sx={textFieldSx}
-              />
+              {isTvShow ? (
+                renderTvShowFields()
+              ) : (
+                <TextField
+                  label="Durée (minutes)"
+                  name="duration"
+                  value={movieData.duration || ""}
+                  onChange={(e) =>
+                    setMovieData((prev) => ({
+                      ...prev,
+                      duration: e.target.value,
+                    }))
+                  }
+                  fullWidth
+                  type="number"
+                  sx={textFieldSx}
+                />
+              )}
             </div>
           ) : (
             <div className="infos_bloc_1">
@@ -799,7 +1060,7 @@ function MovieCard({
                     movieData.episodeDuration > 0 && (
                       <p className="MovieCard_info">
                         <span className="paraph_bolder">Durée d'épisode:</span>{" "}
-                        {movieData.episodeDuration || ""}
+                        {movieData.episodeDuration || ""} mn
                       </p>
                     )}
                   {!isTvShow && (

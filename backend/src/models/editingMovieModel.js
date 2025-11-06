@@ -18,13 +18,13 @@ const insertMovie = (
   vostfr,
   multi,
   isTvShow,
-  TvSeasons,
+  tvSeasons,
   nbTvEpisodes,
   episodeDuration,
   comment
 ) =>
   db.query(
-    "INSERT INTO movies (title, altTitle, year, duration, cover, trailer, pitch, story, location, videoFormat, videoSupport, fileSize, idTheMovieDb, idIMDb, vostfr, multi, isTvShow, TvSeasons, nbTvEpisodes, episodeDuration, comment) VALUES (?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,? );",
+    "INSERT INTO movies (title, altTitle, year, duration, cover, trailer, pitch, story, location, videoFormat, videoSupport, fileSize, idTheMovieDb, idIMDb, vostfr, multi, isTvShow, tvSeasons, nbTvEpisodes, episodeDuration, comment) VALUES (?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,? );",
     [
       title,
       altTitle,
@@ -43,7 +43,7 @@ const insertMovie = (
       vostfr,
       multi,
       isTvShow,
-      TvSeasons,
+      tvSeasons,
       nbTvEpisodes,
       episodeDuration,
       comment,

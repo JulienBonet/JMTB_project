@@ -4,8 +4,6 @@ import axios from "axios";
 const refetchMovieTMDB = async (idTheMovieDb, deps) => {
   const {
     // setSeasonsInfo,
-    // setMovie,
-    movie,
     // tvSeasons,
     // newDataMovie,
     // setNewDataMovie,
@@ -64,10 +62,10 @@ const refetchMovieTMDB = async (idTheMovieDb, deps) => {
     const isTV = mediaType === "tv";
     // const nbTvSeasons = isTV ? moviefetchData.number_of_seasons : null;
     // const nbTvEpisodes = isTV ? moviefetchData.number_of_episodes : null;
-    const episodeDuration =
-      isTV && moviefetchData.episode_run_time?.length > 0
-        ? moviefetchData.episode_run_time[0]
-        : null;
+    // const episodeDuration =
+    //   isTV && moviefetchData.episode_run_time?.length > 0
+    //     ? moviefetchData.episode_run_time[0]
+    //     : null;
 
     // Si c'est une série, on récupère la liste des saisons
     // const seasonsInfo = isTV
@@ -112,11 +110,11 @@ const refetchMovieTMDB = async (idTheMovieDb, deps) => {
         idTheMovieDb: `${mediaType}/${moviefetchData.id}`,
         idIMDB: isTV ? null : moviefetchData.imdb_id,
         isTvShow: isTV,
-        duration: moviefetchData.runtime,
+        // duration: moviefetchData.runtime,
         // nbTvSeasons,
         // tvSeasons,
         // nbTvEpisodes,
-        episodeDuration,
+        // episodeDuration,
       });
     }
 
@@ -385,7 +383,7 @@ const refetchMovieTMDB = async (idTheMovieDb, deps) => {
 
     // mise à jour du film avec la nouvelle cover
     const updateResponse = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/movie/${movie.id}/cover`,
+      `${import.meta.env.VITE_BACKEND_URL}/api/movie/${movieData.id}/cover`,
       {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
