@@ -744,6 +744,55 @@ const editMovieImage = async (req, res) => {
   }
 };
 
+// pour le cas refecth in MovieCard.jsx
+const updateCoverByFilename = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { cover } = req.body;
+
+    if (!cover) {
+      return res.status(400).json({ message: "Cover filename is required" });
+    }
+
+    // Vérifier que le film existe
+    const movie = await editingMovieModel.findMovieById(id);
+    if (!movie || movie.length === 0) {
+      return res.status(404).json({ message: "Movie not found" });
+    }
+
+    const currentImage = movie[0].cover;
+
+    // Supprimer l'ancienne image si ce n'est pas l'image par défaut
+    if (currentImage && currentImage !== "00_cover_default.jpg") {
+      const oldImagePath = path.join(
+        __dirname,
+        "../../public/images",
+        currentImage
+      );
+      if (fs.existsSync(oldImagePath)) {
+        fs.unlinkSync(oldImagePath);
+        console.info("Ancienne image supprimée :", oldImagePath);
+      }
+    }
+
+    // Mettre à jour la BDD avec la nouvelle cover
+    const result = await editingMovieModel.updateMovieImage(cover, id);
+
+    if (result.affectedRows > 0) {
+      const updatedMovie = await editingMovieModel.findMovieById(id);
+      return res.status(200).json({
+        message: "Cover successfully updated from TMDB",
+        movie: updatedMovie[0],
+      });
+    }
+
+    return res.status(500).json({ message: "Database update failed" });
+  } catch (error) {
+    console.error("Erreur updateCoverByFilename :", error);
+    return res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 const editMovieById = async (req, res) => {
   try {
     const {
@@ -892,4 +941,5 @@ module.exports = {
   deleteMovie,
   editMovieImage,
   editMovieById,
+  updateCoverByFilename,
 };

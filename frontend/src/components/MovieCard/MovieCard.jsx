@@ -640,7 +640,7 @@ function MovieCard({
                   refetchMovieTMDB(idTheMovieDb, {
                     // setSeasonsInfo,
                     // setMovie,
-                    // movie,
+                    movie,
                     // tvSeasons,
                     // newDataMovie,
                     // setNewDataMovie,

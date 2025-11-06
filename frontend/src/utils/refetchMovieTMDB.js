@@ -1,11 +1,11 @@
-// -----------------/ MOVIE DATA FETCH IN addNewMovie.jsx/----------------- //
+// -----------------/ MOVIE DATA FETCH IN MovieCard.jsx/----------------- //
 import axios from "axios";
 
 const refetchMovieTMDB = async (idTheMovieDb, deps) => {
   const {
     // setSeasonsInfo,
     // setMovie,
-    // movie,
+    movie,
     // tvSeasons,
     // newDataMovie,
     // setNewDataMovie,
@@ -38,7 +38,8 @@ const refetchMovieTMDB = async (idTheMovieDb, deps) => {
     searchTagInDatabase,
     createTagInDatabase,
     setSelectedTags,
-    // setCoverPreview,
+    setImage,
+    setShowUploadButton,
   } = deps;
 
   const [mediaType, movieId] = idTheMovieDb.split("/");
@@ -355,16 +356,63 @@ const refetchMovieTMDB = async (idTheMovieDb, deps) => {
     setSelectedTags(tagsData);
 
     // fetch movie cover
-    // const posterUrl = moviefetchData.poster_path
-    //   ? `https://image.tmdb.org/t/p/original${moviefetchData.poster_path}`
-    //   : null;
-    // setCoverPreview(posterUrl);
-    // setNewDataMovie((prevMovie) => ({
-    //   ...prevMovie,
-    //   posterUrl,
-    // }));
+    const posterUrl = moviefetchData.poster_path
+      ? `https://image.tmdb.org/t/p/original${moviefetchData.poster_path}`
+      : null;
+
+    if (!posterUrl) {
+      console.warn("Aucune affiche disponible pour ce film sur TMDB.");
+      return;
+    }
+
+    // envoyer l’image au backend pour la copier localement
+    const uploadResponse = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/upload-cover`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ posterUrl }),
+      }
+    );
+
+    if (!uploadResponse.ok) {
+      throw new Error("Erreur upload cover depuis TMDB");
+    }
+
+    const uploadData = await uploadResponse.json();
+    const newCoverFilename = uploadData.coverFilename;
+    console.info("newCoverFilename", newCoverFilename);
+
+    // mise à jour du film avec la nouvelle cover
+    const updateResponse = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/movie/${movie.id}/cover`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cover: newCoverFilename }),
+      }
+    );
+
+    if (!updateResponse.ok) {
+      throw new Error(
+        "Erreur lors de la mise à jour du film avec la nouvelle image"
+      );
+    }
+
+    const { movie: updatedMovie } = await updateResponse.json();
+
+    // mise à jour locale du state
+    setImage(
+      `${import.meta.env.VITE_BACKEND_URL}/images/${updatedMovie.cover}`
+    );
+    setShowUploadButton(true);
+
+    console.info(
+      "Affiche mise à jour avec succès depuis TMDB :",
+      updatedMovie.cover
+    );
   } catch (error) {
-    console.error("Error:", error);
+    console.error("Erreur refetchMovieTMDB:", error);
   }
 };
 
