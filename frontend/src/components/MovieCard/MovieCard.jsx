@@ -35,7 +35,29 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogActions from "@mui/material/DialogActions";
 import Button from "@mui/material/Button";
+import CloudSyncIcon from "@mui/icons-material/CloudSync";
 import TransferList from "../AdminFeatures/AddNewMovie/MovieItemList";
+import refetchMovieTMDB from "../../utils/refetchMovieTMDB";
+import {
+  searchGenreInDatabase,
+  createGenreInDatabase,
+  createStudioInDatabase,
+  searchStudioInDatabase,
+  searchCountryInDatabase,
+  createCountryInDatabase,
+  searchLanguageInDatabase,
+  createLanguageInDatabase,
+  searchDirectorInDatabase,
+  createDirectorInDatabase,
+  searchScreenwriterInDatabase,
+  createScreenwriterInDatabase,
+  searchCompositorInDatabase,
+  createCompositorInDatabase,
+  searchCastingInDatabase,
+  createCastingInDatabase,
+  searchTagInDatabase,
+  createTagInDatabase,
+} from "../../utils/movieEntranceSearchInsert";
 
 function MovieCard({
   movie,
@@ -79,10 +101,16 @@ function MovieCard({
     tvSeasons: movie.tvSeasons || "",
     nbTvEpisodes: movie.nbTvEpisodes || "",
     episodeDuration: movie.episodeDuration || "",
+    idTheMovieDb: movie.idTheMovieDb || "",
   });
-  console.info("movie", movie);
-  console.info("movieData1", movieData);
-  console.info("episodeDuration", movie.episodeDuration);
+
+  useEffect(() => {
+    console.info("movie in MovieCard", movie);
+  }, [movie]);
+
+  useEffect(() => {
+    console.info("movieData1 in MovieCard", movieData);
+  }, [movieData]);
 
   const {
     genres,
@@ -96,6 +124,12 @@ function MovieCard({
   } = movieData;
 
   const isTvShow = movieData.isTvShow === 1;
+
+  // --------- REFRESH WITH API TMDB ------------ //
+  // const [newDataMovie, setNewDataMovie] = useState([]);
+  // console.info("newDataMovie", newDataMovie);
+
+  const { idTheMovieDb } = movie;
 
   // FETCH MOVIE DATAS
   const fetchMovieData = () => {
@@ -114,10 +148,6 @@ function MovieCard({
           console.error("Error fetching user data:", error);
         });
     } else {
-      console.info(
-        "fetch",
-        `${import.meta.env.VITE_BACKEND_URL}/api/movies/${movieData.id}`
-      );
       fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movies/${movieData.id}`)
         .then((response) => {
           if (!response.ok) {
@@ -126,7 +156,6 @@ function MovieCard({
           return response.json();
         })
         .then((data) => {
-          console.info("data in fetch:", data);
           setMovieData(data);
         })
         .catch((error) => {
@@ -580,6 +609,50 @@ function MovieCard({
           {/* info bloc 1 */}
           {isModify ? (
             <div className="infos_bloc_1_modify">
+              <CloudSyncIcon
+                variant="contained"
+                className="Btn_Add_itemsPopUp_MovieCard"
+                onClick={() =>
+                  refetchMovieTMDB(idTheMovieDb, {
+                    // setSeasonsInfo,
+                    // setMovie,
+                    // movie,
+                    // tvSeasons,
+                    // newDataMovie,
+                    // setNewDataMovie,
+                    movieData,
+                    setMovieData,
+                    searchGenreInDatabase,
+                    createGenreInDatabase,
+                    setSelectedKinds,
+                    searchStudioInDatabase,
+                    createStudioInDatabase,
+                    setSelectedStudios,
+                    searchCountryInDatabase,
+                    createCountryInDatabase,
+                    setSelectedCountries,
+                    searchLanguageInDatabase,
+                    createLanguageInDatabase,
+                    // setSelectedLanguages,
+                    searchDirectorInDatabase,
+                    createDirectorInDatabase,
+                    setSelectedDirectors,
+                    searchScreenwriterInDatabase,
+                    createScreenwriterInDatabase,
+                    setSelectedScreenwriters,
+                    searchCompositorInDatabase,
+                    createCompositorInDatabase,
+                    setSelectedMusic,
+                    searchCastingInDatabase,
+                    createCastingInDatabase,
+                    setSelectedCasting,
+                    searchTagInDatabase,
+                    createTagInDatabase,
+                    setSelectedTags,
+                    // setCoverPreview,
+                  })
+                }
+              />
               <TextField
                 label="Title"
                 name="title"
@@ -760,7 +833,11 @@ function MovieCard({
                 </>
               ) : (
                 <>
-                  <p className="MovieCard_info">{movieData.altTitle || ""}</p>
+                  {movieData.altTitle && (
+                    <p className="MovieCard_info">
+                      {movieData.altTitle} (Titre original)
+                    </p>
+                  )}
                   <p className="MovieCard_info">
                     <span className="paraph_bolder">Genre:</span> {genres}
                   </p>

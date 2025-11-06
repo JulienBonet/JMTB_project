@@ -28,7 +28,7 @@ import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import CloseIcon from "@mui/icons-material/Close";
 import TransferList from "./MovieItemList";
 import MovieInfosEntrance from "./MovieInfosEntrance";
-import handleMovieClick from "./AddNewMovie_Script/handleMovieClick";
+import handleMovieClick from "../../../utils/handleMovieClick";
 import {
   searchGenreInDatabase,
   createGenreInDatabase,
@@ -48,8 +48,8 @@ import {
   createCastingInDatabase,
   searchTagInDatabase,
   createTagInDatabase,
-} from "./AddNewMovie_Script/movieEntranceSearchInsert";
-import purgeOrphanRecords from "../AdminFeatures_Script/purgeOrphanRecords";
+} from "../../../utils/movieEntranceSearchInsert";
+import purgeOrphanRecords from "../../../utils/purgeOrphanRecords";
 import "./addNewMovie.css";
 
 function AddNewMovie() {
