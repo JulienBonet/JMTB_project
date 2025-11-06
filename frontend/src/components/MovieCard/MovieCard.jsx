@@ -568,6 +568,29 @@ function MovieCard({
     }
   };
 
+  // -- UX FIELDS
+
+  const textFieldSx = {
+    width: "80%",
+    "& .MuiInputLabel-root": {
+      color: "white",
+    },
+    "& .MuiInputBase-input": {
+      color: "white",
+    },
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": {
+        borderColor: "white",
+      },
+      "&:hover fieldset": {
+        borderColor: "orange",
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: "cyan",
+      },
+    },
+  };
+
   return (
     <article className="MovieCard">
       <div className="MovieCard_container">
@@ -659,26 +682,7 @@ function MovieCard({
                 value={movieData.title}
                 onChange={(e) => handleChange(e)}
                 fullWidth
-                sx={{
-                  width: "80%",
-                  "& .MuiInputLabel-root": {
-                    color: "white", // Couleur du label en blanc
-                  },
-                  "& .MuiInputBase-input": {
-                    color: "white", // Couleur du texte
-                  },
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      borderColor: "white", // Couleur de la bordure
-                    },
-                    "&:hover fieldset": {
-                      borderColor: "orange", // Couleur de la bordure au hover
-                    },
-                    "&.Mui-focused fieldset": {
-                      borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
-                    },
-                  },
-                }}
+                sx={textFieldSx}
               />
               <div className="divider" />
               <TextField
@@ -687,50 +691,12 @@ function MovieCard({
                 value={movieData.altTitle}
                 onChange={handleChange}
                 fullWidth
-                sx={{
-                  width: "80%",
-                  "& .MuiInputLabel-root": {
-                    color: "white", // Couleur du label en blanc
-                  },
-                  "& .MuiInputBase-input": {
-                    color: "white", // Couleur du texte
-                  },
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      borderColor: "white", // Couleur de la bordure
-                    },
-                    "&:hover fieldset": {
-                      borderColor: "orange", // Couleur de la bordure au hover
-                    },
-                    "&.Mui-focused fieldset": {
-                      borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
-                    },
-                  },
-                }}
+                sx={textFieldSx}
               />
               <div className="box_item_form">
                 <Box
                   component="form"
-                  sx={{
-                    width: "80%",
-                    "& .MuiInputLabel-root": {
-                      color: "white", // Couleur du label en blanc
-                    },
-                    "& .MuiInputBase-input": {
-                      color: "white", // Couleur du texte
-                    },
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: "white", // Couleur de la bordure
-                      },
-                      "&:hover fieldset": {
-                        borderColor: "orange", // Couleur de la bordure au hover
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
-                      },
-                    },
-                  }}
+                  sx={textFieldSx}
                   noValidate
                   autoComplete="off"
                   display="flex"
@@ -756,26 +722,7 @@ function MovieCard({
                 onChange={(e) => handleChange(e)}
                 fullWidth
                 type="number"
-                sx={{
-                  width: "80%",
-                  "& .MuiInputLabel-root": {
-                    color: "white", // Couleur du label en blanc
-                  },
-                  "& .MuiInputBase-input": {
-                    color: "white", // Couleur du texte
-                  },
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      borderColor: "white", // Couleur de la bordure
-                    },
-                    "&:hover fieldset": {
-                      borderColor: "orange", // Couleur de la bordure au hover
-                    },
-                    "&.Mui-focused fieldset": {
-                      borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
-                    },
-                  },
-                }}
+                sx={textFieldSx}
               />
               <TextField
                 label="Duration"
@@ -784,26 +731,7 @@ function MovieCard({
                 onChange={(e) => handleChange(e)}
                 fullWidth
                 type="number"
-                sx={{
-                  width: "80%",
-                  "& .MuiInputLabel-root": {
-                    color: "white", // Couleur du label en blanc
-                  },
-                  "& .MuiInputBase-input": {
-                    color: "white", // Couleur du texte
-                  },
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      borderColor: "white", // Couleur de la bordure
-                    },
-                    "&:hover fieldset": {
-                      borderColor: "orange", // Couleur de la bordure au hover
-                    },
-                    "&.Mui-focused fieldset": {
-                      borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
-                    },
-                  },
-                }}
+                sx={textFieldSx}
               />
             </div>
           ) : (
@@ -936,26 +864,7 @@ function MovieCard({
               <div className="box_item_form">
                 <Box
                   component="form"
-                  sx={{
-                    width: "80%",
-                    "& .MuiInputLabel-root": {
-                      color: "white", // Couleur du label en blanc
-                    },
-                    "& .MuiInputBase-input": {
-                      color: "white", // Couleur du texte
-                    },
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: "white", // Couleur de la bordure
-                      },
-                      "&:hover fieldset": {
-                        borderColor: "orange", // Couleur de la bordure au hover
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
-                      },
-                    },
-                  }}
+                  sx={textFieldSx}
                   noValidate
                   autoComplete="off"
                   display="flex"
@@ -977,26 +886,7 @@ function MovieCard({
               <div className="box_item_form">
                 <Box
                   component="form"
-                  sx={{
-                    width: "80%",
-                    "& .MuiInputLabel-root": {
-                      color: "white", // Couleur du label en blanc
-                    },
-                    "& .MuiInputBase-input": {
-                      color: "white", // Couleur du texte
-                    },
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: "white", // Couleur de la bordure
-                      },
-                      "&:hover fieldset": {
-                        borderColor: "orange", // Couleur de la bordure au hover
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
-                      },
-                    },
-                  }}
+                  sx={textFieldSx}
                   noValidate
                   autoComplete="off"
                   display="flex"
@@ -1018,26 +908,7 @@ function MovieCard({
               <div className="box_item_form">
                 <Box
                   component="form"
-                  sx={{
-                    width: "80%",
-                    "& .MuiInputLabel-root": {
-                      color: "white", // Couleur du label en blanc
-                    },
-                    "& .MuiInputBase-input": {
-                      color: "white", // Couleur du texte
-                    },
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: "white", // Couleur de la bordure
-                      },
-                      "&:hover fieldset": {
-                        borderColor: "orange", // Couleur de la bordure au hover
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
-                      },
-                    },
-                  }}
+                  sx={textFieldSx}
                   noValidate
                   autoComplete="off"
                   display="flex"
@@ -1059,26 +930,7 @@ function MovieCard({
               <div className="box_item_form">
                 <Box
                   component="form"
-                  sx={{
-                    width: "80%",
-                    "& .MuiInputLabel-root": {
-                      color: "white", // Couleur du label en blanc
-                    },
-                    "& .MuiInputBase-input": {
-                      color: "white", // Couleur du texte
-                    },
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: "white", // Couleur de la bordure
-                      },
-                      "&:hover fieldset": {
-                        borderColor: "orange", // Couleur de la bordure au hover
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
-                      },
-                    },
-                  }}
+                  sx={textFieldSx}
                   noValidate
                   autoComplete="off"
                   display="flex"
@@ -1100,26 +952,7 @@ function MovieCard({
               <div className="box_item_form">
                 <Box
                   component="form"
-                  sx={{
-                    width: "80%",
-                    "& .MuiInputLabel-root": {
-                      color: "white", // Couleur du label en blanc
-                    },
-                    "& .MuiInputBase-input": {
-                      color: "white", // Couleur du texte
-                    },
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: "white", // Couleur de la bordure
-                      },
-                      "&:hover fieldset": {
-                        borderColor: "orange", // Couleur de la bordure au hover
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
-                      },
-                    },
-                  }}
+                  sx={textFieldSx}
                   noValidate
                   autoComplete="off"
                   display="flex"
@@ -1141,26 +974,7 @@ function MovieCard({
               <div className="box_item_form">
                 <Box
                   component="form"
-                  sx={{
-                    width: "80%",
-                    "& .MuiInputLabel-root": {
-                      color: "white", // Couleur du label en blanc
-                    },
-                    "& .MuiInputBase-input": {
-                      color: "white", // Couleur du texte
-                    },
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: "white", // Couleur de la bordure
-                      },
-                      "&:hover fieldset": {
-                        borderColor: "orange", // Couleur de la bordure au hover
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
-                      },
-                    },
-                  }}
+                  sx={textFieldSx}
                   noValidate
                   autoComplete="off"
                   display="flex"
@@ -1182,26 +996,7 @@ function MovieCard({
               <div className="box_item_form">
                 <Box
                   component="form"
-                  sx={{
-                    width: "80%",
-                    "& .MuiInputLabel-root": {
-                      color: "white", // Couleur du label en blanc
-                    },
-                    "& .MuiInputBase-input": {
-                      color: "white", // Couleur du texte
-                    },
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: "white", // Couleur de la bordure
-                      },
-                      "&:hover fieldset": {
-                        borderColor: "orange", // Couleur de la bordure au hover
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
-                      },
-                    },
-                  }}
+                  sx={textFieldSx}
                   noValidate
                   autoComplete="off"
                   display="flex"
@@ -1228,51 +1023,11 @@ function MovieCard({
                 onChange={(e) => handleChange(e)}
                 multiline
                 fullWidth
-                sx={{
-                  width: "85%",
-                  "& .MuiInputLabel-root": {
-                    color: "white", // Couleur du label en blanc
-                  },
-                  "& .MuiInputBase-input": {
-                    color: "white", // Couleur du texte
-                  },
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      borderColor: "white", // Couleur de la bordure
-                    },
-                    "&:hover fieldset": {
-                      borderColor: "orange", // Couleur de la bordure au hover
-                    },
-                    "&.Mui-focused fieldset": {
-                      borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
-                    },
-                  },
-                }}
+                sx={textFieldSx}
               />
               <div className="divider" />
 
-              <FormControl
-                sx={{
-                  width: "35%",
-                  "& .MuiInputLabel-root": {
-                    color: "white", // Couleur du label en blanc
-                  },
-                  "& .MuiInputBase-input": {
-                    color: "white", // Couleur du texte
-                  },
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      borderColor: "white", // Couleur de la bordure
-                    },
-                    "&:hover fieldset": {
-                      borderColor: "orange", // Couleur de la bordure au hover
-                    },
-                    "&.Mui-focused fieldset": {
-                      borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
-                    },
-                  },
-                }}
-              >
+              <FormControl sx={textFieldSx}>
                 <InputLabel>Support</InputLabel>
                 <Select
                   id="demo-select-small"
@@ -1298,26 +1053,7 @@ function MovieCard({
                       value={movieData.location || ""}
                       onChange={(e) => handleChange(e)}
                       fullWidth
-                      sx={{
-                        width: "85%",
-                        "& .MuiInputLabel-root": {
-                          color: "white", // Couleur du label en blanc
-                        },
-                        "& .MuiInputBase-input": {
-                          color: "white", // Couleur du texte
-                        },
-                        "& .MuiOutlinedInput-root": {
-                          "& fieldset": {
-                            borderColor: "white", // Couleur de la bordure
-                          },
-                          "&:hover fieldset": {
-                            borderColor: "orange", // Couleur de la bordure au hover
-                          },
-                          "&.Mui-focused fieldset": {
-                            borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
-                          },
-                        },
-                      }}
+                      sx={textFieldSx}
                     />
                     <FileUploadIcon
                       className="Btn_upload_File_MovieCard"
@@ -1338,26 +1074,7 @@ function MovieCard({
                     onChange={(e) => handleChange(e)}
                     fullWidth
                     type="number"
-                    sx={{
-                      width: "85%",
-                      "& .MuiInputLabel-root": {
-                        color: "white", // Couleur du label en blanc
-                      },
-                      "& .MuiInputBase-input": {
-                        color: "white", // Couleur du texte
-                      },
-                      "& .MuiOutlinedInput-root": {
-                        "& fieldset": {
-                          borderColor: "white", // Couleur de la bordure
-                        },
-                        "&:hover fieldset": {
-                          borderColor: "orange", // Couleur de la bordure au hover
-                        },
-                        "&.Mui-focused fieldset": {
-                          borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
-                        },
-                      },
-                    }}
+                    sx={textFieldSx}
                   />
 
                   <FormControl
@@ -1420,26 +1137,7 @@ function MovieCard({
                 value={movieData.trailer || ""}
                 onChange={(e) => handleChange(e)}
                 fullWidth
-                sx={{
-                  width: "85%",
-                  "& .MuiInputLabel-root": {
-                    color: "white", // Couleur du label en blanc
-                  },
-                  "& .MuiInputBase-input": {
-                    color: "white", // Couleur du texte
-                  },
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      borderColor: "white", // Couleur de la bordure
-                    },
-                    "&:hover fieldset": {
-                      borderColor: "orange", // Couleur de la bordure au hover
-                    },
-                    "&.Mui-focused fieldset": {
-                      borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
-                    },
-                  },
-                }}
+                sx={textFieldSx}
               />
               <div className="divider" />
               <TextField
@@ -1449,26 +1147,7 @@ function MovieCard({
                 onChange={(e) => handleChange(e)}
                 multiline
                 fullWidth
-                sx={{
-                  width: "85%",
-                  "& .MuiInputLabel-root": {
-                    color: "white", // Couleur du label en blanc
-                  },
-                  "& .MuiInputBase-input": {
-                    color: "white", // Couleur du texte
-                  },
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      borderColor: "white", // Couleur de la bordure
-                    },
-                    "&:hover fieldset": {
-                      borderColor: "orange", // Couleur de la bordure au hover
-                    },
-                    "&.Mui-focused fieldset": {
-                      borderColor: "cyan", // Couleur de la bordure lorsqu'il est focus
-                    },
-                  },
-                }}
+                sx={textFieldSx}
               />
             </div>
           ) : (
