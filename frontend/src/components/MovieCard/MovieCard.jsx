@@ -72,6 +72,7 @@ function MovieCard({
 }) {
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
   const [isModify, setIsModify] = useState(false);
+  const [allowEdit, setAllowEdit] = useState(false);
   const [selectedKinds, setSelectedKinds] = useState([]);
   const [selectedDirectors, setSelectedDirectors] = useState([]);
   const [selectedCasting, setSelectedCasting] = useState([]);
@@ -153,17 +154,147 @@ function MovieCard({
     },
   };
 
+  // --------- FETCH MOVIE DATAS ------------ //
+  const fetchMovieData = () => {
+    if (origin === "country") {
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movies/${movie.movieId}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setMovieData(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching user data:", error);
+        });
+    } else {
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movies/${movieData.id}`)
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setMovieData(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching user data:", error);
+        });
+    }
+  };
+
+  useEffect(() => {
+    fetchMovieData();
+  }, [movie.id, movieData.id]);
+
+  useEffect(() => {
+    setMovieData(movie);
+  }, [movie]);
+
+  const [isTrailerVisible, setIsTrailerVisible] = useState(false);
+  const [isTrailerLoading, setIsTrailerLoading] = useState(false);
+
+  const toggleTrailerVideo = () => {
+    setIsTrailerVisible(!isTrailerVisible);
+    setIsTrailerLoading(true); // Active le chargement lors de l'ouverture du trailer
+  };
+
+  const handleTrailerReady = () => {
+    setIsTrailerLoading(false); // Cache le loader quand la vidéo est prête
+  };
+
+  // MODIFY MODE - modifier champs TextField
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setMovieData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  // MODIFY MODE - modifier  version
+  const handleVersionChange = (event) => {
+    const selectedVersion = event.target.value;
+    setVersion(selectedVersion);
+
+    // Met à jour movieData en fonction de la version sélectionnée
+    setMovieData((prevData) => ({
+      ...prevData,
+      vostfr: selectedVersion === "VOSTFR" ? 1 : 0,
+      multi: selectedVersion === "MULTI" ? 1 : 0,
+    }));
+  };
+
+  // MODIFY MODE - MODIFICATION DE L'AFFICHE
+  const [image, setImage] = useState(`${backendUrl}/images/${movie.cover}`);
+  const [showUploadButton, setShowUploadButton] = useState(true);
+  const fileCoverRef = useRef(null);
+
+  useEffect(() => {
+    if (isModify) {
+      // Lorsque le mode modification est activé, réinitialiser l'affichage du bouton d'upload
+      if (image === `${backendUrl}/images/${movie.cover}`) {
+        setShowUploadButton(true); // Si l'image n'a pas été changée, montrer l'icône d'upload
+      } else {
+        setShowUploadButton(false); // Si l'image a été modifiée, montrer l'icône de reset
+      }
+    }
+  }, [isModify, image, movie.cover, backendUrl]);
+
+  // Handle Cover Upload
+  const handleCoverUpload = (event) => {
+    const file = event.target.files[0];
+    const newImageUrl = URL.createObjectURL(file);
+    setImage(newImageUrl);
+    setShowUploadButton(false); // Après le choix d'une image, afficher le bouton de reset
+  };
+
+  const handleUploadClick = () => {
+    fileCoverRef.current.click();
+  };
+
+  const handleResetImage = () => {
+    setImage(`${backendUrl}/images/${movie.cover}`); // Remettre l'image d'origine
+    setShowUploadButton(true); // Remettre l'icône d'upload
+  };
+
+  // Update Affiche
+  const handleUpdateImage = async () => {
+    const fileInput = fileCoverRef.current;
+    const file = fileInput.files[0];
+
+    if (file) {
+      const imageData = new FormData();
+      imageData.append("cover", file);
+
+      const imageResponse = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/${origin}/${movie.id}/image`,
+        {
+          method: "PUT",
+          body: imageData,
+        }
+      );
+
+      if (imageResponse.ok) {
+        const { movie: updatedMovie } = await imageResponse.json();
+        setImage(`${backendUrl}/images/${updatedMovie.cover}`); // Utiliser la nouvelle URL de l'image
+        console.info("Image successfully updated", updatedMovie.cover);
+      } else {
+        console.error("Error updating item image");
+      }
+    }
+  };
+
   // ------/ GESTION DES FIELDS SAISONS - EPISODES - DUREE /------- //
   // États spécifiques aux séries TV
   const [selectedSeasons, setSelectedSeasons] = useState([]);
   const [seasonsInfo, setSeasonsInfo] = useState([]);
   const [tvSeasons, setTvSeasons] = useState(movieData.tvSeasons || "");
   const [nbTvEpisodes, setNbTvEpisodes] = useState(movieData.nbTvEpisodes || 0);
-
-  console.info("selectedSeasons", selectedSeasons);
-  console.info("seasonsInfo", seasonsInfo);
-  console.info("tvSeasons", tvSeasons);
-  console.info("nbTvEpisodes", nbTvEpisodes);
 
   // -------- Parse tvSeasons de movieData dès le mode modify --------
   useEffect(() => {
@@ -357,6 +488,7 @@ function MovieCard({
     if (seasonsInfo.length > 0) {
       return (
         <>
+          <div className="divider" />
           <FormControl sx={textFieldSx}>
             <InputLabel id="season-select-label">Saisons</InputLabel>
             <Select
@@ -399,169 +531,128 @@ function MovieCard({
     return renderEpisodeDurationFields();
   };
 
-  // --------- REFRESH WITH API TMDB ------------ //
-  // const [newDataMovie, setNewDataMovie] = useState([]);
-  // console.info("newDataMovie", newDataMovie);
-
-  // --------- FETCH MOVIE DATAS ------------ //
-  const fetchMovieData = () => {
-    if (origin === "country") {
-      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movies/${movie.movieId}`)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return response.json();
-        })
-        .then((data) => {
-          setMovieData(data);
-        })
-        .catch((error) => {
-          console.error("Error fetching user data:", error);
-        });
-    } else {
-      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movies/${movieData.id}`)
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Network response was not ok");
-          }
-          return response.json();
-        })
-        .then((data) => {
-          setMovieData(data);
-        })
-        .catch((error) => {
-          console.error("Error fetching user data:", error);
-        });
-    }
-  };
-
-  useEffect(() => {
-    fetchMovieData();
-  }, [movie.id, movieData.id]);
-
-  useEffect(() => {
-    setMovieData(movie);
-  }, [movie]);
-
-  const [isTrailerVisible, setIsTrailerVisible] = useState(false);
-  const [isTrailerLoading, setIsTrailerLoading] = useState(false);
-
-  const toggleTrailerVideo = () => {
-    setIsTrailerVisible(!isTrailerVisible);
-    setIsTrailerLoading(true); // Active le chargement lors de l'ouverture du trailer
-  };
-
-  const handleTrailerReady = () => {
-    setIsTrailerLoading(false); // Cache le loader quand la vidéo est prête
-  };
-
-  // MODIFY MODE - modifier champs TextField
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setMovieData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  // MODIFY MODE - modifier  version
-  const handleVersionChange = (event) => {
-    const selectedVersion = event.target.value;
-    setVersion(selectedVersion);
-
-    // Met à jour movieData en fonction de la version sélectionnée
-    setMovieData((prevData) => ({
-      ...prevData,
-      vostfr: selectedVersion === "VOSTFR" ? 1 : 0,
-      multi: selectedVersion === "MULTI" ? 1 : 0,
-    }));
-  };
-
-  // MODIFY MODE - MODIFICATION DE L'AFFICHE
-  const [image, setImage] = useState(`${backendUrl}/images/${movie.cover}`);
-  const [showUploadButton, setShowUploadButton] = useState(true);
-  const fileCoverRef = useRef(null);
-
-  useEffect(() => {
-    if (isModify) {
-      // Lorsque le mode modification est activé, réinitialiser l'affichage du bouton d'upload
-      if (image === `${backendUrl}/images/${movie.cover}`) {
-        setShowUploadButton(true); // Si l'image n'a pas été changée, montrer l'icône d'upload
-      } else {
-        setShowUploadButton(false); // Si l'image a été modifiée, montrer l'icône de reset
-      }
-    }
-  }, [isModify, image, movie.cover, backendUrl]);
-
-  // Handle Cover Upload
-  const handleCoverUpload = (event) => {
-    const file = event.target.files[0];
-    const newImageUrl = URL.createObjectURL(file);
-    setImage(newImageUrl);
-    setShowUploadButton(false); // Après le choix d'une image, afficher le bouton de reset
-  };
-
-  const handleUploadClick = () => {
-    fileCoverRef.current.click();
-  };
-
-  const handleResetImage = () => {
-    setImage(`${backendUrl}/images/${movie.cover}`); // Remettre l'image d'origine
-    setShowUploadButton(true); // Remettre l'icône d'upload
-  };
-
-  // Update Affiche
-  const handleUpdateImage = async () => {
-    const fileInput = fileCoverRef.current;
-    const file = fileInput.files[0];
-
-    if (file) {
-      const imageData = new FormData();
-      imageData.append("cover", file);
-
-      const imageResponse = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/${origin}/${movie.id}/image`,
-        {
-          method: "PUT",
-          body: imageData,
-        }
-      );
-
-      if (imageResponse.ok) {
-        const { movie: updatedMovie } = await imageResponse.json();
-        setImage(`${backendUrl}/images/${updatedMovie.cover}`); // Utiliser la nouvelle URL de l'image
-        console.info("Image successfully updated", updatedMovie.cover);
-      } else {
-        console.error("Error updating item image");
-      }
-    }
-  };
-
   // -----------------/ INPUT FILE /----------------- //
-  const fileInputRef = useRef(null); // Référence pour le fichier vidéo
+  const fileInputRef = useRef(null);
+  const [selectedFile, setSelectedFile] = useState(null);
 
+  useEffect(() => {
+    if (!movieData) return;
+
+    const support = movieData.videoSupport?.toLowerCase() || "";
+
+    // 🎬 Cas 1 : Fichier unique (film ou équivalent)
+    if (
+      !movieData.isTvShow &&
+      support.includes("fichier multimédia") &&
+      movieData.location &&
+      !movieData.path
+    ) {
+      // On déduit le chemin et le nom de fichier à partir du chemin complet
+      const segments = movieData.location.split("\\");
+      const filename = segments.pop();
+      const folderPath = segments.join("\\");
+
+      setMovieData((prev) => ({
+        ...prev,
+        path: folderPath || prev.path || "",
+        location: filename || prev.location || "",
+      }));
+    }
+
+    // 📺 Cas 2 : Série TV (dossier complet)
+    if (
+      movieData.isTvShow &&
+      support.includes("fichier multimédia") &&
+      !movieData.path
+    ) {
+      // Si le path n’est pas défini, on essaie de le déduire du nom de la série
+      const folderName =
+        movieData.title?.replace(/[^\w\s]/g, "").trim() ||
+        "Série non identifiée";
+
+      setMovieData((prev) => ({
+        ...prev,
+        path: prev.path || folderName,
+        location: prev.location || folderName,
+      }));
+    }
+  }, [movieData?.id]);
+
+  // 🎬 Gestion fichier unique (film)
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
-    const fileExtension = file.name.split(".").pop().toLowerCase();
-    const videoFormats = ["avi", "mkv", "mp4"];
+    setSelectedFile(file);
 
-    if (videoFormats.includes(fileExtension)) {
-      const fileSizeInBytes = file.size;
-      const fileSizeInGigabytes = fileSizeInBytes / (1024 * 1024 * 1024);
+    const extension = file.name.split(".").pop().toLowerCase();
+    const validFormats = ["avi", "mkv", "mp4"];
 
-      setMovieData((prevData) => ({
-        ...prevData,
-        location: file.name, // Ou un chemin approprié
-        videoFormat: fileExtension,
-        videoSupport: "Fichier multimédia",
-        fileSize: fileSizeInGigabytes.toFixed(2),
-      }));
-    } else {
-      toast.warn("Veuillez sélectionner un fichier vidéo valide.");
+    if (!validFormats.includes(extension)) {
+      toast.warn(
+        "Veuillez sélectionner un fichier vidéo valide (avi, mkv, mp4)."
+      );
+      return;
     }
+
+    const sizeGB = file.size / (1024 * 1024 * 1024);
+
+    setMovieData((prev) => ({
+      ...prev,
+      location: file.name,
+      path: "",
+      videoFormat: extension,
+      videoSupport: "Fichier multimédia",
+      fileSize: `${sizeGB.toFixed(2)} GB`,
+    }));
+
+    toast.success(`Fichier "${file.name}" chargé (${sizeGB.toFixed(2)} GB)`);
+  };
+
+  // 📁 Gestion dossier complet (série)
+  const handleFolderChange = (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+
+    // Filtrer uniquement les fichiers vidéo
+    const videoExtensions = ["avi", "mkv", "mp4"];
+    const videoFiles = files.filter((f) =>
+      videoExtensions.includes(f.name.split(".").pop().toLowerCase())
+    );
+
+    if (videoFiles.length === 0) {
+      toast.warn("Aucun fichier vidéo trouvé dans ce dossier.");
+      return;
+    }
+
+    // Calcul du poids total
+    const totalBytes = videoFiles.reduce((acc, file) => acc + file.size, 0);
+    const totalGB = totalBytes / (1024 * 1024 * 1024);
+    const totalSizeDisplay =
+      totalGB < 1
+        ? `${(totalBytes / (1024 * 1024)).toFixed(2)} MB`
+        : `${totalGB.toFixed(2)} GB`;
+
+    // Détermination du chemin commun de base
+    const firstPath = videoFiles[0].webkitRelativePath; // ex: "MaSerie/S01/Episode1.mkv"
+    const rootPath = firstPath.split("/")[0]; // => "MaSerie"
+
+    console.info("firstPath", firstPath);
+    console.info("rootPath", rootPath);
+
+    // ✅ Mise à jour partielle et sûre
+    setMovieData((prev) => ({
+      ...prev,
+      path: rootPath,
+      location: rootPath, // chemin relatif principal
+      videoSupport: "Fichier multimédia",
+      fileSize: totalSizeDisplay,
+      isTvShow: true, // au cas où ce ne serait pas déjà vrai
+    }));
+
+    toast.success(
+      `📁 Dossier "${rootPath}" chargé (${videoFiles.length} vidéos, ${totalSizeDisplay})`
+    );
   };
 
   const handleFormatSupportChange = (event) => {
@@ -887,49 +978,50 @@ function MovieCard({
           {/* info bloc 1 */}
           {isModify ? (
             <div className="infos_bloc_1_modify">
-              <CloudSyncIcon
-                variant="contained"
-                className="Btn_Add_itemsPopUp_MovieCard"
-                onClick={() =>
-                  refetchMovieTMDB(idTheMovieDb, {
-                    // setSeasonsInfo,
-                    // tvSeasons,
-                    // newDataMovie,
-                    // setNewDataMovie,
-                    movieData,
-                    setMovieData,
-                    searchGenreInDatabase,
-                    createGenreInDatabase,
-                    setSelectedKinds,
-                    searchStudioInDatabase,
-                    createStudioInDatabase,
-                    setSelectedStudios,
-                    searchCountryInDatabase,
-                    createCountryInDatabase,
-                    setSelectedCountries,
-                    // searchLanguageInDatabase,
-                    // createLanguageInDatabase,
-                    // setSelectedLanguages,
-                    searchDirectorInDatabase,
-                    createDirectorInDatabase,
-                    setSelectedDirectors,
-                    searchScreenwriterInDatabase,
-                    createScreenwriterInDatabase,
-                    setSelectedScreenwriters,
-                    searchCompositorInDatabase,
-                    createCompositorInDatabase,
-                    setSelectedMusic,
-                    searchCastingInDatabase,
-                    createCastingInDatabase,
-                    setSelectedCasting,
-                    searchTagInDatabase,
-                    createTagInDatabase,
-                    setSelectedTags,
-                    setImage,
-                    setShowUploadButton,
-                  })
-                }
-              />
+              {idTheMovieDb && (
+                <Button
+                  variant="outlined"
+                  sx={{
+                    color: "var(--color-03)",
+                    borderColor: "var(--color-03)",
+                    width: "25%",
+                  }}
+                  onClick={() =>
+                    refetchMovieTMDB(idTheMovieDb, {
+                      movieData,
+                      setMovieData,
+                      searchGenreInDatabase,
+                      createGenreInDatabase,
+                      setSelectedKinds,
+                      searchStudioInDatabase,
+                      createStudioInDatabase,
+                      setSelectedStudios,
+                      searchCountryInDatabase,
+                      createCountryInDatabase,
+                      setSelectedCountries,
+                      searchDirectorInDatabase,
+                      createDirectorInDatabase,
+                      setSelectedDirectors,
+                      searchScreenwriterInDatabase,
+                      createScreenwriterInDatabase,
+                      setSelectedScreenwriters,
+                      searchCompositorInDatabase,
+                      createCompositorInDatabase,
+                      setSelectedMusic,
+                      searchCastingInDatabase,
+                      createCastingInDatabase,
+                      setSelectedCasting,
+                      searchTagInDatabase,
+                      createTagInDatabase,
+                      setSelectedTags,
+                      setImage,
+                      setShowUploadButton,
+                    })
+                  }
+                >
+                  <CloudSyncIcon sx={{ mr: 1 }} /> Recharger les infos
+                </Button>
+              )}
               <TextField
                 label="Title"
                 name="title"
@@ -1309,34 +1401,113 @@ function MovieCard({
 
               {movieData.videoSupport === "Fichier multimédia" && (
                 <>
-                  <div className="box_item_form">
-                    <TextField
-                      label="Emplacement"
-                      name="location"
-                      value={movieData.location || ""}
-                      onChange={(e) => handleChange(e)}
-                      fullWidth
+                  {movie.isTvShow ? (
+                    // ----- CAS SÉRIE (dossier complet)
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      gap={2}
+                      p={1}
                       sx={textFieldSx}
-                    />
-                    <FileUploadIcon
-                      className="Btn_upload_File_MovieCard"
-                      onClick={() => fileInputRef.current.click()}
-                    />
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      style={{ display: "none" }}
-                      onChange={handleFileChange}
-                    />
-                  </div>
+                    >
+                      <TextField
+                        label="Dossier sélectionné"
+                        variant="outlined"
+                        value={movieData.path || ""}
+                        InputProps={{ readOnly: true }}
+                        fullWidth
+                      />
 
+                      {/* Input caché (sélection dossier) */}
+                      <input
+                        type="file"
+                        style={{ display: "none" }}
+                        ref={fileInputRef}
+                        multiple
+                        onChange={handleFolderChange}
+                        webkitdirectory=""
+                      />
+
+                      <Button
+                        variant="outlined"
+                        sx={{
+                          color: "var(--color-03)",
+                          borderColor: "var(--color-03)",
+                        }}
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        Sélectionner un dossier
+                      </Button>
+                    </Box>
+                  ) : (
+                    // ----- CAS FILM (fichier unique)
+                    <Box
+                      component="form"
+                      sx={textFieldSx}
+                      noValidate
+                      autoComplete="off"
+                      display="flex"
+                      flexDirection="column"
+                      gap={2}
+                      p={1}
+                    >
+                      <TextField
+                        label="Chemin du dossier"
+                        variant="outlined"
+                        value={movieData.path || ""}
+                        onChange={(e) => {
+                          const inputPath = e.target.value;
+                          const cleaned = inputPath
+                            .replace(/^[A-Za-z]:[\\/]+/, "")
+                            .replace(/[\\/]+$/, "");
+                          setMovieData((prev) => ({
+                            ...prev,
+                            path: inputPath,
+                            location: selectedFile
+                              ? `${cleaned}\\${selectedFile.name}`
+                              : "",
+                          }));
+                        }}
+                        fullWidth
+                      />
+
+                      <TextField
+                        label="Fichier sélectionné"
+                        variant="outlined"
+                        value={selectedFile ? selectedFile.name : ""}
+                        fullWidth
+                        InputProps={{ readOnly: true }}
+                      />
+
+                      <Button
+                        variant="outlined"
+                        sx={{
+                          color: "var(--color-03)",
+                          borderColor: "var(--color-03)",
+                        }}
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        Sélectionner un fichier vidéo
+                      </Button>
+
+                      {/* Input caché (fichier unique) */}
+                      <input
+                        type="file"
+                        style={{ display: "none" }}
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                      />
+                    </Box>
+                  )}
+
+                  {/* Champ commun : taille du fichier */}
                   <TextField
                     label="Taille du fichier"
                     name="fileSize"
                     value={movieData.fileSize || ""}
                     onChange={(e) => handleChange(e)}
                     fullWidth
-                    type="number"
+                    type="text" // ✅ texte, car inclut unité
                     sx={textFieldSx}
                   />
 
@@ -1347,10 +1518,10 @@ function MovieCard({
                     }}
                   >
                     <FormLabel
-                      id="demo-row-radio-buttons-group-label"
+                      // id="demo-row-radio-buttons-group-label"
                       sx={{
-                        color: "white", // couleur du texte
-                        "&.Mui-focused": { color: "white" }, // conserver la couleur quand le label est sélectionné
+                        color: "white",
+                        "&.Mui-focused": { color: "white" },
                       }}
                     >
                       version:
@@ -1359,7 +1530,7 @@ function MovieCard({
                       row
                       aria-labelledby="demo-row-radio-buttons-group-label"
                       name="row-radio-buttons-group"
-                      value={version} // Assurez-vous que la valeur sélectionnée soit affichée correctement
+                      value={version}
                       onChange={handleVersionChange}
                     >
                       <FormControlLabel
@@ -1368,7 +1539,9 @@ function MovieCard({
                         label="none"
                         sx={{
                           color: "white",
-                          "& .MuiRadio-root.Mui-checked": { color: "cyan" }, // garder le bouton sélectionné en blanc
+                          "& .MuiRadio-root.Mui-checked": {
+                            color: "var(--color-03)",
+                          },
                         }}
                       />
                       <FormControlLabel
@@ -1377,7 +1550,9 @@ function MovieCard({
                         label="VOSTFR"
                         sx={{
                           color: "white",
-                          "& .MuiRadio-root.Mui-checked": { color: "cyan" }, // garder le bouton sélectionné en blanc
+                          "& .MuiRadio-root.Mui-checked": {
+                            color: "var(--color-03)",
+                          },
                         }}
                       />
                       <FormControlLabel
@@ -1386,7 +1561,9 @@ function MovieCard({
                         label="MULTI"
                         sx={{
                           color: "white",
-                          "& .MuiRadio-root.Mui-checked": { color: "cyan" }, // garder le bouton sélectionné en blanc
+                          "& .MuiRadio-root.Mui-checked": {
+                            color: "var(--color-03)",
+                          },
                         }}
                       />
                     </RadioGroup>
@@ -1412,6 +1589,47 @@ function MovieCard({
                 fullWidth
                 sx={textFieldSx}
               />
+              <div className="divider" />
+              {movieData.idTheMovieDb ? (
+                <div>
+                  <TextField
+                    label="id IMDB"
+                    name="idTheMovieDb"
+                    value={movieData.idTheMovieDb}
+                    onChange={handleChange}
+                    placeholder="Ex: tt0111161"
+                    fullWidth
+                    sx={textFieldSx}
+                    disabled={!allowEdit}
+                  />
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        sx={{
+                          color: "white",
+                          "&.Mui-checked": {
+                            color: "var(--color-03)",
+                          },
+                        }}
+                        checked={allowEdit}
+                        onChange={(e) => setAllowEdit(e.target.checked)}
+                      />
+                    }
+                    label="Autoriser la saisie manuelle de l'ID IMDb"
+                    sx={{ color: "white" }}
+                  />
+                </div>
+              ) : (
+                <TextField
+                  label="id IMDB"
+                  name="idTheMovieDb"
+                  placeholder="movie/9255 or tv/90228"
+                  value={movieData.idTheMovieDb}
+                  onChange={handleChange}
+                  fullWidth
+                  sx={textFieldSx}
+                />
+              )}
             </div>
           ) : (
             <div className="MC_line2">

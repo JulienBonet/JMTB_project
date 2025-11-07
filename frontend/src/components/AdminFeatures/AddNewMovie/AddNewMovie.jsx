@@ -517,7 +517,7 @@ function AddNewMovie() {
       ...prev,
       path: rootPath,
       location: rootPath, // chemin relatif principal
-      videoSupport: "Fichiers multimédia (série)",
+      videoSupport: "Fichier multimédia",
       fileSize: totalSizeDisplay,
     }));
 
