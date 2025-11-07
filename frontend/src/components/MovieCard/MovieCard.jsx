@@ -39,8 +39,11 @@ import CloudSyncIcon from "@mui/icons-material/CloudSync";
 import Checkbox from "@mui/material/Checkbox";
 import ListItemText from "@mui/material/ListItemText";
 import OutlinedInput from "@mui/material/OutlinedInput";
+import MovieOutlinedIcon from "@mui/icons-material/MovieOutlined";
+import TvOutlinedIcon from "@mui/icons-material/TvOutlined";
 import TransferList from "../AdminFeatures/AddNewMovie/MovieItemList";
 import refetchMovieTMDB from "../../utils/refetchMovieTMDB";
+// import purgeOrphanRecords from "../../utils/purgeOrphanRecords";
 import {
   searchGenreInDatabase,
   createGenreInDatabase,
@@ -48,8 +51,6 @@ import {
   searchStudioInDatabase,
   searchCountryInDatabase,
   createCountryInDatabase,
-  // searchLanguageInDatabase,
-  // createLanguageInDatabase,
   searchDirectorInDatabase,
   createDirectorInDatabase,
   searchScreenwriterInDatabase,
@@ -85,7 +86,7 @@ function MovieCard({
   );
   const [selectedTags, setSelectedTags] = useState([]);
 
-  // DATA
+  // Datas dans le front
   const [movieData, setMovieData] = useState({
     id: movie.id || "",
     title: movie.title || "",
@@ -131,7 +132,7 @@ function MovieCard({
   const { idTheMovieDb } = movie;
   const isTvShow = movieData.isTvShow === 1;
 
-  // -- UX FIELDS
+  // --------- UX FIELDS ------------ //
 
   const textFieldSx = {
     width: "80%",
@@ -154,7 +155,7 @@ function MovieCard({
     },
   };
 
-  // --------- FETCH MOVIE DATAS ------------ //
+  // --------- FETCH MOVIE DATAS from backend ------------ //
   const fetchMovieData = () => {
     if (origin === "country") {
       fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movies/${movie.movieId}`)
@@ -195,6 +196,7 @@ function MovieCard({
     setMovieData(movie);
   }, [movie]);
 
+  // ------/ TRAILER /------- //
   const [isTrailerVisible, setIsTrailerVisible] = useState(false);
   const [isTrailerLoading, setIsTrailerLoading] = useState(false);
 
@@ -207,7 +209,8 @@ function MovieCard({
     setIsTrailerLoading(false); // Cache le loader quand la vidéo est prête
   };
 
-  // MODIFY MODE - modifier champs TextField
+  // ------/ MODIFY MODE - modifier champs TextField /------- //
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setMovieData((prevData) => ({
@@ -216,7 +219,8 @@ function MovieCard({
     }));
   };
 
-  // MODIFY MODE - modifier  version
+  // ------/ MODIFY MODE - modifier  VOSTFR MULTI /------- //
+
   const handleVersionChange = (event) => {
     const selectedVersion = event.target.value;
     setVersion(selectedVersion);
@@ -229,7 +233,8 @@ function MovieCard({
     }));
   };
 
-  // MODIFY MODE - MODIFICATION DE L'AFFICHE
+  // ------/ MODIFY MODE - MODIFICATION DE L'AFFICHE /------- //
+
   const [image, setImage] = useState(`${backendUrl}/images/${movie.cover}`);
   const [showUploadButton, setShowUploadButton] = useState(true);
   const fileCoverRef = useRef(null);
@@ -290,13 +295,13 @@ function MovieCard({
   };
 
   // ------/ GESTION DES FIELDS SAISONS - EPISODES - DUREE /------- //
-  // États spécifiques aux séries TV
+
   const [selectedSeasons, setSelectedSeasons] = useState([]);
   const [seasonsInfo, setSeasonsInfo] = useState([]);
   const [tvSeasons, setTvSeasons] = useState(movieData.tvSeasons || "");
   const [nbTvEpisodes, setNbTvEpisodes] = useState(movieData.nbTvEpisodes || 0);
 
-  // -------- Parse tvSeasons de movieData dès le mode modify --------
+  // Parse tvSeasons de movieData dès le mode modify
   useEffect(() => {
     if (!isModify || !isTvShow) return;
 
@@ -318,7 +323,7 @@ function MovieCard({
     setSelectedSeasons(parsed);
   }, [isModify, isTvShow, movieData.tvSeasons]);
 
-  // -------- Récupération des infos TMDB --------
+  // Récupération des infos season episodes TMDB
   useEffect(() => {
     if (isModify && isTvShow && idTheMovieDb) {
       setSeasonsInfo([]); // nettoie avant fetch
@@ -361,7 +366,7 @@ function MovieCard({
     }
   }, [isModify, isTvShow, idTheMovieDb]);
 
-  // -------- Mise à jour du nombre total d’épisodes --------
+  // Mise à jour du nombre total d’épisodes
   useEffect(() => {
     if (!isTvShow) return;
 
@@ -380,7 +385,7 @@ function MovieCard({
     setMovieData((prev) => ({ ...prev, nbTvEpisodes: totalEpisodes }));
   }, [selectedSeasons, seasonsInfo, isTvShow]);
 
-  // -------- Mise à jour de la durée totale --------
+  // Mise à jour de la durée totale
   useEffect(() => {
     if (!isTvShow) return;
 
@@ -397,7 +402,7 @@ function MovieCard({
     }
   }, [nbTvEpisodes, movieData.episodeDuration, isTvShow]);
 
-  // -------- Mise à jour automatique de tvSeasons selon les saisons sélectionnées --------
+  // Mise à jour automatique de tvSeasons selon les saisons sélectionnées
   useEffect(() => {
     if (!isTvShow) return;
 
@@ -790,6 +795,8 @@ function MovieCard({
   };
 
   const closeModifyMode = () => {
+    // purgeOrphanRecords(); // purger les données orphelines (souci avec l'affiche qui disparait)
+
     setIsModify(false);
   };
 
@@ -978,50 +985,60 @@ function MovieCard({
           {/* info bloc 1 */}
           {isModify ? (
             <div className="infos_bloc_1_modify">
-              {idTheMovieDb && (
-                <Button
-                  variant="outlined"
-                  sx={{
-                    color: "var(--color-03)",
-                    borderColor: "var(--color-03)",
-                    width: "25%",
-                  }}
-                  onClick={() =>
-                    refetchMovieTMDB(idTheMovieDb, {
-                      movieData,
-                      setMovieData,
-                      searchGenreInDatabase,
-                      createGenreInDatabase,
-                      setSelectedKinds,
-                      searchStudioInDatabase,
-                      createStudioInDatabase,
-                      setSelectedStudios,
-                      searchCountryInDatabase,
-                      createCountryInDatabase,
-                      setSelectedCountries,
-                      searchDirectorInDatabase,
-                      createDirectorInDatabase,
-                      setSelectedDirectors,
-                      searchScreenwriterInDatabase,
-                      createScreenwriterInDatabase,
-                      setSelectedScreenwriters,
-                      searchCompositorInDatabase,
-                      createCompositorInDatabase,
-                      setSelectedMusic,
-                      searchCastingInDatabase,
-                      createCastingInDatabase,
-                      setSelectedCasting,
-                      searchTagInDatabase,
-                      createTagInDatabase,
-                      setSelectedTags,
-                      setImage,
-                      setShowUploadButton,
-                    })
-                  }
-                >
-                  <CloudSyncIcon sx={{ mr: 1 }} /> Recharger les infos
-                </Button>
-              )}
+              <div className="movieCard_Type_Line">
+                {!isTvShow ? (
+                  <MovieOutlinedIcon
+                    sx={{ color: "white", mr: 1 }}
+                    fontSize="large"
+                  />
+                ) : (
+                  <TvOutlinedIcon sx={{ color: "white" }} fontSize="large" />
+                )}
+                {idTheMovieDb && (
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      color: "var(--color-03)",
+                      borderColor: "var(--color-03)",
+                      width: "25%",
+                    }}
+                    onClick={() =>
+                      refetchMovieTMDB(idTheMovieDb, {
+                        movieData,
+                        setMovieData,
+                        searchGenreInDatabase,
+                        createGenreInDatabase,
+                        setSelectedKinds,
+                        searchStudioInDatabase,
+                        createStudioInDatabase,
+                        setSelectedStudios,
+                        searchCountryInDatabase,
+                        createCountryInDatabase,
+                        setSelectedCountries,
+                        searchDirectorInDatabase,
+                        createDirectorInDatabase,
+                        setSelectedDirectors,
+                        searchScreenwriterInDatabase,
+                        createScreenwriterInDatabase,
+                        setSelectedScreenwriters,
+                        searchCompositorInDatabase,
+                        createCompositorInDatabase,
+                        setSelectedMusic,
+                        searchCastingInDatabase,
+                        createCastingInDatabase,
+                        setSelectedCasting,
+                        searchTagInDatabase,
+                        createTagInDatabase,
+                        setSelectedTags,
+                        setImage,
+                        setShowUploadButton,
+                      })
+                    }
+                  >
+                    <CloudSyncIcon sx={{ mr: 1 }} /> Recharger les infos
+                  </Button>
+                )}
+              </div>
               <TextField
                 label="Title"
                 name="title"

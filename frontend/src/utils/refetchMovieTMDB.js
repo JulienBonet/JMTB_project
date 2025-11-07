@@ -138,25 +138,6 @@ const refetchMovieTMDB = async (idTheMovieDb, deps) => {
     );
     setSelectedCountries(countriesData);
 
-    // Fetch LANGUAGE
-    // const fetchLanguage = async (language) => {
-    //   const languageData = await searchLanguageInDatabase(
-    //     language.english_name
-    //   );
-    //   if (languageData) {
-    //     return { id: languageData.id, name: languageData.name };
-    //   }
-    //   const newLanguageData = await createLanguageInDatabase(
-    //     language.english_name
-    //   );
-    //   return { id: newLanguageData.id, name: language.english_name };
-    // };
-
-    // const languagesData = await Promise.all(
-    //   moviefetchDataa.spoken_languages.map(fetchLanguage)
-    // );
-    // setSelectedLanguages(languagesData);
-
     // CREDITS FETCH (cast & crew)
     const options2 = {
       method: "GET",
