@@ -3,10 +3,6 @@ import axios from "axios";
 
 const refetchMovieTMDB = async (idTheMovieDb, deps) => {
   const {
-    // setSeasonsInfo,
-    // tvSeasons,
-    // newDataMovie,
-    // setNewDataMovie,
     movieData,
     setMovieData,
     searchGenreInDatabase,
@@ -18,9 +14,6 @@ const refetchMovieTMDB = async (idTheMovieDb, deps) => {
     searchCountryInDatabase,
     createCountryInDatabase,
     setSelectedCountries,
-    // searchLanguageInDatabase,
-    // createLanguageInDatabase,
-    // setSelectedLanguages,
     searchDirectorInDatabase,
     createDirectorInDatabase,
     setSelectedDirectors,
@@ -60,23 +53,6 @@ const refetchMovieTMDB = async (idTheMovieDb, deps) => {
 
     // Variables spécifiques TV
     const isTV = mediaType === "tv";
-    // const nbTvSeasons = isTV ? moviefetchData.number_of_seasons : null;
-    // const nbTvEpisodes = isTV ? moviefetchData.number_of_episodes : null;
-    // const episodeDuration =
-    //   isTV && moviefetchData.episode_run_time?.length > 0
-    //     ? moviefetchData.episode_run_time[0]
-    //     : null;
-
-    // Si c'est une série, on récupère la liste des saisons
-    // const seasonsInfo = isTV
-    //   ? moviefetchData.seasons.map((s) => ({
-    //       season_number: s.season_number,
-    //       episode_count: s.episode_count,
-    //     }))
-    //   : [];
-
-    // setSeasonsInfo(seasonsInfo);
-    // console.info("seasonsInfo", seasonsInfo);
 
     // Gestion du titre alternatif sans ternaires imbriqués
     let altTitle = "";
@@ -109,12 +85,7 @@ const refetchMovieTMDB = async (idTheMovieDb, deps) => {
         story: moviefetchData.overview || "",
         idTheMovieDb: `${mediaType}/${moviefetchData.id}`,
         idIMDB: isTV ? null : moviefetchData.imdb_id,
-        isTvShow: isTV,
-        // duration: moviefetchData.runtime,
-        // nbTvSeasons,
-        // tvSeasons,
-        // nbTvEpisodes,
-        // episodeDuration,
+        isTvShow: isTV ? 1 : 0,
       });
     }
 
