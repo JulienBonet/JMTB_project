@@ -68,6 +68,11 @@ router.put(
   editingMovieController.editMovieImage
 );
 
+router.put(
+  "/movie/:id/image-from-url",
+  editingMovieController.updateImageFromUrl
+);
+
 router.put("/movie/:id/cover", editingMovieController.updateCoverByFilename);
 
 router.delete("/movie/:id", editingMovieController.deleteMovie);

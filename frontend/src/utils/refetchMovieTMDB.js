@@ -30,7 +30,7 @@ const refetchMovieTMDB = async (idTheMovieDb, deps) => {
     createTagInDatabase,
     setSelectedTags,
     setImage,
-    setShowUploadButton,
+    // setShowUploadButton,
   } = deps;
 
   const [mediaType, movieId] = idTheMovieDb.split("/");
@@ -246,7 +246,6 @@ const refetchMovieTMDB = async (idTheMovieDb, deps) => {
         )
     );
     setSelectedCasting(castingsData);
-    console.info("castingsData in refetchMovieTMDB", castingsData);
 
     // Fetch trailer
     const trailerOptions = {
@@ -271,8 +270,6 @@ const refetchMovieTMDB = async (idTheMovieDb, deps) => {
       trailer: videoUrl,
     }));
 
-    console.info("videoUrl in refetchMovieTMDB", videoUrl);
-
     // Fetch keywords (tags)
     const keywordsOptions = {
       method: "GET",
@@ -291,8 +288,6 @@ const refetchMovieTMDB = async (idTheMovieDb, deps) => {
         ? keywordsResponse.data.results
         : keywordsResponse.data.keywords;
 
-    console.info("keywordsData in refetchMovieTMDB:", keywordsData);
-
     // Fetch or create tags in database
     const tagsData = await Promise.all(
       keywordsData.map((keyword) =>
@@ -306,16 +301,42 @@ const refetchMovieTMDB = async (idTheMovieDb, deps) => {
     setSelectedTags(tagsData);
 
     // fetch movie cover
+
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
     const posterUrl = moviefetchData.poster_path
       ? `https://image.tmdb.org/t/p/original${moviefetchData.poster_path}`
       : null;
 
-    if (!posterUrl) {
-      console.warn("Aucune affiche disponible pour ce film sur TMDB.");
-      return;
+    if (posterUrl) {
+      try {
+        const imageResponse = await fetch(
+          `${backendUrl}/api/movie/${movieData.id}/image-from-url`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ imageUrl: posterUrl }),
+          }
+        );
+
+        if (imageResponse.ok) {
+          const { movie: updatedMovie } = await imageResponse.json();
+          setImage(`${backendUrl}/images/${updatedMovie.cover}`);
+          console.info(
+            "✅ Image téléchargée et associée :",
+            updatedMovie.cover
+          );
+        } else {
+          console.error("Erreur lors de la sauvegarde de l'image TMDB");
+        }
+      } catch (error) {
+        console.error(
+          "Erreur réseau lors de la sauvegarde de l'image TMDB :",
+          error
+        );
+      }
     }
-    setImage(posterUrl);
-    setShowUploadButton(false);
   } catch (error) {
     console.error("Erreur refetchMovieTMDB:", error);
   }
@@ -444,12 +465,6 @@ const refetchDuration = async (idTheMovieDb, { movieData, setMovieData }) => {
         : moviefetchData.runtime || 0,
   });
 };
-
-// refetchPitch.js
-// const refetchPitch = async (idTheMovieDb, { movieData, setMovieData }) => {
-//   const { moviefetchData } = await getTmdbData(idTheMovieDb);
-//   setMovieData({ ...movieData, pitch: moviefetchData.tagline || "" });
-// };
 
 // refetchStory.js
 const refetchStory = async (idTheMovieDb, { movieData, setMovieData }) => {

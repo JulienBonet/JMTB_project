@@ -344,7 +344,6 @@ function MovieCard({
         return [Number(block)];
       });
 
-    console.info("✅ tvSeasons parsé depuis movieData:", parsed);
     setSelectedSeasons(parsed);
   }, [isModify, isTvShow, movieData.tvSeasons]);
 
@@ -664,11 +663,8 @@ function MovieCard({
         : `${totalGB.toFixed(2)} GB`;
 
     // Détermination du chemin commun de base
-    const firstPath = videoFiles[0].webkitRelativePath; // ex: "MaSerie/S01/Episode1.mkv"
-    const rootPath = firstPath.split("/")[0]; // => "MaSerie"
-
-    console.info("firstPath", firstPath);
-    console.info("rootPath", rootPath);
+    const firstPath = videoFiles[0].webkitRelativePath;
+    const rootPath = firstPath.split("/")[0];
 
     // ✅ Mise à jour partielle et sûre
     setMovieData((prev) => ({

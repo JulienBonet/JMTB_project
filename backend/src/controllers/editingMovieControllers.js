@@ -68,6 +68,49 @@ const uploadLocalCover = async (localCoverPath, coverUrl) => {
   });
 }; // end const uploadLocalCover
 
+const updateImageFromUrl = async (req, res) => {
+  const { id } = req.params;
+  const { imageUrl } = req.body;
+
+  if (!imageUrl) {
+    return res.status(400).json({ message: "Aucune URL d'image fournie" });
+  }
+
+  try {
+    console.info(`🖼️ Téléchargement de l'image depuis : ${imageUrl}`);
+
+    // Télécharger l’image distante
+    const response = await axios.get(imageUrl, { responseType: "arraybuffer" });
+
+    // Déterminer l’extension à partir de l’URL
+    const ext = path.extname(imageUrl).split("?")[0] || ".jpg";
+    const filename = `cover-url-${uuidv4()}${ext}`;
+    const filepath = path.join(__dirname, "../../public/images", filename);
+
+    // Sauvegarder le fichier localement
+    fs.writeFileSync(filepath, Buffer.from(response.data, "binary"));
+
+    // Mettre à jour la BDD
+    await editingMovieModel.updateMovieImage(filename, id);
+
+    console.info(`✅ Nouvelle image sauvegardée : ${filename}`);
+
+    // Récupérer le film mis à jour via ton modèle
+    const updatedMovie = await editingMovieModel.findMovieById(id);
+
+    res.status(200).json({
+      message: "Image mise à jour avec succès",
+      movie: updatedMovie[0], // car findMovieById retourne un tableau
+    });
+  } catch (error) {
+    console.error("❌ Erreur updateImageFromUrl :", error.message);
+    res.status(500).json({
+      message: "Erreur lors du téléchargement de l'image",
+      error: error.message,
+    });
+  }
+}; // end const updateImageFromUrl
+
 // ADD MOVIE
 const addMovie = async (req, res) => {
   try {
@@ -745,54 +788,54 @@ const editMovieImage = async (req, res) => {
   }
 };
 
-// pour le cas refecth in MovieCard.jsx
-const updateCoverByFilename = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { cover } = req.body;
+// // pour le cas refecth in MovieCard.jsx
+// const updateCoverByFilename = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const { cover } = req.body;
 
-    if (!cover) {
-      return res.status(400).json({ message: "Cover filename is required" });
-    }
+//     if (!cover) {
+//       return res.status(400).json({ message: "Cover filename is required" });
+//     }
 
-    // Vérifier que le film existe
-    const movie = await editingMovieModel.findMovieById(id);
-    if (!movie || movie.length === 0) {
-      return res.status(404).json({ message: "Movie not found" });
-    }
+//     // Vérifier que le film existe
+//     const movie = await editingMovieModel.findMovieById(id);
+//     if (!movie || movie.length === 0) {
+//       return res.status(404).json({ message: "Movie not found" });
+//     }
 
-    const currentImage = movie[0].cover;
+//     const currentImage = movie[0].cover;
 
-    // Supprimer l'ancienne image si ce n'est pas l'image par défaut
-    if (currentImage && currentImage !== "00_cover_default.jpg") {
-      const oldImagePath = path.join(
-        __dirname,
-        "../../public/images",
-        currentImage
-      );
-      if (fs.existsSync(oldImagePath)) {
-        fs.unlinkSync(oldImagePath);
-        console.info("Ancienne image supprimée :", oldImagePath);
-      }
-    }
+//     // Supprimer l'ancienne image si ce n'est pas l'image par défaut
+//     if (currentImage && currentImage !== "00_cover_default.jpg") {
+//       const oldImagePath = path.join(
+//         __dirname,
+//         "../../public/images",
+//         currentImage
+//       );
+//       if (fs.existsSync(oldImagePath)) {
+//         fs.unlinkSync(oldImagePath);
+//         console.info("Ancienne image supprimée :", oldImagePath);
+//       }
+//     }
 
-    // Mettre à jour la BDD avec la nouvelle cover
-    const result = await editingMovieModel.updateMovieImage(cover, id);
+//     // Mettre à jour la BDD avec la nouvelle cover
+//     const result = await editingMovieModel.updateMovieImage(cover, id);
 
-    if (result.affectedRows > 0) {
-      const updatedMovie = await editingMovieModel.findMovieById(id);
-      return res.status(200).json({
-        message: "Cover successfully updated from TMDB",
-        movie: updatedMovie[0],
-      });
-    }
+//     if (result.affectedRows > 0) {
+//       const updatedMovie = await editingMovieModel.findMovieById(id);
+//       return res.status(200).json({
+//         message: "Cover successfully updated from TMDB",
+//         movie: updatedMovie[0],
+//       });
+//     }
 
-    return res.status(500).json({ message: "Database update failed" });
-  } catch (error) {
-    console.error("Erreur updateCoverByFilename :", error);
-    return res.status(500).json({ message: "Internal Server Error" });
-  }
-};
+//     return res.status(500).json({ message: "Database update failed" });
+//   } catch (error) {
+//     console.error("Erreur updateCoverByFilename :", error);
+//     return res.status(500).json({ message: "Internal Server Error" });
+//   }
+// };
 
 const editMovieById = async (req, res) => {
   try {
@@ -944,5 +987,5 @@ module.exports = {
   deleteMovie,
   editMovieImage,
   editMovieById,
-  updateCoverByFilename,
+  updateImageFromUrl,
 };
