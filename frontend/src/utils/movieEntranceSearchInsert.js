@@ -3,12 +3,6 @@ import axios from "axios";
 
 // GENRES SEARCH BY NAME METHOD
 const searchGenreInDatabase = async (genreName) => {
-  console.info(
-    "get in searchGenreInDatabase: ",
-    `${import.meta.env.VITE_BACKEND_URL}/api/kind/${encodeURIComponent(
-      genreName
-    )}`
-  );
   try {
     const response = await axios.get(
       `${import.meta.env.VITE_BACKEND_URL}/api/kind/${encodeURIComponent(
@@ -17,7 +11,6 @@ const searchGenreInDatabase = async (genreName) => {
     );
 
     if (response.status === 200 && response.data) {
-      console.info("genre cherché:", response.data);
       return response.data;
     }
     return null;
@@ -28,17 +21,11 @@ const searchGenreInDatabase = async (genreName) => {
 
 // GENRES NEW INSERT METHOD
 const createGenreInDatabase = async (genreName) => {
-  console.info(
-    "post in createGenreInDatabase: ",
-    `${import.meta.env.VITE_BACKEND_URL}/api/kind`
-  );
   try {
     const response = await axios.post(
       `${import.meta.env.VITE_BACKEND_URL}/api/kind`,
       { name: genreName }
     );
-
-    console.info("genre crée:", response.data);
 
     if (response.status === 201 && response.data) {
       return response.data;

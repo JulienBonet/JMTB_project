@@ -314,56 +314,443 @@ const refetchMovieTMDB = async (idTheMovieDb, deps) => {
       console.warn("Aucune affiche disponible pour ce film sur TMDB.");
       return;
     }
-
-    // envoyer l’image au backend pour la copier localement
-    const uploadResponse = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/upload-cover`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ posterUrl }),
-      }
-    );
-
-    if (!uploadResponse.ok) {
-      throw new Error("Erreur upload cover depuis TMDB");
-    }
-
-    const uploadData = await uploadResponse.json();
-    const newCoverFilename = uploadData.coverFilename;
-    console.info("newCoverFilename", newCoverFilename);
-
-    // mise à jour du film avec la nouvelle cover
-    const updateResponse = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/api/movie/${movieData.id}/cover`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cover: newCoverFilename }),
-      }
-    );
-
-    if (!updateResponse.ok) {
-      throw new Error(
-        "Erreur lors de la mise à jour du film avec la nouvelle image"
-      );
-    }
-
-    const { movie: updatedMovie } = await updateResponse.json();
-
-    // mise à jour locale du state
-    setImage(
-      `${import.meta.env.VITE_BACKEND_URL}/images/${updatedMovie.cover}`
-    );
-    setShowUploadButton(true);
-
-    console.info(
-      "Affiche mise à jour avec succès depuis TMDB :",
-      updatedMovie.cover
-    );
+    setImage(posterUrl);
+    setShowUploadButton(false);
   } catch (error) {
     console.error("Erreur refetchMovieTMDB:", error);
   }
 };
 
-export default refetchMovieTMDB;
+// ----- REFETCH INDIVIDUELS ------ //
+
+// -------------------------------------
+// FONCTIONS REFETCH UTILITAIRES COMMUNE
+// -------------------------------------
+const getTmdbData = async (idTheMovieDb) => {
+  const [mediaType, movieId] = idTheMovieDb.split("/");
+
+  const [movieResponse, creditsResponse] = await Promise.all([
+    axios.get(
+      `https://api.themoviedb.org/3/${mediaType}/${movieId}?language=fr-FR`,
+      {
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
+        },
+      }
+    ),
+    axios.get(
+      `https://api.themoviedb.org/3/${mediaType}/${movieId}/credits?language=fr-FR`,
+      {
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
+        },
+      }
+    ),
+  ]);
+
+  return {
+    mediaType,
+    movieId,
+    moviefetchData: movieResponse.data,
+    crewData: creditsResponse.data.crew,
+    castData: creditsResponse.data.cast,
+  };
+};
+
+const fetchOrCreateEntity = async (entity, searchFunc, createFunc) => {
+  if (!entity?.name) {
+    console.warn("⚠️ fetchOrCreateEntity appelé sans nom valide :", entity);
+    return null;
+  }
+
+  const cleanName = entity.name.trim();
+
+  let entityData = await searchFunc(cleanName);
+
+  if (!entityData) {
+    const created = await createFunc(cleanName);
+    console.info("🆕 Entité créée :", created);
+
+    // Si la création ne renvoie pas d'id, on refait un search
+    if (!created?.id) {
+      entityData = await searchFunc(cleanName);
+    } else {
+      entityData = created;
+    }
+  }
+
+  return { id: entityData.id, name: cleanName };
+};
+
+// ------------------
+// FETCH infos
+// ------------------
+// refetchTitle.js
+const refetchTitle = async (idTheMovieDb, { movieData, setMovieData }) => {
+  const { moviefetchData } = await getTmdbData(idTheMovieDb);
+  const mediaType = moviefetchData.first_air_date ? "tv" : "movie";
+  setMovieData({
+    ...movieData,
+    title: mediaType === "tv" ? moviefetchData.name : moviefetchData.title,
+  });
+};
+
+// refetchAltTitle.js
+const refetchAltTitle = async (idTheMovieDb, { movieData, setMovieData }) => {
+  const { moviefetchData } = await getTmdbData(idTheMovieDb);
+  const mediaType = moviefetchData.first_air_date ? "tv" : "movie";
+  let altTitle = "";
+  if (
+    mediaType === "tv" &&
+    moviefetchData.original_name &&
+    moviefetchData.original_name !== moviefetchData.name
+  ) {
+    altTitle = moviefetchData.original_name;
+  } else if (
+    mediaType === "movie" &&
+    moviefetchData.original_title &&
+    moviefetchData.original_title !== moviefetchData.title
+  ) {
+    altTitle = moviefetchData.original_title;
+  }
+  setMovieData({ ...movieData, altTitle });
+};
+
+// refetchYear.js
+const refetchYear = async (idTheMovieDb, { movieData, setMovieData }) => {
+  const { moviefetchData } = await getTmdbData(idTheMovieDb);
+  const mediaType = moviefetchData.first_air_date ? "tv" : "movie";
+  setMovieData({
+    ...movieData,
+    year:
+      (mediaType === "tv"
+        ? moviefetchData.first_air_date
+        : moviefetchData.release_date
+      )?.substring(0, 4) || "",
+  });
+};
+
+// refetchDuration.js
+const refetchDuration = async (idTheMovieDb, { movieData, setMovieData }) => {
+  const { moviefetchData } = await getTmdbData(idTheMovieDb);
+  const mediaType = moviefetchData.first_air_date ? "tv" : "movie";
+  setMovieData({
+    ...movieData,
+    duration:
+      mediaType === "tv"
+        ? moviefetchData.episode_run_time?.[0] || 0
+        : moviefetchData.runtime || 0,
+  });
+};
+
+// refetchPitch.js
+// const refetchPitch = async (idTheMovieDb, { movieData, setMovieData }) => {
+//   const { moviefetchData } = await getTmdbData(idTheMovieDb);
+//   setMovieData({ ...movieData, pitch: moviefetchData.tagline || "" });
+// };
+
+// refetchStory.js
+const refetchStory = async (idTheMovieDb, { movieData, setMovieData }) => {
+  const { moviefetchData } = await getTmdbData(idTheMovieDb);
+  setMovieData({ ...movieData, story: moviefetchData.overview || "" });
+};
+
+// ------------------
+// FETCH GENRES
+// ------------------
+const refetchGenres = async (
+  idTheMovieDb,
+  { searchGenreInDatabase, createGenreInDatabase, setSelectedKinds }
+) => {
+  const { moviefetchData } = await getTmdbData(idTheMovieDb);
+
+  const fetchGenre = async (genreName) => {
+    const genreData = await searchGenreInDatabase(genreName);
+    if (genreData) return { id: genreData.id, name: genreData.name };
+    const newGenreData = await createGenreInDatabase(genreName);
+    return { id: newGenreData.id, name: genreName };
+  };
+
+  const genresToFetch = moviefetchData.genres.map((g) => g.name);
+  if (moviefetchData.adult) genresToFetch.push("adulte");
+
+  const genresData = await Promise.all(genresToFetch.map(fetchGenre));
+  setSelectedKinds(genresData);
+  console.info("🎨 Genres rechargés :", genresData);
+};
+
+// ------------------
+// FETCH COUNTRIES
+// ------------------
+
+const refetchCountries = async (
+  idTheMovieDb,
+  { searchCountryInDatabase, createCountryInDatabase, setSelectedCountries }
+) => {
+  const { moviefetchData } = await getTmdbData(idTheMovieDb);
+
+  const fetchCountry = async (country) => {
+    const countryData = await searchCountryInDatabase(country.name);
+    if (countryData) return { id: countryData.id, name: countryData.name };
+    const newCountryData = await createCountryInDatabase(country.name);
+    return { id: newCountryData.id, name: country.name };
+  };
+
+  const countriesData = await Promise.all(
+    moviefetchData.production_countries.map(fetchCountry)
+  );
+  setSelectedCountries(countriesData);
+  console.info("🌍 Pays rechargés :", countriesData);
+};
+
+// ------------------
+// FETCH DIRECTORS
+// ------------------
+const refetchDirectors = async (
+  idTheMovieDb,
+  { searchDirectorInDatabase, createDirectorInDatabase, setSelectedDirectors }
+) => {
+  try {
+    const { mediaType, moviefetchData, crewData } =
+      await getTmdbData(idTheMovieDb);
+
+    const isTV = mediaType === "tv";
+    let directorsData = [];
+
+    if (isTV && moviefetchData.created_by?.length > 0) {
+      directorsData = await Promise.all(
+        moviefetchData.created_by.map((creator) =>
+          fetchOrCreateEntity(
+            creator,
+            searchDirectorInDatabase,
+            createDirectorInDatabase
+          )
+        )
+      );
+    } else {
+      directorsData = await Promise.all(
+        crewData
+          .filter((crewMember) => crewMember.job === "Director")
+          .map((director) =>
+            fetchOrCreateEntity(
+              director,
+              searchDirectorInDatabase,
+              createDirectorInDatabase
+            )
+          )
+      );
+    }
+
+    setSelectedDirectors(directorsData);
+    console.info("🎬 Réalisateurs rechargés :", directorsData);
+  } catch (error) {
+    console.error("Erreur lors du refetch des réalisateurs :", error);
+  }
+};
+
+// ------------------
+// FETCH SCREENWRITER
+// ------------------
+
+const refetchScreenwriters = async (
+  idTheMovieDb,
+  {
+    searchScreenwriterInDatabase,
+    createScreenwriterInDatabase,
+    setSelectedScreenwriters,
+  }
+) => {
+  const { crewData } = await getTmdbData(idTheMovieDb);
+
+  const screenwritersData = await Promise.all(
+    crewData
+      .filter(
+        (crewMember) =>
+          crewMember.job === "Screenplay" ||
+          crewMember.job === "Writer" ||
+          crewMember.job === "Author"
+      )
+      .map((screenwriter) =>
+        fetchOrCreateEntity(
+          screenwriter,
+          searchScreenwriterInDatabase,
+          createScreenwriterInDatabase
+        )
+      )
+  );
+
+  setSelectedScreenwriters(screenwritersData);
+  console.info("🖋️ Scénaristes rechargés :", screenwritersData);
+};
+
+// ------------------
+// FETCH COMPOSITORS
+// ------------------
+const refetchCompositors = async (
+  idTheMovieDb,
+  { searchCompositorInDatabase, createCompositorInDatabase, setSelectedMusic }
+) => {
+  const { crewData } = await getTmdbData(idTheMovieDb);
+
+  const compositorsData = await Promise.all(
+    crewData
+      .filter(
+        (crewMember) =>
+          crewMember.job === "Original Music Composer" ||
+          crewMember.job === "Music"
+      )
+      .map((compositor) =>
+        fetchOrCreateEntity(
+          compositor,
+          searchCompositorInDatabase,
+          createCompositorInDatabase
+        )
+      )
+  );
+
+  setSelectedMusic(compositorsData);
+  console.info("🎶 Compositeurs rechargés :", compositorsData);
+};
+
+// ------------------
+// FETCH STUDIO
+// ------------------
+const refetchStudios = async (
+  idTheMovieDb,
+  { searchStudioInDatabase, createStudioInDatabase, setSelectedStudios }
+) => {
+  const { moviefetchData } = await getTmdbData(idTheMovieDb);
+
+  const studiosData = await Promise.all(
+    moviefetchData.production_companies.map((studio) =>
+      fetchOrCreateEntity(
+        studio,
+        searchStudioInDatabase,
+        createStudioInDatabase
+      )
+    )
+  );
+
+  setSelectedStudios(studiosData);
+  console.info("🏭 Studios rechargés :", studiosData);
+};
+
+// ------------------
+// FETCH CASTING
+// ------------------
+const refetchCasting = async (
+  idTheMovieDb,
+  { searchCastingInDatabase, createCastingInDatabase, setSelectedCasting }
+) => {
+  const { castData } = await getTmdbData(idTheMovieDb);
+
+  const castingsData = await Promise.all(
+    castData
+      .sort((a, b) => a.order - b.order)
+      .slice(0, 5)
+      .map((casting) =>
+        fetchOrCreateEntity(
+          casting,
+          searchCastingInDatabase,
+          createCastingInDatabase
+        )
+      )
+  );
+
+  setSelectedCasting(castingsData);
+  console.info("🎭 Casting rechargé :", castingsData);
+};
+
+// ------------------
+// FETCH TAGS
+// ------------------
+const refetchTags = async (
+  idTheMovieDb,
+  { searchTagInDatabase, createTagInDatabase, setSelectedTags }
+) => {
+  const [mediaType, movieId] = idTheMovieDb.split("/");
+
+  const keywordsResponse = await axios.get(
+    `https://api.themoviedb.org/3/${mediaType}/${movieId}/keywords`,
+    {
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
+      },
+    }
+  );
+
+  const keywordsData =
+    mediaType === "tv"
+      ? keywordsResponse.data.results
+      : keywordsResponse.data.keywords;
+
+  const tagsData = await Promise.all(
+    keywordsData.map((keyword) =>
+      fetchOrCreateEntity(keyword, searchTagInDatabase, createTagInDatabase)
+    )
+  );
+
+  setSelectedTags(tagsData);
+  console.info("🏷️ Tags rechargés :", tagsData);
+};
+
+// ------------------
+// FETCH TRAILER
+// ------------------
+
+const refetchTrailer = async (
+  idTheMovieDb,
+  { setMovieData, setTrailerMessage }
+) => {
+  try {
+    const [mediaType, movieId] = idTheMovieDb.split("/");
+
+    const response = await axios.get(
+      `https://api.themoviedb.org/3/${mediaType}/${movieId}/videos?language=fr-FR`,
+      {
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
+        },
+      }
+    );
+
+    const trailerData = response.data.results.find(
+      (video) => video.type === "Trailer" && video.site === "YouTube"
+    );
+
+    if (!trailerData) {
+      setTrailerMessage("⚠️ Aucun trailer disponible sur TMDB");
+      setMovieData((prev) => ({ ...prev, trailer: null }));
+      return;
+    }
+
+    const videoUrl = `https://www.youtube.com/watch?v=${trailerData.key}`;
+    setMovieData((prev) => ({ ...prev, trailer: videoUrl }));
+    setTrailerMessage("Trailer rechargé !");
+  } catch (error) {
+    console.error("Erreur lors du refetch du trailer :", error);
+    setTrailerMessage("Erreur lors de la récupération du trailer");
+  }
+};
+
+export {
+  refetchMovieTMDB,
+  refetchTitle,
+  refetchAltTitle,
+  refetchYear,
+  refetchDuration,
+  refetchStory,
+  refetchGenres,
+  refetchCountries,
+  refetchDirectors,
+  refetchScreenwriters,
+  refetchCompositors,
+  refetchStudios,
+  refetchCasting,
+  refetchTags,
+  refetchTrailer,
+};

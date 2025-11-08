@@ -17,11 +17,12 @@ const purgeModel = require("../models/purgeModel");
 
 // TELECHARGEMENT IMAGE
 const downloadImage = async (url, filepath) => {
+  console.info("💡 downloadImage appelé avec :", url, filepath);
   const response = await axios({
     url,
     responseType: "stream",
   });
-
+  console.info("💡 Flux reçu depuis l’URL, début de l’écriture...");
   return new Promise((resolve, reject) => {
     const writeStream = fs.createWriteStream(filepath);
     response.data
@@ -821,6 +822,7 @@ const editMovieById = async (req, res) => {
       tvSeasons,
       nbTvEpisodes,
       episodeDuration,
+      idTheMovieDb,
       // !!! ajouter les update item que l'on envoi par la route !!!
     } = req.body;
     console.info("req.body:", req.body);
@@ -845,6 +847,7 @@ const editMovieById = async (req, res) => {
       tvSeasons,
       nbTvEpisodes,
       episodeDuration,
+      idTheMovieDb,
       id
     );
 

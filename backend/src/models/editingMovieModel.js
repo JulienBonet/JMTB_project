@@ -68,10 +68,11 @@ const updateMovie = (
   TvSeasons,
   nbTvEpisodes,
   episodeDuration,
+  idTheMovieDb,
   id
 ) =>
   db.query(
-    "UPDATE movies SET title = ?, altTitle = ?, year = ?, duration = ?, trailer = ?, story = ?, location = ?, videoFormat = ?, videoSupport = ?, fileSize = ?, vostfr = ?, multi = ?, isTvShow = ?, TvSeasons = ?, nbTvEpisodes = ?, episodeDuration = ?,comment = ? WHERE id = ?",
+    "UPDATE movies SET title = ?, altTitle = ?, year = ?, duration = ?, trailer = ?, story = ?, location = ?, videoFormat = ?, videoSupport = ?, fileSize = ?, vostfr = ?, multi = ?, isTvShow = ?, TvSeasons = ?, nbTvEpisodes = ?, episodeDuration = ?,comment = ?, idTheMovieDb = ? WHERE id = ?",
     [
       title,
       altTitle,
@@ -90,6 +91,7 @@ const updateMovie = (
       nbTvEpisodes,
       episodeDuration,
       comment,
+      idTheMovieDb,
       id,
     ]
   );

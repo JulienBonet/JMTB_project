@@ -66,6 +66,11 @@
   color: whitesmoke;
 }
 
+.Btn_Refresh_items_MovieCard {
+  cursor: pointer;
+  color: var(--color-02);
+}
+
 .Btn_upload_File_MovieCard {
   cursor: pointer;
   color: whitesmoke;

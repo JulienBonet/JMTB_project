@@ -10,6 +10,7 @@ import "./movieCard_videoPlayer_MediaQueries.css";
 import ReactPlayer from "react-player";
 import Box from "@mui/material/Box";
 import { Container } from "@mui/material";
+import Alert from "@mui/material/Alert";
 import Modal from "@mui/material/Modal";
 import ModeIcon from "@mui/icons-material/Mode";
 import DoneOutlineIcon from "@mui/icons-material/DoneOutline";
@@ -42,8 +43,24 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import MovieOutlinedIcon from "@mui/icons-material/MovieOutlined";
 import TvOutlinedIcon from "@mui/icons-material/TvOutlined";
 import TransferList from "../AdminFeatures/AddNewMovie/MovieItemList";
-import refetchMovieTMDB from "../../utils/refetchMovieTMDB";
-// import purgeOrphanRecords from "../../utils/purgeOrphanRecords";
+import {
+  refetchMovieTMDB,
+  refetchTitle,
+  refetchAltTitle,
+  refetchYear,
+  refetchDuration,
+  refetchStory,
+  refetchGenres,
+  refetchCountries,
+  refetchDirectors,
+  refetchScreenwriters,
+  refetchCompositors,
+  refetchStudios,
+  refetchCasting,
+  refetchTags,
+  refetchTrailer,
+} from "../../utils/refetchMovieTMDB";
+import purgeOrphanRecords from "../../utils/purgeOrphanRecords";
 import {
   searchGenreInDatabase,
   createGenreInDatabase,
@@ -85,6 +102,7 @@ function MovieCard({
     movie.vostfr ? "VOSTFR" : movie.multi ? "MULTI" : "none"
   );
   const [selectedTags, setSelectedTags] = useState([]);
+  const [trailerMessage, setTrailerMessage] = useState("");
 
   // Datas dans le front
   const [movieData, setMovieData] = useState({
@@ -213,6 +231,10 @@ function MovieCard({
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === "idTheMovieDb" && value && !/^(movie|tv)\/\d*$/.test(value)) {
+      return; // ignore les caractères invalides pendant la saisie
+    }
+
     setMovieData((prevData) => ({
       ...prevData,
       [name]: value,
@@ -247,6 +269,7 @@ function MovieCard({
       } else {
         setShowUploadButton(false); // Si l'image a été modifiée, montrer l'icône de reset
       }
+      // console.info("image", image);
     }
   }, [isModify, image, movie.cover, backendUrl]);
 
@@ -254,6 +277,7 @@ function MovieCard({
   const handleCoverUpload = (event) => {
     const file = event.target.files[0];
     const newImageUrl = URL.createObjectURL(file);
+    console.info("newImageUrl", newImageUrl);
     setImage(newImageUrl);
     setShowUploadButton(false); // Après le choix d'une image, afficher le bouton de reset
   };
@@ -795,7 +819,7 @@ function MovieCard({
   };
 
   const closeModifyMode = () => {
-    // purgeOrphanRecords(); // purger les données orphelines (souci avec l'affiche qui disparait)
+    purgeOrphanRecords(); // purger les données orphelines (souci avec l'affiche qui disparait)
 
     setIsModify(false);
   };
@@ -872,6 +896,7 @@ function MovieCard({
             tvSeasons: movieData.tvSeasons,
             nbTvEpisodes: movieData.nbTvEpisodes,
             episodeDuration: movieData.episodeDuration,
+            idTheMovieDb: movieData.idTheMovieDb,
           }),
         }
       );
@@ -1039,23 +1064,43 @@ function MovieCard({
                   </Button>
                 )}
               </div>
-              <TextField
-                label="Title"
-                name="title"
-                value={movieData.title}
-                onChange={(e) => handleChange(e)}
-                fullWidth
-                sx={textFieldSx}
-              />
+              <div className="box_item_form">
+                <TextField
+                  label="Title"
+                  name="title"
+                  value={movieData.title}
+                  onChange={(e) => handleChange(e)}
+                  fullWidth
+                  sx={textFieldSx}
+                />
+                {idTheMovieDb && (
+                  <CloudSyncIcon
+                    className="Btn_Refresh_items_MovieCard"
+                    onClick={() =>
+                      refetchTitle(idTheMovieDb, { movieData, setMovieData })
+                    }
+                  />
+                )}
+              </div>
               <div className="divider" />
-              <TextField
-                label="Alt Title"
-                name="altTitle"
-                value={movieData.altTitle}
-                onChange={handleChange}
-                fullWidth
-                sx={textFieldSx}
-              />
+              <div className="box_item_form">
+                <TextField
+                  label="Alt Title"
+                  name="altTitle"
+                  value={movieData.altTitle || ""}
+                  onChange={(e) => handleChange(e)}
+                  fullWidth
+                  sx={textFieldSx}
+                />
+                {idTheMovieDb && (
+                  <CloudSyncIcon
+                    className="Btn_Refresh_items_MovieCard"
+                    onClick={() =>
+                      refetchAltTitle(idTheMovieDb, { movieData, setMovieData })
+                    }
+                  />
+                )}
+              </div>
               <div className="box_item_form">
                 <Box
                   component="form"
@@ -1077,33 +1122,68 @@ function MovieCard({
                   className="Btn_Add_itemsPopUp_MovieCard"
                   onClick={() => handleOpenModal("kinds")}
                 />
+                {idTheMovieDb && (
+                  <CloudSyncIcon
+                    className="Btn_Refresh_items_MovieCard"
+                    onClick={() =>
+                      refetchGenres(idTheMovieDb, {
+                        searchGenreInDatabase,
+                        createGenreInDatabase,
+                        setSelectedKinds,
+                      })
+                    }
+                  />
+                )}
               </div>
-              <TextField
-                label="Year"
-                name="year"
-                value={movieData.year}
-                onChange={(e) => handleChange(e)}
-                fullWidth
-                type="number"
-                sx={textFieldSx}
-              />
-              {isTvShow ? (
-                renderTvShowFields()
-              ) : (
+              <div className="box_item_form">
                 <TextField
-                  label="Durée (minutes)"
-                  name="duration"
-                  value={movieData.duration || ""}
-                  onChange={(e) =>
-                    setMovieData((prev) => ({
-                      ...prev,
-                      duration: e.target.value,
-                    }))
-                  }
+                  label="Year"
+                  name="year"
+                  value={movieData.year}
+                  onChange={(e) => handleChange(e)}
                   fullWidth
                   type="number"
                   sx={textFieldSx}
                 />
+                {idTheMovieDb && (
+                  <CloudSyncIcon
+                    className="Btn_Refresh_items_MovieCard"
+                    onClick={() =>
+                      refetchYear(idTheMovieDb, { movieData, setMovieData })
+                    }
+                  />
+                )}
+              </div>
+              {isTvShow ? (
+                renderTvShowFields()
+              ) : (
+                <div className="box_item_form">
+                  <TextField
+                    label="Durée (minutes)"
+                    name="duration"
+                    value={movieData.duration || ""}
+                    onChange={(e) =>
+                      setMovieData((prev) => ({
+                        ...prev,
+                        duration: e.target.value,
+                      }))
+                    }
+                    fullWidth
+                    type="number"
+                    sx={textFieldSx}
+                  />
+                  {idTheMovieDb && (
+                    <CloudSyncIcon
+                      className="Btn_Refresh_items_MovieCard"
+                      onClick={() =>
+                        refetchDuration(idTheMovieDb, {
+                          movieData,
+                          setMovieData,
+                        })
+                      }
+                    />
+                  )}
+                </div>
               )}
             </div>
           ) : (
@@ -1254,7 +1334,20 @@ function MovieCard({
                   className="Btn_Add_itemsPopUp_MovieCard"
                   onClick={() => handleOpenModal("country")}
                 />
+                {idTheMovieDb && (
+                  <CloudSyncIcon
+                    className="Btn_Refresh_items_MovieCard"
+                    onClick={() =>
+                      refetchCountries(idTheMovieDb, {
+                        searchCountryInDatabase,
+                        createCountryInDatabase,
+                        setSelectedCountries,
+                      })
+                    }
+                  />
+                )}
               </div>
+              <div className="divider" />
               <div className="box_item_form">
                 <Box
                   component="form"
@@ -1276,29 +1369,55 @@ function MovieCard({
                   className="Btn_Add_itemsPopUp_MovieCard"
                   onClick={() => handleOpenModal("directors")}
                 />
-              </div>
-              <div className="box_item_form">
-                <Box
-                  component="form"
-                  sx={textFieldSx}
-                  noValidate
-                  autoComplete="off"
-                  display="flex"
-                  alignItems="center"
-                >
-                  <TextField
-                    id="outlined-read-only-input"
-                    label="Scénariste(s)"
-                    value={getSelectedNames(selectedScreenwriters)}
-                    InputProps={{ readOnly: true }}
-                    fullWidth
+                {idTheMovieDb && (
+                  <CloudSyncIcon
+                    className="Btn_Refresh_items_MovieCard"
+                    onClick={() =>
+                      refetchDirectors(idTheMovieDb, {
+                        searchDirectorInDatabase,
+                        createDirectorInDatabase,
+                        setSelectedDirectors,
+                      })
+                    }
                   />
-                </Box>
-                <AddCircleOutlineIcon
-                  className="Btn_Add_itemsPopUp_MovieCard"
-                  onClick={() => handleOpenModal("screenwriters")}
-                />
+                )}
               </div>
+              {!isTvShow && (
+                <div className="box_item_form">
+                  <Box
+                    component="form"
+                    sx={textFieldSx}
+                    noValidate
+                    autoComplete="off"
+                    display="flex"
+                    alignItems="center"
+                  >
+                    <TextField
+                      id="outlined-read-only-input"
+                      label="Scénariste(s)"
+                      value={getSelectedNames(selectedScreenwriters)}
+                      InputProps={{ readOnly: true }}
+                      fullWidth
+                    />
+                  </Box>
+                  <AddCircleOutlineIcon
+                    className="Btn_Add_itemsPopUp_MovieCard"
+                    onClick={() => handleOpenModal("screenwriters")}
+                  />
+                  {idTheMovieDb && (
+                    <CloudSyncIcon
+                      className="Btn_Refresh_items_MovieCard"
+                      onClick={() =>
+                        refetchScreenwriters(idTheMovieDb, {
+                          searchScreenwriterInDatabase,
+                          createScreenwriterInDatabase,
+                          setSelectedScreenwriters,
+                        })
+                      }
+                    />
+                  )}
+                </div>
+              )}
               <div className="box_item_form">
                 <Box
                   component="form"
@@ -1320,6 +1439,18 @@ function MovieCard({
                   className="Btn_Add_itemsPopUp_MovieCard"
                   onClick={() => handleOpenModal("music")}
                 />
+                {idTheMovieDb && (
+                  <CloudSyncIcon
+                    className="Btn_Refresh_items_MovieCard"
+                    onClick={() =>
+                      refetchCompositors(idTheMovieDb, {
+                        searchCompositorInDatabase,
+                        createCompositorInDatabase,
+                        setSelectedMusic,
+                      })
+                    }
+                  />
+                )}
               </div>
               <div className="box_item_form">
                 <Box
@@ -1342,6 +1473,18 @@ function MovieCard({
                   className="Btn_Add_itemsPopUp_MovieCard"
                   onClick={() => handleOpenModal("studio")}
                 />
+                {idTheMovieDb && (
+                  <CloudSyncIcon
+                    className="Btn_Refresh_items_MovieCard"
+                    onClick={() =>
+                      refetchStudios(idTheMovieDb, {
+                        searchStudioInDatabase,
+                        createStudioInDatabase,
+                        setSelectedStudios,
+                      })
+                    }
+                  />
+                )}
               </div>
               <div className="box_item_form">
                 <Box
@@ -1364,6 +1507,18 @@ function MovieCard({
                   className="Btn_Add_itemsPopUp_MovieCard"
                   onClick={() => handleOpenModal("casting")}
                 />
+                {idTheMovieDb && (
+                  <CloudSyncIcon
+                    className="Btn_Refresh_items_MovieCard"
+                    onClick={() =>
+                      refetchCasting(idTheMovieDb, {
+                        searchCastingInDatabase,
+                        createCastingInDatabase,
+                        setSelectedCasting,
+                      })
+                    }
+                  />
+                )}
               </div>
               <div className="box_item_form">
                 <Box
@@ -1386,17 +1541,42 @@ function MovieCard({
                   className="Btn_Add_itemsPopUp_MovieCard"
                   onClick={() => handleOpenModal("tags")}
                 />
+                {idTheMovieDb && (
+                  <CloudSyncIcon
+                    className="Btn_Refresh_items_MovieCard"
+                    onClick={() =>
+                      refetchTags(idTheMovieDb, {
+                        searchTagInDatabase,
+                        createTagInDatabase,
+                        setSelectedTags,
+                      })
+                    }
+                  />
+                )}
               </div>
               <div className="divider" />
-              <TextField
-                label="Résumé"
-                name="story"
-                value={movieData.story}
-                onChange={(e) => handleChange(e)}
-                multiline
-                fullWidth
-                sx={textFieldSx}
-              />
+              <div className="box_item_form">
+                <TextField
+                  label="Résumé"
+                  name="story"
+                  value={movieData.story}
+                  onChange={(e) => handleChange(e)}
+                  multiline
+                  fullWidth
+                  sx={textFieldSx}
+                />
+                {idTheMovieDb && (
+                  <CloudSyncIcon
+                    className="Btn_Refresh_items_MovieCard"
+                    onClick={() =>
+                      refetchStory(idTheMovieDb, {
+                        movieData,
+                        setMovieData,
+                      })
+                    }
+                  />
+                )}
+              </div>
               <div className="divider" />
 
               <FormControl sx={textFieldSx}>
@@ -1588,14 +1768,33 @@ function MovieCard({
                 </>
               )}
               <div className="divider" />
-              <TextField
-                label="trailer"
-                name="trailer"
-                value={movieData.trailer || ""}
-                onChange={(e) => handleChange(e)}
-                fullWidth
-                sx={textFieldSx}
-              />
+              <div className="box_item_form">
+                <TextField
+                  label="trailer"
+                  name="trailer"
+                  value={movieData.trailer || ""}
+                  onChange={handleChange}
+                  fullWidth
+                  sx={textFieldSx}
+                />
+
+                {idTheMovieDb && (
+                  <CloudSyncIcon
+                    className="Btn_Refresh_items_MovieCard"
+                    onClick={() =>
+                      refetchTrailer(idTheMovieDb, {
+                        setMovieData,
+                        setTrailerMessage,
+                      })
+                    }
+                  />
+                )}
+              </div>
+              {trailerMessage && (
+                <Alert severity="info" sx={{ mt: 1, width: "50%" }}>
+                  {trailerMessage}
+                </Alert>
+              )}
               <div className="divider" />
               <TextField
                 label="Commentaire"
