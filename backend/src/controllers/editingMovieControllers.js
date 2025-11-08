@@ -118,6 +118,7 @@ const updateImageFromUrl = async (req, res) => {
 }; // end const updateImageFromUrl
 
 // ADD MOVIE
+
 const addMovie = async (req, res) => {
   try {
     const {

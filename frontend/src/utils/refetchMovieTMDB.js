@@ -29,8 +29,8 @@ const refetchMovieTMDB = async (idTheMovieDb, deps) => {
     searchTagInDatabase,
     createTagInDatabase,
     setSelectedTags,
-    setImage,
-    // setShowUploadButton,
+    // setImage,
+    // setShowImageButton,
   } = deps;
 
   const [mediaType, movieId] = idTheMovieDb.split("/");
@@ -301,42 +301,42 @@ const refetchMovieTMDB = async (idTheMovieDb, deps) => {
     setSelectedTags(tagsData);
 
     // fetch movie cover
+    // const backendUrl = import.meta.env.VITE_BACKEND_URL;
+    // const posterUrl = moviefetchData.poster_path
+    //   ? `https://image.tmdb.org/t/p/original${moviefetchData.poster_path}`
+    //   : null;
 
-    const backendUrl = import.meta.env.VITE_BACKEND_URL;
-    const posterUrl = moviefetchData.poster_path
-      ? `https://image.tmdb.org/t/p/original${moviefetchData.poster_path}`
-      : null;
+    // if (posterUrl) {
+    //   try {
+    //     const imageResponse = await fetch(
+    //       `${backendUrl}/api/movie/${movieData.id}/image-from-url`,
+    //       {
+    //         method: "PUT",
+    //         headers: {
+    //           "Content-Type": "application/json",
+    //         },
+    //         body: JSON.stringify({ imageUrl: posterUrl }),
+    //       }
+    //     );
 
-    if (posterUrl) {
-      try {
-        const imageResponse = await fetch(
-          `${backendUrl}/api/movie/${movieData.id}/image-from-url`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ imageUrl: posterUrl }),
-          }
-        );
-
-        if (imageResponse.ok) {
-          const { movie: updatedMovie } = await imageResponse.json();
-          setImage(`${backendUrl}/images/${updatedMovie.cover}`);
-          console.info(
-            "✅ Image téléchargée et associée :",
-            updatedMovie.cover
-          );
-        } else {
-          console.error("Erreur lors de la sauvegarde de l'image TMDB");
-        }
-      } catch (error) {
-        console.error(
-          "Erreur réseau lors de la sauvegarde de l'image TMDB :",
-          error
-        );
-      }
-    }
+    //     if (imageResponse.ok) {
+    //       const { movie: updatedMovie } = await imageResponse.json();
+    //       setImage(`${backendUrl}/images/${updatedMovie.cover}`);
+    //       console.info(
+    //         "✅ Image téléchargée et associée :",
+    //         updatedMovie.cover
+    //       );
+    //       setShowImageButton(false);
+    //     } else {
+    //       console.error("Erreur lors de la sauvegarde de l'image TMDB");
+    //     }
+    //   } catch (error) {
+    //     console.error(
+    //       "Erreur réseau lors de la sauvegarde de l'image TMDB :",
+    //       error
+    //     );
+    //   }
+    // }
   } catch (error) {
     console.error("Erreur refetchMovieTMDB:", error);
   }
@@ -752,6 +752,59 @@ const refetchTrailer = async (
   }
 };
 
+// ------------------
+// FETCH COVER
+// ------------------
+
+const refetchMovieCoverFromTMDB = async (
+  idTheMovieDb,
+  { movieId, setImage, setShowImageButton }
+) => {
+  const [mediaType, movieIdTMDB] = idTheMovieDb.split("/");
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+  try {
+    // fetch poster_path depuis TMDB
+    const response = await axios.get(
+      `https://api.themoviedb.org/3/${mediaType}/${movieIdTMDB}?language=fr-FR`,
+      {
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
+        },
+      }
+    );
+
+    const moviefetchData = response.data;
+
+    if (!moviefetchData.poster_path) return;
+
+    const posterUrl = `https://image.tmdb.org/t/p/original${moviefetchData.poster_path}`;
+
+    // envoyer au backend avec ID interne
+    const backendResponse = await fetch(
+      `${backendUrl}/api/movie/${movieId}/image-from-url`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageUrl: posterUrl }),
+      }
+    );
+
+    const data = await backendResponse.json();
+    if (!data.movie) {
+      console.error("Film non trouvé ou backend ne renvoie pas de movie");
+      return;
+    }
+
+    setImage(`${backendUrl}/images/${data.movie.cover}`);
+    setShowImageButton(false);
+    console.info("✅ Image mise à jour :", data.movie.cover);
+  } catch (error) {
+    console.error("Erreur lors de la récupération de la cover TMDB :", error);
+  }
+};
+
 export {
   refetchMovieTMDB,
   refetchTitle,
@@ -768,4 +821,5 @@ export {
   refetchCasting,
   refetchTags,
   refetchTrailer,
+  refetchMovieCoverFromTMDB,
 };

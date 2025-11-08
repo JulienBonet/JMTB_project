@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unknown-property */
 /* eslint-disable no-alert */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable react/prop-types */
@@ -59,6 +60,7 @@ import {
   refetchCasting,
   refetchTags,
   refetchTrailer,
+  refetchMovieCoverFromTMDB,
 } from "../../utils/refetchMovieTMDB";
 import purgeOrphanRecords from "../../utils/purgeOrphanRecords";
 import {
@@ -260,7 +262,11 @@ function MovieCard({
 
   const [image, setImage] = useState(`${backendUrl}/images/${movie.cover}`);
   const [showUploadButton, setShowUploadButton] = useState(true);
+  const [showImageButton, setShowImageButton] = useState(true);
   const fileCoverRef = useRef(null);
+
+  console.info("showImageButton", showImageButton);
+  console.info("showUploadButton", showUploadButton);
 
   useEffect(() => {
     if (isModify) {
@@ -924,6 +930,7 @@ function MovieCard({
   };
 
   // DELETE MOVIE
+
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
   const [movieIdToDelete, setMovieIdToDelete] = useState(null);
 
@@ -986,24 +993,93 @@ function MovieCard({
                   ref={fileCoverRef}
                   style={{ display: "none" }}
                 />
-                {showUploadButton ? (
-                  <div className="movie_cover_modify_button">
-                    <FileUploadIcon
-                      className="Item_uploadButton"
-                      onClick={handleUploadClick}
-                    />
-                  </div>
-                ) : (
-                  <div className="movie_cover_modify_button">
-                    <CachedIcon
-                      className="Item_reset_img_Button"
-                      onClick={handleResetImage}
-                    />
+
+                {/* Bouton Upload / Reset */}
+                {showImageButton && (
+                  <div className="movie_cover_modify_buttons_wrapper">
+                    {/* Upload / Reset */}
+                    <div className="movie_cover_modify_button">
+                      {showUploadButton ? (
+                        <Button
+                          variant="outlined"
+                          sx={{
+                            color: "var(--color-03)",
+                            borderColor: "var(--color-03)",
+                            // width: "15%",
+                            transition: "all 0.2s ease-in-out",
+                            borderRadius: "10px",
+                            "&:hover": {
+                              borderColor: "var(--color-06)",
+                              color: "var(--color-06)",
+                              transform: "scale(1.02)",
+                            },
+                          }}
+                          onClick={handleUploadClick}
+                        >
+                          <FileUploadIcon />
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="outlined"
+                          sx={{
+                            color: "var(--color-01)",
+                            borderColor: "var(--color-01)",
+                            // width: "15%",
+                            transition: "all 0.2s ease-in-out",
+                            borderRadius: "10px",
+                            "&:hover": {
+                              borderColor: "var(--color-06)",
+                              color: "var(--color-06)",
+                              transform: "scale(1.02)",
+                            },
+                          }}
+                          onClick={handleResetImage}
+                        >
+                          <CachedIcon />
+                        </Button>
+                      )}
+                    </div>
+
+                    {/* TMDB Sync */}
+                    {idTheMovieDb && (
+                      <div className="movie_cover_modify_button">
+                        <Button
+                          variant="outlined"
+                          sx={{
+                            color: "var(--color-02)",
+                            borderColor: "var(--color-02)",
+                            // width: "15%",
+                            transition: "all 0.2s ease-in-out",
+                            borderRadius: "10px",
+                            "&:hover": {
+                              borderColor: "var(--color-06)",
+                              color: "var(--color-06)",
+                              transform: "scale(1.02)",
+                            },
+                          }}
+                          onClick={() => {
+                            const confirmReplace = window.confirm(
+                              "Êtes-vous sûr de vouloir remplacer définitivement l'image ?"
+                            );
+                            if (confirmReplace) {
+                              refetchMovieCoverFromTMDB(idTheMovieDb, {
+                                movieId: movieData.id,
+                                setImage,
+                                setShowImageButton,
+                              });
+                            }
+                          }}
+                        >
+                          <CloudSyncIcon />
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 )}
               </>
             )}
           </div>
+
           {/* info bloc 1 */}
           {isModify ? (
             <div className="infos_bloc_1_modify">
@@ -1020,42 +1096,54 @@ function MovieCard({
                   <Button
                     variant="outlined"
                     sx={{
-                      color: "var(--color-03)",
-                      borderColor: "var(--color-03)",
+                      color: "var(--color-02)",
+                      borderColor: "var(--color-02)",
                       width: "25%",
+                      transition: "all 0.2s ease-in-out",
+                      "&:hover": {
+                        borderColor: "var(--color-03)",
+                        color: "var(--color-03)",
+                        transform: "scale(1.02)",
+                      },
                     }}
-                    onClick={() =>
-                      refetchMovieTMDB(idTheMovieDb, {
-                        movieData,
-                        setMovieData,
-                        searchGenreInDatabase,
-                        createGenreInDatabase,
-                        setSelectedKinds,
-                        searchStudioInDatabase,
-                        createStudioInDatabase,
-                        setSelectedStudios,
-                        searchCountryInDatabase,
-                        createCountryInDatabase,
-                        setSelectedCountries,
-                        searchDirectorInDatabase,
-                        createDirectorInDatabase,
-                        setSelectedDirectors,
-                        searchScreenwriterInDatabase,
-                        createScreenwriterInDatabase,
-                        setSelectedScreenwriters,
-                        searchCompositorInDatabase,
-                        createCompositorInDatabase,
-                        setSelectedMusic,
-                        searchCastingInDatabase,
-                        createCastingInDatabase,
-                        setSelectedCasting,
-                        searchTagInDatabase,
-                        createTagInDatabase,
-                        setSelectedTags,
-                        setImage,
-                        setShowUploadButton,
-                      })
-                    }
+                    onClick={() => {
+                      const confirmReload = window.confirm(
+                        "⚠️ Êtes-vous sûr de vouloir recharger les informations du film ?\nLes données actuelles seront remplacées."
+                      );
+                      if (confirmReload) {
+                        refetchMovieTMDB(idTheMovieDb, {
+                          movieData,
+                          setMovieData,
+                          searchGenreInDatabase,
+                          createGenreInDatabase,
+                          setSelectedKinds,
+                          searchStudioInDatabase,
+                          createStudioInDatabase,
+                          setSelectedStudios,
+                          searchCountryInDatabase,
+                          createCountryInDatabase,
+                          setSelectedCountries,
+                          searchDirectorInDatabase,
+                          createDirectorInDatabase,
+                          setSelectedDirectors,
+                          searchScreenwriterInDatabase,
+                          createScreenwriterInDatabase,
+                          setSelectedScreenwriters,
+                          searchCompositorInDatabase,
+                          createCompositorInDatabase,
+                          setSelectedMusic,
+                          searchCastingInDatabase,
+                          createCastingInDatabase,
+                          setSelectedCasting,
+                          searchTagInDatabase,
+                          createTagInDatabase,
+                          setSelectedTags,
+                          setImage,
+                          setShowUploadButton,
+                          setShowImageButton,
+                        });
+                      }
+                    }}
                   >
                     <CloudSyncIcon sx={{ mr: 1 }} /> Recharger les infos
                   </Button>
@@ -1627,6 +1715,10 @@ function MovieCard({
                         sx={{
                           color: "var(--color-03)",
                           borderColor: "var(--color-03)",
+                          "&:hover": {
+                            color: "var(--color-06)",
+                            borderColor: "var(--color-06)",
+                          },
                         }}
                         onClick={() => fileInputRef.current?.click()}
                       >
@@ -1678,6 +1770,10 @@ function MovieCard({
                         sx={{
                           color: "var(--color-03)",
                           borderColor: "var(--color-03)",
+                          "&:hover": {
+                            color: "var(--color-06)",
+                            borderColor: "var(--color-06)",
+                          },
                         }}
                         onClick={() => fileInputRef.current?.click()}
                       >
