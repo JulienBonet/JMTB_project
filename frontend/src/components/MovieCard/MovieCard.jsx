@@ -149,6 +149,7 @@ function MovieCard({
 
   const { idTheMovieDb } = movie;
   const isTvShow = movieData.isTvShow === 1;
+  const safeValue = (val) => val ?? "";
 
   // --------- UX FIELDS ------------ //
 
@@ -1068,7 +1069,7 @@ function MovieCard({
                 <TextField
                   label="Title"
                   name="title"
-                  value={movieData.title}
+                  value={safeValue(movieData.title)}
                   onChange={(e) => handleChange(e)}
                   fullWidth
                   sx={textFieldSx}
@@ -1087,7 +1088,7 @@ function MovieCard({
                 <TextField
                   label="Alt Title"
                   name="altTitle"
-                  value={movieData.altTitle || ""}
+                  value={safeValue(movieData.altTitle)}
                   onChange={(e) => handleChange(e)}
                   fullWidth
                   sx={textFieldSx}
@@ -1139,7 +1140,7 @@ function MovieCard({
                 <TextField
                   label="Year"
                   name="year"
-                  value={movieData.year}
+                  value={safeValue(movieData.year)}
                   onChange={(e) => handleChange(e)}
                   fullWidth
                   type="number"
@@ -1161,7 +1162,7 @@ function MovieCard({
                   <TextField
                     label="Durée (minutes)"
                     name="duration"
-                    value={movieData.duration || ""}
+                    value={safeValue(movieData.duration)}
                     onChange={(e) =>
                       setMovieData((prev) => ({
                         ...prev,
@@ -1559,7 +1560,7 @@ function MovieCard({
                 <TextField
                   label="Résumé"
                   name="story"
-                  value={movieData.story}
+                  value={safeValue(movieData.story)}
                   onChange={(e) => handleChange(e)}
                   multiline
                   fullWidth
@@ -1584,7 +1585,7 @@ function MovieCard({
                 <Select
                   id="demo-select-small"
                   name="videoSupport"
-                  value={movieData.videoSupport || ""}
+                  value={safeValue(movieData.videoSupport)}
                   label="Support"
                   onChange={handleFormatSupportChange}
                 >
@@ -1610,7 +1611,7 @@ function MovieCard({
                       <TextField
                         label="Dossier sélectionné"
                         variant="outlined"
-                        value={movieData.path || ""}
+                        value={safeValue(movieData.path)}
                         InputProps={{ readOnly: true }}
                         fullWidth
                       />
@@ -1651,7 +1652,7 @@ function MovieCard({
                       <TextField
                         label="Chemin du dossier"
                         variant="outlined"
-                        value={movieData.path || ""}
+                        value={safeValue(movieData.path)}
                         onChange={(e) => {
                           const inputPath = e.target.value;
                           const cleaned = inputPath
@@ -1701,7 +1702,7 @@ function MovieCard({
                   <TextField
                     label="Taille du fichier"
                     name="fileSize"
-                    value={movieData.fileSize || ""}
+                    value={safeValue(movieData.fileSize)}
                     onChange={(e) => handleChange(e)}
                     fullWidth
                     type="text" // ✅ texte, car inclut unité
@@ -1772,7 +1773,7 @@ function MovieCard({
                 <TextField
                   label="trailer"
                   name="trailer"
-                  value={movieData.trailer || ""}
+                  value={safeValue(movieData.trailer)}
                   onChange={handleChange}
                   fullWidth
                   sx={textFieldSx}
@@ -1799,7 +1800,7 @@ function MovieCard({
               <TextField
                 label="Commentaire"
                 name="comment"
-                value={movieData.comment}
+                value={safeValue(movieData.comment)}
                 onChange={(e) => handleChange(e)}
                 multiline
                 fullWidth

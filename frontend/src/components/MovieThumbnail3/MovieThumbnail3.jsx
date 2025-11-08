@@ -16,7 +16,8 @@ function MovieThumbnail3({ data }) {
   // Initialisation des données du film à partir des props
   const [movieData, setMovieData] = useState(data);
 
-  const { title, year, cover } = movieData;
+  const { title, cover } = movieData;
+  const year = Number(movieData.year) || "";
 
   const [selectedMovie, setSelectedMovie] = useState(null);
 
