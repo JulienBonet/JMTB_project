@@ -79,29 +79,35 @@ const updateImageFromUrl = async (req, res) => {
   try {
     console.info(`🖼️ Téléchargement de l'image depuis : ${imageUrl}`);
 
-    // Télécharger l’image distante
-    const response = await axios.get(imageUrl, { responseType: "arraybuffer" });
+    // 1️⃣ Récupérer l’ancien film pour connaître l’ancienne image
+    const [oldMovie] = await editingMovieModel.findMovieById(id);
+    const oldCover = oldMovie?.cover;
 
-    // Déterminer l’extension à partir de l’URL
+    // 2️⃣ Télécharger la nouvelle image
+    const response = await axios.get(imageUrl, { responseType: "arraybuffer" });
     const ext = path.extname(imageUrl).split("?")[0] || ".jpg";
     const filename = `cover-url-${uuidv4()}${ext}`;
     const filepath = path.join(__dirname, "../../public/images", filename);
 
-    // Sauvegarder le fichier localement
     fs.writeFileSync(filepath, Buffer.from(response.data, "binary"));
 
-    // Mettre à jour la BDD
+    // 3️⃣ Mettre à jour la BDD
     await editingMovieModel.updateMovieImage(filename, id);
 
-    console.info(`✅ Nouvelle image sauvegardée : ${filename}`);
+    // 4️⃣ Supprimer l’ancienne image (si elle existe et n’est pas l’image par défaut)
+    if (oldCover && oldCover !== "00_cover_default.jpg") {
+      const oldPath = path.join(__dirname, "../../public/images", oldCover);
+      if (fs.existsSync(oldPath)) {
+        fs.unlinkSync(oldPath);
+        console.info(`🧹 Ancienne image supprimée : ${oldCover}`);
+      }
+    }
 
-    // Récupérer le film mis à jour via ton modèle
-    const updatedMovie = await editingMovieModel.findMovieById(id);
-
-    res.status(200).json({
-      message: "Image mise à jour avec succès",
-      movie: updatedMovie[0], // car findMovieById retourne un tableau
-    });
+    // 5️⃣ Renvoyer le film mis à jour
+    const [updatedMovie] = await editingMovieModel.findMovieById(id);
+    res
+      .status(200)
+      .json({ message: "Image mise à jour avec succès", movie: updatedMovie });
   } catch (error) {
     console.error("❌ Erreur updateImageFromUrl :", error.message);
     res.status(500).json({
