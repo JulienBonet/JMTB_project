@@ -1,5 +1,10 @@
 // -----------------/ MOVIE DATA FETCH IN MovieCard.jsx/----------------- //
 import axios from "axios";
+import countries from "i18n-iso-countries";
+import frLocale from "i18n-iso-countries/langs/fr.json";
+import { translateCountry } from "./countries";
+
+countries.registerLocale(frLocale);
 
 const refetchMovieTMDB = async (idTheMovieDb, deps) => {
   const {
@@ -125,12 +130,14 @@ const refetchMovieTMDB = async (idTheMovieDb, deps) => {
 
     // Fetch COUNTRY
     const fetchCountry = async (country) => {
-      const countryData = await searchCountryInDatabase(country.name);
+      const countryNameFr = translateCountry(country.iso_3166_1, country.name);
+
+      const countryData = await searchCountryInDatabase(countryNameFr);
       if (countryData) {
         return { id: countryData.id, name: countryData.name };
       }
-      const newCountryData = await createCountryInDatabase(country.name);
-      return { id: newCountryData.id, name: country.name };
+      const newCountryData = await createCountryInDatabase(countryNameFr);
+      return { id: newCountryData.id, name: countryNameFr };
     };
 
     const countriesData = await Promise.all(
@@ -299,44 +306,6 @@ const refetchMovieTMDB = async (idTheMovieDb, deps) => {
       )
     );
     setSelectedTags(tagsData);
-
-    // fetch movie cover
-    // const backendUrl = import.meta.env.VITE_BACKEND_URL;
-    // const posterUrl = moviefetchData.poster_path
-    //   ? `https://image.tmdb.org/t/p/original${moviefetchData.poster_path}`
-    //   : null;
-
-    // if (posterUrl) {
-    //   try {
-    //     const imageResponse = await fetch(
-    //       `${backendUrl}/api/movie/${movieData.id}/image-from-url`,
-    //       {
-    //         method: "PUT",
-    //         headers: {
-    //           "Content-Type": "application/json",
-    //         },
-    //         body: JSON.stringify({ imageUrl: posterUrl }),
-    //       }
-    //     );
-
-    //     if (imageResponse.ok) {
-    //       const { movie: updatedMovie } = await imageResponse.json();
-    //       setImage(`${backendUrl}/images/${updatedMovie.cover}`);
-    //       console.info(
-    //         "✅ Image téléchargée et associée :",
-    //         updatedMovie.cover
-    //       );
-    //       setShowImageButton(false);
-    //     } else {
-    //       console.error("Erreur lors de la sauvegarde de l'image TMDB");
-    //     }
-    //   } catch (error) {
-    //     console.error(
-    //       "Erreur réseau lors de la sauvegarde de l'image TMDB :",
-    //       error
-    //     );
-    //   }
-    // }
   } catch (error) {
     console.error("Erreur refetchMovieTMDB:", error);
   }
@@ -507,10 +476,11 @@ const refetchCountries = async (
   const { moviefetchData } = await getTmdbData(idTheMovieDb);
 
   const fetchCountry = async (country) => {
-    const countryData = await searchCountryInDatabase(country.name);
+    const countryNameFr = translateCountry(country.iso_3166_1, country.name);
+    const countryData = await searchCountryInDatabase(countryNameFr);
     if (countryData) return { id: countryData.id, name: countryData.name };
-    const newCountryData = await createCountryInDatabase(country.name);
-    return { id: newCountryData.id, name: country.name };
+    const newCountryData = await createCountryInDatabase(countryNameFr);
+    return { id: newCountryData.id, name: countryNameFr };
   };
 
   const countriesData = await Promise.all(
