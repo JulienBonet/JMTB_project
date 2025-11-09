@@ -2,6 +2,7 @@
 /* eslint-disable prefer-destructuring */
 const fs = require("fs");
 const path = require("path");
+const { resizeImage } = require("../middlewares/resizeImage");
 const editingModel = require("../models/editingModel");
 
 // EDIT DIRECTOR
@@ -93,6 +94,7 @@ const uploadDirectorImage = async (req, res) => {
 
     // Mettre à jour la nouvelle image
     const imageUrl = req.file.filename;
+    await resizeImage(req.multerType, imageUrl);
     const result = await editingModel.editDirectorImage(imageUrl, id);
 
     if (result.affectedRows > 0) {
@@ -238,7 +240,7 @@ const uploadCastingImage = async (req, res) => {
     }
 
     const imageUrl = req.file.filename;
-
+    await resizeImage(req.multerType, imageUrl);
     const result = await editingModel.editCastingImage(imageUrl, id);
 
     if (result.affectedRows > 0) {
@@ -390,7 +392,7 @@ const uploadScreenwriterImage = async (req, res) => {
     }
 
     const imageUrl = req.file.filename;
-
+    await resizeImage(req.multerType, imageUrl);
     const result = await editingModel.editScreenwriterImage(imageUrl, id);
 
     if (result.affectedRows > 0) {
@@ -540,7 +542,7 @@ const uploadCompositorImage = async (req, res) => {
     }
 
     const imageUrl = req.file.filename;
-
+    await resizeImage(req.multerType, imageUrl);
     const result = await editingModel.editCompositorImage(imageUrl, id);
 
     if (result.affectedRows > 0) {
@@ -687,7 +689,7 @@ const uploadStudioImage = async (req, res) => {
     }
 
     const imageUrl = req.file.filename;
-
+    await resizeImage(req.multerType, imageUrl);
     const result = await editingModel.editStudioImage(imageUrl, id);
 
     if (result.affectedRows > 0) {
@@ -823,7 +825,7 @@ const uploadThemaImage = async (req, res) => {
     }
 
     const imageUrl = req.file.filename;
-
+    await resizeImage(req.multerType, imageUrl);
     const result = await editingModel.editThemaImage(imageUrl, id);
 
     if (result.affectedRows > 0) {
@@ -959,7 +961,7 @@ const uploadCountryImage = async (req, res) => {
     }
 
     const imageUrl = req.file.filename;
-
+    await resizeImage(req.multerType, imageUrl);
     const result = await editingModel.editCountryImage(imageUrl, id);
 
     if (result.affectedRows > 0) {

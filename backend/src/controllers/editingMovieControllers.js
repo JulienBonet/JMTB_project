@@ -44,35 +44,10 @@ const downloadPoster = async (posterPath) => {
 
   await downloadImage(posterUrl, filepath);
 
-  // // ✅ Redimensionne juste après le téléchargement
-  // await resizeImage("cover", filename);
-
   console.info(`✅ Image TMDB téléchargée et redimensionnée : ${filename}`);
 
   return filename;
 }; // end const downloadPoster
-
-// const uploadLocalCover = async (localCoverPath, coverUrl) => {
-//   const extension = path.extname(localCoverPath);
-//   const filename = `cover-${uuidv4()}${extension}`;
-//   const targetPath = path.join(__dirname, "../../public/images", filename);
-
-//   return new Promise((resolve, reject) => {
-//     const readStream = fs.createReadStream(localCoverPath);
-//     const writeStream = fs.createWriteStream(targetPath);
-
-//     readStream
-//       .pipe(writeStream)
-//       .on("finish", () => {
-//         console.info("Image locale téléchargée avec succès : ", targetPath);
-//         resolve(filename);
-//       })
-//       .on("error", (error) => {
-//         console.error("Erreur lors de l'upload de l'image locale :", error);
-//         reject(error);
-//       });
-//   });
-// }; // end const uploadLocalCover
 
 const uploadLocalCover = async (localCoverPath, coverUrl) => {
   const extension = path.extname(localCoverPath);
@@ -85,12 +60,8 @@ const uploadLocalCover = async (localCoverPath, coverUrl) => {
 
     readStream
       .pipe(writeStream)
-      .on("finish", async () => {
+      .on("finish", () => {
         console.info("Image locale téléchargée avec succès : ", targetPath);
-
-        // // ✅ Redimensionnement juste après l’écriture
-        // await resizeImage("cover", filename);
-
         resolve(filename);
       })
       .on("error", (error) => {
@@ -98,7 +69,33 @@ const uploadLocalCover = async (localCoverPath, coverUrl) => {
         reject(error);
       });
   });
-};
+}; // end const uploadLocalCover
+
+// const uploadLocalCover = async (localCoverPath, coverUrl) => {
+//   const extension = path.extname(localCoverPath);
+//   const filename = `cover-${uuidv4()}${extension}`;
+//   const targetPath = path.join(__dirname, "../../public/images", filename);
+
+//   return new Promise((resolve, reject) => {
+//     const readStream = fs.createReadStream(localCoverPath);
+//     const writeStream = fs.createWriteStream(targetPath);
+
+//     readStream
+//       .pipe(writeStream)
+//       .on("finish", async () => {
+//         console.info("Image locale téléchargée avec succès : ", targetPath);
+
+//         // // ✅ Redimensionnement juste après l’écriture
+//         // await resizeImage("cover", filename);
+
+//         resolve(filename);
+//       })
+//       .on("error", (error) => {
+//         console.error("Erreur lors de l'upload de l'image locale :", error);
+//         reject(error);
+//       });
+//   });
+// };
 
 const updateImageFromUrl = async (req, res) => {
   const { id } = req.params;

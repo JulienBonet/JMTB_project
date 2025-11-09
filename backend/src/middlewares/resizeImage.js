@@ -25,9 +25,12 @@ async function resizeImage(type, filename) {
       case "compositor":
       case "studio":
       case "thema":
-      case "country":
         width = 500;
         height = 500;
+        break;
+      case "country":
+        width = 500;
+        height = 281;
         break;
       default:
         console.warn(
