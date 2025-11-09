@@ -6,7 +6,9 @@ function YearDropdown({ onYearChange, selectedYearData, search }) {
   const [decades, setDecades] = useState([]);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1200);
 
+  //------------------
   // REQUEST ALL YEAR
+  //------------------
   useEffect(() => {
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/decades`)
       .then((response) => {
@@ -40,6 +42,9 @@ function YearDropdown({ onYearChange, selectedYearData, search }) {
     </option>
   ));
 
+  //------------------
+  // RETURN
+  //------------------
   return (
     <select
       onChange={handleChange}

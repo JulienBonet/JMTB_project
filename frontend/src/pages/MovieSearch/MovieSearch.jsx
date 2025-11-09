@@ -8,6 +8,7 @@ import "./movieSearch.css";
 import "./movieSearchMediaQueries.css";
 import "../../assets/css/scrollButton.css";
 import CachedIcon from "@mui/icons-material/Cached";
+import { ToggleButton, ToggleButtonGroup } from "@mui/material";
 import AlphabeticBtn from "../../components/AlphabeticBtn/AlphabeticBtn";
 import ChronologicBtn from "../../components/ChronologicBtn/ChronologicBtn";
 import YearDropdown from "../../components/YearOption/YearDropdown";
@@ -20,6 +21,7 @@ import LoaderCowardlySquid from "../../components/LoaderCowardlySquid/LoaderCowa
 function MovieSearch() {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
+  const [selectedTvShow, setSelectedTvShow] = useState("all");
   const [selectedKind, setSelectedKind] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
@@ -29,6 +31,9 @@ function MovieSearch() {
     useState(true);
   const [isLoading, setIsLoading] = useState(true);
 
+  //--------------
+  // CHARGEMENT
+  //--------------
   useEffect(() => {
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movies/search-filter`)
       .then((response) => {
@@ -45,58 +50,84 @@ function MovieSearch() {
       });
   }, []);
 
+  //--------------
   // SEARCH BAR
+  //--------------
   const handleTyping = (e) => {
     let { value } = e.target;
     value = value.replace(/-/g, "").toLowerCase();
     setSearch(value);
   };
 
-  // FILTERS OPTIONS
+  //----------------------------------
+  // FETCH DATA BACKEND SELON ISTVSHOW
+  //----------------------------------
   useEffect(() => {
-    setIsLoading(true); // Définir isLoading à true au début du chargement
+    setIsLoading(true);
+    let url = `${import.meta.env.VITE_BACKEND_URL}/api/movies/filter/tvshow`;
 
-    // Simuler une opération de chargement asynchrone
-    const loadData = () => {
-      // Appliquer les filtres aux données initialData
-      let filteredMovies = data.filter((movie) =>
-        movie.title
-          .toString()
-          .toLowerCase()
-          .replace(/-/g, "")
-          .includes(search.toLowerCase())
+    if (selectedTvShow === "movies") url += "?isTvShow=0";
+    else if (selectedTvShow === "series") url += "?isTvShow=1";
+
+    fetch(url)
+      .then((res) => res.json())
+      .then((moviesData) => {
+        setData(moviesData);
+        setFilteredMovies(moviesData);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.error(err);
+        setIsLoading(false);
+      });
+  }, [selectedTvShow]);
+
+  //-----------------
+  // FILTERS OPTIONS
+  //-----------------
+  useEffect(() => {
+    setIsLoading(true); // loader actif pendant le fetch
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movies/search-filter`)
+      .then((response) => {
+        if (!response.ok) throw new Error("Network response was not ok");
+        return response.json();
+      })
+      .then((moviesData) => {
+        setData(moviesData);
+        setFilteredMovies(moviesData); // remplir la liste filtrée au départ
+        setIsLoading(false); // loader désactivé après réception des données
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+        setIsLoading(false); // loader désactivé même en cas d'erreur
+      });
+  }, []);
+
+  useEffect(() => {
+    let filteredMovies = data.filter((movie) =>
+      movie.title.toLowerCase().replace(/-/g, "").includes(search.toLowerCase())
+    );
+
+    if (selectedKind) {
+      filteredMovies = filteredMovies.filter((movie) =>
+        movie.genres?.split(", ").includes(selectedKind)
       );
+    }
 
-      if (selectedKind) {
-        filteredMovies = filteredMovies.filter((movie) =>
-          movie.genres?.split(", ").includes(selectedKind)
-        );
-      }
+    if (selectedYear) {
+      filteredMovies = filteredMovies.filter(
+        (movie) =>
+          Math.floor(movie.year / 10) * 10 === parseInt(selectedYear, 10)
+      );
+    }
 
-      // Filtre par année (décennie)
-      if (selectedYear) {
-        filteredMovies = filteredMovies.filter(
-          (movie) =>
-            Math.floor(movie.year / 10) * 10 === parseInt(selectedYear, 10)
-        );
-      }
+    if (selectedCountry) {
+      filteredMovies = filteredMovies.filter((movie) =>
+        movie.countries?.split(", ").includes(selectedCountry)
+      );
+    }
 
-      if (selectedCountry) {
-        filteredMovies = filteredMovies.filter((movie) =>
-          movie.countries?.split(", ").includes(selectedCountry)
-        );
-      }
-
-      // Mettre à jour l'état des données filtrées
-      setFilteredMovies(filteredMovies);
-      setIsLoading(false);
-    };
-
-    // Simuler une durée de chargement
-    const timeout = setTimeout(loadData, 1000);
-
-    // Nettoyage lors du démontage du composant
-    return () => clearTimeout(timeout);
+    setFilteredMovies(filteredMovies);
   }, [data, search, selectedKind, selectedYear, selectedCountry]);
 
   const handleKindChange = (selectedKind) => {
@@ -116,12 +147,17 @@ function MovieSearch() {
     setSelectedKind("");
     setSelectedYear("");
     setSelectedCountry("");
+    setSelectedTvShow("all");
   };
 
+  //-----------------
   // MOVIE AMOUNT
+  //-----------------
   const movieAmount = filteredMovies.length;
 
+  //------------------------
   // ALPHABETICAL SORT BTN
+  //------------------------
   const ignoreSuffixes = [
     "le",
     "la",
@@ -160,7 +196,9 @@ function MovieSearch() {
     setIsAscending(!isAscending);
   };
 
+  //------------------------
   // CHRONOLIGICAL SORT BTN
+  //------------------------
   const sortChronologically = () => {
     const sortedMovies = [...filteredMovies].sort((a, b) => {
       return isChronologicalAscending ? a.year - b.year : b.year - a.year;
@@ -173,7 +211,9 @@ function MovieSearch() {
     setIsChronologicalAscending(!isChronologicalAscending);
   };
 
+  //-------------------------------------------------------
   // MISE A JOUR AFFICHAGE SI UPDATE MOVIE DANS MOVIECARD
+  //-------------------------------------------------------
   const handleUpdateMovie = async (updatedMovieData) => {
     const updatedMovies = data.map((movie) =>
       movie.id === updatedMovieData.id ? updatedMovieData : movie
@@ -182,13 +222,38 @@ function MovieSearch() {
     setFilteredMovies(updatedMovies); // Mettez à jour la liste filtrée si nécessaire
   };
 
+  //-------------------------------------------------------
   // MISE A JOUR AFFICHAGE SI DELETE MOVIE DANS MOVIECARD
+  //-------------------------------------------------------
   const handleDeleteMovie = (movieId) => {
     const updatedMovies = data.filter((movie) => movie.id !== movieId);
     setData(updatedMovies);
     setFilteredMovies(updatedMovies); // Mettez à jour la liste filtrée
   };
 
+  //-----------
+  // SX STYLES
+  //-----------
+
+  const searchToggleGroupButtonSx = {
+    borderRadius: "8px",
+  };
+
+  const searchToggleButtonSx = {
+    color: "var(--color-01)",
+    border: "solid 1px white",
+    textTransform: "none",
+    "&.Mui-selected": {
+      color: "var(--color-02)",
+    },
+    "&:hover": {
+      color: "var(--color-03)",
+    },
+  };
+
+  //-----------
+  // RETURN
+  //-----------
   return (
     <main className="Main_movieSearchPage">
       <section className="search_bar_contents">
@@ -217,11 +282,40 @@ function MovieSearch() {
               search={search}
               selectedYearData={selectedYear}
             />
+
+            <ToggleButtonGroup
+              value={selectedTvShow}
+              exclusive
+              className="tvShowToggleGroup"
+              onChange={(e, newValue) =>
+                newValue && setSelectedTvShow(newValue)
+              }
+              sx={searchToggleGroupButtonSx}
+            >
+              <ToggleButton value="all" sx={searchToggleButtonSx}>
+                Tous
+              </ToggleButton>
+              <ToggleButton value="movies" sx={searchToggleButtonSx}>
+                Films
+              </ToggleButton>
+              <ToggleButton value="series" sx={searchToggleButtonSx}>
+                Séries
+              </ToggleButton>
+            </ToggleButtonGroup>
+
             <AlphabeticBtn onClick={handleAlphabeticBtnClick} />
             <ChronologicBtn onClick={handleChronologicBtnClick} />
             <CachedIcon
               className="reset_search_btn"
               onClick={handleResetSearch}
+            />
+          </div>
+          <div className="search_bar_container_responsive">
+            <input
+              value={search}
+              onChange={handleTyping}
+              className="search_bar"
+              placeholder="recherche"
             />
           </div>
         </section>

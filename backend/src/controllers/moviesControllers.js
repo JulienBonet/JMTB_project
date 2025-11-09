@@ -267,6 +267,17 @@ const getAllForSearchFilter = async (req, res, next) => {
   }
 };
 
+const getByTvShow = async (req, res) => {
+  try {
+    const { isTvShow } = req.query; // "0", "1" ou vide
+    const [rows] = await moviesModel.findByTvShow(isTvShow);
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Erreur serveur" });
+  }
+};
+
 module.exports = {
   getAll,
   getById,
@@ -291,4 +302,5 @@ module.exports = {
   getAllByCountrySorted3,
   getAllDecades,
   getAllForSearchFilter,
+  getByTvShow,
 };

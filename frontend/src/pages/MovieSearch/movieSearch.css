@@ -24,10 +24,13 @@
   border-radius: 25px;
   padding: 10px;
 }
+.search_bar_container_responsive{
+  display: none;
+}
 
 .search_bar {
   padding: 10px;
-  width: 90%;
+  width: 80%;
 }
 
 .dropdown_search_container {
@@ -180,4 +183,3 @@
   border-color: var(--color-02);
   transform: scale(0.95);
 }
-

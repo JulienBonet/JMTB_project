@@ -6,7 +6,9 @@ function KindsDropdown({ onKindChange, selectedKindData, search }) {
   const [kinds, setKinds] = useState([]);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1200);
 
+  //------------------
   // REQUEST ALL KINDS
+  //------------------
   useEffect(() => {
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/kinds`)
       .then((response) => {
@@ -26,19 +28,23 @@ function KindsDropdown({ onKindChange, selectedKindData, search }) {
     const handleResize = () => setIsMobile(window.innerWidth <= 1200);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [search]);
+  }, [search]); // end useEffect
 
   const handleChange = (event) => {
     const selectedKindId = event.target.value;
     onKindChange(selectedKindId);
   };
 
+  // Mapping des genres pour créer les options de sélection
   const options = kinds.map((kind) => (
     <option key={kind.id} value={kind.name}>
       {kind.name}
     </option>
   ));
 
+  //------------------
+  // RETURN
+  //------------------
   return (
     <select
       onChange={handleChange}

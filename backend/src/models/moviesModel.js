@@ -146,12 +146,29 @@ const findAllForSearchFilter = () => {
   );
 };
 
-// // requête limitée pour dev responvie
-// const findAllForSearchFilter = () => {
-//   return db.query(
-//     "SELECT movies.*, GROUP_CONCAT(DISTINCT genre.name SEPARATOR ', ') AS genres, GROUP_CONCAT(DISTINCT country.name SEPARATOR ', ') AS countries FROM movies LEFT JOIN movie_genre ON movies.id = movie_genre.movieId LEFT JOIN genre ON movie_genre.genreId = genre.id LEFT JOIN movie_country ON movies.id = movie_country.movieId LEFT JOIN country ON movie_country.countryId = country.id GROUP BY movies.id, movies.title, movies.altTitle, movies.year, movies.duration, movies.cover, movies.trailer, movies.pitch, movies.story, movies.location, movies.videoFormat, movies.comment, movies.videoSupport, movies.fileSize, movies.idTheMovieDb, movies.idIMDb ORDER BY movies.id DESC LIMIT 30;"
-//   );
-// };
+const findByTvShow = (isTvShow) => {
+  let sql = `
+    SELECT movies.*, 
+      GROUP_CONCAT(DISTINCT genre.name SEPARATOR ', ') AS genres, 
+      GROUP_CONCAT(DISTINCT country.name SEPARATOR ', ') AS countries
+    FROM movies
+    LEFT JOIN movie_genre ON movies.id = movie_genre.movieId
+    LEFT JOIN genre ON movie_genre.genreId = genre.id
+    LEFT JOIN movie_country ON movies.id = movie_country.movieId
+    LEFT JOIN country ON movie_country.countryId = country.id
+  `;
+
+  // Si isTvShow est "0" ou "1", ajouter la condition
+  if (isTvShow === "0" || isTvShow === "1") {
+    sql += ` WHERE movies.isTvShow = ?`;
+    sql += " GROUP BY movies.id ORDER BY movies.id DESC;";
+    return db.query(sql, [isTvShow]);
+  }
+
+  // Sinon, tous les films et séries
+  sql += " GROUP BY movies.id ORDER BY movies.id DESC;";
+  return db.query(sql, []);
+};
 
 module.exports = {
   findAll,
@@ -172,4 +189,5 @@ module.exports = {
   findAllDecades,
   findMoviesByDecade,
   findAllForSearchFilter,
+  findByTvShow,
 };

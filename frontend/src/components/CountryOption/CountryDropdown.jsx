@@ -6,7 +6,9 @@ function CountryDropdown({ onCountryChange, selectedCountryData, search }) {
   const [countries, setCountries] = useState([]);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 1200);
 
+  //----------------------
   // REQUEST ALL COUNTRIES
+  //----------------------
   useEffect(() => {
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/country`)
       .then((response) => {
@@ -23,7 +25,7 @@ function CountryDropdown({ onCountryChange, selectedCountryData, search }) {
       });
 
     // 🔹 Gérer le passage desktop ↔ mobile dynamiquement
-    const handleResize = () => setIsMobile(window.innerWidth <= 1200);
+    const handleResize = () => setIsMobile(window.innerWidth <= 1280);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, [search]);
@@ -33,12 +35,16 @@ function CountryDropdown({ onCountryChange, selectedCountryData, search }) {
     onCountryChange(selectedCountryId);
   };
 
+  // Mapping des pays pour créer les options de sélection
   const options = countries.map((country) => (
     <option key={country.id} value={country.name}>
       {country.name}
     </option>
   ));
 
+  //------------------
+  // RETURN
+  //------------------
   return (
     <select
       onChange={handleChange}
