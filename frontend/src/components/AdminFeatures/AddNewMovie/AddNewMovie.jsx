@@ -878,15 +878,6 @@ function AddNewMovie() {
                       : "year_duration_Btn_AddNewMovie"
                   }
                 >
-                  {/* movie idTheMovieDb */}
-                  <TextField
-                    id="filled-basic"
-                    label="Id MovieDb"
-                    variant="outlined"
-                    sx={{ flexGrow: 1 }}
-                    value={movie.idTheMovieDb}
-                    onChange={handleChangeMovieDb}
-                  />
                   {/* movie year */}
                   <TextField
                     name="year"
@@ -995,8 +986,27 @@ function AddNewMovie() {
                 />
               </Box>
             </div>
-
             <div className="Adm_l1b">
+              {/* movie idTheMovieDb */}
+              <Box
+                component="form"
+                sx={{ width: "30%" }}
+                noValidate
+                autoComplete="off"
+                display="flex"
+                gap={2}
+                p={2}
+              >
+                <TextField
+                  id="filled-basic"
+                  label="Id MovieDb"
+                  variant="outlined"
+                  placeholder="movie/12345 ou tv/12345"
+                  sx={{ flexGrow: 1 }}
+                  value={movie.idTheMovieDb}
+                  onChange={handleChangeMovieDb}
+                />
+              </Box>
               {/* movie KINDS */}
               <div className="adm-l1_item">
                 <Box
