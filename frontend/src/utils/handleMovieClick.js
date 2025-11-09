@@ -3,6 +3,7 @@ import axios from "axios";
 import countries from "i18n-iso-countries";
 import frLocale from "i18n-iso-countries/langs/fr.json";
 import { translateCountry } from "./countries";
+import { translateLanguage } from "./languages";
 
 countries.registerLocale(frLocale);
 
@@ -155,47 +156,7 @@ const handleMovieClick = async (movieId, mediaType, deps) => {
     setSelectedStudios(studiosData);
 
     // Fetch COUNTRY
-    // const fetchCountry = async (country) => {
-    //   const countryData = await searchCountryInDatabase(country.name);
-    //   if (countryData) {
-    //     return { id: countryData.id, name: countryData.name };
-    //   }
-    //   const newCountryData = await createCountryInDatabase(country.name);
-    //   return { id: newCountryData.id, name: country.name };
-    // };
 
-    // const countriesData = await Promise.all(
-    //   movieData.production_countries.map(fetchCountry)
-    // );
-    // setSelectedCountries(countriesData);
-
-    // // Fetch COUNTRY avec traduction en français
-    // const fetchCountry = async (country) => {
-    //   // country.iso_3166_1 = "US", "FR", etc.
-    //   // Récupère le nom en français via le code ISO
-    //   const countryNameFr =
-    //     countries.getName(country.iso_3166_1, "fr") || country.name;
-
-    //   // Cherche le pays dans la base avec le nom français
-    //   const countryData = await searchCountryInDatabase(countryNameFr);
-    //   if (countryData) {
-    //     return { id: countryData.id, name: countryData.name };
-    //   }
-
-    //   // Sinon, crée le pays dans la base avec le nom français
-    //   const newCountryData = await createCountryInDatabase(countryNameFr);
-    //   return { id: newCountryData.id, name: countryNameFr };
-    // };
-
-    // // On map tous les pays du film
-    // const countriesData = await Promise.all(
-    //   movieData.production_countries.map(fetchCountry)
-    // );
-
-    // // On met à jour le state
-    // setSelectedCountries(countriesData);
-
-    // ----------------- FETCH COUNTRY ----------------- //
     const fetchCountry = async (country) => {
       // Traduction + correction automatique
       const countryNameFr = translateCountry(country.iso_3166_1, country.name);
@@ -221,16 +182,16 @@ const handleMovieClick = async (movieId, mediaType, deps) => {
 
     // Fetch LANGUAGE
     const fetchLanguage = async (language) => {
-      const languageData = await searchLanguageInDatabase(
-        language.english_name
+      const languageNameFr = translateLanguage(
+        language.iso_639_1,
+        language.name
       );
+      const languageData = await searchLanguageInDatabase(languageNameFr);
       if (languageData) {
         return { id: languageData.id, name: languageData.name };
       }
-      const newLanguageData = await createLanguageInDatabase(
-        language.english_name
-      );
-      return { id: newLanguageData.id, name: language.english_name };
+      const newLanguageData = await createLanguageInDatabase(languageNameFr);
+      return { id: newLanguageData.id, name: languageNameFr };
     };
 
     const languagesData = await Promise.all(

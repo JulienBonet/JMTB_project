@@ -1,4 +1,5 @@
-// utils/countries.js
+// UTILITAIRE DE TRADUCTION DE NOMS PAYS //
+
 import countries from "i18n-iso-countries";
 import frLocale from "i18n-iso-countries/langs/fr.json";
 
