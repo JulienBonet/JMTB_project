@@ -5,6 +5,7 @@ const express = require("express");
 const router = express.Router();
 // const path = require("path");
 const { fileUpload, setType } = require("../middlewares/fileUpload");
+const { resizeImage } = require("../middlewares/resizeImage");
 
 const editingMovieController = require("../controllers/editingMovieControllers");
 
@@ -48,6 +49,11 @@ router.post(
       }
 
       const coverFilename = req.file.filename;
+
+      console.info("Nom du fichier pour la base de données:", coverFilename);
+
+      // ✅ Redimensionnement juste après l’upload
+      await resizeImage(req.multerType, coverFilename);
 
       console.info("Nom du fichier pour la base de données:", coverFilename);
 

@@ -10,6 +10,7 @@ const axios = require("axios");
 const fs = require("fs");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
+const { resizeImage } = require("../middlewares/resizeImage");
 const editingController = require("./editingControllers");
 const editingModel = require("../models/editingModel");
 const editingMovieModel = require("../models/editingMovieModel");
@@ -43,8 +44,35 @@ const downloadPoster = async (posterPath) => {
 
   await downloadImage(posterUrl, filepath);
 
+  // // ✅ Redimensionne juste après le téléchargement
+  // await resizeImage("cover", filename);
+
+  console.info(`✅ Image TMDB téléchargée et redimensionnée : ${filename}`);
+
   return filename;
 }; // end const downloadPoster
+
+// const uploadLocalCover = async (localCoverPath, coverUrl) => {
+//   const extension = path.extname(localCoverPath);
+//   const filename = `cover-${uuidv4()}${extension}`;
+//   const targetPath = path.join(__dirname, "../../public/images", filename);
+
+//   return new Promise((resolve, reject) => {
+//     const readStream = fs.createReadStream(localCoverPath);
+//     const writeStream = fs.createWriteStream(targetPath);
+
+//     readStream
+//       .pipe(writeStream)
+//       .on("finish", () => {
+//         console.info("Image locale téléchargée avec succès : ", targetPath);
+//         resolve(filename);
+//       })
+//       .on("error", (error) => {
+//         console.error("Erreur lors de l'upload de l'image locale :", error);
+//         reject(error);
+//       });
+//   });
+// }; // end const uploadLocalCover
 
 const uploadLocalCover = async (localCoverPath, coverUrl) => {
   const extension = path.extname(localCoverPath);
@@ -57,8 +85,12 @@ const uploadLocalCover = async (localCoverPath, coverUrl) => {
 
     readStream
       .pipe(writeStream)
-      .on("finish", () => {
+      .on("finish", async () => {
         console.info("Image locale téléchargée avec succès : ", targetPath);
+
+        // // ✅ Redimensionnement juste après l’écriture
+        // await resizeImage("cover", filename);
+
         resolve(filename);
       })
       .on("error", (error) => {
@@ -66,7 +98,7 @@ const uploadLocalCover = async (localCoverPath, coverUrl) => {
         reject(error);
       });
   });
-}; // end const uploadLocalCover
+};
 
 const updateImageFromUrl = async (req, res) => {
   const { id } = req.params;
@@ -90,6 +122,11 @@ const updateImageFromUrl = async (req, res) => {
     const filepath = path.join(__dirname, "../../public/images", filename);
 
     fs.writeFileSync(filepath, Buffer.from(response.data, "binary"));
+
+    // ✅ Redimensionne juste après le téléchargement
+    await resizeImage("cover", filename);
+
+    console.info(`✅ Image TMDB téléchargée et redimensionnée : ${filename}`);
 
     // 3️⃣ Mettre à jour la BDD
     await editingMovieModel.updateMovieImage(filename, id);
@@ -152,7 +189,7 @@ const addMovie = async (req, res) => {
       episodeDuration,
       comment,
     } = req.body;
-    console.info("genres in create movie", req.body);
+    console.info("fields in create movie", req.body);
 
     if (!title) {
       return res.status(400).json({ message: "Movie's title is required" });
@@ -775,6 +812,9 @@ const editMovieImage = async (req, res) => {
       }
     }
 
+    // 🔹 Redimensionnement de la nouvelle cover
+    await resizeImage("cover", req.file.filename);
+
     // Mettre à jour la nouvelle image
     const imageUrl = req.file.filename;
     const result = await editingMovieModel.updateMovieImage(imageUrl, id);
@@ -794,55 +834,6 @@ const editMovieImage = async (req, res) => {
     return res.status(500).json({ message: "Error updating image" });
   }
 };
-
-// // pour le cas refecth in MovieCard.jsx
-// const updateCoverByFilename = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const { cover } = req.body;
-
-//     if (!cover) {
-//       return res.status(400).json({ message: "Cover filename is required" });
-//     }
-
-//     // Vérifier que le film existe
-//     const movie = await editingMovieModel.findMovieById(id);
-//     if (!movie || movie.length === 0) {
-//       return res.status(404).json({ message: "Movie not found" });
-//     }
-
-//     const currentImage = movie[0].cover;
-
-//     // Supprimer l'ancienne image si ce n'est pas l'image par défaut
-//     if (currentImage && currentImage !== "00_cover_default.jpg") {
-//       const oldImagePath = path.join(
-//         __dirname,
-//         "../../public/images",
-//         currentImage
-//       );
-//       if (fs.existsSync(oldImagePath)) {
-//         fs.unlinkSync(oldImagePath);
-//         console.info("Ancienne image supprimée :", oldImagePath);
-//       }
-//     }
-
-//     // Mettre à jour la BDD avec la nouvelle cover
-//     const result = await editingMovieModel.updateMovieImage(cover, id);
-
-//     if (result.affectedRows > 0) {
-//       const updatedMovie = await editingMovieModel.findMovieById(id);
-//       return res.status(200).json({
-//         message: "Cover successfully updated from TMDB",
-//         movie: updatedMovie[0],
-//       });
-//     }
-
-//     return res.status(500).json({ message: "Database update failed" });
-//   } catch (error) {
-//     console.error("Erreur updateCoverByFilename :", error);
-//     return res.status(500).json({ message: "Internal Server Error" });
-//   }
-// };
 
 const editMovieById = async (req, res) => {
   try {

@@ -130,13 +130,13 @@ function MovieCard({
     idTheMovieDb: movie.idTheMovieDb || "",
   });
 
-  useEffect(() => {
-    console.info("movie in MovieCard", movie);
-  }, [movie]);
+  // useEffect(() => {
+  //   console.info("movie in MovieCard", movie);
+  // }, [movie]);
 
-  useEffect(() => {
-    console.info("movieData1 in MovieCard", movieData);
-  }, [movieData]);
+  // useEffect(() => {
+  //   console.info("movieData1 in MovieCard", movieData);
+  // }, [movieData]);
 
   const {
     genres,
@@ -264,9 +264,6 @@ function MovieCard({
   const [showUploadButton, setShowUploadButton] = useState(true);
   const [showImageButton, setShowImageButton] = useState(true);
   const fileCoverRef = useRef(null);
-
-  console.info("showImageButton", showImageButton);
-  console.info("showUploadButton", showUploadButton);
 
   useEffect(() => {
     if (isModify) {
