@@ -377,17 +377,17 @@ const fetchOrCreateEntity = async (entity, searchFunc, createFunc) => {
 // ------------------
 // FETCH infos
 // ------------------
-// refetchTitle.js
-const refetchTitle = async (idTheMovieDb, { movieData, setMovieData }) => {
-  const { moviefetchData } = await getTmdbData(idTheMovieDb);
-  const mediaType = moviefetchData.first_air_date ? "tv" : "movie";
-  setMovieData({
-    ...movieData,
-    title: mediaType === "tv" ? moviefetchData.name : moviefetchData.title,
-  });
-};
+// refetchTitle (! XX provoque la creation d'un nouveau film XX !)
+// const refetchTitle = async (idTheMovieDb, { movieData, setMovieData }) => {
+//   const { moviefetchData } = await getTmdbData(idTheMovieDb);
+//   const mediaType = moviefetchData.first_air_date ? "tv" : "movie";
+//   setMovieData({
+//     ...movieData,
+//     title: mediaType === "tv" ? moviefetchData.name : moviefetchData.title,
+//   });
+// };
 
-// refetchAltTitle.js
+// refetchAltTitle
 const refetchAltTitle = async (idTheMovieDb, { movieData, setMovieData }) => {
   const { moviefetchData } = await getTmdbData(idTheMovieDb);
   const mediaType = moviefetchData.first_air_date ? "tv" : "movie";
@@ -408,7 +408,7 @@ const refetchAltTitle = async (idTheMovieDb, { movieData, setMovieData }) => {
   setMovieData({ ...movieData, altTitle });
 };
 
-// refetchYear.js
+// refetchYear
 const refetchYear = async (idTheMovieDb, { movieData, setMovieData }) => {
   const { moviefetchData } = await getTmdbData(idTheMovieDb);
   const mediaType = moviefetchData.first_air_date ? "tv" : "movie";
@@ -422,7 +422,7 @@ const refetchYear = async (idTheMovieDb, { movieData, setMovieData }) => {
   });
 };
 
-// refetchDuration.js
+// refetchDuration
 const refetchDuration = async (idTheMovieDb, { movieData, setMovieData }) => {
   const { moviefetchData } = await getTmdbData(idTheMovieDb);
   const mediaType = moviefetchData.first_air_date ? "tv" : "movie";
@@ -435,7 +435,7 @@ const refetchDuration = async (idTheMovieDb, { movieData, setMovieData }) => {
   });
 };
 
-// refetchStory.js
+// refetchStory
 const refetchStory = async (idTheMovieDb, { movieData, setMovieData }) => {
   const { moviefetchData } = await getTmdbData(idTheMovieDb);
   setMovieData({ ...movieData, story: moviefetchData.overview || "" });
@@ -777,7 +777,7 @@ const refetchMovieCoverFromTMDB = async (
 
 export {
   refetchMovieTMDB,
-  refetchTitle,
+  // refetchTitle,
   refetchAltTitle,
   refetchYear,
   refetchDuration,

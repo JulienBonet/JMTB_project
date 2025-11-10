@@ -46,7 +46,7 @@ import TvOutlinedIcon from "@mui/icons-material/TvOutlined";
 import TransferList from "../AdminFeatures/AddNewMovie/MovieItemList";
 import {
   refetchMovieTMDB,
-  refetchTitle,
+  // refetchTitle,
   refetchAltTitle,
   refetchYear,
   refetchDuration,
@@ -1152,17 +1152,18 @@ function MovieCard({
                   name="title"
                   value={safeValue(movieData.title)}
                   onChange={(e) => handleChange(e)}
+                  InputProps={{ readOnly: true }}
                   fullWidth
                   sx={textFieldSx}
                 />
-                {idTheMovieDb && (
+                {/* {idTheMovieDb && (
                   <CloudSyncIcon
                     className="Btn_Refresh_items_MovieCard"
                     onClick={() =>
                       refetchTitle(idTheMovieDb, { movieData, setMovieData })
                     }
                   />
-                )}
+                )} */}
               </div>
               <div className="divider" />
               <div className="box_item_form">
@@ -1441,7 +1442,7 @@ function MovieCard({
                 >
                   <TextField
                     id="outlined-read-only-input"
-                    label="Réalisateur(s)"
+                    label={isTvShow ? "Créateur:" : "Réalisateur:"}
                     value={getSelectedNames(selectedDirectors)}
                     InputProps={{ readOnly: true }}
                     fullWidth

@@ -9,14 +9,15 @@ import "./movieSearchMediaQueries.css";
 import "../../assets/css/scrollButton.css";
 import CachedIcon from "@mui/icons-material/Cached";
 import { ToggleButton, ToggleButtonGroup } from "@mui/material";
-import AlphabeticBtn from "../../components/AlphabeticBtn/AlphabeticBtn";
-import ChronologicBtn from "../../components/ChronologicBtn/ChronologicBtn";
+// import AlphabeticBtn from "../../components/AlphabeticBtn/AlphabeticBtn";
+// import ChronologicBtn from "../../components/ChronologicBtn/ChronologicBtn";
 import YearDropdown from "../../components/YearOption/YearDropdown";
 import CountryDropdown from "../../components/CountryOption/CountryDropdown";
 import KindsDropdown from "../../components/KindOption/KindsDropdown";
 import MovieThumbnail from "../../components/MovieThumbnail/MovieThumbnail";
 import MovieCount from "../../components/MovieCount/MovieCount";
 import LoaderCowardlySquid from "../../components/LoaderCowardlySquid/LoaderCowardlySquid";
+import SideActionBar from "../../components/StickySideBar/StickySideBar";
 
 function MovieSearch() {
   const [data, setData] = useState([]);
@@ -266,6 +267,23 @@ function MovieSearch() {
               placeholder="recherche"
             />
           </div>
+          <ToggleButtonGroup
+            value={selectedTvShow}
+            exclusive
+            className="tvShowToggleGroup"
+            onChange={(e, newValue) => newValue && setSelectedTvShow(newValue)}
+            sx={searchToggleGroupButtonSx}
+          >
+            <ToggleButton value="all" sx={searchToggleButtonSx}>
+              Tous
+            </ToggleButton>
+            <ToggleButton value="movies" sx={searchToggleButtonSx}>
+              Films
+            </ToggleButton>
+            <ToggleButton value="series" sx={searchToggleButtonSx}>
+              Séries
+            </ToggleButton>
+          </ToggleButtonGroup>
           <div className="dropdown_search_container">
             <KindsDropdown
               onKindChange={handleKindChange}
@@ -283,33 +301,14 @@ function MovieSearch() {
               selectedYearData={selectedYear}
             />
 
-            <ToggleButtonGroup
-              value={selectedTvShow}
-              exclusive
-              className="tvShowToggleGroup"
-              onChange={(e, newValue) =>
-                newValue && setSelectedTvShow(newValue)
-              }
-              sx={searchToggleGroupButtonSx}
-            >
-              <ToggleButton value="all" sx={searchToggleButtonSx}>
-                Tous
-              </ToggleButton>
-              <ToggleButton value="movies" sx={searchToggleButtonSx}>
-                Films
-              </ToggleButton>
-              <ToggleButton value="series" sx={searchToggleButtonSx}>
-                Séries
-              </ToggleButton>
-            </ToggleButtonGroup>
-
-            <AlphabeticBtn onClick={handleAlphabeticBtnClick} />
+            {/* <AlphabeticBtn onClick={handleAlphabeticBtnClick} />
             <ChronologicBtn onClick={handleChronologicBtnClick} />
             <CachedIcon
               className="reset_search_btn"
               onClick={handleResetSearch}
-            />
+            /> */}
           </div>
+
           <div className="search_bar_container_responsive">
             <input
               value={search}
@@ -332,6 +331,13 @@ function MovieSearch() {
         )}
         {!isLoading && (
           <div className="MovieThumbnails_container">
+            <SideActionBar
+              onAlphabeticClick={handleAlphabeticBtnClick}
+              onChronologicClick={handleChronologicBtnClick}
+              onResetClick={handleResetSearch}
+              // selectedItems={selectedItems} // ou l’équivalent selon ta logique
+              origin="movies"
+            />
             <div className="MovieThumbnails">
               {filteredMovies.length > 0 ? (
                 filteredMovies.map((movieData) => (
