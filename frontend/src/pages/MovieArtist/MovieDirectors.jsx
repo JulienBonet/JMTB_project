@@ -19,6 +19,7 @@ function MovieDirectors() {
   const [movieAmount, setMovieAmount] = useState(0);
   const [selectedLetter, SetSelectedLetter] = useState("a");
   const [selectedDirectorByLetter, setSelectedDirectorByLetter] = useState([]);
+  const [openSideBar, setOpenSideBar] = useState(false);
 
   // REQUEST ALL ARTIST BY LETTER
   useEffect(() => {
@@ -226,13 +227,9 @@ function MovieDirectors() {
             search={search}
             onSearchChange={handleTyping}
             onReset={handleResetSearch}
+            openSideBar={openSideBar}
+            setOpenSideBar={setOpenSideBar}
             selectedItem={selectedDirector}
-            sortOrderA={sortOrderA}
-            sortOrderY={sortOrderY}
-            movieSortedA={movieSortedA}
-            movieSortedZ={movieSortedZ}
-            movieSortedYear={movieSortedYear}
-            movieSortedYearDesc={movieSortedYearDesc}
           />
         </section>
         <div className="dashed_secondary_bar" />
@@ -262,6 +259,9 @@ function MovieDirectors() {
               movieAmount={movieAmount}
               onUpdateMovie={fetchMoviesByDirector}
               onDeleteMovie={handleDeleteMovie}
+              onReset={handleResetSearch}
+              openSideBar={openSideBar}
+              setOpenSideBar={setOpenSideBar}
             />
           </section>
         </section>

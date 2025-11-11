@@ -1,21 +1,14 @@
 /* eslint-disable react/prop-types */
-import CachedIcon from "@mui/icons-material/Cached";
-import AlphabeticBtn from "../AlphabeticBtn/AlphabeticBtn";
-import ChronologicBtn from "../ChronologicBtn/ChronologicBtn";
+import ToggleSortedButton from "../ToggleSortedBtn/ToggleSortedButton";
 import "./movieArtistSearchBar.css";
 
 function MovieArtistSearchBar({
   placeholder,
   search,
   onSearchChange,
-  onReset,
+  openSideBar,
+  setOpenSideBar,
   selectedItem,
-  sortOrderA,
-  sortOrderY,
-  movieSortedA,
-  movieSortedZ,
-  movieSortedYear,
-  movieSortedYearDesc,
 }) {
   return (
     <section className="search_bar_position">
@@ -27,19 +20,10 @@ function MovieArtistSearchBar({
           placeholder={placeholder}
         />
       </div>
-      <div className="Btn_sorted_container_movieArtistSearchBar">
-        <AlphabeticBtn
-          selectedItems={selectedItem}
-          origin="artists"
-          onClick={sortOrderA === "asc" ? movieSortedZ : movieSortedA}
-        />
-        <ChronologicBtn
-          selectedItems={selectedItem}
-          origin="artists"
-          onClick={sortOrderY === "asc" ? movieSortedYearDesc : movieSortedYear}
-        />
-        <CachedIcon className="reset_search_btn" onClick={onReset} />
-      </div>
+      <ToggleSortedButton
+        active={!!selectedItem}
+        onClick={() => setOpenSideBar(!openSideBar)}
+      />
     </section>
   );
 }

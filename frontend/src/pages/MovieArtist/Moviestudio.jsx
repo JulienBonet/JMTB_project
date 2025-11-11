@@ -19,6 +19,7 @@ function MovieStudio() {
   const [selectedLetter, SetSelectedLetter] = useState("a");
   const [selectedStudio, setselectedStudio] = useState("");
   const [selectedStudioByLetter, setSelectedStudioByLetter] = useState([]);
+  const [openSideBar, setOpenSideBar] = useState(false);
 
   // REQUEST ALL STUDIOS BY LETTER
   useEffect(() => {
@@ -223,12 +224,8 @@ function MovieStudio() {
             onSearchChange={handleTyping}
             onReset={handleResetSearch}
             selectedItem={selectedStudio}
-            sortOrderA={sortOrderA}
-            sortOrderY={sortOrderY}
-            movieSortedA={movieSortedA}
-            movieSortedZ={movieSortedZ}
-            movieSortedYear={movieSortedYear}
-            movieSortedYearDesc={movieSortedYearDesc}
+            openSideBar={openSideBar}
+            setOpenSideBar={setOpenSideBar}
           />
         </section>
         <div className="dashed_secondary_bar" />
@@ -258,6 +255,9 @@ function MovieStudio() {
               movieAmount={movieAmount}
               onUpdateMovie={fetchMoviesByStudio}
               onDeleteMovie={handleDeleteMovie}
+              onReset={handleResetSearch}
+              openSideBar={openSideBar}
+              setOpenSideBar={setOpenSideBar}
             />
           </section>
         </section>

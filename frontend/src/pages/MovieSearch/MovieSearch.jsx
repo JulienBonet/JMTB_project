@@ -9,14 +9,13 @@ import "./movieSearchMediaQueries.css";
 import "../../assets/css/scrollButton.css";
 import CachedIcon from "@mui/icons-material/Cached";
 import { ToggleButton, ToggleButtonGroup } from "@mui/material";
-// import AlphabeticBtn from "../../components/AlphabeticBtn/AlphabeticBtn";
-// import ChronologicBtn from "../../components/ChronologicBtn/ChronologicBtn";
 import YearDropdown from "../../components/YearOption/YearDropdown";
 import CountryDropdown from "../../components/CountryOption/CountryDropdown";
 import KindsDropdown from "../../components/KindOption/KindsDropdown";
 import MovieThumbnail from "../../components/MovieThumbnail/MovieThumbnail";
 import MovieCount from "../../components/MovieCount/MovieCount";
 import LoaderCowardlySquid from "../../components/LoaderCowardlySquid/LoaderCowardlySquid";
+import ToggleSortedButton from "../../components/ToggleSortedBtn/ToggleSortedButton";
 import SideActionBar from "../../components/StickySideBar/StickySideBar";
 
 function MovieSearch() {
@@ -31,6 +30,7 @@ function MovieSearch() {
   const [isChronologicalAscending, setIsChronologicalAscending] =
     useState(true);
   const [isLoading, setIsLoading] = useState(true);
+  const [openSideBar, setOpenSideBar] = useState(false);
 
   //--------------
   // CHARGEMENT
@@ -237,18 +237,21 @@ function MovieSearch() {
   //-----------
 
   const searchToggleGroupButtonSx = {
-    borderRadius: "8px",
+    borderRadius: "10px",
   };
 
   const searchToggleButtonSx = {
     color: "var(--color-01)",
     border: "solid 1px white",
+    borderRadius: "10px",
     textTransform: "none",
     "&.Mui-selected": {
-      color: "var(--color-02)",
+      color: "var(--color-03)",
     },
     "&:hover": {
-      color: "var(--color-03)",
+      backgroundColor: "var(--color-05)",
+      border: "solid 1px white",
+      // color: "var(--color-04)",
     },
   };
 
@@ -267,23 +270,7 @@ function MovieSearch() {
               placeholder="recherche"
             />
           </div>
-          <ToggleButtonGroup
-            value={selectedTvShow}
-            exclusive
-            className="tvShowToggleGroup"
-            onChange={(e, newValue) => newValue && setSelectedTvShow(newValue)}
-            sx={searchToggleGroupButtonSx}
-          >
-            <ToggleButton value="all" sx={searchToggleButtonSx}>
-              Tous
-            </ToggleButton>
-            <ToggleButton value="movies" sx={searchToggleButtonSx}>
-              Films
-            </ToggleButton>
-            <ToggleButton value="series" sx={searchToggleButtonSx}>
-              Séries
-            </ToggleButton>
-          </ToggleButtonGroup>
+
           <div className="dropdown_search_container">
             <KindsDropdown
               onKindChange={handleKindChange}
@@ -300,21 +287,29 @@ function MovieSearch() {
               search={search}
               selectedYearData={selectedYear}
             />
+            <ToggleButtonGroup
+              value={selectedTvShow}
+              exclusive
+              className="tvShowToggleGroup"
+              onChange={(e, newValue) =>
+                newValue && setSelectedTvShow(newValue)
+              }
+              sx={searchToggleGroupButtonSx}
+            >
+              <ToggleButton value="all" sx={searchToggleButtonSx}>
+                Tous
+              </ToggleButton>
+              <ToggleButton value="movies" sx={searchToggleButtonSx}>
+                Films
+              </ToggleButton>
+              <ToggleButton value="series" sx={searchToggleButtonSx}>
+                Séries
+              </ToggleButton>
+            </ToggleButtonGroup>
 
-            {/* <AlphabeticBtn onClick={handleAlphabeticBtnClick} />
-            <ChronologicBtn onClick={handleChronologicBtnClick} />
-            <CachedIcon
-              className="reset_search_btn"
-              onClick={handleResetSearch}
-            /> */}
-          </div>
-
-          <div className="search_bar_container_responsive">
-            <input
-              value={search}
-              onChange={handleTyping}
-              className="search_bar"
-              placeholder="recherche"
+            <ToggleSortedButton
+              active={!!data}
+              onClick={() => setOpenSideBar(!openSideBar)}
             />
           </div>
         </section>
@@ -335,7 +330,7 @@ function MovieSearch() {
               onAlphabeticClick={handleAlphabeticBtnClick}
               onChronologicClick={handleChronologicBtnClick}
               onResetClick={handleResetSearch}
-              // selectedItems={selectedItems} // ou l’équivalent selon ta logique
+              openSideBar={openSideBar}
               origin="movies"
             />
             <div className="MovieThumbnails">

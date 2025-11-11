@@ -1,4 +1,5 @@
 /* eslint-disable react/prop-types */
+import { useState, useEffect } from "react";
 import MovieCountArtistMovie from "../MovieCountArtistMovie/MovieCountArtistMovie";
 import MovieThumbnail from "../MovieThumbnail/MovieThumbnail";
 import DirectorBear from "../../assets/ico/director_bear_01.jpeg";
@@ -7,6 +8,7 @@ import ScreenwriterBear from "../../assets/ico/screenwiter-bear.jpeg";
 import MusicBear from "../../assets/ico/compositor-bear.jpeg";
 import StudioBear from "../../assets/ico/studio_bear.jpeg";
 import TagBear from "../../assets/ico/search_Bear_02.jpeg";
+import SideActionBar from "../StickySideBar/StickySideBar";
 
 function ArtistFilmo({
   selectedArtist,
@@ -15,7 +17,92 @@ function ArtistFilmo({
   movieAmount,
   onUpdateMovie,
   onDeleteMovie,
+  movieSortedA,
+  movieSortedZ,
+  movieSortedYear,
+  movieSortedYearDesc,
+  sortOrderA,
+  sortOrderY,
+  onReset,
+  openSideBar,
 }) {
+  console.info("selectedArtist", selectedArtist);
+  console.info("origin", origin);
+  console.info("data", data);
+
+  const [artistMovies, setArtistMovies] = useState(data || []);
+
+  useEffect(() => {
+    setArtistMovies(data);
+  }, [data]);
+
+  console.info("artistMovies", artistMovies);
+
+  // ---------- Wrappers qui utilisent les fonctions backend si disponibles ----------
+  const handleAlphabeticBtnClick = async () => {
+    // si le parent a fourni movieSortedA/movieSortedZ et sortOrderA : on les utilise
+    if (
+      typeof movieSortedA === "function" &&
+      typeof movieSortedZ === "function"
+    ) {
+      try {
+        if (sortOrderA === "asc") {
+          await movieSortedZ(); // appel parent qui fetch sorted desc
+        } else {
+          await movieSortedA(); // appel parent qui fetch sorted asc
+        }
+        // parent mettra à jour `data`, et useEffect propagera dans artistMovies
+      } catch (err) {
+        console.error("Erreur lors du tri alphabétique remote:", err);
+      }
+      return;
+    }
+
+    // fallback local (si le parent n'a pas fourni les fonctions)
+    const sorted = [...artistMovies].sort((a, b) =>
+      a.title.localeCompare(b.title, undefined, { sensitivity: "accent" })
+    );
+    setArtistMovies(sorted);
+  };
+
+  const handleChronologicBtnClick = async () => {
+    if (
+      typeof movieSortedYear === "function" &&
+      typeof movieSortedYearDesc === "function"
+    ) {
+      try {
+        if (sortOrderY === "asc") {
+          await movieSortedYearDesc();
+        } else {
+          await movieSortedYear();
+        }
+      } catch (err) {
+        console.error("Erreur lors du tri chronologique remote:", err);
+      }
+      return;
+    }
+
+    // fallback local
+    const sorted = [...artistMovies].sort((a, b) => a.year - b.year);
+    setArtistMovies(sorted);
+  };
+
+  const handleResetSearch = () => {
+    // Prefer call parent reset if provided (réinitialise lettres/search etc.)
+    if (typeof onReset === "function") {
+      onReset();
+      return;
+    }
+
+    // sinon on demande au parent de re-fetch les films (onUpdateMovie)
+    if (typeof onUpdateMovie === "function") {
+      onUpdateMovie();
+      return;
+    }
+    // Fallback local : on réaffiche les données actuelles
+    setArtistMovies(data || []);
+  };
+
   return (
     <section className="filmo_artists">
       {selectedArtist === "" && (
@@ -104,6 +191,14 @@ function ArtistFilmo({
       )}
       {selectedArtist !== "" && (
         <section className="artists_filmo">
+          <SideActionBar
+            onAlphabeticClick={handleAlphabeticBtnClick}
+            onChronologicClick={handleChronologicBtnClick}
+            onResetClick={handleResetSearch}
+            selectedItems={selectedArtist}
+            origin={origin}
+            openSideBar={openSideBar}
+          />
           <div className="MovieCountArtistMovie_container">
             <MovieCountArtistMovie movieAmount={movieAmount} />
           </div>

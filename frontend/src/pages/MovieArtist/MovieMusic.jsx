@@ -19,6 +19,7 @@ function MovieCasting() {
   const [selectedLetter, SetSelectedLetter] = useState("a");
   const [selectedMusic, setselectedMusic] = useState("");
   const [selectedMusicByLetter, setSelectedMusicByLetter] = useState([]);
+  const [openSideBar, setOpenSideBar] = useState(false);
 
   // REQUEST ALL ARTIST BY LETTER
   useEffect(() => {
@@ -223,12 +224,8 @@ function MovieCasting() {
             onSearchChange={handleTyping}
             onReset={handleResetSearch}
             selectedItem={selectedMusic}
-            sortOrderA={sortOrderA}
-            sortOrderY={sortOrderY}
-            movieSortedA={movieSortedA}
-            movieSortedZ={movieSortedZ}
-            movieSortedYear={movieSortedYear}
-            movieSortedYearDesc={movieSortedYearDesc}
+            sopenSideBar={openSideBar}
+            setOpenSideBar={setOpenSideBar}
           />
         </section>
         <div className="dashed_secondary_bar" />
@@ -258,6 +255,9 @@ function MovieCasting() {
               movieAmount={movieAmount}
               onUpdateMovie={fetchMoviesByMusic}
               onDeleteMovie={handleDeleteMovie}
+              onReset={handleResetSearch}
+              openSideBar={openSideBar}
+              setOpenSideBar={setOpenSideBar}
             />
           </section>
         </section>

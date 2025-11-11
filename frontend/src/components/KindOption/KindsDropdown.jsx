@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { useState, useEffect } from "react";
-import "./kindsDropdown.css";
+import { Select, MenuItem } from "@mui/material";
+import MovieTwoToneIcon from "@mui/icons-material/MovieTwoTone";
 
 function KindsDropdown({ onKindChange, selectedKindData, search }) {
   const [kinds, setKinds] = useState([]);
@@ -11,49 +12,81 @@ function KindsDropdown({ onKindChange, selectedKindData, search }) {
   //------------------
   useEffect(() => {
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/kinds`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then((kindsData) => {
-        setKinds(kindsData);
-      })
-      .catch((error) => {
-        console.error("Error fetching user data:", error);
-      });
+      .then((res) => res.json())
+      .then(setKinds)
+      .catch((err) => console.error("Error fetching kinds data:", err));
 
-    // 🔹 Gérer le passage desktop ↔ mobile dynamiquement
     const handleResize = () => setIsMobile(window.innerWidth <= 1200);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [search]); // end useEffect
+  }, [search]);
 
-  const handleChange = (event) => {
-    const selectedKindId = event.target.value;
-    onKindChange(selectedKindId);
-  };
-
-  // Mapping des genres pour créer les options de sélection
-  const options = kinds.map((kind) => (
-    <option key={kind.id} value={kind.name}>
-      {kind.name}
-    </option>
-  ));
+  const handleChange = (event) => onKindChange(event.target.value);
 
   //------------------
   // RETURN
   //------------------
   return (
-    <select
-      onChange={handleChange}
-      className="kindsDropdown"
+    <Select
       value={selectedKindData}
+      onChange={handleChange}
+      displayEmpty
+      sx={{
+        height: "50px",
+        textAlign: "center",
+        fontFamily: "var(--font-02)",
+        color: "var(--color-02)",
+        backgroundColor: "var(--color-04)",
+        border: "1px solid white",
+        width: "30%",
+        fontSize: "medium",
+        fontWeight: "bold",
+        borderRadius: "10px",
+        cursor: "pointer",
+        "& .MuiSelect-select": {
+          paddingY: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        "& .MuiSelect-icon": { color: "var(--color-02)" },
+        "& fieldset": { border: "none" },
+      }}
+      MenuProps={{
+        PaperProps: {
+          sx: {
+            backgroundColor: "var(--color-04)",
+            color: "var(--color-01)",
+            fontFamily: "var(--font-02)",
+            border: "1px solid white",
+            "& .MuiMenuItem-root": {
+              justifyContent: "center",
+              alignItems: "center",
+              textAlign: "center",
+            },
+            "& .MuiMenuItem-root:hover": {
+              backgroundColor: "#ffa500",
+              color: "#242105",
+            },
+          },
+        },
+      }}
     >
-      <option value="">{isMobile ? "🎬" : "GENRES"}</option>
-      {options}
-    </select>
+      {/* Placeholder / icône mobile */}
+      <MenuItem value="">
+        {isMobile ? (
+          <MovieTwoToneIcon sx={{ fontSize: 20, mr: 1 }} />
+        ) : (
+          "GENRES"
+        )}
+      </MenuItem>
+
+      {kinds.map((kind) => (
+        <MenuItem key={kind.id} value={kind.name}>
+          {kind.name}
+        </MenuItem>
+      ))}
+    </Select>
   );
 }
 

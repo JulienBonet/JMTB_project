@@ -1,6 +1,4 @@
-/* eslint-disable no-dupe-keys */
-/* eslint-disable react/prop-types */
-import { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import { Box, IconButton, Tooltip } from "@mui/material";
 import CachedIcon from "@mui/icons-material/Cached";
 import AlphabeticBtn from "../AlphabeticBtn/AlphabeticBtn";
@@ -12,36 +10,25 @@ export default function SideActionBar({
   onResetClick,
   selectedItems,
   origin,
+  openSideBar,
 }) {
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    // lancement progressif de l’animation
-    const timer = setTimeout(() => setVisible(true), 100);
-    return () => clearTimeout(timer);
-  }, []);
   return (
     <Box
       sx={{
         position: "fixed",
-        top: "50%",
-        left: 20,
+        top: "40%",
+        right: openSideBar ? 20 : -240,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         gap: 2,
         backgroundColor: "rgba(18,18,18,0.85)",
-        border: 1,
+        border: "1px solid #555",
         borderRadius: 4,
         padding: 1.5,
         boxShadow: 3,
         zIndex: 1200,
-        opacity: visible ? 1 : 0,
-        transformOrigin: "left center",
-        transition: "opacity 0.6s ease, transform 0.6s ease",
-        transform: visible
-          ? "translateY(-50%) translateX(0)"
-          : "translateY(-50%) translateX(-30px)",
+        transition: "right 0.4s ease",
       }}
     >
       <Tooltip title="Trier alphabétiquement" placement="right">
@@ -79,3 +66,22 @@ export default function SideActionBar({
     </Box>
   );
 }
+
+// ✅ Validation des props
+SideActionBar.propTypes = {
+  onAlphabeticClick: PropTypes.func.isRequired,
+  onChronologicClick: PropTypes.func.isRequired,
+  onResetClick: PropTypes.func.isRequired,
+  selectedItems: PropTypes.oneOfType([
+    PropTypes.array,
+    PropTypes.object,
+    PropTypes.string,
+  ]),
+  origin: PropTypes.string,
+  openSideBar: PropTypes.bool.isRequired,
+};
+
+SideActionBar.defaultProps = {
+  selectedItems: [],
+  origin: "",
+};

@@ -19,6 +19,7 @@ function MovieScreenwriters() {
   const [selectedLetter, SetSelectedLetter] = useState("a");
   const [selectedScreenW, setselectedScreenW] = useState("");
   const [selecteScreenWByLetter, setSelecteScreenWByLetter] = useState([]);
+  const [openSideBar, setOpenSideBar] = useState(false);
 
   // REQUEST ALL ARTIST BY LETTER
   useEffect(() => {
@@ -229,12 +230,8 @@ function MovieScreenwriters() {
             onSearchChange={handleTyping}
             onReset={handleResetSearch}
             selectedItem={selectedScreenW}
-            sortOrderA={sortOrderA}
-            sortOrderY={sortOrderY}
-            movieSortedA={movieSortedA}
-            movieSortedZ={movieSortedZ}
-            movieSortedYear={movieSortedYear}
-            movieSortedYearDesc={movieSortedYearDesc}
+            openSideBar={openSideBar}
+            setOpenSideBar={setOpenSideBar}
           />
         </section>
         <div className="dashed_secondary_bar" />
@@ -264,6 +261,9 @@ function MovieScreenwriters() {
               movieAmount={movieAmount}
               onUpdateMovie={fetchMoviesByScreenwriter}
               onDeleteMovie={handleDeleteMovie}
+              onReset={handleResetSearch}
+              openSideBar={openSideBar}
+              setOpenSideBar={setOpenSideBar}
             />
           </section>
         </section>

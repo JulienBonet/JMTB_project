@@ -19,6 +19,7 @@ function MovieTag() {
   const [selectedLetter, SetSelectedLetter] = useState("a");
   const [selectedTag, setselectedTag] = useState("");
   const [selectedTagByLetter, setSelectedStudioByLetter] = useState([]);
+  const [openSideBar, setOpenSideBar] = useState(false);
 
   // REQUEST ALL TAGS BY LETTER
   useEffect(() => {
@@ -223,12 +224,8 @@ function MovieTag() {
             onSearchChange={handleTyping}
             onReset={handleResetSearch}
             selectedItem={selectedTag}
-            sortOrderA={sortOrderA}
-            sortOrderY={sortOrderY}
-            movieSortedA={movieSortedA}
-            movieSortedZ={movieSortedZ}
-            movieSortedYear={movieSortedYear}
-            movieSortedYearDesc={movieSortedYearDesc}
+            openSideBar={openSideBar}
+            setOpenSideBar={setOpenSideBar}
           />
         </section>
         <div className="dashed_secondary_bar" />
@@ -258,6 +255,9 @@ function MovieTag() {
               movieAmount={movieAmount}
               onUpdateMovie={fetchMoviesByTag}
               onDeleteMovie={handleDeleteMovie}
+              onReset={handleResetSearch}
+              openSideBar={openSideBar}
+              setOpenSideBar={setOpenSideBar}
             />
           </section>
         </section>
