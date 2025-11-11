@@ -20,7 +20,7 @@ export default function ToggleSortedButton({
           "&:hover": {
             backgroundColor: active ? "#3a3205" : "rgba(18,18,18,0.5)",
           },
-          zIndex: 1300,
+          // zIndex: 1300,
           pointerEvents: active ? "auto" : "none",
         }}
       >

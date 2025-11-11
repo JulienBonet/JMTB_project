@@ -11,12 +11,12 @@ function MovieArtistSearchBar({
   selectedItem,
 }) {
   return (
-    <section className="search_bar_position">
-      <div className="search_bar_container">
+    <section className="MovieArtist_Search_bar_position ">
+      <div className="MovieArtist_Search_bar_container">
         <input
           value={search}
           onChange={onSearchChange}
-          className="search_bar"
+          className="MovieArtist_search_bar"
           placeholder={placeholder}
         />
       </div>

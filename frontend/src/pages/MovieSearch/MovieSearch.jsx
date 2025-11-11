@@ -2,8 +2,7 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable no-undef */
-import { useState, useEffect } from "react";
-// import { toast } from "react-toastify";
+import { useState, useEffect, useRef } from "react";
 import "./movieSearch.css";
 import "./movieSearchMediaQueries.css";
 import "../../assets/css/scrollButton.css";
@@ -18,6 +17,23 @@ import LoaderCowardlySquid from "../../components/LoaderCowardlySquid/LoaderCowa
 import ToggleSortedButton from "../../components/ToggleSortedBtn/ToggleSortedButton";
 import SideActionBar from "../../components/StickySideBar/StickySideBar";
 
+// Virtualisation ligne par ligne
+function getVisibleRows(movies, containerWidth, thumbnailWidth, gap) {
+  // Largeur d’une vignette + l’espace entre elles
+  const effectiveWidth = thumbnailWidth + gap;
+
+  // Nombre de colonnes qu’on peut placer dans la largeur
+  const cols = Math.max(1, Math.floor((containerWidth + gap) / effectiveWidth));
+
+  // On découpe la liste des films en lignes
+  const rows = [];
+  for (let i = 0; i < movies.length; i += cols) {
+    rows.push(movies.slice(i, i + cols));
+  }
+
+  return rows;
+}
+
 function MovieSearch() {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
@@ -25,44 +41,37 @@ function MovieSearch() {
   const [selectedKind, setSelectedKind] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
-  const [filteredMovies, setFilteredMovies] = useState(data);
+  const [filteredMovies, setFilteredMovies] = useState([]);
   const [isAscending, setIsAscending] = useState(true);
   const [isChronologicalAscending, setIsChronologicalAscending] =
     useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [openSideBar, setOpenSideBar] = useState(false);
 
-  //--------------
-  // CHARGEMENT
-  //--------------
+  const containerRef = useRef(null);
+  const [containerWidth, setContainerWidth] = useState(1200);
+
+  //-----------------------------
+  // FETCH INITIAL DATA
+  //-----------------------------
   useEffect(() => {
+    setIsLoading(true);
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movies/search-filter`)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
+      .then((res) => res.json())
       .then((moviesData) => {
         setData(moviesData);
+        setFilteredMovies(moviesData);
+        setIsLoading(false);
       })
-      .catch((error) => {
-        console.error("Error fetching user data:", error);
+      .catch((err) => {
+        console.error(err);
+        setIsLoading(false);
       });
   }, []);
 
-  //--------------
-  // SEARCH BAR
-  //--------------
-  const handleTyping = (e) => {
-    let { value } = e.target;
-    value = value.replace(/-/g, "").toLowerCase();
-    setSearch(value);
-  };
-
-  //----------------------------------
-  // FETCH DATA BACKEND SELON ISTVSHOW
-  //----------------------------------
+  //-----------------------------
+  // TV SHOW FILTER
+  //-----------------------------
   useEffect(() => {
     setIsLoading(true);
     let url = `${import.meta.env.VITE_BACKEND_URL}/api/movies/filter/tvshow`;
@@ -83,66 +92,45 @@ function MovieSearch() {
       });
   }, [selectedTvShow]);
 
-  //-----------------
-  // FILTERS OPTIONS
-  //-----------------
+  //-----------------------------
+  // FILTERS SEARCH
+  //-----------------------------
   useEffect(() => {
-    setIsLoading(true); // loader actif pendant le fetch
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movies/search-filter`)
-      .then((response) => {
-        if (!response.ok) throw new Error("Network response was not ok");
-        return response.json();
-      })
-      .then((moviesData) => {
-        setData(moviesData);
-        setFilteredMovies(moviesData); // remplir la liste filtrée au départ
-        setIsLoading(false); // loader désactivé après réception des données
-      })
-      .catch((error) => {
-        console.error("Error fetching user data:", error);
-        setIsLoading(false); // loader désactivé même en cas d'erreur
-      });
-  }, []);
-
-  useEffect(() => {
-    let filteredMovies = data.filter((movie) =>
+    let filtered = data.filter((movie) =>
       movie.title.toLowerCase().replace(/-/g, "").includes(search.toLowerCase())
     );
 
     if (selectedKind) {
-      filteredMovies = filteredMovies.filter((movie) =>
+      filtered = filtered.filter((movie) =>
         movie.genres?.split(", ").includes(selectedKind)
       );
     }
 
     if (selectedYear) {
-      filteredMovies = filteredMovies.filter(
+      filtered = filtered.filter(
         (movie) =>
           Math.floor(movie.year / 10) * 10 === parseInt(selectedYear, 10)
       );
     }
 
     if (selectedCountry) {
-      filteredMovies = filteredMovies.filter((movie) =>
+      filtered = filtered.filter((movie) =>
         movie.countries?.split(", ").includes(selectedCountry)
       );
     }
 
-    setFilteredMovies(filteredMovies);
+    setFilteredMovies(filtered);
   }, [data, search, selectedKind, selectedYear, selectedCountry]);
 
-  const handleKindChange = (selectedKind) => {
-    setSelectedKind(selectedKind);
+  const handleTyping = (e) => {
+    let { value } = e.target;
+    value = value.replace(/-/g, "").toLowerCase();
+    setSearch(value);
   };
 
-  const handleYearChange = (selectedYear) => {
-    setSelectedYear(selectedYear);
-  };
-
-  const handleCountryChange = (selectedCountry) => {
-    setSelectedCountry(selectedCountry);
-  };
-
+  const handleKindChange = (kind) => setSelectedKind(kind);
+  const handleYearChange = (year) => setSelectedYear(year);
+  const handleCountryChange = (country) => setSelectedCountry(country);
   const handleResetSearch = () => {
     setSearch("");
     setSelectedKind("");
@@ -151,14 +139,11 @@ function MovieSearch() {
     setSelectedTvShow("all");
   };
 
-  //-----------------
-  // MOVIE AMOUNT
-  //-----------------
   const movieAmount = filteredMovies.length;
 
-  //------------------------
-  // ALPHABETICAL SORT BTN
-  //------------------------
+  //-----------------------------
+  // SORT FUNCTIONS
+  //-----------------------------
   const ignoreSuffixes = [
     "le",
     "la",
@@ -171,7 +156,6 @@ function MovieSearch() {
     "a",
     "der",
   ];
-
   const removeIgnoredSuffixes = (title) => {
     const words = title.split(" ");
     const filteredWords = words.filter(
@@ -184,80 +168,88 @@ function MovieSearch() {
     const sortedMovies = [...filteredMovies].sort((a, b) => {
       const titleA = removeIgnoredSuffixes(a.title);
       const titleB = removeIgnoredSuffixes(b.title);
-
       return isAscending
         ? titleA.localeCompare(titleB, undefined, { sensitivity: "accent" })
         : titleB.localeCompare(titleA, undefined, { sensitivity: "accent" });
     });
     setFilteredMovies(sortedMovies);
   };
-  // reverse alphabtical sort
   const handleAlphabeticBtnClick = () => {
     sortAlphabetically();
     setIsAscending(!isAscending);
   };
 
-  //------------------------
-  // CHRONOLIGICAL SORT BTN
-  //------------------------
   const sortChronologically = () => {
     const sortedMovies = [...filteredMovies].sort((a, b) => {
       return isChronologicalAscending ? a.year - b.year : b.year - a.year;
     });
     setFilteredMovies(sortedMovies);
   };
-  // reverse Chronological sort
   const handleChronologicBtnClick = () => {
     sortChronologically();
     setIsChronologicalAscending(!isChronologicalAscending);
   };
 
-  //-------------------------------------------------------
-  // MISE A JOUR AFFICHAGE SI UPDATE MOVIE DANS MOVIECARD
-  //-------------------------------------------------------
-  const handleUpdateMovie = async (updatedMovieData) => {
+  //-----------------------------
+  // UPDATE / DELETE MOVIE
+  //-----------------------------
+  const handleUpdateMovie = (updatedMovieData) => {
     const updatedMovies = data.map((movie) =>
       movie.id === updatedMovieData.id ? updatedMovieData : movie
     );
     setData(updatedMovies);
-    setFilteredMovies(updatedMovies); // Mettez à jour la liste filtrée si nécessaire
+    setFilteredMovies(updatedMovies);
   };
 
-  //-------------------------------------------------------
-  // MISE A JOUR AFFICHAGE SI DELETE MOVIE DANS MOVIECARD
-  //-------------------------------------------------------
   const handleDeleteMovie = (movieId) => {
     const updatedMovies = data.filter((movie) => movie.id !== movieId);
     setData(updatedMovies);
-    setFilteredMovies(updatedMovies); // Mettez à jour la liste filtrée
+    setFilteredMovies(updatedMovies);
   };
 
-  //-----------
+  //-----------------------------
   // SX STYLES
-  //-----------
-
-  const searchToggleGroupButtonSx = {
-    borderRadius: "10px",
-  };
-
+  //-----------------------------
+  const searchToggleGroupButtonSx = { borderRadius: "10px" };
   const searchToggleButtonSx = {
     color: "var(--color-01)",
     border: "solid 1px white",
     borderRadius: "10px",
     textTransform: "none",
-    "&.Mui-selected": {
-      color: "var(--color-03)",
-    },
+    "&.Mui-selected": { color: "var(--color-03)" },
     "&:hover": {
       backgroundColor: "var(--color-05)",
       border: "solid 1px white",
-      // color: "var(--color-04)",
     },
   };
 
-  //-----------
+  //-----------------------------
+  // Resize container width pour responsive
+  //-----------------------------
+  useEffect(() => {
+    const handleResize = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.offsetWidth);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    handleResize(); // appel immédiat
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  const THUMB_WIDTH = 200;
+  const THUMB_GAP = 16;
+
+  const visibleRows = getVisibleRows(
+    filteredMovies,
+    containerWidth,
+    THUMB_WIDTH,
+    THUMB_GAP
+  );
+
+  //-----------------------------
   // RETURN
-  //-----------
+  //-----------------------------
   return (
     <main className="Main_movieSearchPage">
       <section className="search_bar_contents">
@@ -287,6 +279,7 @@ function MovieSearch() {
               search={search}
               selectedYearData={selectedYear}
             />
+
             <ToggleButtonGroup
               value={selectedTvShow}
               exclusive
@@ -318,13 +311,12 @@ function MovieSearch() {
       <div className="dashed_secondary_bar" />
       <MovieCount movieAmount={movieAmount} />
 
-      <section className="search_bear_position">
-        {isLoading && (
+      <section className="search_bear_position" ref={containerRef}>
+        {isLoading ? (
           <div className="MovieThumbnails_container MovieThumbnails_Loader">
             <LoaderCowardlySquid />
           </div>
-        )}
-        {!isLoading && (
+        ) : (
           <div className="MovieThumbnails_container">
             <SideActionBar
               onAlphabeticClick={handleAlphabeticBtnClick}
@@ -333,31 +325,39 @@ function MovieSearch() {
               openSideBar={openSideBar}
               origin="movies"
             />
-            <div className="MovieThumbnails">
-              {filteredMovies.length > 0 ? (
-                filteredMovies.map((movieData) => (
-                  <MovieThumbnail
-                    key={movieData.id}
-                    data={movieData}
-                    onDeleteMovie={handleDeleteMovie}
-                    onUpdateMovie={handleUpdateMovie}
-                  />
-                ))
-              ) : (
-                <div className="NoMovieMessageContainer">
-                  <p>NO MOVIE FOUND ...</p>
-                  <CachedIcon
-                    className="reset_search_btn_NoMovie"
-                    onClick={handleResetSearch}
-                  />
-                </div>
-              )}
-            </div>
+
+            {filteredMovies.length > 0 ? (
+              <div className="MovieThumbnails">
+                {visibleRows.map((rowMovies) => (
+                  <div
+                    key={rowMovies.map((m) => m.id).join("-")}
+                    className="MovieThumbnails_Row"
+                  >
+                    {rowMovies.map((movie) => (
+                      <MovieThumbnail
+                        key={movie.id}
+                        data={movie}
+                        onDeleteMovie={handleDeleteMovie}
+                        onUpdateMovie={handleUpdateMovie}
+                      />
+                    ))}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="NoMovieMessageContainer">
+                <p>NO MOVIE FOUND ...</p>
+                <CachedIcon
+                  className="reset_search_btn_NoMovie"
+                  onClick={handleResetSearch}
+                />
+              </div>
+            )}
           </div>
         )}
       </section>
     </main>
-  ); // return
-} // function MovieSearch()
+  );
+}
 
 export default MovieSearch;

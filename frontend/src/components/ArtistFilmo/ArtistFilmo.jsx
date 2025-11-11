@@ -26,10 +26,6 @@ function ArtistFilmo({
   onReset,
   openSideBar,
 }) {
-  console.info("selectedArtist", selectedArtist);
-  console.info("origin", origin);
-  console.info("data", data);
-
   const [artistMovies, setArtistMovies] = useState(data || []);
 
   useEffect(() => {
@@ -214,9 +210,6 @@ function ArtistFilmo({
           </div>
         </section>
       )}
-      {/* <div className="btn_sort_container_search">
-        <MovieCount movieAmount={movieAmount} />
-      </div> */}
     </section>
   );
 }
