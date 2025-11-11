@@ -5,7 +5,22 @@ import MovieTwoToneIcon from "@mui/icons-material/MovieTwoTone";
 
 function KindsDropdown({ onKindChange, selectedKindData, search }) {
   const [kinds, setKinds] = useState([]);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1200);
+
+  const [isTablet, setIsTablet] = useState(
+    window.innerWidth <= 1279 && window.innerWidth >= 769
+  );
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      setIsTablet(width <= 1279 && width >= 769);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // const [isMobile, setIsMobile] = useState(window.innerWidth <= 1279);
 
   //------------------
   // REQUEST ALL KINDS
@@ -16,9 +31,9 @@ function KindsDropdown({ onKindChange, selectedKindData, search }) {
       .then(setKinds)
       .catch((err) => console.error("Error fetching kinds data:", err));
 
-    const handleResize = () => setIsMobile(window.innerWidth <= 1200);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    //   const handleResize = () => setIsMobile(window.innerWidth <= 1279);
+    //   window.addEventListener("resize", handleResize);
+    //   return () => window.removeEventListener("resize", handleResize);
   }, [search]);
 
   const handleChange = (event) => onKindChange(event.target.value);
@@ -74,7 +89,7 @@ function KindsDropdown({ onKindChange, selectedKindData, search }) {
     >
       {/* Placeholder / icône mobile */}
       <MenuItem value="">
-        {isMobile ? (
+        {isTablet ? (
           <MovieTwoToneIcon sx={{ fontSize: 20, mr: 1 }} />
         ) : (
           "GENRES"

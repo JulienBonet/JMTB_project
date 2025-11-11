@@ -5,7 +5,21 @@ import CalendarMonthTwoToneIcon from "@mui/icons-material/CalendarMonthTwoTone";
 
 function YearDropdown({ onYearChange, selectedYearData, search }) {
   const [decades, setDecades] = useState([]);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1200);
+  const [isTablet, setIsTablet] = useState(
+    window.innerWidth <= 1279 && window.innerWidth >= 769
+  );
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      setIsTablet(width <= 1279 && width >= 769);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // const [isMobile, setIsMobile] = useState(window.innerWidth <= 1279);
 
   //------------------
   // REQUEST ALL YEARS / DECADES
@@ -16,9 +30,9 @@ function YearDropdown({ onYearChange, selectedYearData, search }) {
       .then(setDecades)
       .catch((err) => console.error("Error fetching decades:", err));
 
-    const handleResize = () => setIsMobile(window.innerWidth <= 1200);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    // const handleResize = () => setIsMobile(window.innerWidth <= 1279);
+    // window.addEventListener("resize", handleResize);
+    // return () => window.removeEventListener("resize", handleResize);
   }, [search]);
 
   const handleChange = (event) => {
@@ -76,7 +90,7 @@ function YearDropdown({ onYearChange, selectedYearData, search }) {
     >
       {/* Placeholder / icône mobile */}
       <MenuItem value="">
-        {isMobile ? (
+        {isTablet ? (
           <CalendarMonthTwoToneIcon sx={{ fontSize: 20, mr: 1 }} />
         ) : (
           "PERIODE"

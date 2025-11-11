@@ -49,7 +49,8 @@ function MovieSearch() {
   const [openSideBar, setOpenSideBar] = useState(false);
 
   const containerRef = useRef(null);
-  const [containerWidth, setContainerWidth] = useState(1200);
+  const [containerWidth, setContainerWidth] = useState(1280);
+  const [mobileToggleOpen, setMobileToggleOpen] = useState(false);
 
   //-----------------------------
   // FETCH INITIAL DATA
@@ -254,7 +255,16 @@ function MovieSearch() {
     <main className="Main_movieSearchPage">
       <section className="search_bar_contents">
         <section className="search_bar_position">
-          <div className="search_bar_container">
+          {/* Search bar */}
+          <div
+            className="search_bar_container"
+            // style={{
+            //   padding:
+            //     mobileToggleOpen || window.innerWidth > 768
+            //       ? "10px 0"
+            //       : "10px 0 0 0",
+            // }}
+          >
             <input
               value={search}
               onChange={handleTyping}
@@ -262,8 +272,22 @@ function MovieSearch() {
               placeholder="recherche"
             />
           </div>
-
-          <div className="dropdown_search_container">
+          {/* Toggle button pour mobile */}
+          <button
+            type="button"
+            className="mobile_toggle_button"
+            onClick={() => setMobileToggleOpen(!mobileToggleOpen)}
+          >
+            <span>{mobileToggleOpen ? "▲" : "▼"}</span>
+          </button>
+          {/* Dropdowns */}
+          <div
+            className="dropdown_search_container"
+            style={{
+              display:
+                mobileToggleOpen || window.innerWidth > 768 ? "flex" : "none",
+            }}
+          >
             <KindsDropdown
               onKindChange={handleKindChange}
               search={search}
@@ -279,7 +303,15 @@ function MovieSearch() {
               search={search}
               selectedYearData={selectedYear}
             />
-
+          </div>
+          {/* Filter buttons */}
+          <div
+            className="filter_container_MovieSearch"
+            style={{
+              display:
+                mobileToggleOpen || window.innerWidth > 768 ? "flex" : "none",
+            }}
+          >
             <ToggleButtonGroup
               value={selectedTvShow}
               exclusive
@@ -290,13 +322,13 @@ function MovieSearch() {
               sx={searchToggleGroupButtonSx}
             >
               <ToggleButton value="all" sx={searchToggleButtonSx}>
-                Tous
+                TOUS
               </ToggleButton>
               <ToggleButton value="movies" sx={searchToggleButtonSx}>
-                Films
+                FILMS
               </ToggleButton>
               <ToggleButton value="series" sx={searchToggleButtonSx}>
-                Séries
+                SERIES
               </ToggleButton>
             </ToggleButtonGroup>
 

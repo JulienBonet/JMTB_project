@@ -5,7 +5,21 @@ import PublicIcon from "@mui/icons-material/Public";
 
 function CountryDropdown({ onCountryChange, selectedCountryData, search }) {
   const [countries, setCountries] = useState([]);
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1200);
+  const [isTablet, setIsTablet] = useState(
+    window.innerWidth <= 1279 && window.innerWidth >= 769
+  );
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+      setIsTablet(width <= 1279 && width >= 769);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // const [isMobile, setIsMobile] = useState(window.innerWidth <= 1279);
 
   // --- Fetch des pays ---
   useEffect(() => {
@@ -14,9 +28,9 @@ function CountryDropdown({ onCountryChange, selectedCountryData, search }) {
       .then(setCountries)
       .catch((err) => console.error("Erreur fetch countries:", err));
 
-    const handleResize = () => setIsMobile(window.innerWidth <= 1200);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    // const handleResize = () => setIsMobile(window.innerWidth <= 1279);
+    // window.addEventListener("resize", handleResize);
+    // return () => window.removeEventListener("resize", handleResize);
   }, [search]);
 
   const handleChange = (event) => {
@@ -65,7 +79,7 @@ function CountryDropdown({ onCountryChange, selectedCountryData, search }) {
       }}
     >
       <MenuItem value="">
-        {isMobile ? <PublicIcon sx={{ fontSize: 18, mr: 1 }} /> : "PAYS"}
+        {isTablet ? <PublicIcon sx={{ fontSize: 18, mr: 1 }} /> : "PAYS"}
       </MenuItem>
 
       {countries.map((country) => (

@@ -15,29 +15,35 @@
   align-items: center;
   height: 5rem;
   gap: 1rem;
+  padding: 0 1rem;
 }
 .search_bar_container {
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
-  width: 30%;
   border-radius: 10px;
   padding: 10px;
 }
-.search_bar_container_responsive{
-  display: none;
-}
-
 .search_bar {
   padding: 15px 10px;
-  width: 80%;
+  width: 350px;
 }
 
 .dropdown_search_container {
   display: flex;
   align-items: center;
+  justify-content: center;
   width: 50%;
   gap: 1rem;
+}
+.filter_container_MovieSearch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+}
+.mobile_toggle_button {
+  display: none; /* caché par défaut sur desktop */
 }
 
 .reset_search_btn {

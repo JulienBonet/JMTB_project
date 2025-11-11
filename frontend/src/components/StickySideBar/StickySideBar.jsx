@@ -1,4 +1,4 @@
-import PropTypes from "prop-types";
+/* eslint-disable react/prop-types */
 import { Box, IconButton, Tooltip } from "@mui/material";
 import CachedIcon from "@mui/icons-material/Cached";
 import AlphabeticBtn from "../AlphabeticBtn/AlphabeticBtn";
@@ -16,7 +16,7 @@ export default function SideActionBar({
     <Box
       sx={{
         position: "fixed",
-        top: "40%",
+        bottom: "10%",
         right: openSideBar ? 20 : -240,
         display: "flex",
         flexDirection: "column",
@@ -66,22 +66,3 @@ export default function SideActionBar({
     </Box>
   );
 }
-
-// ✅ Validation des props
-SideActionBar.propTypes = {
-  onAlphabeticClick: PropTypes.func.isRequired,
-  onChronologicClick: PropTypes.func.isRequired,
-  onResetClick: PropTypes.func.isRequired,
-  selectedItems: PropTypes.oneOfType([
-    PropTypes.array,
-    PropTypes.object,
-    PropTypes.string,
-  ]),
-  origin: PropTypes.string,
-  openSideBar: PropTypes.bool.isRequired,
-};
-
-SideActionBar.defaultProps = {
-  selectedItems: [],
-  origin: "",
-};
