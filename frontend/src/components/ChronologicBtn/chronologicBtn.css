@@ -1,0 +1,36 @@
+.chronologic_btn,
+.chronologic_btn_artists {
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.chronologic_btn_artists {
+  width: 15%;
+  line-height: 0;
+}
+
+/* Style de l'icône */
+.chronologic_btn svg,
+.chronologic_btn_artists svg {
+  color: var(--color-01);
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+/* Hover */
+.chronologic_btn:hover svg,
+.chronologic_btn_artists:hover svg {
+  color: var(--color-06);
+}
+
+/* Clic (pressé) */
+.chronologic_btn:active svg {
+  color: var(--color-02);
+  transform: rotate(-20deg);
+}
+
+/* Désactivé */
+.chronologic_btn:disabled svg {
+  color: gray;
+}
