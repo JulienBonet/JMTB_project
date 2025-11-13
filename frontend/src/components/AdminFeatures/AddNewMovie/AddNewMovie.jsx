@@ -738,18 +738,17 @@ function AddNewMovie() {
   });
 
   // -----------------/ MODAL STYLE /----------------- //
-  const style = {
+  const transferListStyle = {
     position: "absolute",
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: "50%",
     bgcolor: "background.paper",
     border: "2px solid #000",
     boxShadow: 24,
-    pt: 0, // Padding top
-    pb: 4, // Padding bottom
-    px: 0, // Padding left and right, si besoin
+    pt: 0,
+    pb: 4,
+    px: 0,
   };
 
   const styleMIEmodal = {
@@ -1520,7 +1519,7 @@ function AddNewMovie() {
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
-        <Box sx={style}>
+        <Box sx={transferListStyle}>
           <div
             onClick={handleCloseModal}
             onKeyDown={(event) => {

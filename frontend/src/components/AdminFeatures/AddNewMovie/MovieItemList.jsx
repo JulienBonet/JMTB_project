@@ -3,6 +3,8 @@
 /* eslint-disable react/prop-types */
 import * as React from "react";
 import axios from "axios";
+import { createTheme, useTheme, ThemeProvider } from "@mui/material/styles";
+import useMediaQuery from "@mui/material/useMediaQuery";
 import { useState, useEffect } from "react";
 import { FixedSizeList } from "react-window";
 import Grid from "@mui/material/Grid";
@@ -15,6 +17,7 @@ import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
 import CreateItemCard from "../CreateItemCard/CreateItemCard";
+import "./movieItemList.css";
 
 function not(a, b) {
   return a.filter((value) => b.indexOf(value) === -1);
@@ -225,6 +228,21 @@ export default function TransferList({
     }
   };
 
+  const theme = createTheme({
+    breakpoints: {
+      values: {
+        xs: 0, // smartphones
+        sm: 769, // tablettes
+        md: 1100, // laptops
+        lg: 1650, // desktop large (point critique que tu mentionnais)
+        xl: 2000, // très grands écrans
+      },
+    },
+  });
+
+  const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const listHeight = isSmall ? 220 : 460;
+
   const customList = (
     items,
     showSearch = false,
@@ -234,15 +252,16 @@ export default function TransferList({
     <Paper
       sx={{
         width: 350,
-        height: 520,
+        height: { listHeight },
         overflow: "auto",
         overflowX: "hidden",
         overflowY: "hidden",
+        border: "solid 1px var(--color-04)",
       }}
     >
       {showSearch && (
         <TextField
-          sx={{ m: 1, width: "335px" }}
+          sx={{ m: 1, width: "95%" }}
           fullWidth
           label="Search"
           variant="outlined"
@@ -251,7 +270,7 @@ export default function TransferList({
         />
       )}
       <FixedSizeList
-        height={450}
+        height={listHeight}
         width={350}
         itemCount={items.length}
         itemSize={50}
@@ -282,13 +301,50 @@ export default function TransferList({
     <>
       <Grid
         container
-        spacing={2}
-        justifyContent="space-evenly"
+        spacing={0}
+        justifyContent="center"
         alignItems="center"
+        sx={{
+          width: "95%",
+          maxWidth: "100%",
+          margin: "0 auto",
+          padding: "0",
+          flexWrap: "nowrap",
+          flexDirection: "row",
+          gap: 2,
+          "@media (max-width: 768px)": {
+            flexDirection: "column",
+            alignItems: "center",
+          },
+        }}
       >
-        <Grid item>{customList(left)}</Grid>
+        {/* Liste de gauche */}
+        <Grid
+          item
+          sx={{
+            flexShrink: 1,
+            flexGrow: 1,
+            minWidth: { xs: "90%", sm: "40%", md: "40%", lg: "350px" },
+            maxWidth: 500,
+            display: "flex",
+            justifyContent: "center",
+            paddingLeft: "10px",
+            "@media (max-width: 768px)": {
+              paddingLeft: 0,
+            },
+          }}
+        >
+          {customList(left)}
+        </Grid>
+        {/* Colonne centrale avec les boutons */}
         <Grid item>
-          <Grid container direction="column" alignItems="center">
+          <Grid
+            container
+            direction={{ xs: "row", sm: "row", md: "column" }}
+            alignItems="center"
+            justifyContent="center"
+            gap="0 1rem"
+          >
             <Button
               sx={{ my: 0.5 }}
               variant="outlined"
@@ -297,7 +353,7 @@ export default function TransferList({
               disabled={leftChecked.length === 0}
               aria-label="move selected right"
             >
-              &gt;
+              {isSmall ? "↓" : ">"}
             </Button>
             <Button
               sx={{ my: 0.5 }}
@@ -316,13 +372,30 @@ export default function TransferList({
               disabled={rightChecked.length === 0}
               aria-label="move selected left"
             >
-              &lt;
+              {isSmall ? "↑" : "<"}
             </Button>
           </Grid>
         </Grid>
-        {customList(filteredRightItems, true, searchTermRight, (e) =>
-          setSearchTermRight(e.target.value)
-        )}
+        {/* Liste de droite */}
+        <Grid
+          item
+          sx={{
+            flexShrink: 1,
+            flexGrow: 1,
+            minWidth: { xs: "90%", sm: "40%", md: "40%", lg: "350px" },
+            maxWidth: 500,
+            display: "flex",
+            justifyContent: "center",
+            paddingRight: "10px",
+            "@media (max-width: 768px)": {
+              paddingRight: 0,
+            },
+          }}
+        >
+          {customList(filteredRightItems, true, searchTermRight, (e) =>
+            setSearchTermRight(e.target.value)
+          )}
+        </Grid>
       </Grid>
       <Modal open={showModal} onClose={closeModal} className="Movie_Modal">
         <Box>

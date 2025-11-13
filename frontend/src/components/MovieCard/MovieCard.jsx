@@ -714,12 +714,11 @@ function MovieCard({
   const [data, setData] = useState([]);
   const [dataType, setDataType] = useState("");
 
-  const style = {
+  const transferListStyle = {
     position: "absolute",
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: "50%",
     bgcolor: "background.paper",
     border: "2px solid #000",
     boxShadow: 24,
@@ -1158,14 +1157,6 @@ function MovieCard({
                   fullWidth
                   sx={textFieldSx}
                 />
-                {/* {idTheMovieDb && (
-                  <CloudSyncIcon
-                    className="Btn_Refresh_items_MovieCard"
-                    onClick={() =>
-                      refetchTitle(idTheMovieDb, { movieData, setMovieData })
-                    }
-                  />
-                )} */}
               </div>
               <div className="divider" />
               <div className="box_item_form">
@@ -2107,7 +2098,7 @@ function MovieCard({
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"
         >
-          <Box sx={style}>
+          <Box sx={transferListStyle}>
             <div
               onClick={handleCloseModal}
               onKeyDown={(event) => {
