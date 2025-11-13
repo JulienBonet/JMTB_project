@@ -737,7 +737,7 @@ function AddNewMovie() {
     },
   });
 
-  // -----------------/ MODAL STYLE /----------------- //
+  // -----------------/ MODALS STYLE /----------------- //
   const transferListStyle = {
     position: "absolute",
     top: "50%",

@@ -113,3 +113,16 @@
   padding: 1rem 1rem 1.5rem 0;
   margin: 0 5% 0 0;
 }
+
+@media (max-width: 1024px) {
+.Adm_l1, .Adm_l2 {
+    flex-direction: column;
+}
+
+.Adm_l1a, .Adm_l1b, .Adm_l2a {
+    width: 95%;
+}
+.Adm_l2b{
+  width: 90%;
+}
+}

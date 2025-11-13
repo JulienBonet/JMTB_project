@@ -17,7 +17,6 @@ import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
 import CreateItemCard from "../CreateItemCard/CreateItemCard";
-import "./movieItemList.css";
 
 function not(a, b) {
   return a.filter((value) => b.indexOf(value) === -1);

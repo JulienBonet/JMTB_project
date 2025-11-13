@@ -165,14 +165,14 @@ function AdminCompositorList() {
             currentArtists.map((DataItem) => (
               <tr key={DataItem.id}>
                 <th scope="row">{DataItem.id}</th>
-                <td>{DataItem.name}</td>
-                <td>
+                <td data-label="Compositeur">{DataItem.name}</td>
+                <td data-label="Aperçu">
                   <PreviewIcon
                     className="admin_tools_ico"
                     onClick={() => openModal(DataItem)}
                   />
                 </td>
-                <td>
+                <td data-label="Supprimer">
                   <DeleteIcon
                     className="admin_tools_ico"
                     onClick={() => handleDelete(DataItem.id)}

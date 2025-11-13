@@ -19,7 +19,7 @@
   width: 50%;
   justify-content: flex-end;
 }
-.admin_search_bar{
+.admin_search_bar {
   border: solid 1px gray;
 }
 
@@ -66,4 +66,78 @@ tbody tr:nth-child(even) {
   width: 50%;
   border-radius: 25px;
   padding: 10px;
+}
+@media (max-width: 720px) {
+  .HeaderAdminItemsSection {
+    justify-content: center;
+}
+  .admin_Title_feat_container {
+    display: none;
+  }
+  .admin_feat_tools_line {
+    justify-content: center;
+  width: 90%;
+}
+  /* Enveloppe de la table si possible */
+  .AdminItemsSection {
+    overflow-x: auto;
+  }
+
+  table {
+    display: block; /* rend la table scrollable */
+    width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: 0.75rem;
+  }
+
+  thead {
+    display: none;
+  }
+  tbody,
+  th,
+  td,
+  tr {
+    display: block; /* force la table à se comporter comme un flux */
+  }
+
+  /* chaque ligne devient un mini bloc */
+  tr {
+    margin-bottom: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 0.5rem;
+  }
+
+  th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+  }
+
+  td {
+    text-align: left;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  td::before {
+    content: attr(data-label); /* crée un label pour chaque valeur */
+    font-weight: 600;
+    text-transform: capitalize;
+  }
+
+  /* Icônes */
+  .admin_tools_ico {
+    width: 2rem !important;
+    height: 2rem !important;
+    margin: 10px
+  }
+
+  /* LOADER */
+  .LoaderTemp {
+    font-size: 0.9rem;
+    padding: 1rem 0;
+  }
 }

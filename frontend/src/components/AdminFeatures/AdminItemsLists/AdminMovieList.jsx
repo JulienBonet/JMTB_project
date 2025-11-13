@@ -195,17 +195,17 @@ function AdminMovieList() {
             currentMovies.map((movieData) => (
               <tr key={movieData.id}>
                 <th scope="row">{movieData.id}</th>
-                <td>{movieData.title}</td>
-                <td>{movieData.year}</td>
-                <td>{movieData.duration}</td>
-                <td>{movieData.videoSupport}</td>
-                <td>
+                <td data-label="Titre">{movieData.title}</td>
+                <td data-label="Année">{movieData.year}</td>
+                <td data-label="Durée">{movieData.duration}</td>
+                <td data-label="Support">{movieData.videoSupport}</td>
+                <td data-label="Aperçu">
                   <PreviewIcon
                     className="admin_tools_ico"
                     onClick={() => openModal(movieData)}
                   />
                 </td>
-                <td>
+                <td data-label="Supprimer">
                   <DeleteIcon
                     className="admin_tools_ico"
                     onClick={() => handleOpenDeleteConfirm(movieData.id)}
