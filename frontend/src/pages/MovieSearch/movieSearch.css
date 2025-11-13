@@ -47,7 +47,7 @@
   display: none; /* caché par défaut sur desktop */
 }
 
-.reset_search_btn {
+/* .reset_search_btn {
   width: 42px;
   height: 42px;
   color: var(--color-01);
@@ -71,7 +71,7 @@
   transform: scale(0.9);
   color: var(--color-02);
   border-color: var(--color-02);
-}
+} */
 
 .material-symbols-outlined {
   font-variation-settings:
@@ -102,7 +102,7 @@
   align-items: center;
   padding-top: 1rem;
 }
-.search_bear_position {
+.search_moviesList_position {
   flex: 1 1 auto;
   overflow-y: auto;
   display: flex;
@@ -116,23 +116,23 @@
   height: 100%;
   width: 100%;
 }
-.Search_pitch_container {
+/* .Search_pitch_container {
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 3rem;
   width: 59%;
-}
-.Search_pitch {
+} */
+/* .Search_pitch {
   font-family: var(--font-03);
   text-align: center;
   line-height: normal;
   color: var(--color-01);
-}
-.search_bear_background {
+} */
+/* .search_bear_background {
   border-radius: 25px;
   width: 31%;
-}
+} */
 
 .MovieThumbnails_container::-webkit-scrollbar {
   width: 0;
@@ -208,15 +208,14 @@
   transform: scale(0.95);
 }
 
-.MovieThumbnails_Grid {
+/* .MovieThumbnails_Grid {
   display: flex;
   justify-content: center;
   width: 90%;
-  height: 100%; /* remplit le container */
-}
+} */
 
-.MovieThumbnails_Grid > div {
+/* .MovieThumbnails_Grid > div {
   display: flex;
   justify-content: center;
   align-items: center;
-}
+} */

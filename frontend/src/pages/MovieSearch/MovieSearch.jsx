@@ -343,7 +343,7 @@ function MovieSearch() {
       <div className="dashed_secondary_bar" />
       <MovieCount movieAmount={movieAmount} />
 
-      <section className="search_bear_position" ref={containerRef}>
+      <section className="search_moviesList_position" ref={containerRef}>
         {isLoading ? (
           <div className="MovieThumbnails_container MovieThumbnails_Loader">
             <LoaderCowardlySquid />
