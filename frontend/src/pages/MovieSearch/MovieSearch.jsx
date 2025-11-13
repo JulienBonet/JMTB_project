@@ -51,6 +51,20 @@ function MovieSearch() {
   const containerRef = useRef(null);
   const [containerWidth, setContainerWidth] = useState(1280);
   const [mobileToggleOpen, setMobileToggleOpen] = useState(false);
+  const [isNarrow, setIsNarrow] = useState(window.innerWidth < 768);
+
+  console.info("filteredMovies", filteredMovies);
+
+  //-----------------------------
+  // SUIVRE L'ETAT DE isNarrow
+  //-----------------------------
+
+  useEffect(() => {
+    const handleResize = () => setIsNarrow(window.innerWidth < 768);
+    window.addEventListener("resize", handleResize);
+    handleResize(); // au cas où le composant se monte après un resize
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   //-----------------------------
   // FETCH INITIAL DATA
@@ -96,10 +110,60 @@ function MovieSearch() {
   //-----------------------------
   // FILTERS SEARCH
   //-----------------------------
+  // useEffect(() => {
+  //   let filtered = data.filter((movie) =>
+  //     movie.title.toLowerCase().replace(/-/g, "").includes(search.toLowerCase())
+  //   );
+
+  //   if (selectedKind) {
+  //     filtered = filtered.filter((movie) =>
+  //       movie.genres?.split(", ").includes(selectedKind)
+  //     );
+  //   }
+
+  //   if (selectedYear) {
+  //     filtered = filtered.filter(
+  //       (movie) =>
+  //         Math.floor(movie.year / 10) * 10 === parseInt(selectedYear, 10)
+  //     );
+  //   }
+
+  //   if (selectedCountry) {
+  //     filtered = filtered.filter((movie) =>
+  //       movie.countries?.split(", ").includes(selectedCountry)
+  //     );
+  //   }
+
+  //   setFilteredMovies(filtered);
+  // }, [data, search, selectedKind, selectedYear, selectedCountry]);
+
   useEffect(() => {
-    let filtered = data.filter((movie) =>
-      movie.title.toLowerCase().replace(/-/g, "").includes(search.toLowerCase())
-    );
+    const lowerSearch = search.toLowerCase().replace(/-/g, "");
+
+    // fonction utilitaire pour éviter les erreurs si champ vide
+    const includesNormalized = (field) =>
+      !!field && field.toLowerCase().replace(/-/g, "").includes(lowerSearch);
+
+    let filtered = data.filter((movie) => {
+      if (!lowerSearch) return true;
+
+      if (!isNarrow) {
+        // >= 768px → recherche uniquement dans le titre
+        return includesNormalized(movie.title);
+      }
+
+      // < 768px → recherche dans tout (titre + champs associés)
+      return (
+        includesNormalized(movie.title) ||
+        includesNormalized(movie.directors) ||
+        includesNormalized(movie.castings) ||
+        includesNormalized(movie.screenwriters) ||
+        includesNormalized(movie.musics) ||
+        includesNormalized(movie.studios) ||
+        includesNormalized(movie.genres) ||
+        includesNormalized(movie.countries)
+      );
+    });
 
     if (selectedKind) {
       filtered = filtered.filter((movie) =>
@@ -121,7 +185,7 @@ function MovieSearch() {
     }
 
     setFilteredMovies(filtered);
-  }, [data, search, selectedKind, selectedYear, selectedCountry]);
+  }, [data, search, selectedKind, selectedYear, selectedCountry, isNarrow]);
 
   const handleTyping = (e) => {
     let { value } = e.target;
@@ -256,15 +320,7 @@ function MovieSearch() {
       <section className="search_bar_contents">
         <section className="search_bar_position">
           {/* Search bar */}
-          <div
-            className="search_bar_container"
-            // style={{
-            //   padding:
-            //     mobileToggleOpen || window.innerWidth > 768
-            //       ? "10px 0"
-            //       : "10px 0 0 0",
-            // }}
-          >
+          <div className="search_bar_container">
             <input
               value={search}
               onChange={handleTyping}

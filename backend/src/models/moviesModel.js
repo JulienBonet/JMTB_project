@@ -140,10 +140,41 @@ const findMoviesByDecade = (decade) => {
   ]);
 };
 
+// const findAllForSearchFilter = () => {
+//   return db.query(
+//     "SELECT movies.*, GROUP_CONCAT(DISTINCT genre.name SEPARATOR ', ') AS genres, GROUP_CONCAT(DISTINCT country.name SEPARATOR ', ') AS countries FROM movies LEFT JOIN movie_genre ON movies.id = movie_genre.movieId LEFT JOIN genre ON movie_genre.genreId = genre.id LEFT JOIN movie_country ON movies.id = movie_country.movieId LEFT JOIN country ON movie_country.countryId = country.id GROUP BY movies.id, movies.title, movies.altTitle, movies.year, movies.duration, movies.cover, movies.trailer, movies.pitch, movies.story, movies.location, movies.videoFormat, movies.comment, movies.videoSupport, movies.fileSize, movies.idTheMovieDb, movies.idIMDb ORDER BY movies.id DESC;"
+//   );
+// };
+
 const findAllForSearchFilter = () => {
-  return db.query(
-    "SELECT movies.*, GROUP_CONCAT(DISTINCT genre.name SEPARATOR ', ') AS genres, GROUP_CONCAT(DISTINCT country.name SEPARATOR ', ') AS countries FROM movies LEFT JOIN movie_genre ON movies.id = movie_genre.movieId LEFT JOIN genre ON movie_genre.genreId = genre.id LEFT JOIN movie_country ON movies.id = movie_country.movieId LEFT JOIN country ON movie_country.countryId = country.id GROUP BY movies.id, movies.title, movies.altTitle, movies.year, movies.duration, movies.cover, movies.trailer, movies.pitch, movies.story, movies.location, movies.videoFormat, movies.comment, movies.videoSupport, movies.fileSize, movies.idTheMovieDb, movies.idIMDb ORDER BY movies.id DESC;"
-  );
+  return db.query(`
+    SELECT 
+      movies.*,
+      GROUP_CONCAT(DISTINCT genre.name SEPARATOR ', ') AS genres,
+      GROUP_CONCAT(DISTINCT country.name SEPARATOR ', ') AS countries,
+      GROUP_CONCAT(DISTINCT director.name SEPARATOR ', ') AS directors,
+      GROUP_CONCAT(DISTINCT casting.name SEPARATOR ', ') AS castings,
+      GROUP_CONCAT(DISTINCT screenwriter.name SEPARATOR ', ') AS screenwriters,
+      GROUP_CONCAT(DISTINCT music.name SEPARATOR ', ') AS musics,
+      GROUP_CONCAT(DISTINCT studio.name SEPARATOR ', ') AS studios
+    FROM movies
+      LEFT JOIN movie_genre ON movies.id = movie_genre.movieId
+      LEFT JOIN genre ON movie_genre.genreId = genre.id
+      LEFT JOIN movie_country ON movies.id = movie_country.movieId
+      LEFT JOIN country ON movie_country.countryId = country.id
+      LEFT JOIN movie_director ON movies.id = movie_director.movieId
+      LEFT JOIN director ON movie_director.directorId = director.id
+      LEFT JOIN movie_casting ON movies.id = movie_casting.movieId
+      LEFT JOIN casting ON movie_casting.castingId = casting.id
+      LEFT JOIN movie_screenwriter ON movies.id = movie_screenwriter.movieId
+      LEFT JOIN screenwriter ON movie_screenwriter.screenwriterId = screenwriter.id
+      LEFT JOIN movie_music ON movies.id = movie_music.movieId
+      LEFT JOIN music ON movie_music.musicId = music.id
+      LEFT JOIN movie_studio ON movies.id = movie_studio.movieId
+      LEFT JOIN studio ON movie_studio.studioId = studio.id
+    GROUP BY movies.id
+    ORDER BY movies.id DESC;
+  `);
 };
 
 const findByTvShow = (isTvShow) => {
