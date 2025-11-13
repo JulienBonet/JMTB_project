@@ -1074,6 +1074,7 @@ function MovieCard({
                     )}
                   </div>
                 )}
+                <div className="divider divider_movie_cover_modify_button" />
               </>
             )}
           </div>
@@ -1096,7 +1097,6 @@ function MovieCard({
                     sx={{
                       color: "var(--color-02)",
                       borderColor: "var(--color-02)",
-                      width: "25%",
                       transition: "all 0.2s ease-in-out",
                       "&:hover": {
                         borderColor: "var(--color-03)",
@@ -1147,6 +1147,7 @@ function MovieCard({
                   </Button>
                 )}
               </div>
+              <div className="divider divider_movie_cover_modify_button2" />
               <div className="box_item_form">
                 <TextField
                   label="Title"

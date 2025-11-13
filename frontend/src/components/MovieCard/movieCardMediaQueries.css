@@ -5,14 +5,33 @@
 }
 
 @media (max-width: 767px) {
-.MC_line1
- {
+  .MC_line1 {
     flex-direction: column;
-}
+  }
 
-.MovieCard_Cover_Position {
+  .MovieCard_Cover_Position {
     margin: 0 0 2rem 0;
     display: flex;
     justify-content: center;
-}
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .movie_cover_modify_buttons_wrapper {
+    gap: 2rem;
+  }
+
+  .movieCard_Type_Line {
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .divider_movie_cover_modify_button,
+  .divider_movie_cover_modify_button2 {
+    display: flex;
+  }
+
+  .divider_movie_cover_modify_button {
+    margin: 1.5rem 0 0 0;
+  }
 }
