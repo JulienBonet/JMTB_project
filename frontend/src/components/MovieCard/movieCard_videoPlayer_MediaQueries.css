@@ -9,80 +9,108 @@
 @media (max-width: 994px) {
   .video_player {
     width: 500px !important;
-    height: auto !important;
-    aspect-ratio: 16/9 !important;
   }
 }
 
 @media (max-width: 950px) {
   .video_player {
     width: 450px !important;
-    height: auto !important;
-    aspect-ratio: 16/9 !important;
   }
 }
 
 @media (max-width: 896px) {
   .video_player {
     width: 400px !important;
-    height: auto !important;
-    aspect-ratio: 16/9 !important;
   }
 }
 
 @media (max-width: 840px) {
   .video_player {
     width: 350px !important;
-    height: auto !important;
-    aspect-ratio: 16/9 !important;
   }
 }
 
 @media (max-width: 786px) {
   .video_player {
     width: 300px !important;
-    height: auto !important;
-    aspect-ratio: 16/9 !important;
   }
 }
 
-@media (max-width: 732px) {
+@media (max-width: 767px) {
+  .video_player {
+    width: 550px !important;
+  }
+}
+@media (max-width: 712px) {
+  .video_player {
+    width: 500px !important;
+  }
+}
+@media (max-width: 670px) {
+  .video_player {
+    width: 450px !important;
+  }
+}
+@media (max-width: 610px) {
+  .video_player {
+    width: 400px !important;
+  }
+}
+@media (max-width: 540px) {
+  .video_player {
+    width: 380px !important;
+  }
+}
+@media (max-width: 507px) {
+  .video_player {
+    width: 360px !important;
+  }
+}
+
+@media (max-width: 490px) {
+  .video_player {
+    width: 340px !important;
+  }
+}
+
+@media (max-width: 470px) {
+  .video_player {
+    width: 320px !important;
+  }
+}
+
+@media (max-width: 440px) {
+  .video_player {
+    width: 300px !important;
+  }
+}
+
+@media (max-width: 420px) {
   .video_player {
     width: 280px !important;
-    height: auto !important;
-    aspect-ratio: 16/9 !important;
   }
 }
-@media (max-width: 704px) {
+
+@media (max-width: 395px) {
   .video_player {
-    width: 250px !important;
-    height: auto !important;
-    aspect-ratio: 16/9 !important;
+    width: 260px !important;
   }
 }
-@media (max-width: 672px) {
+
+@media (max-width: 370px) {
+  .video_player {
+    width: 240px !important;
+  }
+}
+
+@media (max-width: 350px) {
+  .video_player {
+    width: 220px !important;
+  }
+}
+
+@media (max-width: 330px) {
   .video_player {
     width: 200px !important;
-    height: auto !important;
-    aspect-ratio: 16/9 !important;
-  }
-}
-@media (max-width: 618px) {
-  .video_player {
-    width: 180px !important;
-    height: auto !important;
-    aspect-ratio: 16/9 !important;
-  }
-}
-@media (max-width: 578px) {
-  .video_player {
-    width: 150px !important;
-    height: auto !important;
-    aspect-ratio: 16/9 !important;
-  }
-}
-@media (max-width: 538px) {
-  .video_player {
-    display:none;
   }
 }

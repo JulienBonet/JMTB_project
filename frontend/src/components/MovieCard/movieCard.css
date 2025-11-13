@@ -227,8 +227,4 @@
   color: greenyellow;
 }
 
-@media (min-width: 1200px) {
-  .css-1oqqzyl-MuiContainer-root {
-    max-width: 1400px !important;
-  }
-}
+

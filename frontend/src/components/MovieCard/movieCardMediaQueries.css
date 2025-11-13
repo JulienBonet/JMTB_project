@@ -1,0 +1,18 @@
+@media (min-width: 1200px) {
+  .css-1oqqzyl-MuiContainer-root {
+    max-width: 1400px !important;
+  }
+}
+
+@media (max-width: 767px) {
+.MC_line1
+ {
+    flex-direction: column;
+}
+
+.MovieCard_Cover_Position {
+    margin: 0 0 2rem 0;
+    display: flex;
+    justify-content: center;
+}
+}

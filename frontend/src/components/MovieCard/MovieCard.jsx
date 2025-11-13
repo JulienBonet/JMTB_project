@@ -7,6 +7,7 @@ import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "./movieCard.css";
+import "./movieCardMediaQueries.css";
 import "./movieCard_videoPlayer_MediaQueries.css";
 import ReactPlayer from "react-player";
 import Box from "@mui/material/Box";

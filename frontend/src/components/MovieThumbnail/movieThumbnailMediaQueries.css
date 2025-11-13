@@ -11,7 +11,7 @@
 @media (max-width: 1024px) {
 .thumbail_container {
     width: 9rem;
-   height: 17rem;
+   height: 14rem;
 }
 
 .thumbail_cover {
@@ -26,7 +26,6 @@
 @media (max-width: 970px) {
 .thumbail_container {
     width: 8rem;
-   height: 16rem;
 }
 
 .thumbail_cover {
