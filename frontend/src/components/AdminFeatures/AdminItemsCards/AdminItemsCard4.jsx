@@ -1,5 +1,6 @@
 /* eslint-disable react/prop-types */
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import { FormControl, Select, MenuItem, OutlinedInput } from "@mui/material";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
@@ -16,19 +17,33 @@ function AdminItemsCard4({ item, origin, onUpdate, closeModal }) {
   const [isModify, setIsModify] = useState(false);
   const [name, setName] = useState(item.name);
   const [pitch, setPitch] = useState(item.pitch);
-  const [isEditing, setIsEditing] = useState(false);
   const [image, setImage] = useState(`${backendUrl}/${item.image}`);
   const [showUploadButton, setShowUploadButton] = useState(true);
+  const [categories, setCategories] = useState([]);
+  const [categoryId, setCategoryId] = useState(
+    item.categoryId ? Number(item.categoryId) : ""
+  );
+
   const fileInputRef = useRef(null);
 
   const openModif = () => {
     setIsModify(true);
-    setIsEditing(true);
   };
 
   const handleReturn = () => {
     closeModal();
   };
+
+  // Fetch catégories (origin === "focus")
+  useEffect(() => {
+    if (origin === "focus") {
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/focuscategory`)
+        .then((res) => res.json())
+        .then((data) => setCategories(data))
+        .catch((err) => console.error("Error fetching categories:", err));
+    }
+  }, []);
+  // End Fetch catégories (origin === "focus")
 
   const handleUpdateImage = async () => {
     const fileInput = fileInputRef.current;
@@ -57,12 +72,16 @@ function AdminItemsCard4({ item, origin, onUpdate, closeModal }) {
 
   const handleValidate = async () => {
     try {
-      const hasChanges = name !== item.name || pitch !== item.pitch;
+      const hasChanges =
+        name !== item.name ||
+        pitch !== item.pitch ||
+        categoryId !== item.categoryId;
 
       if (hasChanges) {
         const data = {
           name,
           pitch,
+          categoryId,
         };
 
         // 1. Mettre à jour les infos
@@ -101,7 +120,6 @@ function AdminItemsCard4({ item, origin, onUpdate, closeModal }) {
         className: "custom-toast",
       });
       setIsModify(false);
-      setIsEditing(false);
       setShowUploadButton(true);
 
       onUpdate(); // Rafraîchir les données dans le composant parent
@@ -109,7 +127,7 @@ function AdminItemsCard4({ item, origin, onUpdate, closeModal }) {
     } catch (error) {
       console.error("Request error:", error);
     }
-  };
+  }; // end handleValidate
 
   // Fonctions pour filtrer les caractères interdits
   const regexInput = (value) => {
@@ -127,7 +145,6 @@ function AdminItemsCard4({ item, origin, onUpdate, closeModal }) {
     setPitch(item.pitch);
     setImage(`${backendUrl}/${item.image}`);
     setIsModify(false);
-    setIsEditing(false);
     setShowUploadButton(true);
   };
 
@@ -153,6 +170,7 @@ function AdminItemsCard4({ item, origin, onUpdate, closeModal }) {
           <h2 className="ItemsCard_title">ID: </h2>
           <p className="Items_info">{item.id}</p>
         </div>
+
         <div className="Info_item_line">
           <h2 className="ItemsCard_title">NAME: </h2>
           {isModify ? (
@@ -174,9 +192,37 @@ function AdminItemsCard4({ item, origin, onUpdate, closeModal }) {
             <p className="Items_info">{pitch}</p>
           )}
         </div>
-
+        <div className="Info_item_line">
+          {isModify && origin === "focus" ? (
+            <>
+              <h2 className="ItemsCard_title">CATEGORY: </h2>
+              <FormControl fullWidth size="small">
+                <Select
+                  labelId="edit-focus-category-label"
+                  value={categoryId}
+                  onChange={(e) => setCategoryId(Number(e.target.value))}
+                  input={<OutlinedInput label="Category" />}
+                  sx={{
+                    backgroundColor: "white",
+                  }}
+                >
+                  {categories.map((cat) => (
+                    <MenuItem key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </>
+          ) : (
+            <>
+              <h2 className="ItemsCard_title">CATEGORY: </h2>
+              <p className="Items_info">{item.category_name}</p>
+            </>
+          )}
+        </div>
         <div className="Info_Btn-Modify">
-          {isEditing ? (
+          {isModify ? (
             <section className="Item_Editing_Buttons">
               <DoneOutlineIcon
                 className="Item_validateButton"

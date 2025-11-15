@@ -59,17 +59,6 @@ router.put(
 );
 router.delete("/studio/:id", editingController.eraseStudio);
 
-// THEMA ROUTES
-router.post("/thema", editingController.addThema);
-router.put("/thema/:id", editingController.editingThema);
-router.put(
-  "/thema/:id/image",
-  setType("thema"),
-  fileUpload.single("image"),
-  editingController.uploadThemaImage
-);
-router.delete("/thema/:id", editingController.eraseThema);
-
 // COUNTRY ROUTES
 router.post("/country", editingController.addCountry);
 router.put("/country/:id", editingController.editingCountry);
@@ -98,5 +87,16 @@ router.post("/tag", editingController.addTag);
 router.put("/tag/:id", editingController.editingTag);
 router.delete("/tag/:id", editingController.eraseTag);
 router.get("/tag/byname/:name", editingController.getTagByName);
+
+// THEMA ROUTES
+router.post("/focus", editingController.addFocus);
+router.put("/focus/:id", editingController.editingFocus);
+router.put(
+  "/focus/:id/image",
+  setType("focus"),
+  fileUpload.single("image"),
+  editingController.uploadFocusImage
+);
+router.delete("/focus/:id", editingController.eraseFocus);
 
 module.exports = router;

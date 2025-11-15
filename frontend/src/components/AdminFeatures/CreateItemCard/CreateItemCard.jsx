@@ -1,6 +1,13 @@
 /* eslint-disable react/prop-types */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import {
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  OutlinedInput,
+} from "@mui/material";
 import "react-toastify/dist/ReactToastify.css";
 import DoneOutlineIcon from "@mui/icons-material/DoneOutline";
 import UndoIcon from "@mui/icons-material/Undo";
@@ -8,6 +15,8 @@ import "./createItemCard.css";
 
 function CreateItemCard({ origin, onUpdate, closeModal }) {
   const [name, setName] = useState("");
+  const [categories, setCategories] = useState([]);
+  const [categoryId, setCategoryId] = useState("");
   console.info("origin in CreateItemCard:", origin);
   console.info("onUpdate in CreateItemCard:", onUpdate);
   console.info("closeModal in CreateItemCard:", closeModal);
@@ -24,11 +33,26 @@ function CreateItemCard({ origin, onUpdate, closeModal }) {
   };
   // end Fonctions pour filtrer les caractères interdits
 
+  // Fetch catégories (origin === "focus")
+  useEffect(() => {
+    if (origin === "focus") {
+      fetch(`${import.meta.env.VITE_BACKEND_URL}/api/focuscategory`)
+        .then((res) => res.json())
+        .then((data) => setCategories(data))
+        .catch((err) => console.error("Error fetching categories:", err));
+    }
+  }, []);
+  // End Fetch catégories (origin === "focus")
+
   const handleValidate = async () => {
     try {
       const data = {
         name,
       };
+
+      if (origin === "focus") {
+        data.categoryId = categoryId;
+      }
 
       console.info(
         "POST in CeateItemCard:",
@@ -86,6 +110,26 @@ function CreateItemCard({ origin, onUpdate, closeModal }) {
           className="created-item_input"
         />
       </div>
+      {origin === "focus" && (
+        <div className="Created_Info_item_line">
+          <FormControl fullWidth size="small">
+            <InputLabel id="focus-category-label">Category</InputLabel>
+
+            <Select
+              labelId="focus-category-label"
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+              input={<OutlinedInput label="Category" />}
+            >
+              {categories.map((cat) => (
+                <MenuItem key={cat.id} value={cat.id}>
+                  {cat.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </div>
+      )}
       <div className="Created_Info_Btn-Modify">
         <section className="Created_Item_Editing_Buttons">
           <DoneOutlineIcon

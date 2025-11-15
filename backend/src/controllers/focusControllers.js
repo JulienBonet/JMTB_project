@@ -1,5 +1,14 @@
 const focusModel = require("../models/focusModel");
 
+const getAllFocus = async (req, res, next) => {
+  try {
+    const [focus] = await focusModel.findAllFocus();
+    res.status(200).json(focus);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getAllFocusByCategoryIdRandom = async (req, res, next) => {
   try {
     const { id } = req.params;
@@ -100,7 +109,37 @@ const getFocusById = async (req, res, next) => {
   }
 };
 
+const getAllFocusCategory = async (req, res, next) => {
+  try {
+    const [focusCategory] = await focusModel.findAllFocusCategory();
+    res.status(200).json(focusCategory);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getFocusCategoryByName = async (req, res, next) => {
+  try {
+    const { name } = req.params;
+    const [focus] = await focusModel.findFocusCategoryByName(name);
+    res.status(200).json(focus);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getFocusCategoryById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const [focus] = await focusModel.findFocusCategoryById(id);
+    res.status(200).json(focus);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
+  getAllFocus,
   getAllFocusByCategoryIdRandom,
   getAllFocusByCategoryIdAsc,
   getAllFocusByCategoryIdDesc,
@@ -111,4 +150,7 @@ module.exports = {
   getAllMoviesByCategoryIdYearDesc,
   getFocusByName,
   getFocusById,
+  getAllFocusCategory,
+  getFocusCategoryByName,
+  getFocusCategoryById,
 };

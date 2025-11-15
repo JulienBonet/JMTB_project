@@ -1,5 +1,15 @@
 const db = require("../../database/client");
 
+const findAllFocus = () => {
+  return db.query(
+    `SELECT f.id, f.name, f.pitch, f.image, f.categoryId, fc.name AS category_name
+     FROM focus f
+     LEFT JOIN focuscategory fc ON f.categoryId = fc.id
+     ORDER BY f.id DESC;`,
+    []
+  );
+};
+
 const findAllFocusByCategoryIdRandom = (id) => {
   return db.query(`SELECT * FROM focus WHERE categoryId = ? ORDER BY RAND();`, [
     id,
@@ -63,7 +73,20 @@ const findFocusById = (id) => {
   return db.query(`SELECT * FROM focus WHERE id = ?;`, [id]);
 };
 
+const findAllFocusCategory = () => {
+  return db.query(`SELECT * FROM focuscategory;`, []);
+};
+
+const findFocusCategoryById = (id) => {
+  return db.query(`SELECT * FROM focuscategory WHERE id = ?;`, [id]);
+};
+
+const findFocusCategoryByName = (name) => {
+  return db.query(`SELECT * FROM focuscategory WHERE name = ?;`, [name]);
+};
+
 module.exports = {
+  findAllFocus,
   findAllFocusByCategoryIdRandom,
   findAllFocusByCategoryIdAsc,
   findAllFocusByCategoryIdDesc,
@@ -74,4 +97,7 @@ module.exports = {
   findAllMoviesByCategoryIdYearDesc,
   findFocusByName,
   findFocusById,
+  findAllFocusCategory,
+  findFocusCategoryById,
+  findFocusCategoryByName,
 };

@@ -13,16 +13,16 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AdminItemsCard from "../AdminItemsCards/AdminItemsCard4";
 import CreateItemCard from "../CreateItemCard/CreateItemCard";
 
-function AdminThemaList() {
+function AdminFocusList() {
   const [data, setData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [newThema, setNewThema] = useState(false);
-
-  const origin = "thema";
+  const [newFocus, setNewFocus] = useState(false);
+  console.info("data", data);
+  const origin = "focus";
 
   const openModal = (DataItem) => {
     setSelectedItem(DataItem);
@@ -32,17 +32,17 @@ function AdminThemaList() {
     setSelectedItem(null);
   };
 
-  const openModalNewThema = () => {
-    setNewThema(true);
+  const openModalNewFocus = () => {
+    setNewFocus(true);
   };
 
-  const closeModalNewThema = () => {
-    setNewThema(false);
+  const closeModalNewFocus = () => {
+    setNewFocus(false);
   };
 
-  // REQUEST ALL THEMA sorted ID desc
+  // REQUEST ALL FOCUS sorted ID desc
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/themas/sorted_id`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/focus`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -60,9 +60,9 @@ function AdminThemaList() {
       });
   }, []);
 
-  // REFRESH THEMA LIST
-  const refreshThema = () => {
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/themas/sorted_id`)
+  // REFRESH FOCUS LIST
+  const refreshFocus = () => {
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/focus`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -78,7 +78,7 @@ function AdminThemaList() {
       });
   };
 
-  // DELETE STUDIO
+  // DELETE FOCUS
   const handleDelete = async (id) => {
     // Display confirmation dialog
     const confirmDelete = window.confirm(
@@ -89,17 +89,17 @@ function AdminThemaList() {
     if (confirmDelete) {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/thema/${id}`,
+          `${import.meta.env.VITE_BACKEND_URL}/api/focus/${id}`,
           {
             method: "delete",
           }
         );
         if (response.status === 204) {
           console.info("delete ok");
-          toast.success("thema deleted", {
+          toast.success("focus deleted", {
             className: "custom-toast",
           });
-          refreshThema();
+          refreshFocus();
         } else {
           console.error("error delete");
         }
@@ -133,7 +133,7 @@ function AdminThemaList() {
     <section className="AdminItemsSection">
       <section className="HeaderAdminItemsSection">
         <div className="admin_Title_feat_container">
-          <h1 className="admin_Title_feat">THEMAS LIST</h1>
+          <h1 className="admin_Title_feat">fOCUS LIST</h1>
         </div>
         <div className="admin_feat_tools_line">
           <div className="Admin_search_bar_container">
@@ -144,8 +144,8 @@ function AdminThemaList() {
               placeholder="recherche"
             />
           </div>
-          <Button variant="contained" onClick={() => openModalNewThema()}>
-            ADD NEW THEMA
+          <Button variant="contained" onClick={() => openModalNewFocus()}>
+            ADD NEW FOCUS
           </Button>
         </div>
       </section>
@@ -153,7 +153,8 @@ function AdminThemaList() {
         <thead>
           <tr>
             <th scope="col">ID</th>
-            <th scope="col">THEMA</th>
+            <th scope="col">FOCUS</th>
+            <th scope="col">CATEGORIE</th>
           </tr>
         </thead>
         <tbody>
@@ -164,6 +165,7 @@ function AdminThemaList() {
               <tr key={DataItem.id}>
                 <th scope="row">{DataItem.id}</th>
                 <td data-label="Focus">{DataItem.name}</td>
+                <td data-label="Catégorie">{DataItem.category_name}</td>
                 <td data-label="Aperçu">
                   <PreviewIcon
                     className="admin_tools_ico"
@@ -210,22 +212,22 @@ function AdminThemaList() {
               <AdminItemsCard
                 item={selectedItem}
                 origin={origin}
-                onUpdate={refreshThema}
+                onUpdate={refreshFocus}
                 closeModal={closeModal}
               />
             </Container>
           </Box>
         </Modal>
       )}
-      {newThema && (
-        <Modal open onClose={closeModalNewThema} className="Movie_Modal">
+      {newFocus && (
+        <Modal open onClose={closeModalNewFocus} className="Movie_Modal">
           <Box>
             <Container maxWidth="sm">
               <div
-                onClick={closeModalNewThema}
+                onClick={closeModalNewFocus}
                 onKeyDown={(event) => {
                   if (event.key === "Enter" || event.key === " ") {
-                    closeModalNewThema();
+                    closeModalNewFocus();
                   }
                 }}
                 role="button"
@@ -236,8 +238,8 @@ function AdminThemaList() {
               </div>
               <CreateItemCard
                 origin={origin}
-                onUpdate={refreshThema}
-                closeModal={closeModalNewThema}
+                onUpdate={refreshFocus}
+                closeModal={closeModalNewFocus}
               />
             </Container>
           </Box>
@@ -247,4 +249,4 @@ function AdminThemaList() {
   );
 }
 
-export default AdminThemaList;
+export default AdminFocusList;

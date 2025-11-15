@@ -20,7 +20,7 @@
 }
 .Info_item_line {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 1rem;
 }
 .ItemsCard_title {

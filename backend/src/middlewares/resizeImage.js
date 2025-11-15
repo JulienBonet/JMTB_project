@@ -24,7 +24,7 @@ async function resizeImage(type, filename) {
       case "screenwriter":
       case "compositor":
       case "studio":
-      case "thema":
+      case "focus":
         width = 500;
         height = 500;
         break;

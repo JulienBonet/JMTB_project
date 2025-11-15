@@ -5,7 +5,9 @@ const path = require("path");
 const { resizeImage } = require("../middlewares/resizeImage");
 const editingModel = require("../models/editingModel");
 
+//-----------------------------
 // EDIT DIRECTOR
+//-----------------------------
 const addDirector = async (req, res) => {
   try {
     const { name } = req.body;
@@ -155,7 +157,9 @@ const eraseDirector = async (req, res = null) => {
   }
 };
 
+//-----------------------------
 // EDIT CASTING
+//-----------------------------
 const addCasting = async (req, res) => {
   try {
     const { name } = req.body;
@@ -301,7 +305,9 @@ const eraseCasting = async (req, res = null) => {
   }
 };
 
+//-----------------------------
 // EDIT SCREENWRITER
+//-----------------------------
 const addScreenwriter = async (req, res) => {
   try {
     const { name } = req.body;
@@ -455,7 +461,9 @@ const eraseScreenwriter = async (req, res = null) => {
   }
 };
 
+//-----------------------------
 // EDIT COMPOSITOR
+//-----------------------------
 const addCompositor = async (req, res) => {
   try {
     const { name } = req.body;
@@ -604,7 +612,9 @@ const eraseCompositor = async (req, res = null) => {
   }
 };
 
+//-----------------------------
 // EDIT STUDIO
+//-----------------------------
 const addStudio = async (req, res) => {
   try {
     const { name } = req.body;
@@ -751,143 +761,9 @@ const eraseStudio = async (req, res = null) => {
   }
 };
 
-// EDIT THEMA
-const addThema = async (req, res) => {
-  try {
-    const { name } = req.body;
-    if (!name) {
-      return res.status(400).json({ message: "Thema's name is required" });
-    }
-    await editingModel.insertThema(name);
-
-    return res.status(201).json({ message: "Thema successfully created" });
-  } catch (error) {
-    console.error("Error Thema creation :", error);
-    return res.status(500).json({ message: "Error Thema creation" });
-  }
-};
-
-const editingThema = async (req, res) => {
-  try {
-    const { name, pitch } = req.body;
-    const { id } = req.params;
-
-    const existingThema = await editingModel.findThemaById(id);
-    if (existingThema[0].name === name && existingThema[0].pitch === pitch) {
-      return res
-        .status(400)
-        .json({ message: "Error updating Thema: no changes detected" });
-    }
-
-    const result = await editingModel.editThema(name, pitch, id);
-
-    if (result.affectedRows !== 0) {
-      return res.status(200).json({ message: "Thema successfully updated" });
-    }
-    return res.status(400).json({ message: "Error updating Thema" });
-  } catch (error) {
-    console.error("Stack trace :", error.stack);
-    return res.status(500).json({ message: "Error updating Thema" });
-  }
-};
-
-const uploadThemaImage = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    if (!req.file) {
-      return res
-        .status(400)
-        .json({ message: "Aucun fichier n'a été téléchargé" });
-    }
-
-    const thema = await editingModel.findThemaById(id);
-    const currentImageUrl = thema[0].image;
-
-    if (currentImageUrl !== "00_jmtb_item_default.jpg") {
-      try {
-        const fullPath = path.join(
-          __dirname,
-          "../../public/images",
-          currentImageUrl
-        );
-        if (fs.existsSync(fullPath)) {
-          fs.unlinkSync(fullPath);
-        } else {
-          console.info(`Le fichier n'existe pas : ${fullPath}`);
-        }
-      } catch (unlinkError) {
-        console.error(
-          "Erreur lors de la suppression du fichier :",
-          unlinkError
-        );
-      }
-    }
-
-    const imageUrl = req.file.filename;
-    await resizeImage(req.multerType, imageUrl);
-    const result = await editingModel.editThemaImage(imageUrl, id);
-
-    if (result.affectedRows > 0) {
-      return res.status(200).json({ message: "Image successfully updated" });
-    }
-    console.error("Erreur lors de la mise à jour de l'image");
-    return res.status(500).json({ message: "Error updating image" });
-  } catch (error) {
-    console.error("Erreur lors du téléchargement de l'image :", error);
-    return res.status(500).json({ message: "Error updating image" });
-  }
-};
-
-const eraseThema = async (req, res = null) => {
-  try {
-    const themaId = req.params.id;
-
-    const themas = await editingModel.findThemaById(themaId);
-    if (!themas || themas.length === 0) {
-      if (res) {
-        return res.status(404).json({ message: "Thema non trouvé" });
-      }
-      return; // Arrêter l'exécution si aucune réponse HTTP n'est envoyée
-    }
-
-    const thema = themas[0];
-    const imageUrl = thema.image;
-    if (imageUrl && imageUrl !== "00_jmtb_item_default.jpg") {
-      try {
-        const fullPath = path.join(
-          __dirname,
-          "../../public/images",
-          path.basename(imageUrl)
-        );
-        if (fs.existsSync(fullPath)) {
-          fs.unlinkSync(fullPath);
-        } else {
-          console.info(`Le fichier n'existe pas : ${fullPath}`);
-        }
-      } catch (unlinkError) {
-        console.error(
-          "Erreur lors de la suppression du fichier :",
-          unlinkError
-        );
-      }
-    }
-
-    await editingModel.deleteThema(themaId);
-
-    if (res) {
-      res.sendStatus(204); // Envoyer la réponse uniquement si 'res' est défini
-    }
-  } catch (error) {
-    if (res) {
-      res
-        .status(500)
-        .json({ message: "Erreur lors de la suppression du thema" });
-    }
-  }
-};
-
+//-----------------------------
 // EDIT COUNTRY
+//-----------------------------
 const addCountry = async (req, res) => {
   try {
     const { name } = req.body;
@@ -1033,7 +909,9 @@ const getCountryByName = async (req, res, next) => {
   }
 };
 
+//-----------------------------
 // EDIT GENRE
+//-----------------------------
 const addGenre = async (req, res) => {
   try {
     const { name } = req.body;
@@ -1090,7 +968,9 @@ const eraseGenre = async (req, res, next) => {
   }
 };
 
+//-----------------------------
 // EDIT LANGUAGE
+//----------------------------
 const addLanguage = async (req, res) => {
   try {
     const { name } = req.body;
@@ -1156,7 +1036,9 @@ const getLanguageByName = async (req, res, next) => {
   }
 };
 
+//-----------------------------
 // EDIT TAG
+//-----------------------------
 const addTag = async (req, res) => {
   try {
     const { name } = req.body;
@@ -1222,6 +1104,151 @@ const getTagByName = async (req, res, next) => {
   }
 };
 
+//-----------------------------
+// EDIT FOCUS
+//-----------------------------
+const addFocus = async (req, res) => {
+  try {
+    const { name, categoryId } = req.body;
+
+    if (!name || !categoryId) {
+      return res.status(400).json({ message: "name and categoryId required" });
+    }
+
+    await editingModel.insertFocus(name, categoryId);
+    return res.status(201).json({ message: "Focus successfully created" });
+  } catch (error) {
+    console.error("Error Focus creation :", error);
+    return res.status(500).json({ message: "Error Focus creation" });
+  }
+};
+
+const editingFocus = async (req, res) => {
+  try {
+    const { name, pitch, categoryId } = req.body;
+    const { id } = req.params;
+
+    const existingFocus = await editingModel.findFocusById(id);
+
+    if (
+      existingFocus[0].name === name &&
+      existingFocus[0].pitch === pitch &&
+      existingFocus[0].categoryId === Number(categoryId)
+    ) {
+      return res.status(400).json({
+        message: "Error updating Focus: no changes detected",
+      });
+    }
+
+    const result = await editingModel.editFocus(name, pitch, categoryId, id);
+
+    if (result.affectedRows !== 0) {
+      return res.status(200).json({ message: "Focus successfully updated" });
+    }
+
+    return res.status(400).json({ message: "Error updating Focus" });
+  } catch (error) {
+    console.error("Stack trace :", error.stack);
+    return res.status(500).json({ message: "Error updating Focus" });
+  }
+};
+
+const uploadFocusImage = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if (!req.file) {
+      return res
+        .status(400)
+        .json({ message: "Aucun fichier n'a été téléchargé" });
+    }
+
+    const thema = await editingModel.findFocusById(id);
+    const currentImageUrl = thema[0].image;
+
+    if (currentImageUrl !== "00_jmtb_item_default.jpg") {
+      try {
+        const fullPath = path.join(
+          __dirname,
+          "../../public/images",
+          currentImageUrl
+        );
+        if (fs.existsSync(fullPath)) {
+          fs.unlinkSync(fullPath);
+        } else {
+          console.info(`Le fichier n'existe pas : ${fullPath}`);
+        }
+      } catch (unlinkError) {
+        console.error(
+          "Erreur lors de la suppression du fichier :",
+          unlinkError
+        );
+      }
+    }
+
+    const imageUrl = req.file.filename;
+    await resizeImage(req.multerType, imageUrl);
+    const result = await editingModel.editFocusImage(imageUrl, id);
+
+    if (result.affectedRows > 0) {
+      return res.status(200).json({ message: "Image successfully updated" });
+    }
+    console.error("Erreur lors de la mise à jour de l'image");
+    return res.status(500).json({ message: "Error updating image" });
+  } catch (error) {
+    console.error("Erreur lors du téléchargement de l'image :", error);
+    return res.status(500).json({ message: "Error updating image" });
+  }
+};
+
+const eraseFocus = async (req, res = null) => {
+  try {
+    const themaId = req.params.id;
+
+    const themas = await editingModel.findFocusById(themaId);
+    if (!themas || themas.length === 0) {
+      if (res) {
+        return res.status(404).json({ message: "Thema non trouvé" });
+      }
+      return; // Arrêter l'exécution si aucune réponse HTTP n'est envoyée
+    }
+
+    const thema = themas[0];
+    const imageUrl = thema.image;
+    if (imageUrl && imageUrl !== "00_jmtb_item_default.jpg") {
+      try {
+        const fullPath = path.join(
+          __dirname,
+          "../../public/images",
+          path.basename(imageUrl)
+        );
+        if (fs.existsSync(fullPath)) {
+          fs.unlinkSync(fullPath);
+        } else {
+          console.info(`Le fichier n'existe pas : ${fullPath}`);
+        }
+      } catch (unlinkError) {
+        console.error(
+          "Erreur lors de la suppression du fichier :",
+          unlinkError
+        );
+      }
+    }
+
+    await editingModel.deleteFocus(themaId);
+
+    if (res) {
+      res.sendStatus(204); // Envoyer la réponse uniquement si 'res' est défini
+    }
+  } catch (error) {
+    if (res) {
+      res
+        .status(500)
+        .json({ message: "Erreur lors de la suppression du thema" });
+    }
+  }
+};
+
 module.exports = {
   addDirector,
   editingDirector,
@@ -1243,10 +1270,6 @@ module.exports = {
   editingStudio,
   uploadStudioImage,
   eraseStudio,
-  addThema,
-  editingThema,
-  uploadThemaImage,
-  eraseThema,
   addCountry,
   editingCountry,
   uploadCountryImage,
@@ -1263,4 +1286,8 @@ module.exports = {
   editingTag,
   eraseTag,
   getTagByName,
+  addFocus,
+  editingFocus,
+  uploadFocusImage,
+  eraseFocus,
 };

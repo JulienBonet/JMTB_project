@@ -1,6 +1,8 @@
 const db = require("../../database/client");
 
+//-----------------------------
 // EDIT DIRECTOR
+//-----------------------------
 
 const findDirectorById = (id) =>
   db.query("SELECT * FROM director WHERE id = ?", [id]).then(([rows]) => rows);
@@ -31,8 +33,9 @@ const editDirectorImage = (imageUrl, id) =>
 const deleteDirector = (id) =>
   db.query("DELETE FROM director WHERE id = ?;", [id]);
 
+//-----------------------------
 // EDIT CASTING
-
+//-----------------------------
 const findCastingById = (id) =>
   db.query("SELECT * FROM casting WHERE id = ?", [id]).then(([rows]) => rows);
 
@@ -62,7 +65,9 @@ const editCastingImage = (imageUrl, id) =>
 const deleteCasting = (id) =>
   db.query("DELETE FROM casting WHERE id = ?;", [id]);
 
+//-----------------------------
 // EDIT SCREENWRITER
+//-----------------------------
 
 const findScreenwriterById = (id) =>
   db
@@ -95,7 +100,9 @@ const editScreenwriterImage = (imageUrl, id) =>
 const deleteScreenwriter = (id) =>
   db.query("DELETE FROM screenwriter WHERE id = ?;", [id]);
 
+//-----------------------------
 // EDIT COMPOSITOR
+//-----------------------------
 
 const findCompositorById = (id) =>
   db.query("SELECT * FROM music WHERE id = ?", [id]).then(([rows]) => rows);
@@ -126,13 +133,13 @@ const editCompositorImage = (imageUrl, id) =>
 const deleteCompositor = (id) =>
   db.query("DELETE FROM music WHERE id = ?;", [id]);
 
+//-----------------------------
 // EDIT STUDIO
+//-----------------------------
 
 const findStudioById = (id) =>
   db.query("SELECT * FROM studio WHERE id = ?", [id]).then(([rows]) => rows);
 
-// const findStudioByName = (name) =>
-//   db.query("SELECT * FROM studio WHERE name = ?", [name]);
 const findStudioByName = async (name) => {
   const [rows] = await db.query("SELECT id FROM studio WHERE name = ?", [name]);
   return rows.length > 0 ? rows[0].id : null;
@@ -160,34 +167,9 @@ const editStudioImage = (imageUrl, id) =>
 
 const deleteStudio = (id) => db.query("DELETE FROM studio WHERE id = ?;", [id]);
 
-// EDIT THEMA
-
-const findThemaById = (id) =>
-  db.query("SELECT * FROM thema WHERE id = ?", [id]).then(([rows]) => rows);
-
-const insertThema = (name) =>
-  db.query("INSERT INTO thema (name) VALUES (?);", [name]);
-
-const editThema = async (name, pitch, id) => {
-  const query = `
-        UPDATE thema
-        SET name = ?, pitch = ?
-        WHERE id = ?
-      `;
-
-  const result = await db.query(query, [name, pitch, id]);
-
-  return result;
-};
-
-const editThemaImage = (imageUrl, id) =>
-  db
-    .query("UPDATE thema SET image = ? WHERE id = ?", [imageUrl, id])
-    .then(([result]) => result);
-
-const deleteThema = (id) => db.query("DELETE FROM thema WHERE id = ?;", [id]);
-
+//-----------------------------
 // EDIT COUNTRY
+//-----------------------------
 
 const findCountryById = (id) =>
   db.query("SELECT * FROM country WHERE id = ?", [id]).then(([rows]) => rows);
@@ -216,7 +198,9 @@ const editCountryImage = (imageUrl, id) =>
 const deleteCountry = (id) =>
   db.query("DELETE FROM country WHERE id = ?;", [id]);
 
+//-----------------------------
 // EDIT GENRE
+//-----------------------------
 
 const findGenreByName = (name) => {
   db.query("SELECT * FROM genre WHERE name = ?", [name])
@@ -256,7 +240,9 @@ const editGenre = async (name, id) => {
 
 const deleteGenre = (id) => db.query("DELETE FROM genre WHERE id = ?;", [id]);
 
+//-----------------------------
 // EDIT LANGUAGE
+//-----------------------------
 
 const findLanguageById = (id) =>
   db.query("SELECT * FROM language WHERE id = ?", [id]).then(([rows]) => rows);
@@ -282,10 +268,10 @@ const editLanguage = async (name, id) => {
 const deleteLanguage = (id) =>
   db.query("DELETE FROM language WHERE id = ?;", [id]);
 
+//-----------------------------
 // EDIT TAG
+//-----------------------------
 
-// const findTagById = (id) =>
-//   db.query("SELECT * FROM tag WHERE id = ?", [id]).then(([rows]) => rows);
 const findTagById = async (tagId) => {
   const [rows] = await db.query("SELECT id FROM tag WHERE id = ?", [tagId]);
   return rows.length > 0 ? rows[0].id : null;
@@ -299,11 +285,9 @@ const findTagByNameInBackend = async (name) => {
   return results.length > 0 ? results[0] : null; // Retourne le premier tag trouvé ou null
 };
 
-// const insertTag = (name) =>
-//   db.query("INSERT INTO tag (name) VALUES (?);", [name]);
 const insertTag = (name) =>
   db.query("INSERT INTO tag (name) VALUES (?);", [name]).then((result) => {
-    return result; // Assurez-vous de retourner le résultat ici
+    return result;
   });
 
 const editTag = async (name, id) => {
@@ -319,6 +303,39 @@ const editTag = async (name, id) => {
 };
 
 const deleteTag = (id) => db.query("DELETE FROM tag WHERE id = ?;", [id]);
+
+//-----------------------------
+// EDIT FOCUS
+//-----------------------------
+
+const findFocusById = (id) =>
+  db.query("SELECT * FROM focus WHERE id = ?", [id]).then(([rows]) => rows);
+
+const insertFocus = (name, categoryId) => {
+  return db.query(
+    `INSERT INTO focus (name, categoryId, image, pitch) VALUES (?, ?, "00_jmtb_item_default.jpg", "")`,
+    [name, categoryId]
+  );
+};
+
+const editFocus = async (name, pitch, categoryId, id) => {
+  const query = `
+        UPDATE focus
+        SET name = ?, pitch = ?, categoryId = ?
+        WHERE id = ?
+      `;
+
+  const [result] = await db.query(query, [name, pitch, categoryId, id]);
+
+  return result;
+};
+
+const editFocusImage = (imageUrl, id) =>
+  db
+    .query("UPDATE focus SET image = ? WHERE id = ?", [imageUrl, id])
+    .then(([result]) => result);
+
+const deleteFocus = (id) => db.query("DELETE FROM focus WHERE id = ?;", [id]);
 
 module.exports = {
   findDirectorById,
@@ -351,11 +368,6 @@ module.exports = {
   editStudio,
   editStudioImage,
   deleteStudio,
-  findThemaById,
-  insertThema,
-  editThema,
-  editThemaImage,
-  deleteThema,
   findCountryById,
   findCountryByName,
   insertCountry,
@@ -378,4 +390,9 @@ module.exports = {
   insertTag,
   editTag,
   deleteTag,
+  findFocusById,
+  insertFocus,
+  editFocus,
+  editFocusImage,
+  deleteFocus,
 };
