@@ -79,8 +79,6 @@ router.put(
   editingMovieController.updateImageFromUrl
 );
 
-// router.put("/movie/:id/cover", editingMovieController.updateCoverByFilename);
-
 router.delete("/movie/:id", editingMovieController.deleteMovie);
 
 module.exports = router;

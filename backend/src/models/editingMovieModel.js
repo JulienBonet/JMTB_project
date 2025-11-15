@@ -1,5 +1,9 @@
 const db = require("../../database/client");
 
+//-----------------------------------------------
+// ADD MOVIE
+//-----------------------------------------------
+
 const insertMovie = (
   title,
   altTitle,
@@ -49,6 +53,10 @@ const insertMovie = (
       comment,
     ]
   );
+
+//-----------------------------------------------
+// UPDATE MOVIE
+//-----------------------------------------------
 
 const updateMovie = (
   title,
@@ -147,9 +155,15 @@ const findMovieExtendedById = async (id) => {
   return result;
 };
 
+//-----------------------------------------------
+// DELETE MOVIE
+//-----------------------------------------------
+
 const eraseMovie = (id) => db.query("DELETE FROM movies WHERE id = ?", [id]);
 
+//-----------------------------------------------
 // EDIT MOVIE_GENRE
+//-----------------------------------------------
 
 const findMovieKind = (movieId, genreId) =>
   db.query(
@@ -183,7 +197,9 @@ const eraseKindByMovieId = (movieId) => {
   return db.query("DELETE FROM movie_genre WHERE movieId = ?", [movieId]);
 };
 
+//-----------------------------------------------
 // EDIT MOVIE_DIRECTOR
+//-----------------------------------------------
 
 const findMovieDirector = (movieId, directorId) =>
   db.query(
@@ -217,7 +233,9 @@ const eraseDirectorByMovieId = (movieId) => {
   return db.query("DELETE FROM movie_director WHERE movieId = ?", [movieId]);
 };
 
+//-----------------------------------------------
 // EDIT MOVIE_CASTING
+//-----------------------------------------------
 
 const findMovieCasting = (movieId, castingId) =>
   db.query(
@@ -251,7 +269,9 @@ const eraseCastingByMovieId = (movieId) => {
   return db.query("DELETE FROM movie_casting WHERE movieId = ?", [movieId]);
 };
 
+//-----------------------------------------------
 // EDIT MOVIE_SCREENWRITER
+//-----------------------------------------------
 
 const findMovieScreenwriter = (movieId, screenwriterId) =>
   db.query(
@@ -287,7 +307,9 @@ const eraseScreenwriterByMovieId = (movieId) => {
   ]);
 };
 
+//-----------------------------------------------
 // EDIT MOVIE_MUSIC
+//-----------------------------------------------
 
 const findMovieMusic = (movieId, musicId) =>
   db.query(
@@ -321,7 +343,9 @@ const eraseMusicByMovieId = (movieId) => {
   return db.query("DELETE FROM movie_music WHERE movieId = ?", [movieId]);
 };
 
+//-----------------------------------------------
 // EDIT MOVIE_STUDIO
+//-----------------------------------------------
 
 const findMovieStudio = (movieId, studioId) =>
   db.query(
@@ -355,7 +379,9 @@ const eraseStudioByMovieId = (movieId) => {
   return db.query("DELETE FROM movie_studio WHERE movieId = ?", [movieId]);
 };
 
+//-----------------------------------------------
 // EDIT MOVIE_COUNTRY
+//-----------------------------------------------
 
 const findMovieCountry = (movieId, countryId) =>
   db.query(
@@ -389,7 +415,9 @@ const eraseCountryByMovieId = (movieId) => {
   return db.query("DELETE FROM movie_country WHERE movieId = ?", [movieId]);
 };
 
+//-----------------------------------------------
 // EDIT MOVIE_LANGUAGE
+//-----------------------------------------------
 
 const findMovieLanguage = (movieId, languageId) =>
   db.query(
@@ -423,7 +451,9 @@ const eraseLanguageByMovieId = (movieId) => {
   return db.query("DELETE FROM movie_language WHERE movieId = ?", [movieId]);
 };
 
+//-----------------------------------------------
 // EDIT MOVIE_TAG
+//-----------------------------------------------
 
 const findMovieTag = (movieId, tagId) =>
   db.query("SELECT * FROM `movie_tag` WHERE `movieId` = ? AND `tagId` = ?", [
@@ -455,6 +485,21 @@ const addMovieTag = (movieId, tagId) =>
 
 const eraseTagByMovieId = (movieId) => {
   return db.query("DELETE FROM movie_tag WHERE movieId = ?", [movieId]);
+};
+
+//-----------------------------------------------
+// EDIT MOVIE_FOCUS
+//-----------------------------------------------
+
+const addMovieFocus = (movieId, focusId) => {
+  return db.query("INSERT INTO movie_focus (movieId, focusId) VALUES (?, ?)", [
+    movieId,
+    focusId,
+  ]);
+};
+
+const eraseFocusByMovieId = (movieId) => {
+  return db.query("DELETE FROM movie_focus WHERE movieId = ?", [movieId]);
 };
 
 module.exports = {
@@ -510,4 +555,6 @@ module.exports = {
   countMoviesByTag,
   addMovieTag,
   eraseTagByMovieId,
+  addMovieFocus,
+  eraseFocusByMovieId,
 };

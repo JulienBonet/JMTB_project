@@ -1,6 +1,16 @@
 const db = require("../../database/client");
 
-const findAllFocus = () => {
+const findAllFocusSortedNameAsc = () => {
+  return db.query(
+    `SELECT f.id, f.name, f.pitch, f.image, f.categoryId, fc.name AS category_name
+     FROM focus f
+     LEFT JOIN focuscategory fc ON f.categoryId = fc.id
+     ORDER BY f.name ASC;`,
+    []
+  );
+};
+
+const findAllFocusSortedIdDesc = () => {
   return db.query(
     `SELECT f.id, f.name, f.pitch, f.image, f.categoryId, fc.name AS category_name
      FROM focus f
@@ -86,7 +96,8 @@ const findFocusCategoryByName = (name) => {
 };
 
 module.exports = {
-  findAllFocus,
+  findAllFocusSortedNameAsc,
+  findAllFocusSortedIdDesc,
   findAllFocusByCategoryIdRandom,
   findAllFocusByCategoryIdAsc,
   findAllFocusByCategoryIdDesc,

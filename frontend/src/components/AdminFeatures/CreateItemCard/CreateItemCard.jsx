@@ -45,6 +45,14 @@ function CreateItemCard({ origin, onUpdate, closeModal }) {
   // End Fetch catégories (origin === "focus")
 
   const handleValidate = async () => {
+    // Sécurité : si aucun catégorie n'est choisi dans focus
+    if (origin === "focus" && !categoryId) {
+      toast.error("Merci de choisir une catégorie pour ce focus.", {
+        className: "custom-toast",
+      });
+      return; // On bloque la validation
+    }
+
     try {
       const data = {
         name,
@@ -120,6 +128,9 @@ function CreateItemCard({ origin, onUpdate, closeModal }) {
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
               input={<OutlinedInput label="Category" />}
+              sx={{
+                backgroundColor: "white",
+              }}
             >
               {categories.map((cat) => (
                 <MenuItem key={cat.id} value={cat.id}>

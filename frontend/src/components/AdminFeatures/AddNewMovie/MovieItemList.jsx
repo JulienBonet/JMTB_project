@@ -46,6 +46,8 @@ export default function TransferList({
   onSelectedLanguagesUpdate,
   selectedTags,
   onSelectedTagsUpdate,
+  selectedFocus,
+  onSelectedFocusUpdate,
   dataType,
 }) {
   let selectedItems;
@@ -92,6 +94,10 @@ export default function TransferList({
       selectedItems = selectedTags || [];
       onSelectedItemsUpdate = onSelectedTagsUpdate || (() => {});
       break;
+    case "focus":
+      selectedItems = selectedFocus || [];
+      onSelectedItemsUpdate = onSelectedFocusUpdate || (() => {});
+      break;
     default:
       selectedItems = [];
       onSelectedItemsUpdate = () => {};
@@ -117,6 +123,8 @@ export default function TransferList({
         return "language";
       case "tags/sorted_id":
         return "tag";
+      case "focus":
+        return "focus";
       default:
         return "";
     }
@@ -233,7 +241,7 @@ export default function TransferList({
         xs: 0, // smartphones
         sm: 769, // tablettes
         md: 1100, // laptops
-        lg: 1650, // desktop large (point critique que tu mentionnais)
+        lg: 1650, // desktop
         xl: 2000, // très grands écrans
       },
     },

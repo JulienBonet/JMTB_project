@@ -2,7 +2,8 @@ const router = require("express").Router();
 
 const focusController = require("../controllers/focusControllers");
 
-router.get("/focus", focusController.getAllFocus);
+router.get("/focus", focusController.getAllFocusSortedNameAsc);
+router.get("/focus/sorted_id", focusController.getAllFocusSortedIdDesc);
 router.get("/focus/:id", focusController.getAllFocusByCategoryIdRandom);
 router.get("/focus/:id/sorted0", focusController.getAllFocusByCategoryIdAsc);
 router.get("/focus/:id/sorted1", focusController.getAllFocusByCategoryIdDesc);

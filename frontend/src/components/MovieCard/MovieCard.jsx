@@ -105,6 +105,7 @@ function MovieCard({
     movie.vostfr ? "VOSTFR" : movie.multi ? "MULTI" : "none"
   );
   const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedFocus, setSelectedFocus] = useState([]);
   const [trailerMessage, setTrailerMessage] = useState("");
 
   // Datas dans le front
@@ -131,9 +132,9 @@ function MovieCard({
     idTheMovieDb: movie.idTheMovieDb || "",
   });
 
-  useEffect(() => {
-    console.info("movie in MovieCard", movie);
-  }, [movie]);
+  // useEffect(() => {
+  //   console.info("movie in MovieCard", movie);
+  // }, [movie]);
 
   // useEffect(() => {
   //   console.info("movieData1 in MovieCard", movieData);
@@ -148,13 +149,16 @@ function MovieCard({
     studios,
     casting,
     tags,
+    focus,
   } = movieData;
 
   const { idTheMovieDb } = movie;
   const isTvShow = movieData.isTvShow === 1;
   const safeValue = (val) => val ?? "";
 
-  // --------- UX FIELDS ------------ //
+  //-----------------------------------------------
+  // UX FIELDS
+  //-----------------------------------------------
 
   const textFieldSx = {
     width: "80%",
@@ -177,7 +181,9 @@ function MovieCard({
     },
   };
 
-  // --------- FETCH MOVIE DATAS from backend ------------ //
+  //-----------------------------------------------
+  // FETCH MOVIE DATAS from backend
+  //-----------------------------------------------
   const fetchMovieData = () => {
     if (origin === "country") {
       fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movies/${movie.movieId}`)
@@ -218,7 +224,10 @@ function MovieCard({
     setMovieData(movie);
   }, [movie]);
 
-  // ------/ TRAILER /------- //
+  //-----------------------------------------------
+  // TRAILER
+  //-----------------------------------------------
+
   const [isTrailerVisible, setIsTrailerVisible] = useState(false);
   const [isTrailerLoading, setIsTrailerLoading] = useState(false);
 
@@ -231,7 +240,9 @@ function MovieCard({
     setIsTrailerLoading(false); // Cache le loader quand la vidéo est prête
   };
 
-  // ------/ MODIFY MODE - modifier champs TextField /------- //
+  //-----------------------------------------------
+  // MODIFY MODE - modifier champs TextField
+  //-----------------------------------------------
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -245,7 +256,9 @@ function MovieCard({
     }));
   };
 
-  // ------/ MODIFY MODE - modifier  VOSTFR MULTI /------- //
+  //-----------------------------------------------
+  // MODIFY MODE - modifier  VOSTFR MULTI
+  //-----------------------------------------------
 
   const handleVersionChange = (event) => {
     const selectedVersion = event.target.value;
@@ -259,7 +272,9 @@ function MovieCard({
     }));
   };
 
-  // ------/ MODIFY MODE - MODIFICATION DE L'AFFICHE /------- //
+  //-----------------------------------------------
+  // MODIFY MODE - MODIFICATION DE L'AFFICHE
+  //-----------------------------------------------
 
   const [image, setImage] = useState(`${backendUrl}/images/${movie.cover}`);
   const [showUploadButton, setShowUploadButton] = useState(true);
@@ -323,7 +338,9 @@ function MovieCard({
     }
   };
 
-  // ------/ GESTION DES FIELDS SAISONS - EPISODES - DUREE /------- //
+  //-----------------------------------------------
+  // GESTION DES FIELDS SAISONS - EPISODES - DUREE
+  //-----------------------------------------------
 
   const [selectedSeasons, setSelectedSeasons] = useState([]);
   const [seasonsInfo, setSeasonsInfo] = useState([]);
@@ -564,7 +581,9 @@ function MovieCard({
     return renderEpisodeDurationFields();
   };
 
-  // -----------------/ INPUT FILE /----------------- //
+  //-----------------------------------------------
+  // INPUT FILE
+  //-----------------------------------------------
   const fileInputRef = useRef(null);
   const [selectedFile, setSelectedFile] = useState(null);
 
@@ -709,7 +728,9 @@ function MovieCard({
     });
   };
 
-  // -----------------/ TRANSFERT LIST /----------------- //
+  //-----------------------------------------------
+  // TRANSFERT LIST
+  //-----------------------------------------------
   const [openModal, setOpenModal] = useState(false);
   const [data, setData] = useState([]);
   const [dataType, setDataType] = useState("");
@@ -802,6 +823,7 @@ function MovieCard({
   useAutoFetch(studios, "studio", setSelectedStudios);
   useAutoFetch(countries, "country", setSelectedCountries);
   useAutoFetch(tags, "tags", setSelectedTags);
+  useAutoFetch(focus, "focus", setSelectedFocus);
 
   // HANDLERS POUR CHAQUE TYPE
   const handleSelectedKindsUpdate = setSelectedKinds;
@@ -812,8 +834,12 @@ function MovieCard({
   const handleSelectedStudiosUpdate = setSelectedStudios;
   const handleSelectedCountriesUpdate = setSelectedCountries;
   const handleSelectedTagsUpdate = setSelectedTags;
+  const handleSelectedFocusUpdate = setSelectedFocus;
 
-  // -----------------/ UPDATE MODE /----------------- //
+  //-----------------------------------------------
+  // UPDATE MODE
+  //-----------------------------------------------
+
   const isModifyMode = () => {
     setIsModify(true);
   };
@@ -837,11 +863,14 @@ function MovieCard({
     fetchByNames(studios, "studio", setSelectedStudios);
     fetchByNames(countries, "country", setSelectedCountries);
     fetchByNames(tags, "tags", setSelectedTags);
+    fetchByNames(focus, "focus", setSelectedFocus);
 
     closeModifyMode();
   };
 
+  //-----------------------------------------------
   // UPDATE MOVIE
+  //-----------------------------------------------
   const [isConfirmUpdateOpen, setIsConfirmUpdateOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -892,6 +921,7 @@ function MovieCard({
             studios: selectedStudios.map((studio) => studio.id),
             countries: selectedCountries.map((country) => country.id),
             tags: selectedTags.map((tag) => tag.id),
+            focus: selectedFocus.map((f) => f.id),
             isTvShow: movieData.isTvShow,
             tvSeasons: movieData.tvSeasons || null,
             nbTvEpisodes: movieData.nbTvEpisodes || null,
@@ -970,10 +1000,15 @@ function MovieCard({
     }
   };
 
+  //-----------------------------------------------
+  // RETURN
+  //-----------------------------------------------
+
   return (
     <article className="MovieCard">
       <div className="MovieCard_container">
         <section className="MC_line1">
+          {/* COVER BLOCK */}
           <div className="MovieCard_Cover_Position">
             <img
               className="MovieCard_cover"
@@ -991,18 +1026,17 @@ function MovieCard({
                   style={{ display: "none" }}
                 />
 
-                {/* Bouton Upload / Reset */}
+                {/* Cover Boutons Upload / Reset */}
                 {showImageButton && (
                   <div className="movie_cover_modify_buttons_wrapper">
-                    {/* Upload / Reset */}
                     <div className="movie_cover_modify_button">
                       {showUploadButton ? (
+                        // cover upload btn
                         <Button
                           variant="outlined"
                           sx={{
                             color: "var(--color-03)",
                             borderColor: "var(--color-03)",
-                            // width: "15%",
                             transition: "all 0.2s ease-in-out",
                             borderRadius: "10px",
                             "&:hover": {
@@ -1016,12 +1050,12 @@ function MovieCard({
                           <FileUploadIcon />
                         </Button>
                       ) : (
+                        // cover reset btn
                         <Button
                           variant="outlined"
                           sx={{
                             color: "var(--color-01)",
                             borderColor: "var(--color-01)",
-                            // width: "15%",
                             transition: "all 0.2s ease-in-out",
                             borderRadius: "10px",
                             "&:hover": {
@@ -1037,15 +1071,14 @@ function MovieCard({
                       )}
                     </div>
 
-                    {/* TMDB Sync */}
                     {idTheMovieDb && (
+                      // cover TMDB Sync btn
                       <div className="movie_cover_modify_button">
                         <Button
                           variant="outlined"
                           sx={{
                             color: "var(--color-02)",
                             borderColor: "var(--color-02)",
-                            // width: "15%",
                             transition: "all 0.2s ease-in-out",
                             borderRadius: "10px",
                             "&:hover": {
@@ -1077,11 +1110,15 @@ function MovieCard({
               </>
             )}
           </div>
+          {/* END COVER BLOCK */}
 
-          {/* info bloc 1 */}
+          {/* INFO BLOCK 1 */}
           {isModify ? (
+            // BLOCK 1 MODIFY MODE
             <div className="infos_bloc_1_modify">
+              {/* Line ICO type + general Refresh button (modify) */}
               <div className="movieCard_Type_Line">
+                {/* ICO movie or tvShow type (modify) */}
                 {!isTvShow ? (
                   <MovieOutlinedIcon
                     sx={{ color: "white", mr: 1 }}
@@ -1090,6 +1127,9 @@ function MovieCard({
                 ) : (
                   <TvOutlinedIcon sx={{ color: "white" }} fontSize="large" />
                 )}
+                {/* ENd ICO movie or tvShow type (modify) */}
+
+                {/* Bouton TMDB synchro général (modify) */}
                 {idTheMovieDb && (
                   <Button
                     variant="outlined"
@@ -1145,8 +1185,11 @@ function MovieCard({
                     <CloudSyncIcon sx={{ mr: 1 }} /> Recharger les infos
                   </Button>
                 )}
+                {/* END Bouton TMDB synchro général (modify) */}
               </div>
+              {/* ENd Line ICO type + general Refresh button (modify) */}
               <div className="divider divider_movie_cover_modify_button2" />
+              {/* Title (modify) */}
               <div className="box_item_form">
                 <TextField
                   label="Title"
@@ -1158,7 +1201,34 @@ function MovieCard({
                   sx={textFieldSx}
                 />
               </div>
+              {/* END Title (modify) */}
               <div className="divider" />
+              {/* focus (modify) */}
+              <div className="box_item_form">
+                <Box
+                  component="form"
+                  sx={textFieldSx}
+                  noValidate
+                  autoComplete="off"
+                  display="flex"
+                  alignItems="center"
+                >
+                  <TextField
+                    id="outlined-read-only-input"
+                    label="Focus"
+                    value={getSelectedNames(selectedFocus)}
+                    InputProps={{ readOnly: true }}
+                    fullWidth
+                  />
+                </Box>
+                <AddCircleOutlineIcon
+                  className="Btn_Add_itemsPopUp_MovieCard"
+                  onClick={() => handleOpenModal("focus")}
+                />
+              </div>
+              <div className="divider" />
+              {/* END focus (modify) */}
+              {/* Alt Title (modify) */}
               <div className="box_item_form">
                 <TextField
                   label="Alt Title"
@@ -1177,6 +1247,8 @@ function MovieCard({
                   />
                 )}
               </div>
+              {/* END Alt Title (modify) */}
+              {/* Genre(s) (modify) */}
               <div className="box_item_form">
                 <Box
                   component="form"
@@ -1211,6 +1283,8 @@ function MovieCard({
                   />
                 )}
               </div>
+              {/* END Genre(s) (modify) */}
+              {/* Year (modify) */}
               <div className="box_item_form">
                 <TextField
                   label="Year"
@@ -1230,6 +1304,8 @@ function MovieCard({
                   />
                 )}
               </div>
+              {/* END Year (modify) */}
+              {/* TV saison - episode /+/ duration (modify) */}
               {isTvShow ? (
                 renderTvShowFields()
               ) : (
@@ -1260,12 +1336,16 @@ function MovieCard({
                     />
                   )}
                 </div>
+                // END BLOCK 1 MODIFY MODE
               )}
+              {/* EDN TV saison - episode /+/ duration */}
             </div>
           ) : (
+            // BLOCK 1 LISTEN MODE
             <div className="infos_bloc_1">
               <p className="MovieCard_title">{movieData.title}</p>
               <div className="divider" />
+              {/* trailer */}
               {isTrailerVisible ? (
                 <>
                   <Backdrop
@@ -1289,21 +1369,30 @@ function MovieCard({
                 </>
               ) : (
                 <>
+                  {/* altTitle */}
                   {movieData.altTitle && (
                     <p className="MovieCard_info">
                       {movieData.altTitle} (Titre original)
                     </p>
                   )}
+                  {/* end altTitle */}
+                  {/* Genre */}
                   <p className="MovieCard_info">
                     <span className="paraph_bolder">Genre:</span> {genres}
                   </p>
+                  {/* end Genre */}
+                  {/* Année */}
                   <p className="MovieCard_info">
                     <span className="paraph_bolder">Année:</span>{" "}
                     {movieData.year || ""}
                   </p>
+                  {/* end Année */}
+                  {/* Pays */}
                   <p className="MovieCard_info">
                     <span className="paraph_bolder">Pays:</span> {countries}
                   </p>
+                  {/* end Pays */}
+                  {/* TV saisons */}
                   {isTvShow &&
                     movieData.tvSeasons &&
                     movieData.tvSeasons.trim() !== "" && (
@@ -1312,6 +1401,8 @@ function MovieCard({
                         {movieData.tvSeasons || ""}
                       </p>
                     )}
+                  {/* end TV saisons */}
+                  {/* TV episodes */}
                   {isTvShow &&
                     movieData.nbTvEpisodes &&
                     movieData.nbTvEpisodes > 0 && (
@@ -1320,6 +1411,8 @@ function MovieCard({
                         {movieData.nbTvEpisodes || ""}
                       </p>
                     )}
+                  {/* end TV episodes */}
+                  {/* TV Durée d'épisode */}
                   {isTvShow &&
                     movieData.episodeDuration &&
                     movieData.episodeDuration > 0 && (
@@ -1328,14 +1421,17 @@ function MovieCard({
                         {movieData.episodeDuration || ""} mn
                       </p>
                     )}
+                  {/* end TV Durée d'épisode */}
+                  {/* Durée */}
                   {!isTvShow && (
                     <p className="MovieCard_info">
                       <span className="paraph_bolder">Durée:</span>{" "}
                       {movieData.duration || ""}mn
                     </p>
                   )}
+                  {/* end Durée */}
                   <div className="divider_dashed" />
-                  {/* Autres détails du film */}
+                  {/* Réalisateur / créateur */}
                   {directors && (
                     <p className="MovieCard_info">
                       <span className="paraph_bolder paraph_color_2">
@@ -1344,6 +1440,8 @@ function MovieCard({
                       {directors}
                     </p>
                   )}
+                  {/* end Réalisateur / créateur */}
+                  {/* Scénariste */}
                   {screenwriters && (
                     <p className="MovieCard_info">
                       <span className="paraph_bolder paraph_color_2">
@@ -1352,6 +1450,8 @@ function MovieCard({
                       {screenwriters}
                     </p>
                   )}
+                  {/* end Scénariste */}
+                  {/* Compositeur */}
                   {music && (
                     <p className="MovieCard_info">
                       <span className="paraph_bolder paraph_color_2">
@@ -1360,6 +1460,8 @@ function MovieCard({
                       {music}
                     </p>
                   )}
+                  {/* end Compositeur */}
+                  {/* Studio */}
                   {studios && (
                     <p className="MovieCard_info">
                       <span className="paraph_bolder paraph_color_2">
@@ -1368,6 +1470,8 @@ function MovieCard({
                       {studios}
                     </p>
                   )}
+                  {/* end Studio */}
+                  {/* casting */}
                   {casting && (
                     <p className="MovieCard_info MovieCard_casting paraph_height">
                       <span className="paraph_bolder paraph_color_2">
@@ -1376,19 +1480,23 @@ function MovieCard({
                       {casting}
                     </p>
                   )}
+                  {/* end casting */}
                   <div className="divider" />
                 </>
+                // END BLOCK 1 LISTEN MODE
               )}
             </div>
           )}
-          {/* fin info bloc 1 */}
         </section>
+        {/* END INFO BLOCK 1 */}
 
+        {/* INFO BLOCK 2 */}
         <section>
-          {/* info bloc 2 */}
           {isModify ? (
+            // BLOCK 2 MODIFY MODE
             <div className="MC_line2_modify">
               <div className="divider" />
+              {/* Pays (modify) */}
               <div className="box_item_form">
                 <Box
                   component="form"
@@ -1423,7 +1531,9 @@ function MovieCard({
                   />
                 )}
               </div>
+              {/* end Pays (modify) */}
               <div className="divider" />
+              {/* Réalisateur (modify) */}
               <div className="box_item_form">
                 <Box
                   component="form"
@@ -1458,6 +1568,8 @@ function MovieCard({
                   />
                 )}
               </div>
+              {/* end Réalisateur (modify) */}
+              {/* Scénariste (modfiy) */}
               {!isTvShow && (
                 <div className="box_item_form">
                   <Box
@@ -1494,6 +1606,8 @@ function MovieCard({
                   )}
                 </div>
               )}
+              {/* end Scénariste (modfiy) */}
+              {/* Compositeur (modfiy) */}
               <div className="box_item_form">
                 <Box
                   component="form"
@@ -1528,6 +1642,8 @@ function MovieCard({
                   />
                 )}
               </div>
+              {/* end Compositeur (modfiy) */}
+              {/* Studio (modfiy) */}
               <div className="box_item_form">
                 <Box
                   component="form"
@@ -1562,6 +1678,8 @@ function MovieCard({
                   />
                 )}
               </div>
+              {/* end Studio (modfiy) */}
+              {/* Casting (modfiy) */}
               <div className="box_item_form">
                 <Box
                   component="form"
@@ -1596,6 +1714,8 @@ function MovieCard({
                   />
                 )}
               </div>
+              {/* end Casting (modfiy) */}
+              {/* Tags (modfiy) */}
               <div className="box_item_form">
                 <Box
                   component="form"
@@ -1630,7 +1750,9 @@ function MovieCard({
                   />
                 )}
               </div>
+              {/* end Tags (modfiy) */}
               <div className="divider" />
+              {/* Résumé (modfiy) */}
               <div className="box_item_form">
                 <TextField
                   label="Résumé"
@@ -1653,8 +1775,9 @@ function MovieCard({
                   />
                 )}
               </div>
+              {/* end Résumé (modfiy) */}
               <div className="divider" />
-
+              {/* Support (modfiy) */}
               <FormControl sx={textFieldSx}>
                 <InputLabel>Support</InputLabel>
                 <Select
@@ -1671,7 +1794,6 @@ function MovieCard({
                   </MenuItem>
                 </Select>
               </FormControl>
-
               {movieData.videoSupport === "Fichier multimédia" && (
                 <>
                   {movie.isTvShow ? (
@@ -1851,7 +1973,9 @@ function MovieCard({
                   </FormControl>
                 </>
               )}
+              {/* end Support (modfiy) */}
               <div className="divider" />
+              {/* trailer (modfiy) */}
               <div className="box_item_form">
                 <TextField
                   label="trailer"
@@ -1879,7 +2003,9 @@ function MovieCard({
                   {trailerMessage}
                 </Alert>
               )}
+              {/* end trailer (modfiy) */}
               <div className="divider" />
+              {/* Commentaire (modfiy) */}
               <TextField
                 label="Commentaire"
                 name="comment"
@@ -1889,7 +2015,9 @@ function MovieCard({
                 fullWidth
                 sx={textFieldSx}
               />
+              {/* end Commentaire (modfiy) */}
               <div className="divider" />
+              {/* IMDB ID (modfiy) */}
               {movieData.idTheMovieDb ? (
                 <div>
                   <TextField
@@ -1930,22 +2058,38 @@ function MovieCard({
                   sx={textFieldSx}
                 />
               )}
+              {/* IMDB ID (modfiy) */}
+              {/* // END BLOCK 2 MODIFY MODE */}
             </div>
           ) : (
+            // BLOCK 2 LISTEN MODE
             <div className="MC_line2">
               {isTrailerVisible ? (
                 <div className="MovieCard_trailer" />
               ) : (
                 <>
+                  {/* Résumé */}
                   <p className="MovieCard_info paraph_bolder">Résumé:</p>
                   <p className="MovieCard_info MovieCard_story  paraph_height">
                     {movieData.story}
                   </p>
+                  {/* end Résumé */}
                   <div className="divider_dashed" />
+                  {/* focus */}
+                  {movieData.focus && (
+                    <p className="MovieCard_info">
+                      <span className="paraph_bolder">focus:</span> {focus}
+                    </p>
+                  )}
+                  {/* end focus */}
+                  <div className="divider_dashed" />
+                  {/* Support */}
                   <p className="MovieCard_info">
                     <span className="paraph_bolder">Support:</span>{" "}
                     {movieData.videoSupport}
                   </p>
+                  {/* end Support */}
+                  {/* Version VOSTFR - MULTI */}
                   {movieData.vostfr ? (
                     <p className="MovieCard_info paraph_height">
                       <span className="paraph_bolder">Version:</span> VOSTFR
@@ -1957,6 +2101,8 @@ function MovieCard({
                       Multi-langues
                     </p>
                   ) : null}
+                  {/* end Version VOSTFR - MULTI */}
+                  {/* Support */}
                   {(movieData.videoSupport === "Fichier multimédia" ||
                     movieData.videoSupport === "FICHIER MULTIMEDIA") && (
                     <>
@@ -1974,6 +2120,8 @@ function MovieCard({
                       )}
                     </>
                   )}
+                  {/* end Support */}
+                  {/* Commentaire */}
                   {movieData.comment && (
                     <>
                       <div className="divider_dashed" />
@@ -1983,6 +2131,7 @@ function MovieCard({
                       </p>
                     </>
                   )}
+                  {/* end Commentaire */}
                 </>
               )}
 
@@ -2007,11 +2156,14 @@ function MovieCard({
                     </p>
                   </div>
                 </div>
+                // BLOCK 2 LISTEN MODE
               )}
             </div>
           )}
-          {/* fin info bloc 2 */}
+          {/* END INFO BLOCK 2 */}
         </section>
+
+        {/* EDITING BUTTON */}
         {!homepage && (
           <section className="Movie_editing_btn-container">
             <section className="Item_Movie_Editing_Buttons">
@@ -2091,7 +2243,9 @@ function MovieCard({
             </section>
           </section>
         )}
+        {/* END EDITING BUTTON */}
 
+        {/* MODAL TRANSFERT LIST */}
         <Modal
           open={openModal}
           onClose={handleCloseModal}
@@ -2135,10 +2289,13 @@ function MovieCard({
                 onSelectedCountriesUpdate={handleSelectedCountriesUpdate}
                 selectedTags={selectedTags}
                 onSelectedTagsUpdate={handleSelectedTagsUpdate}
+                selectedFocus={selectedFocus}
+                onSelectedFocusUpdate={handleSelectedFocusUpdate}
               />
             </Container>
           </Box>
         </Modal>
+        {/* END MODAL TRANSFERT LIST */}
       </div>
     </article>
   ); // end return

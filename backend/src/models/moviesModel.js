@@ -28,7 +28,8 @@ const findById = (id) => {
     GROUP_CONCAT(DISTINCT music.name SEPARATOR ', ') AS music,
     GROUP_CONCAT(DISTINCT screenwriter.name SEPARATOR ', ') AS screenwriters,
     GROUP_CONCAT(DISTINCT studio.name SEPARATOR ', ') AS studios,
-    GROUP_CONCAT(DISTINCT tag.name SEPARATOR ', ') AS tags
+    GROUP_CONCAT(DISTINCT tag.name SEPARATOR ', ') AS tags,
+    GROUP_CONCAT(DISTINCT focus.name SEPARATOR ', ') AS focus
 FROM movies
 LEFT JOIN movie_director ON movies.id = movie_director.movieId
 LEFT JOIN director ON movie_director.directorId = director.id
@@ -48,6 +49,8 @@ LEFT JOIN movie_studio ON movies.id = movie_studio.movieId
 LEFT JOIN studio ON movie_studio.studioId = studio.id
 LEFT JOIN movie_tag ON movies.id = movie_tag.movieId
 LEFT JOIN tag ON movie_tag.tagId = tag.id
+LEFT JOIN movie_focus ON movies.id = movie_focus.movieId
+LEFT JOIN focus ON movie_focus.focusId = focus.id
 WHERE movies.id = ?
 GROUP BY movies.id, movies.title, movies.altTitle, movies.year, movies.duration, movies.cover, movies.trailer, movies.pitch, movies.story, movies.location, movies.videoFormat, movies.comment, movies.videoSupport, movies.fileSize, movies.idTheMovieDb, movies.idIMDb;
   `,

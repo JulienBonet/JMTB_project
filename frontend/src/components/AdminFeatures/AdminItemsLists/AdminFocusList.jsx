@@ -42,7 +42,7 @@ function AdminFocusList() {
 
   // REQUEST ALL FOCUS sorted ID desc
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/focus`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/focus/sorted_id`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -62,7 +62,7 @@ function AdminFocusList() {
 
   // REFRESH FOCUS LIST
   const refreshFocus = () => {
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/focus`)
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/focus/sorted_id`)
       .then((response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok");

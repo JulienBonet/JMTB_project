@@ -110,7 +110,13 @@ function AddNewMovie() {
     console.info("isTvShow", movie.isTvShow);
   }, [data, movie.isTvShow]);
 
-  // -----------------/ GESTION DES FIELDS SAISONS - EPISODES - DUREE /----------------- //
+  //-----------------------------------------------
+  // GESTION FOCUS
+  //-----------------------------------------------
+
+  //-----------------------------------------------
+  // GESTION DES FIELDS SAISONS - EPISODES - DUREE
+  //-----------------------------------------------
 
   // -- TVSHOW Mettre à jour le nombre d'épisodes en fonction des saisons sélectionnées
   useEffect(() => {
@@ -307,7 +313,9 @@ function AddNewMovie() {
     );
   };
 
-  // -----------------/ ANNULATION - RETOUR VERS ADMIN MOVIE LIST /----------------- //
+  //-----------------------------------------------
+  // ANNULATION - RETOUR VERS ADMIN MOVIE LIST
+  //-----------------------------------------------
 
   const navigate = useNavigate();
 
@@ -322,7 +330,9 @@ function AddNewMovie() {
     }
   };
 
-  // -----------------/ SOURCE /----------------- //
+  //-----------------------------------------------
+  // SOURCE
+  //-----------------------------------------------
 
   const handleChangeMovieDb = (event) => {
     setMovie((prevMovie) => ({
@@ -331,7 +341,9 @@ function AddNewMovie() {
     }));
   };
 
-  // -----------------/ RESET FORM /----------------- //
+  //-----------------------------------------------
+  // RESET FORM
+  //-----------------------------------------------
   const resetStates = async (isTvShow = false, withPurge = true) => {
     // Vider le formulaire
     setMovie({
@@ -391,8 +403,9 @@ function AddNewMovie() {
     }
   };
 
-  // -----------------/ MOVIE INFO ENTRANCE MODAL /----------------- //
-
+  //-----------------------------------------------
+  // MOVIE INFO ENTRANCE MODAL
+  //-----------------------------------------------
   const handleOpenModalMIE = () => {
     if (movie.title) {
       setOpenModalMIE(true);
@@ -405,7 +418,9 @@ function AddNewMovie() {
     setOpenModalMIE(false);
   };
 
-  // -----------------/ ITEMS MODAL FETCH /----------------- //
+  //-----------------------------------------------
+  // ITEMS MODAL FETCH
+  //-----------------------------------------------
 
   // --- FETCH DATA GENERIQUE ---
   const fetchData = async (route) => {
@@ -438,7 +453,10 @@ function AddNewMovie() {
   // --- GENERER LES NOMS
   const getSelectedNames = (items) => items.map((item) => item.name).join(", ");
 
-  // -----------------/ INPUT FILE /----------------- //
+  //-----------------------------------------------
+  // INPUT FILE
+  //-----------------------------------------------
+
   const fileInputRef = useRef(null); // Référence pour le fichier vidéo
 
   const handleFileChange = (e) => {
@@ -547,7 +565,9 @@ function AddNewMovie() {
     supportsHandleChange(event);
   };
 
-  // -----------------/ INPUT COVER /----------------- //
+  //-----------------------------------------------
+  // INPUT COVER
+  //-----------------------------------------------
 
   const fileCoverRef = useRef(null); // Référence pour le fichier image
 
@@ -615,7 +635,9 @@ function AddNewMovie() {
     return coverFilename;
   };
 
-  // -----------------/ POST NEW MOVIE /----------------- //
+  //-----------------------------------------------
+  // POST NEW MOVIE
+  //-----------------------------------------------
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -719,7 +741,10 @@ function AddNewMovie() {
     } // end else
   }; // end handleFormSubmit
 
-  // -----------------/ BUTTON STYLE /----------------- //
+  //-----------------------------------------------
+  // BUTTON STYLE
+  //-----------------------------------------------
+
   const theme = createTheme({
     palette: {
       primary: {
@@ -737,7 +762,9 @@ function AddNewMovie() {
     },
   });
 
-  // -----------------/ MODALS STYLE /----------------- //
+  //-----------------------------------------------
+  // MODALS STYLE
+  //-----------------------------------------------
   const transferListStyle = {
     position: "absolute",
     top: "50%",
@@ -763,7 +790,9 @@ function AddNewMovie() {
     p: 0,
   };
 
-  // -----------------------------/ RETURN /----------------------------- //
+  //-----------------------------------------------
+  // RETURN
+  //-----------------------------------------------
   return (
     <main>
       <section className="Adm_form_box">
@@ -1512,7 +1541,7 @@ function AddNewMovie() {
           </Backdrop>
         </section>
       </section>
-
+      {/* transfert Lists */}
       <Modal
         open={openModal}
         onClose={handleCloseModal}
@@ -1562,6 +1591,7 @@ function AddNewMovie() {
           </Container>
         </Box>
       </Modal>
+      {/* MIE modal */}
       <Modal
         open={openModalMIE}
         onClose={handleCloseModalMIE}
