@@ -69,22 +69,6 @@ ADD COLUMN image VARCHAR(255) DEFAULT '00_jmtb_flag_item_default.jpg';
 
 SELECT * FROM country;
 
-CREATE TABLE thema (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  name TEXT NULL DEFAULT NULL,
-  pitch TEXT NULL DEFAULT NULL,
-  image VARCHAR(255) DEFAULT '00_jmtb_item_default.jpg'
-);
-
-CREATE TABLE movie_thema (
-  thema_id INT,
-  movie_id INT,
-  PRIMARY KEY (thema_id, movie_id),
-  FOREIGN KEY (thema_id) REFERENCES thema(id),
-  FOREIGN KEY (movie_id) REFERENCES movies(id)
-);
-
-SELECT * FROM thema;
 
 ALTER TABLE tag MODIFY name VARCHAR(255);
 ALTER TABLE tag ADD UNIQUE (name);

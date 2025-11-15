@@ -13,16 +13,32 @@ const findDirectorByName = (name) =>
 const insertDirector = (name) =>
   db.query("INSERT INTO director (name) VALUES (?);", [name]);
 
-const editDirector = async (name, pitch, wikilink, imdblink, id) => {
+const editDirector = async (
+  name,
+  pitch,
+  wikilink,
+  imdblink,
+  birthDate,
+  deathDate,
+  isFocus,
+  id
+) => {
   const query = `
-        UPDATE director
-        SET name = ?, pitch = ?, wikilink = ?, imdblink = ?
-        WHERE id = ?
-      `;
+    UPDATE director
+    SET name = ?, pitch = ?, wikilink = ?, imdblink = ?, birthDate = ?, deathDate = ?, isFocus = ?
+    WHERE id = ?
+  `;
 
-  const result = await db.query(query, [name, pitch, wikilink, imdblink, id]);
-
-  return result;
+  return db.query(query, [
+    name,
+    pitch,
+    wikilink,
+    imdblink,
+    birthDate,
+    deathDate,
+    isFocus,
+    id,
+  ]);
 };
 
 const editDirectorImage = (imageUrl, id) =>
@@ -45,16 +61,32 @@ const findCastingByName = (name) =>
 const insertCasting = (name) =>
   db.query("INSERT INTO casting (name) VALUES (?);", [name]);
 
-const editCasting = async (name, pitch, wikilink, imdblink, id) => {
+const editCasting = async (
+  name,
+  pitch,
+  wikilink,
+  imdblink,
+  birthDate,
+  deathDate,
+  isFocus,
+  id
+) => {
   const query = `
-        UPDATE casting
-        SET name = ?, pitch = ?, wikilink = ?, imdblink = ?
-        WHERE id = ?
-      `;
+    UPDATE casting
+    SET name = ?, pitch = ?, wikilink = ?, imdblink = ?, birthDate = ?, deathDate = ?, isFocus = ?
+    WHERE id = ?
+  `;
 
-  const result = await db.query(query, [name, pitch, wikilink, imdblink, id]);
-
-  return result;
+  return db.query(query, [
+    name,
+    pitch,
+    wikilink,
+    imdblink,
+    birthDate,
+    deathDate,
+    isFocus,
+    id,
+  ]);
 };
 
 const editCastingImage = (imageUrl, id) =>

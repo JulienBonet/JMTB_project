@@ -50,8 +50,8 @@ CREATE TABLE movie_focus (
 -- ========================================
 ALTER TABLE director
   ADD COLUMN isFocus TINYINT(1) DEFAULT 0 AFTER imdblink,
-  ADD COLUMN birthDate DATE NULL AFTER isFocus,
-  ADD COLUMN deathDate DATE NULL AFTER birthDate;
+  ADD COLUMN birthDate VARCHAR(10) NULL AFTER isFocus,
+  ADD COLUMN deathDate VARCHAR(10) NULL AFTER birthDate;
   
   -- ========================================
 -- TABLE casting
@@ -59,8 +59,8 @@ ALTER TABLE director
 -- ========================================
   ALTER TABLE casting
   ADD COLUMN isFocus TINYINT(1) DEFAULT 0 AFTER imdblink,
-  ADD COLUMN birthDate DATE NULL AFTER isFocus,
-  ADD COLUMN deathDate DATE NULL AFTER birthDate;
+  ADD COLUMN birthDate VARCHAR(10) NULL AFTER isFocus,
+  ADD COLUMN deathDate VARCHAR(10) NULL AFTER birthDate;
   
   SELECT * FROM focusCategory; 
   SELECT * FROM focus;

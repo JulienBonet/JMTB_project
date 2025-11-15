@@ -23,30 +23,81 @@ const addDirector = async (req, res) => {
   }
 };
 
+// const editingDirector = async (req, res) => {
+//   try {
+//     const { name, pitch, wikilink, imdblink } = req.body;
+//     const { id } = req.params;
+
+//     // Vérifier si les nouvelles données sont différentes des données existantes
+//     const existingDirector = await editingModel.findDirectorById(id);
+//     if (
+//       existingDirector[0].name === name &&
+//       existingDirector[0].pitch === pitch &&
+//       existingDirector[0].wikilink === wikilink &&
+//       existingDirector[0].imdblink === imdblink
+//     ) {
+//       return res
+//         .status(400)
+//         .json({ message: "Error updating director: no changes detected" });
+//     }
+
+//     // Mettre à jour le réalisateur
+//     const result = await editingModel.editDirector(
+//       name,
+//       pitch,
+//       wikilink,
+//       imdblink,
+//       id
+//     );
+
+//     if (result.affectedRows !== 0) {
+//       return res.status(200).json({ message: "Director successfully updated" });
+//     }
+//     return res.status(400).json({ message: "Error updating director" });
+//   } catch (error) {
+//     console.error("Stack trace :", error.stack);
+//     return res.status(500).json({ message: "Error updating director" });
+//   }
+// };
+
 const editingDirector = async (req, res) => {
   try {
-    const { name, pitch, wikilink, imdblink } = req.body;
+    const { name, pitch, wikilink, imdblink, birthDate, deathDate, isFocus } =
+      req.body;
     const { id } = req.params;
 
-    // Vérifier si les nouvelles données sont différentes des données existantes
-    const existingDirector = await editingModel.findDirectorById(id);
-    if (
-      existingDirector[0].name === name &&
-      existingDirector[0].pitch === pitch &&
-      existingDirector[0].wikilink === wikilink &&
-      existingDirector[0].imdblink === imdblink
-    ) {
-      return res
-        .status(400)
-        .json({ message: "Error updating director: no changes detected" });
+    const existing = await editingModel.findDirectorById(id);
+    if (!existing.length) {
+      return res.status(404).json({ message: "Director not found" });
     }
 
-    // Mettre à jour le réalisateur
+    const old = existing[0];
+
+    // Détection des changements
+    const noChange =
+      old.name === name &&
+      old.pitch === pitch &&
+      old.wikilink === wikilink &&
+      old.imdblink === imdblink &&
+      old.birthDate === birthDate &&
+      old.deathDate === deathDate &&
+      old.isFocus === isFocus;
+
+    if (noChange) {
+      return res
+        .status(400)
+        .json({ message: "No change detected for director" });
+    }
+
+    // Mise à jour
     const result = await editingModel.editDirector(
       name,
       pitch,
       wikilink,
       imdblink,
+      birthDate,
+      deathDate,
+      isFocus,
       id
     );
 
@@ -177,36 +228,52 @@ const addCasting = async (req, res) => {
 
 const editingCasting = async (req, res) => {
   try {
-    const { name, pitch, wikilink, imdblink } = req.body;
+    const { name, pitch, wikilink, imdblink, birthDate, deathDate, isFocus } =
+      req.body;
     const { id } = req.params;
 
-    const existingCasting = await editingModel.findCastingById(id);
-    if (
-      existingCasting[0].name === name &&
-      existingCasting[0].pitch === pitch &&
-      existingCasting[0].wikilink === wikilink &&
-      existingCasting[0].imdblink === imdblink
-    ) {
-      return res
-        .status(400)
-        .json({ message: "Error updating Casting: no changes detected" });
+    const existing = await editingModel.findCastingById(id);
+    if (!existing.length) {
+      return res.status(404).json({ message: "Casting not found" });
     }
 
+    const old = existing[0];
+
+    // Vérifier les changements
+    const noChange =
+      old.name === name &&
+      old.pitch === pitch &&
+      old.wikilink === wikilink &&
+      old.imdblink === imdblink &&
+      old.birthDate === birthDate &&
+      old.deathDate === deathDate &&
+      old.isFocus === isFocus;
+
+    if (noChange) {
+      return res
+        .status(400)
+        .json({ message: "No change detected for casting" });
+    }
+
+    // Mise à jour
     const result = await editingModel.editCasting(
       name,
       pitch,
       wikilink,
       imdblink,
+      birthDate,
+      deathDate,
+      isFocus,
       id
     );
 
     if (result.affectedRows !== 0) {
       return res.status(200).json({ message: "Casting successfully updated" });
     }
-    return res.status(400).json({ message: "Error updating Casting" });
+    return res.status(400).json({ message: "Error updating casting" });
   } catch (error) {
     console.error("Stack trace :", error.stack);
-    return res.status(500).json({ message: "Error updating Casting" });
+    return res.status(500).json({ message: "Error updating casting" });
   }
 };
 
@@ -1203,18 +1270,18 @@ const uploadFocusImage = async (req, res) => {
 
 const eraseFocus = async (req, res = null) => {
   try {
-    const themaId = req.params.id;
+    const focusId = req.params.id;
 
-    const themas = await editingModel.findFocusById(themaId);
-    if (!themas || themas.length === 0) {
+    const focus = await editingModel.findFocusById(focusId);
+    if (!focus || focus.length === 0) {
       if (res) {
         return res.status(404).json({ message: "Thema non trouvé" });
       }
       return; // Arrêter l'exécution si aucune réponse HTTP n'est envoyée
     }
 
-    const thema = themas[0];
-    const imageUrl = thema.image;
+    const f = focus[0];
+    const imageUrl = f.image;
     if (imageUrl && imageUrl !== "00_jmtb_item_default.jpg") {
       try {
         const fullPath = path.join(
@@ -1235,7 +1302,7 @@ const eraseFocus = async (req, res = null) => {
       }
     }
 
-    await editingModel.deleteFocus(themaId);
+    await editingModel.deleteFocus(focusId);
 
     if (res) {
       res.sendStatus(204); // Envoyer la réponse uniquement si 'res' est défini

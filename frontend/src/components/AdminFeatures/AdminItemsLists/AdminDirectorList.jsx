@@ -23,7 +23,6 @@ function AdminDirectorList() {
   const [newDirector, SetNewDirector] = useState(false);
 
   const origin = "director";
-  console.info(data);
 
   const openModal = (DataItem) => {
     setSelectedItem(DataItem);

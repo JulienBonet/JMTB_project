@@ -147,17 +147,6 @@ CHANGE COLUMN `Numéro` `movieId` INT;
 
 SELECT * FROM movie_studio;
 
--- commentaire : souci avec l'export EMDB, plus d'étiquettes :( donc a la place on les crée ici
--- ALTER TABLE tag
--- CHANGE COLUMN `Etiquettes` name TEXT NULL DEFAULT NULL;
-
--- SELECT * FROM tag;
-
--- ALTER TABLE movie_tag
--- CHANGE COLUMN `id` `tagId` INT,
--- CHANGE COLUMN `Numéro` `movieId` INT;
-
-
 
 ALTER TABLE country
 CHANGE COLUMN `Pays` name TEXT NULL DEFAULT NULL;
