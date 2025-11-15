@@ -164,6 +164,7 @@ const addMovie = async (req, res) => {
       nbTvEpisodes,
       episodeDuration,
       comment,
+      focus,
     } = req.body;
     console.info("fields in create movie", req.body);
 
@@ -455,6 +456,17 @@ const addMovie = async (req, res) => {
       } else {
         console.warn("Aucun tag valide à associer au film.");
       }
+    }
+
+    // INSERT FOCUS
+    if (focus && focus.length > 0) {
+      const focusIds = focus.map((f) => f.id);
+
+      const focusPromises = focusIds.map((focusId) =>
+        editingMovieModel.addMovieFocus(movieId, focusId)
+      );
+
+      await Promise.all(focusPromises);
     }
 
     // Purger les données inutiles

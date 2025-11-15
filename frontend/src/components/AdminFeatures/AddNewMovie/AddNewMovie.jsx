@@ -76,6 +76,7 @@ function AddNewMovie() {
   const [selectedCountries, setSelectedCountries] = useState([]);
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
+  const [selectedFocus, setSelectedFocus] = useState([]);
   const [uploadLocal, setUploadLocal] = useState(false);
   const [version, setVersion] = useState("none");
   const [tvSeasons, setTvSeasons] = useState("");
@@ -107,8 +108,7 @@ function AddNewMovie() {
   useEffect(() => {
     console.info("data", data);
     console.info("movie", movie);
-    console.info("isTvShow", movie.isTvShow);
-  }, [data, movie.isTvShow]);
+  }, [data]);
 
   //-----------------------------------------------
   // GESTION FOCUS
@@ -382,6 +382,7 @@ function AddNewMovie() {
     setSelectedCountries([]);
     setSelectedLanguages([]);
     setSelectedTags([]);
+    setSelectedFocus([]);
     setCoverPreview(`${backendUrl}/00_cover_default.jpg`);
     setSelectedCoverFile("");
     setUploadLocal(false);
@@ -700,6 +701,7 @@ function AddNewMovie() {
         countries: selectedCountriesName,
         languages: selectedLanguagesName,
         tags: selectedTagsName,
+        focus: selectedFocus,
         vostfr,
         multi,
       };
@@ -808,6 +810,7 @@ function AddNewMovie() {
             <div className="Adm_l1a">
               {/* Control Admin Buttons */}
               <div className="SourceResearchItems">
+                {/* recherche BTN */}
                 <Button
                   variant="contained"
                   size="large"
@@ -830,7 +833,7 @@ function AddNewMovie() {
                     }
                     label="Série TV"
                   />
-                  {/* resest feild button */}
+                  {/* resest field button */}
                   <IconButton
                     onClick={() => resetStates()}
                     sx={{
@@ -1288,6 +1291,33 @@ function AddNewMovie() {
                   onClick={() => handleOpenModal("tags/sorted_id")}
                 />
               </div>
+              {/* movie FOCUS */}
+              <div className="adm-l1_item">
+                <Box
+                  component="form"
+                  sx={{ flexGrow: 1 }}
+                  noValidate
+                  autoComplete="off"
+                  display="flex"
+                  alignItems="center"
+                  gap={4}
+                  p={2}
+                >
+                  <TextField
+                    id="outlined-read-only-input"
+                    label="Focus"
+                    value={getSelectedNames(selectedFocus)}
+                    InputProps={{
+                      readOnly: true,
+                    }}
+                    fullWidth
+                  />
+                </Box>
+                <AddCircleOutlineIcon
+                  className="Btn_Add_itemsPopUp"
+                  onClick={() => handleOpenModal("focus")}
+                />
+              </div>
             </div>
           </section>
         </section>
@@ -1456,7 +1486,7 @@ function AddNewMovie() {
                     />
                   </Box>
                 )}
-
+                {/* movie VERSION (vostfr or multi) */}
                 <FormControl sx={{ m: 1 }}>
                   <FormLabel id="demo-row-radio-buttons-group-label">
                     version:
@@ -1586,6 +1616,8 @@ function AddNewMovie() {
                 onSelectedLanguagesUpdate={setSelectedLanguages}
                 selectedTags={selectedTags}
                 onSelectedTagsUpdate={setSelectedTags}
+                selectedFocus={selectedFocus}
+                onSelectedFocusUpdate={setSelectedFocus}
               />
             )}
           </Container>
