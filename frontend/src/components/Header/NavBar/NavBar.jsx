@@ -8,16 +8,14 @@ import MenuItem from "@mui/material/MenuItem";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import "./NavBar.css";
 
-export default function BasicButtons() {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
+export default function navBar() {
+  // Menu 1 : Recherche par
+  const [anchorSearch, setAnchorSearch] = useState(null);
+  const openSearch = Boolean(anchorSearch);
 
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  // Menu 2 : Ciné-club
+  const [anchorCine, setAnchorCine] = useState(null);
+  const openCine = Boolean(anchorCine);
 
   const theme = createTheme({
     palette: {
@@ -41,61 +39,89 @@ export default function BasicButtons() {
             </Button>
           </Link>
 
-          {/* Bouton RECHERCHE PAR avec flèche déroulante */}
+          {/* Menu : RECHERCHE PAR */}
           <div>
             <Button
               variant="outlined"
               color="JmdbColorNav"
-              onClick={handleClick}
+              onClick={(e) => setAnchorSearch(e.currentTarget)}
               endIcon={<ArrowDropDownIcon />}
             >
               RECHERCHE PAR
             </Button>
+
             <Menu
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose}
-              MenuListProps={{
-                "aria-labelledby": "basic-button",
-              }}
+              anchorEl={anchorSearch}
+              open={openSearch}
+              onClose={() => setAnchorSearch(null)}
             >
               <MenuItem
                 component={Link}
                 to="/movie_directors"
-                onClick={handleClose}
+                onClick={() => setAnchorSearch(null)}
               >
                 RÉALISATEURS
               </MenuItem>
               <MenuItem
                 component={Link}
                 to="/movie_casting"
-                onClick={handleClose}
+                onClick={() => setAnchorSearch(null)}
               >
                 CASTING
               </MenuItem>
               <MenuItem
                 component={Link}
                 to="/movie_screenwriters"
-                onClick={handleClose}
+                onClick={() => setAnchorSearch(null)}
               >
                 SCÉNARISTES
               </MenuItem>
               <MenuItem
                 component={Link}
                 to="/movie_music"
-                onClick={handleClose}
+                onClick={() => setAnchorSearch(null)}
               >
                 COMPOSITEURS
               </MenuItem>
               <MenuItem
                 component={Link}
                 to="/movie_studio"
-                onClick={handleClose}
+                onClick={() => setAnchorSearch(null)}
               >
                 STUDIOS
               </MenuItem>
-              <MenuItem component={Link} to="/movie_tag" onClick={handleClose}>
+              <MenuItem
+                component={Link}
+                to="/movie_tag"
+                onClick={() => setAnchorSearch(null)}
+              >
                 TAGS
+              </MenuItem>
+            </Menu>
+          </div>
+
+          {/* Menu : CINE CLUB */}
+          <div>
+            <Button
+              variant="outlined"
+              color="JmdbColorNav"
+              onClick={(e) => setAnchorCine(e.currentTarget)}
+              endIcon={<ArrowDropDownIcon />}
+            >
+              CINE-CLUB
+            </Button>
+
+            <Menu
+              anchorEl={anchorCine}
+              open={openCine}
+              onClose={() => setAnchorCine(null)}
+            >
+              <MenuItem
+                component={Link}
+                to="/movie_thema"
+                onClick={() => setAnchorCine(null)}
+              >
+                THEMAS
               </MenuItem>
             </Menu>
           </div>

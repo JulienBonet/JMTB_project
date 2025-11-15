@@ -87,13 +87,21 @@ const getAllByLetter = async (req, res, next) => {
   }
 };
 
-const getAllByName = async (req, res, next) => {
+const getAllByName = async (req, res) => {
   try {
     const { name } = req.params;
-    const [[tags]] = await tagsModel.findTagByName(name);
-    res.status(200).json(tags);
+    const [rows] = await tagsModel.findTagByName(name);
+
+    if (rows.length === 0) {
+      // 🔥 Toujours renvoyer un JSON valide
+      return res.status(200).json([]);
+    }
+
+    // rows[0] contient ton tag
+    return res.status(200).json(rows[0]);
   } catch (error) {
-    next(error);
+    console.error("Error in getAllByName:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };
 

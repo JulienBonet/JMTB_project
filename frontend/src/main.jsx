@@ -17,6 +17,7 @@ import MovieTag from "./pages/MovieArtist/MovieTags.jsx";
 import AdminFeat from "./pages/AdminFeat/AdminFeat.jsx";
 import AddNewMovie from "./components/AdminFeatures/AddNewMovie/AddNewMovie.jsx";
 import MovieInfosEntrance from "./components/AdminFeatures/AddNewMovie/MovieInfosEntrance.jsx";
+import MovieThema from "./pages/MovieFocus/MovieThema.jsx";
 
 // Déterminer si on est en mode développement
 const isDevelopment = import.meta.env.MODE === "development";
@@ -57,21 +58,6 @@ const router = createBrowserRouter([
       {
         path: "/movie_directors",
         element: <MovieDirectors />,
-        // loader: async () => {
-        //   try {
-        //     const response = await fetch(`${backendUrl}/api/directors`);
-        //     if (!response.ok) {
-        //       const text = await response.text(); // Lire la réponse comme texte
-        //       console.error("Response text: ", text); // Loguer le texte de la réponse
-        //       throw new Error("Network response was not ok");
-        //     }
-        //     const data = await response.json();
-        //     return data;
-        //   } catch (error) {
-        //     console.error("Fetch error: ", error);
-        //     throw error;
-        //   }
-        // },
         loader: () => {
           return fetch(`${backendUrl}/api/directors`);
         },
@@ -109,6 +95,13 @@ const router = createBrowserRouter([
         element: <MovieTag />,
         loader: () => {
           return fetch(`${backendUrl}/api/tags`);
+        },
+      },
+      {
+        path: "/movie_thema",
+        element: <MovieThema />,
+        loader: () => {
+          return fetch(`${backendUrl}/api/focus/1`);
         },
       },
       {

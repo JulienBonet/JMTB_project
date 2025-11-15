@@ -1,0 +1,22 @@
+.FocusThumbnail {
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.image_FocusThumbnail {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.name_FocusThumbnail {
+  font-family: var(--font-02);
+  color: var(--color-01);
+  font-size: medium;
+  
+}

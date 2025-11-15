@@ -30,11 +30,6 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
 
   const isArtistFocus = origin === "director" || origin === "casting";
 
-  console.info("item:", item);
-  console.info("birthDate:", birthDate);
-  console.info("deathDate:", deathDate);
-  console.info("isFocus:", isFocus);
-
   const openModif = () => {
     setIsModify(true);
   };

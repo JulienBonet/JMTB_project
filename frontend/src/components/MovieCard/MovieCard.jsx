@@ -2077,12 +2077,15 @@ function MovieCard({
                   <div className="divider_dashed" />
                   {/* focus */}
                   {movieData.focus && (
-                    <p className="MovieCard_info">
-                      <span className="paraph_bolder">focus:</span> {focus}
-                    </p>
+                    <>
+                      <p className="MovieCard_info">
+                        <span className="paraph_bolder">focus:</span> {focus}
+                      </p>
+                      <div className="divider_dashed" />
+                    </>
                   )}
                   {/* end focus */}
-                  <div className="divider_dashed" />
+
                   {/* Support */}
                   <p className="MovieCard_info">
                     <span className="paraph_bolder">Support:</span>{" "}

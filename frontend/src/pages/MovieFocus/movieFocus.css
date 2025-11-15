@@ -1,0 +1,52 @@
+.Main_movieFocusPage {
+  display: flex;
+  flex-direction: column;
+  height: 90vh;
+  overflow: hidden;
+}
+.search_bar_container_MF {
+  flex: 0 0 auto;
+}
+.search_bar_content_MF {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 5rem;
+}
+.search_bar_content_selectefFocus_MF {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 5rem;
+  padding: 0 2rem;
+}
+.h1_titlePage_MF {
+  font-family: var(--font-02);
+  color: var(--color-01);
+  font-size: xx-large;
+}
+.main_content_MF {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  overflow-y: auto;
+}
+
+.thumbnails_container_MF {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 2rem; /* espace entre les thumbnails */
+  justify-items: center; /* centre les items dans leur colonne */
+  padding: 2rem 0;
+  width: 90%;
+  margin: 0 auto; /* centre la grid */
+}
+
+.Movies_thumbnails_container_MF {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+  width: 90%;
+  margin: 0 auto;
+}
