@@ -12,6 +12,7 @@ export default function SideActionBar({
   origin,
   openSideBar,
 }) {
+  const isThema = origin === "focus";
   return (
     <Box
       sx={{
@@ -41,15 +42,17 @@ export default function SideActionBar({
         </Box>
       </Tooltip>
 
-      <Tooltip title="Trier chronologiquement" placement="right">
-        <Box>
-          <ChronologicBtn
-            onClick={onChronologicClick}
-            selectedItems={selectedItems}
-            origin={origin}
-          />
-        </Box>
-      </Tooltip>
+      {!isThema && (
+        <Tooltip title="Trier chronologiquement" placement="right">
+          <Box>
+            <ChronologicBtn
+              onClick={onChronologicClick}
+              selectedItems={selectedItems}
+              origin={origin}
+            />
+          </Box>
+        </Tooltip>
+      )}
 
       <Tooltip title="Réinitialiser la recherche" placement="right">
         <IconButton

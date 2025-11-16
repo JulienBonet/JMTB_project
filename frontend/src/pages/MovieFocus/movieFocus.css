@@ -11,6 +11,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  justify-content: space-between;
   height: 5rem;
 }
 .search_bar_content_selectefFocus_MF {
@@ -19,6 +20,9 @@
   justify-content: space-between;
   height: 5rem;
   padding: 0 2rem;
+}
+.thema_icon{
+  height: 3rem;
 }
 .h1_titlePage_MF {
   font-family: var(--font-02);
@@ -46,6 +50,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap;
   padding: 2rem 0;
   width: 90%;
   margin: 0 auto;

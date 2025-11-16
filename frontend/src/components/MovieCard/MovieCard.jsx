@@ -942,7 +942,8 @@ function MovieCard({
         setMovieData(newMovie);
         onUpdateMovie(newMovie);
         closeModifyMode();
-        closeModal();
+        // closeModal();
+        if (typeof closeModal === "function") closeModal();
       } else {
         console.error("Erreur lors de la mise à jour");
       }
