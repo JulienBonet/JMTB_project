@@ -348,11 +348,15 @@ function MovieSearch() {
               onKindChange={handleKindChange}
               search={search}
               selectedKindData={selectedKind}
+              handleUpdateMovie={handleUpdateMovie}
+              handleDeleteMovie={handleDeleteMovie}
             />
             <CountryDropdown
               onCountryChange={handleCountryChange}
               search={search}
               selectedCountryData={selectedCountry}
+              handleUpdateMovie={handleUpdateMovie}
+              handleDeleteMovie={handleDeleteMovie}
             />
             <YearDropdown
               onYearChange={handleYearChange}

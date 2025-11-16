@@ -3,7 +3,13 @@ import React, { useState, useEffect } from "react";
 import { Select, MenuItem } from "@mui/material";
 import MovieTwoToneIcon from "@mui/icons-material/MovieTwoTone";
 
-function KindsDropdown({ onKindChange, selectedKindData, search }) {
+function KindsDropdown({
+  onKindChange,
+  selectedKindData,
+  search,
+  handleUpdateMovie,
+  handleDeleteMovie,
+}) {
   const [kinds, setKinds] = useState([]);
 
   const [isTablet, setIsTablet] = useState(
@@ -34,7 +40,7 @@ function KindsDropdown({ onKindChange, selectedKindData, search }) {
     //   const handleResize = () => setIsMobile(window.innerWidth <= 1279);
     //   window.addEventListener("resize", handleResize);
     //   return () => window.removeEventListener("resize", handleResize);
-  }, [search]);
+  }, [search, handleUpdateMovie, handleDeleteMovie]);
 
   const handleChange = (event) => onKindChange(event.target.value);
 

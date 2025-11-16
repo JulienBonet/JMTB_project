@@ -3,7 +3,13 @@ import React, { useState, useEffect } from "react";
 import { Select, MenuItem } from "@mui/material";
 import PublicIcon from "@mui/icons-material/Public";
 
-function CountryDropdown({ onCountryChange, selectedCountryData, search }) {
+function CountryDropdown({
+  onCountryChange,
+  selectedCountryData,
+  search,
+  handleUpdateMovie,
+  handleDeleteMovie,
+}) {
   const [countries, setCountries] = useState([]);
   const [isTablet, setIsTablet] = useState(
     window.innerWidth <= 1279 && window.innerWidth >= 769
@@ -31,7 +37,7 @@ function CountryDropdown({ onCountryChange, selectedCountryData, search }) {
     // const handleResize = () => setIsMobile(window.innerWidth <= 1279);
     // window.addEventListener("resize", handleResize);
     // return () => window.removeEventListener("resize", handleResize);
-  }, [search]);
+  }, [search, handleUpdateMovie, handleDeleteMovie]);
 
   const handleChange = (event) => {
     onCountryChange(event.target.value);

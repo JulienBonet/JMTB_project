@@ -21,6 +21,7 @@ function MovieThema() {
   const [sortMoviesYearAsc, setSortMoviesYearAsc] = useState(true);
 
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
+  console.info("Focus", Focus);
 
   //------------------------------------------
   // SORTED THEMAS
