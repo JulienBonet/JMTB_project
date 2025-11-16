@@ -920,7 +920,7 @@ function MovieCard({
             musics: selectedMusic.map((compositor) => compositor.id),
             studios: selectedStudios.map((studio) => studio.id),
             countries: selectedCountries.map((country) => country.id),
-            tags: selectedTags.map((tag) => tag.id),
+            // tags: selectedTags.map((tag) => tag.id),
             focus: selectedFocus.map((f) => f.id),
             isTvShow: movieData.isTvShow,
             tvSeasons: movieData.tvSeasons || null,

@@ -116,6 +116,22 @@ function MovieThema() {
     setOpenFocusModal(false);
   };
 
+  //------------------------------------------
+  // MAJ DU CONTENU
+  //------------------------------------------
+  const handleUpdateMovie = (updatedMovie) => {
+    setFilms((prev) =>
+      prev.map((m) => (m.id === updatedMovie.id ? updatedMovie : m))
+    );
+  };
+
+  const handleDeleteMovie = (movieId) => {
+    setFilms((prev) => prev.filter((movie) => movie.id !== movieId));
+  };
+
+  //------------------------------------------
+  // RETURN
+  //------------------------------------------
   return (
     <main className="Main_movieFocusPage">
       {/* barre */}
@@ -209,7 +225,12 @@ function MovieThema() {
             />
             <div className="Movies_thumbnails_container_MF">
               {films.map((movie) => (
-                <MovieThumbnail key={movie.id} data={movie} />
+                <MovieThumbnail
+                  key={movie.id}
+                  data={movie}
+                  onUpdateMovie={handleUpdateMovie}
+                  onDeleteMovie={handleDeleteMovie}
+                />
               ))}
             </div>
           </>
