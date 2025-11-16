@@ -1,13 +1,19 @@
 import { useLoaderData } from "react-router-dom";
 import { useState } from "react";
+import Modal from "@mui/material/Modal";
+import Box from "@mui/material/Box";
+import { Container } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import themaIco from "../../assets/ico/focus_thema.png";
 import MovieFocusThumbnail from "../../components/MovieFocusThumbnail/MovieFocusThumbnail";
 import MovieThumbnail from "../../components/MovieThumbnail/MovieThumbnail";
 import ToggleSortedButton from "../../components/ToggleSortedBtn/ToggleSortedButton";
 import SideActionBar from "../../components/StickySideBar/StickySideBar";
+import FocusCard from "../../components/FocusCard/FocusCard";
 import "./movieFocus.css";
+import "./movieFocusMediaqueries.css";
 
 function MovieThema() {
   const themaData = useLoaderData();
@@ -19,6 +25,7 @@ function MovieThema() {
   const [sortFocusAsc, setSortFocusAsc] = useState(true);
   const [sortMoviesAsc, setSortMoviesAsc] = useState(true);
   const [sortMoviesYearAsc, setSortMoviesYearAsc] = useState(true);
+  const [openFocusModal, setOpenFocusModal] = useState(false);
 
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
   console.info("Focus", Focus);
@@ -98,9 +105,20 @@ function MovieThema() {
     setSortMoviesAsc(true);
     setSortMoviesYearAsc(true);
   };
+  //------------------------------------------
+  // OPEN / CLOSED MODAL
+  //------------------------------------------
+  const openModal = () => {
+    setOpenFocusModal(true);
+  };
+
+  const closeModal = () => {
+    setOpenFocusModal(false);
+  };
 
   return (
     <main className="Main_movieFocusPage">
+      {/* barre */}
       <section className="search_bar_container_MF">
         <div className="search_bar_content_selectefFocus_MF">
           {selectedFocus ? (
@@ -113,7 +131,7 @@ function MovieThema() {
                   borderRadius: "8px",
                   padding: "6px",
                   "&:hover": {
-                    backgroundColor: "rgba(0,0,0,0.05)",
+                    backgroundColor: "var(--color-05)",
                     borderColor: "var(--color-01)",
                   },
                 }}
@@ -121,7 +139,27 @@ function MovieThema() {
               >
                 <KeyboardReturnIcon />
               </IconButton>
-              <h1 className="h1_titlePage_MF">{selectedFocus.name}</h1>
+              <div className="SelectFocus_Title">
+                <h1 className="h1_titlePage_MF">{selectedFocus.name}</h1>
+                <IconButton
+                  onClick={openModal}
+                  sx={{
+                    color: "var(--color-01)",
+                  }}
+                  aria-label="info +"
+                >
+                  <InfoOutlinedIcon
+                    sx={{
+                      fontSize: "2rem",
+                      transition: "0.2s ease",
+                      "&:hover": {
+                        color: "var(--color-03)", // ta couleur hover
+                        transform: "scale(1.15)", // petit zoom
+                      },
+                    }}
+                  />
+                </IconButton>
+              </div>
               <ToggleSortedButton
                 active={!!films}
                 onClick={() => setOpenMovieSideBar(!openMovieSideBar)}
@@ -140,6 +178,7 @@ function MovieThema() {
         </div>
       </section>
       <div className="dashed_secondary_bar" />
+      {/* contenu */}
       <section className="main_content_MF">
         {!selectedFocus ? (
           <>
@@ -176,6 +215,33 @@ function MovieThema() {
           </>
         )}
       </section>
+      {/* modal */}
+      {selectedFocus && (
+        <Modal
+          open={openFocusModal}
+          onClose={closeModal}
+          className="Focus_Modal"
+        >
+          <Box>
+            <Container maxWidth="800px" className="Focus_Modal_container">
+              <div
+                onClick={closeModal}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    closeModal();
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+                className="focus_modal_closed_btn"
+              >
+                X Fermer
+              </div>
+              <FocusCard selectedFocus={selectedFocus} origin={origin} />
+            </Container>
+          </Box>
+        </Modal>
+      )}
     </main>
   );
 }

@@ -1,6 +1,10 @@
 /* eslint-disable react/prop-types */
 import { useState, useRef, useEffect } from "react";
 import { FormControl, Select, MenuItem, OutlinedInput } from "@mui/material";
+import ReactQuill from "react-quill";
+import DOMPurify from "dompurify";
+import "react-quill/dist/quill.snow.css";
+import "../../../assets/css/reactQuill_html_parametrage.css";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
@@ -12,7 +16,9 @@ import CachedIcon from "@mui/icons-material/Cached";
 import "./adminItemsCard.css";
 
 function AdminItemsCard4({ item, origin, onUpdate, closeModal }) {
+  console.info("origin", origin);
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}/images`;
+  const isFocus = origin === "focus";
 
   const [isModify, setIsModify] = useState(false);
   const [name, setName] = useState(item.name);
@@ -163,6 +169,17 @@ function AdminItemsCard4({ item, origin, onUpdate, closeModal }) {
     setShowUploadButton(true);
   };
 
+  const modules = {
+    toolbar: [
+      [{ header: [1, 2, 3, false] }],
+      ["bold", "italic", "underline"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      ["clean"],
+    ],
+  };
+
+  const formats = ["header", "bold", "italic", "underline", "list", "bullet"];
+
   return (
     <article className="ItemsCard">
       <section className="ItemsCard_Col1">
@@ -179,21 +196,46 @@ function AdminItemsCard4({ item, origin, onUpdate, closeModal }) {
             <p className="Items_info">{name}</p>
           )}
         </div>
-
+        {!isFocus && (
+          <div className="Info_item_line">
+            <h2 className="ItemsCard_title">PITCH: </h2>
+            {isModify ? (
+              <input
+                type="text"
+                value={pitch}
+                onChange={(e) => setPitch(e.target.value)}
+              />
+            ) : (
+              <p className="Items_info">{pitch}</p>
+            )}
+          </div>
+        )}
+        {isFocus && (
+          <div className="Info_item_line_html">
+            <h2 className="ItemsCard_title">PITCH: </h2>
+            {isModify ? (
+              <ReactQuill
+                value={pitch}
+                onChange={setPitch}
+                theme="snow"
+                modules={modules}
+                formats={formats}
+                style={{
+                  width: "100%",
+                  minHeight: "200px",
+                }}
+                className="Items_info"
+              />
+            ) : (
+              <div
+                className="Items_info"
+                dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(pitch) }}
+              />
+            )}
+          </div>
+        )}
         <div className="Info_item_line">
-          <h2 className="ItemsCard_title">PITCH: </h2>
-          {isModify ? (
-            <input
-              type="text"
-              value={pitch}
-              onChange={(e) => setPitch(e.target.value)}
-            />
-          ) : (
-            <p className="Items_info">{pitch}</p>
-          )}
-        </div>
-        <div className="Info_item_line">
-          {isModify && origin === "focus" ? (
+          {isModify && isFocus ? (
             <>
               <h2 className="ItemsCard_title">CATEGORY: </h2>
               <FormControl fullWidth size="small">

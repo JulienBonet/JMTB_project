@@ -34,6 +34,7 @@
   font-size: medium;
   color: var(--color-01);
 }
+
 .ItemsCard input {
   width: 100%;
   padding: 8px;
@@ -83,3 +84,9 @@
   /* width: 70%; */
   width: 250px;
 }
+.Info_item_line_html {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+

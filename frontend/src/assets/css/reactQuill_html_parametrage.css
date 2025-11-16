@@ -1,0 +1,32 @@
+/* ------------------------- */
+/* SAISI HMTL VIA REACTQUILL*/
+/* ----------------------- */
+.ql-toolbar.ql-snow {
+  background-color: white !important;
+  border-radius: 6px 6px 0 0; /* optionnel, pour arrondir */
+}
+.focusCard_Pitch,
+.Items_info {
+  white-space: pre-wrap; /* respecte les sauts de ligne */
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.focusCard_Pitch strong,
+.Items_info strong {
+  font-weight: bold;
+}
+
+.focusCard_Pitch em,
+.Items_info em {
+  font-style: italic;
+}
+
+.focusCard_Pitch h1,
+.focusCard_Pitch h2,
+.focusCard_Pitch h3,
+.Items_info h1,
+.Items_info h2,
+.Items_info h3 {
+  margin: 0.5em 0;
+}

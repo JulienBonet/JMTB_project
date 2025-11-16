@@ -1,0 +1,9 @@
+@media (max-width: 500px) {
+  .SelectFocus_Title {
+    gap: 1rem;
+  }
+
+  .h1_titlePage_MF {
+    font-size: x-large;
+  }
+}
