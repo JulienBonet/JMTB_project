@@ -18,6 +18,7 @@ import AdminFeat from "./pages/AdminFeat/AdminFeat.jsx";
 import AddNewMovie from "./components/AdminFeatures/AddNewMovie/AddNewMovie.jsx";
 import MovieInfosEntrance from "./components/AdminFeatures/AddNewMovie/MovieInfosEntrance.jsx";
 import MovieThema from "./pages/MovieFocus/MovieThema.jsx";
+import MovieFestival from "./pages/MovieFocus/MovieFestival.jsx";
 
 // Déterminer si on est en mode développement
 const isDevelopment = import.meta.env.MODE === "development";
@@ -102,6 +103,13 @@ const router = createBrowserRouter([
         element: <MovieThema />,
         loader: () => {
           return fetch(`${backendUrl}/api/focus/1`);
+        },
+      },
+      {
+        path: "/movie_thema_festival",
+        element: <MovieFestival />,
+        loader: () => {
+          return fetch(`${backendUrl}/api/focus/2`);
         },
       },
       {
