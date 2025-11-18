@@ -29,7 +29,6 @@ function MovieThema() {
 
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
   const origin = "focus";
-  console.info("Focus", Focus);
 
   //------------------------------------------
   // SORTED THEMAS
@@ -60,7 +59,6 @@ function MovieThema() {
     const res = await fetch(`${backendUrl}/api/focus/${f.id}/movies`);
     const data = await res.json();
     setFilms(data);
-    console.info("data", data);
   };
 
   //------------------------------------------
