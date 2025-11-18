@@ -28,6 +28,7 @@ function MovieThema() {
   const [openFocusModal, setOpenFocusModal] = useState(false);
 
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
+  const origin = "focus";
   console.info("Focus", Focus);
 
   //------------------------------------------
@@ -202,7 +203,7 @@ function MovieThema() {
               onAlphabeticClick={handleSortedAlphabeticalFocus}
               onResetClick={handleResetFocus}
               openSideBar={openSideBar}
-              origin="focus"
+              origin={origin}
             />
             <div className="thumbnails_container_MF">
               {Focus.map((f) => (

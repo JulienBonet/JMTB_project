@@ -5,6 +5,10 @@
   background-color: white !important;
   border-radius: 6px 6px 0 0; /* optionnel, pour arrondir */
 }
+
+/* .ql-container {
+  width: 91% !important;;
+} */
 .focusCard_Pitch,
 .Items_info {
   white-space: pre-wrap; /* respecte les sauts de ligne */

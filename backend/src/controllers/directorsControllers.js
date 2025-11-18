@@ -107,6 +107,51 @@ const getAllById = async (req, res, next) => {
   }
 };
 
+const getAllArtistFocusRandom = async (req, res) => {
+  try {
+    const [director] = await directorsModel.findAllArtistFocusRandom();
+    res.status(200).json(director);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+const getAllArtistFocusAsc = async (req, res) => {
+  try {
+    const [director] = await directorsModel.findAllArtistFocusAsc();
+    res.status(200).json(director);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+const getAllArtistFocusDesc = async (req, res) => {
+  try {
+    const [director] = await directorsModel.findAllArtistFocusDesc();
+    res.status(200).json(director);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+const getAllArtistFocusYearAsc = async (req, res) => {
+  try {
+    const [director] = await directorsModel.findAllArtistFocusYearAsc();
+    res.status(200).json(director);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+const getAllArtistFocusYearDesc = async (req, res) => {
+  try {
+    const [director] = await directorsModel.findAllArtistFocusYearDesc();
+    res.status(200).json(director);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 module.exports = {
   getAllArtistAsc,
   getAllArtistDesc,
@@ -119,4 +164,9 @@ module.exports = {
   getAllByLetter,
   getAllByName,
   getAllById,
+  getAllArtistFocusRandom,
+  getAllArtistFocusAsc,
+  getAllArtistFocusDesc,
+  getAllArtistFocusYearAsc,
+  getAllArtistFocusYearDesc,
 };

@@ -18,6 +18,8 @@ const editDirector = async (
   pitch,
   wikilink,
   imdblink,
+  senscritiquelink,
+  websitelink,
   birthDate,
   deathDate,
   isFocus,
@@ -25,7 +27,7 @@ const editDirector = async (
 ) => {
   const query = `
     UPDATE director
-    SET name = ?, pitch = ?, wikilink = ?, imdblink = ?, birthDate = ?, deathDate = ?, isFocus = ?
+    SET name = ?, pitch = ?, wikilink = ?, imdblink = ?, senscritiquelink = ?, websitelink = ?, birthDate = ?, deathDate = ?, isFocus = ?
     WHERE id = ?
   `;
 
@@ -34,6 +36,8 @@ const editDirector = async (
     pitch,
     wikilink,
     imdblink,
+    senscritiquelink,
+    websitelink,
     birthDate,
     deathDate,
     isFocus,

@@ -106,6 +106,51 @@ const findDirectorById = (id) => {
   return db.query("SELECT * FROM director WHERE id = ?", [id]);
 };
 
+const findAllArtistFocusRandom = () => {
+  return db.query(
+    `SELECT *
+     FROM director
+     WHERE isFocus = 1
+     ORDER BY RAND();`
+  );
+};
+
+const findAllArtistFocusAsc = () => {
+  return db.query(
+    `SELECT *
+     FROM director
+     WHERE isFocus = 1
+     ORDER BY SUBSTRING_INDEX(name, ' ', -1) ASC;`
+  );
+};
+
+const findAllArtistFocusDesc = () => {
+  return db.query(
+    `SELECT *
+     FROM director
+     WHERE isFocus = 1
+     ORDER BY SUBSTRING_INDEX(name, ' ', -1) DESC;`
+  );
+};
+
+const findAllArtistFocusYearAsc = () => {
+  return db.query(
+    `SELECT *
+     FROM director
+     WHERE isFocus = 1
+     ORDER BY birthDate ASC;`
+  );
+};
+
+const findAllArtistFocusYearDesc = () => {
+  return db.query(
+    `SELECT *
+     FROM director
+     WHERE isFocus = 1
+     ORDER BY birthDate DESC;`
+  );
+};
+
 module.exports = {
   findAllArtistAsc,
   findAllArtistDesc,
@@ -118,4 +163,9 @@ module.exports = {
   findAllArtistIdDesc,
   findDirectorByName,
   findDirectorById,
+  findAllArtistFocusRandom,
+  findAllArtistFocusAsc,
+  findAllArtistFocusDesc,
+  findAllArtistFocusYearAsc,
+  findAllArtistFocusYearDesc,
 };

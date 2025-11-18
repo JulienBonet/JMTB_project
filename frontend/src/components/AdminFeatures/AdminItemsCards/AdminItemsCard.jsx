@@ -1,7 +1,12 @@
+/* eslint-disable react/no-danger */
 /* eslint-disable react/prop-types */
 // /* eslint-disable react/prop-types */
 import { useState, useRef } from "react";
 import { toast } from "react-toastify";
+import ReactQuill from "react-quill";
+import DOMPurify from "dompurify";
+import "react-quill/dist/quill.snow.css";
+import "../../../assets/css/reactQuill_html_parametrage.css";
 import "react-toastify/dist/ReactToastify.css";
 import Switch from "@mui/material/Switch";
 import FormControlLabel from "@mui/material/FormControlLabel";
@@ -12,6 +17,7 @@ import UndoIcon from "@mui/icons-material/Undo";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import CachedIcon from "@mui/icons-material/Cached";
 import "./adminItemsCard.css";
+import "./adminItemsCardMediaQueries.css";
 
 function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}/images`;
@@ -21,6 +27,10 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
   const [pitch, setPitch] = useState(item.pitch || "");
   const [wikilink, setWikilink] = useState(item.wikilink || "");
   const [imdblink, setImdblink] = useState(item.imdblink || "");
+  const [senscritiquelink, setSenscritiquelink] = useState(
+    item.senscritiquelink || ""
+  );
+  const [websitelink, setWebsitelink] = useState(item.webSitelink || "");
   const [birthDate, setBirthDate] = useState(item.birthDate || "");
   const [deathDate, setDeathDate] = useState(item.deathDate || "");
   const [isFocus, setIsFocus] = useState(item.isFocus || "");
@@ -78,9 +88,11 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
 
       const hasChanges =
         name !== item.name ||
-        pitch !== item.pitch ||
-        wikilink !== item.wikilink ||
-        imdblink !== item.imdblink ||
+        (isArtistFocus && pitch !== item.pitch) ||
+        (isArtistFocus && wikilink !== item.wikilink) ||
+        (isArtistFocus && imdblink !== item.imdblink) ||
+        (isArtistFocus && senscritiquelink !== item.senscritiquelink) ||
+        (isArtistFocus && websitelink !== item.websitelink) ||
         (isArtistFocus && birthDate !== item.birthDate) ||
         (isArtistFocus && deathDate !== item.deathDate) ||
         (isArtistFocus && isFocus !== item.isFocus);
@@ -88,12 +100,14 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
       if (hasChanges) {
         const data = {
           name,
-          pitch,
-          wikilink,
-          imdblink,
         };
 
         if (isArtistFocus) {
+          data.pitch = pitch || null;
+          data.wikilink = wikilink || null;
+          data.imdblink = imdblink || null;
+          data.senscritiquelink = senscritiquelink || null;
+          data.websitelink = websitelink || null;
           data.birthDate = birthDate || null;
           data.deathDate = deathDate || null;
           data.isFocus = Boolean(isFocus);
@@ -176,8 +190,48 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
     setShowUploadButton(true);
   };
 
+  const modules = {
+    toolbar: [
+      [{ header: [1, 2, 3, false] }],
+      ["bold", "italic", "underline"],
+      [{ list: "ordered" }, { list: "bullet" }],
+      ["clean"],
+    ],
+  };
+
+  const formats = ["header", "bold", "italic", "underline", "list", "bullet"];
+
   return (
     <article className="ItemsCard">
+      <section className="ItemsCard_Col_0">
+        {item && image && (
+          <img className="ItemImage" src={image} alt={`${item.name}`} />
+        )}
+        {isModify && (
+          <>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileUpload}
+              ref={fileInputRef}
+              style={{ display: "none" }}
+            />
+            {showUploadButton ? (
+              <FileUploadIcon
+                className="Item_uploadButton"
+                onClick={handleUploadClick}
+              />
+            ) : (
+              <CachedIcon
+                className="Item_reset_img_Button"
+                onClick={handleResetImage}
+              />
+            )}
+          </>
+        )}
+        <div className="ItemsCard_bar" />
+      </section>
+
       <section className="ItemsCard_Col1">
         <div className="Info_item_line">
           <h2 className="ItemsCard_title">ID: </h2>
@@ -208,74 +262,107 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
         )}
 
         {isArtistFocus && (
-          <div className="Info_item_line">
-            <h2 className="ItemsCard_title">DEATH: </h2>
-            {isModify ? (
-              <input
-                type="text"
-                value={deathDate}
-                onChange={(e) => setDeathDate(e.target.value)}
-              />
-            ) : (
-              <p className="Items_info">{deathDate}</p>
-            )}
-          </div>
-        )}
-
-        <div className="Info_item_line">
-          <h2 className="ItemsCard_title">PITCH: </h2>
-          {isModify ? (
-            <input
-              type="text"
-              value={pitch}
-              onChange={(e) => setPitch(e.target.value)}
-            />
-          ) : (
-            <p className="Items_info">{pitch}</p>
-          )}
-        </div>
-
-        <div className="Info_item_line">
-          <h2 className="ItemsCard_title">WIKIPEDIA: </h2>
-          {isModify ? (
-            <input
-              type="text"
-              value={wikilink}
-              onChange={(e) => setWikilink(e.target.value)}
-            />
-          ) : (
-            <p className="Items_info">{wikilink}</p>
-          )}
-        </div>
-
-        <div className="Info_item_line">
-          <h2 className="ItemsCard_title">IMDB: </h2>
-          {isModify ? (
-            <input
-              type="text"
-              value={imdblink}
-              onChange={(e) => setImdblink(e.target.value)}
-            />
-          ) : (
-            <p className="Items_info">{imdblink}</p>
-          )}
-        </div>
-        {isArtistFocus && (
-          <div className="Info_item_line">
-            <h2 className="ItemsCard_title">FOCUS: </h2>
-            {isModify ? (
-              <FormControlLabel
-                control={
-                  <Switch
-                    checked={Boolean(isFocus)}
-                    onChange={(e) => setIsFocus(e.target.checked)}
-                  />
-                }
-              />
-            ) : (
-              <p className="Items_info">{isFocus ? "OUI" : "NON"}</p>
-            )}
-          </div>
+          <>
+            <div className="Info_item_line">
+              <h2 className="ItemsCard_title">DEATH: </h2>
+              {isModify ? (
+                <input
+                  type="text"
+                  value={deathDate}
+                  onChange={(e) => setDeathDate(e.target.value)}
+                />
+              ) : (
+                <p className="Items_info">{deathDate}</p>
+              )}
+            </div>
+            <div className="Info_item_line_html">
+              <h2 className="ItemsCard_title">PITCH: </h2>
+              {isModify ? (
+                <ReactQuill
+                  value={pitch}
+                  onChange={setPitch}
+                  theme="snow"
+                  modules={modules}
+                  formats={formats}
+                  style={{
+                    width: "91%",
+                    // minHeight: "200px",
+                  }}
+                  className="Items_info"
+                />
+              ) : (
+                <div
+                  className="Items_info_artistFocus"
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(pitch),
+                  }}
+                />
+              )}
+            </div>
+            <div className="Info_item_line">
+              <h2 className="ItemsCard_title">WIKIPEDIA: </h2>
+              {isModify ? (
+                <input
+                  type="text"
+                  value={wikilink}
+                  onChange={(e) => setWikilink(e.target.value)}
+                />
+              ) : (
+                <p className="Items_info word-break">{wikilink}</p>
+              )}
+            </div>
+            <div className="Info_item_line">
+              <h2 className="ItemsCard_title">IMDB: </h2>
+              {isModify ? (
+                <input
+                  type="text"
+                  value={imdblink}
+                  onChange={(e) => setImdblink(e.target.value)}
+                />
+              ) : (
+                <p className="Items_info word-break">{imdblink}</p>
+              )}
+            </div>
+            <div className="Info_item_line">
+              <h2 className="ItemsCard_title">SENS CRITIQUE: </h2>
+              {isModify ? (
+                <input
+                  type="text"
+                  value={senscritiquelink}
+                  onChange={(e) => setSenscritiquelink(e.target.value)}
+                />
+              ) : (
+                <p className="Items_info word-break">{senscritiquelink}</p>
+              )}
+            </div>
+            <div className="Info_item_line">
+              <h2 className="ItemsCard_title">WEBSITE: </h2>
+              {isModify ? (
+                <input
+                  type="text"
+                  value={websitelink}
+                  onChange={(e) => setWebsitelink(e.target.value)}
+                />
+              ) : (
+                <p className="Items_info word-break">{websitelink}</p>
+              )}
+            </div>
+            <div className="Info_item_line">
+              <h2 className="ItemsCard_title">FOCUS: </h2>
+              {isModify ? (
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={Boolean(isFocus)}
+                      onChange={(e) => setIsFocus(e.target.checked)}
+                    />
+                  }
+                />
+              ) : (
+                <p className="Items_info">{isFocus ? "OUI" : "NON"}</p>
+              )}
+            </div>
+          </>
         )}
 
         <div className="Info_Btn-Modify">

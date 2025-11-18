@@ -62,8 +62,17 @@ const addDirector = async (req, res) => {
 
 const editingDirector = async (req, res) => {
   try {
-    const { name, pitch, wikilink, imdblink, birthDate, deathDate, isFocus } =
-      req.body;
+    const {
+      name,
+      pitch,
+      wikilink,
+      imdblink,
+      senscritiquelink,
+      websitelink,
+      birthDate,
+      deathDate,
+      isFocus,
+    } = req.body;
     const { id } = req.params;
 
     const existing = await editingModel.findDirectorById(id);
@@ -79,6 +88,8 @@ const editingDirector = async (req, res) => {
       old.pitch === pitch &&
       old.wikilink === wikilink &&
       old.imdblink === imdblink &&
+      old.senscritiquelink === senscritiquelink &&
+      old.websitelink === websitelink &&
       old.birthDate === birthDate &&
       old.deathDate === deathDate &&
       old.isFocus === isFocus;
@@ -95,6 +106,8 @@ const editingDirector = async (req, res) => {
       pitch,
       wikilink,
       imdblink,
+      senscritiquelink,
+      websitelink,
       birthDate,
       deathDate,
       isFocus,

@@ -6,7 +6,7 @@ import { Container } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import themaIco from "../../assets/ico/focus_thema.png";
+import focusDirectorsIco from "../../assets/ico/focus_directors.png";
 import MovieFocusThumbnail from "../../components/MovieFocusThumbnail/MovieFocusThumbnail";
 import MovieThumbnail from "../../components/MovieThumbnail/MovieThumbnail";
 import ToggleSortedButton from "../../components/ToggleSortedBtn/ToggleSortedButton";
@@ -28,7 +28,7 @@ function MovieThema() {
   const [openFocusModal, setOpenFocusModal] = useState(false);
 
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
-  const origin = "focus";
+  const origin = "ArtistFocus";
   console.info("Focus", Focus);
 
   //------------------------------------------
@@ -36,8 +36,20 @@ function MovieThema() {
   //------------------------------------------
   const handleSortedAlphabeticalFocus = async () => {
     const url = sortFocusAsc
-      ? `${backendUrl}/api/focus/1/sorted0` // ASC
-      : `${backendUrl}/api/focus/1/sorted1`; // DESC
+      ? `${backendUrl}/api/directors/focus/sorted/0` // ASC
+      : `${backendUrl}/api/directors/focus/sorted/1`; // DESC
+
+    const res = await fetch(url);
+    const data = await res.json();
+    setFocus(data);
+
+    setSortFocusAsc(!sortFocusAsc);
+  };
+
+  const handleSortedChronologicalFocus = async () => {
+    const url = sortFocusAsc
+      ? `${backendUrl}/api/directors/focus/sorted/2` // ASC
+      : `${backendUrl}/api/directors/focus/sorted/3`; // DESC
 
     const res = await fetch(url);
     const data = await res.json();
@@ -57,7 +69,7 @@ function MovieThema() {
     setSelectedFocus(f);
 
     // fetch des films du focus
-    const res = await fetch(`${backendUrl}/api/focus/${f.id}/movies`);
+    const res = await fetch(`${backendUrl}/api/directors/${f.id}`);
     const data = await res.json();
     setFilms(data);
     console.info("data", data);
@@ -70,8 +82,8 @@ function MovieThema() {
     if (!selectedFocus) return;
 
     const url = sortMoviesAsc
-      ? `${backendUrl}/api/focus/${selectedFocus.id}/movies/sorted0` // ASC
-      : `${backendUrl}/api/focus/${selectedFocus.id}/movies/sorted1`; // DESC
+      ? `${backendUrl}/api/directors/${selectedFocus.id}/sorted/0` // ASC
+      : `${backendUrl}/api/directors/${selectedFocus.id}/sorted/1`; // DESC
 
     const res = await fetch(url);
     const data = await res.json();
@@ -84,8 +96,8 @@ function MovieThema() {
     if (!selectedFocus) return;
 
     const url = sortMoviesYearAsc
-      ? `${backendUrl}/api/focus/${selectedFocus.id}/movies/sorted2` // ASC
-      : `${backendUrl}/api/focus/${selectedFocus.id}/movies/sorted3`; // DESC
+      ? `${backendUrl}/api/directors/${selectedFocus.id}/sorted/2` // ASC
+      : `${backendUrl}/api/directors/${selectedFocus.id}/sorted/3`; // DESC
 
     const res = await fetch(url);
     const data = await res.json();
@@ -97,9 +109,7 @@ function MovieThema() {
   const handleResetMovies = async () => {
     if (!selectedFocus) return;
 
-    const res = await fetch(
-      `${backendUrl}/api/focus/${selectedFocus.id}/movies`
-    );
+    const res = await fetch(`${backendUrl}/api/directors/${selectedFocus.id}`);
     const data = await res.json();
     setFilms(data);
 
@@ -184,8 +194,12 @@ function MovieThema() {
             </>
           ) : (
             <>
-              <img src={themaIco} alt="Thémas" className="thema_icon" />
-              <h1 className="h1_titlePage_MF">THEMAS</h1>
+              <img
+                src={focusDirectorsIco}
+                alt="Les grands maîtres"
+                className="thema_icon"
+              />
+              <h1 className="h1_titlePage_MF">LES GRANDS MAÎTRES</h1>
               <ToggleSortedButton
                 active={!!themaData}
                 onClick={() => setOpenSideBar(!openSideBar)}
@@ -201,6 +215,7 @@ function MovieThema() {
           <>
             <SideActionBar
               onAlphabeticClick={handleSortedAlphabeticalFocus}
+              onChronologicClick={handleSortedChronologicalFocus}
               onResetClick={handleResetFocus}
               openSideBar={openSideBar}
               origin={origin}

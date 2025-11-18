@@ -182,12 +182,39 @@ function AdminItemsCard4({ item, origin, onUpdate, closeModal }) {
 
   return (
     <article className="ItemsCard">
+      <section className="ItemsCard_Col_0">
+        {image && (
+          <img className="ItemImage" src={image} alt={`${item.name}`} />
+        )}
+        {isModify && (
+          <>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileUpload}
+              ref={fileInputRef}
+              style={{ display: "none" }}
+            />
+            {showUploadButton ? (
+              <FileUploadIcon
+                className="Item_uploadButton"
+                onClick={handleUploadClick}
+              />
+            ) : (
+              <CachedIcon
+                className="Item_reset_img_Button"
+                onClick={handleResetImage}
+              />
+            )}
+          </>
+        )}
+        <div className="ItemsCard_bar" />
+      </section>
       <section className="ItemsCard_Col1">
         <div className="Info_item_line">
           <h2 className="ItemsCard_title">ID: </h2>
           <p className="Items_info">{item.id}</p>
         </div>
-
         <div className="Info_item_line">
           <h2 className="ItemsCard_title">NAME: </h2>
           {isModify ? (
@@ -221,14 +248,14 @@ function AdminItemsCard4({ item, origin, onUpdate, closeModal }) {
                 modules={modules}
                 formats={formats}
                 style={{
-                  width: "100%",
+                  width: "91%",
                   minHeight: "200px",
                 }}
                 className="Items_info"
               />
             ) : (
               <div
-                className="Items_info"
+                className="Items_info_artistFocus"
                 dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(pitch) }}
               />
             )}

@@ -87,14 +87,3 @@ EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
 SELECT * FROM country;
-
--- TAG TABLE (mis en commentaire car inutile si la table tag est vide)
--- DELETE FROM tag WHERE id = 209;
-
--- SET @maxId = (SELECT MAX(id) FROM tag);
--- SET @alterStmt = CONCAT('ALTER TABLE tag AUTO_INCREMENT = ', @maxId + 1);
--- PREPARE stmt FROM @alterStmt;
--- EXECUTE stmt;
--- DEALLOCATE PREPARE stmt;
-
--- SELECT * FROM tag;
