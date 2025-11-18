@@ -138,7 +138,54 @@ export default function BasicMenu() {
           TAGS
         </MenuItem>
         <Divider sx={{ backgroundColor: "var(--color-02)", marginY: 1 }} />
+        {/* CINE CLUB */}
+        <Box sx={{ px: 2, textAlign: "center" }}>
+          <Typography
+            sx={{
+              fontWeight: 700,
+              color: "var(--color-02)",
+              letterSpacing: 0.6,
+              marginBottom: 1,
+            }}
+            aria-hidden="true"
+          >
+            - CINE CLUB -
+          </Typography>
+        </Box>
+        <MenuItem
+          component={Link}
+          to="/movie_thema"
+          onClick={handleClose}
+          sx={{ justifyContent: "center" }}
+        >
+          THEMAS
+        </MenuItem>
+        <MenuItem
+          component={Link}
+          to="/movie_thema_festival"
+          onClick={handleClose}
+          sx={{ justifyContent: "center" }}
+        >
+          FESTIVALS
+        </MenuItem>
 
+        <MenuItem
+          component={Link}
+          to="/movie_thema_directors"
+          onClick={handleClose}
+          sx={{ justifyContent: "center" }}
+        >
+          LES GRANDS MAÎTRES
+        </MenuItem>
+        <MenuItem
+          component={Link}
+          to="/movie_thema_casting"
+          onClick={handleClose}
+          sx={{ justifyContent: "center" }}
+        >
+          LES STARS
+        </MenuItem>
+        <Divider sx={{ backgroundColor: "var(--color-02)", marginY: 1 }} />
         {/* ADMIN */}
         <MenuItem
           onClick={handleClose}

@@ -5,6 +5,21 @@ const castingController = require("../controllers/castingControllers");
 router.get("/casting", castingController.getAllArtistAsc);
 router.get("/casting/sorted_z", castingController.getAllArtistDesc);
 router.get("/casting/sorted_id", castingController.getAllArtistIdDesc);
+router.get("/casting/focus/random", castingController.getAllArtistFocusRandom);
+
+router.get("/casting/focus/sorted/0", castingController.getAllArtistFocusAsc);
+
+router.get("/casting/focus/sorted/1", castingController.getAllArtistFocusDesc);
+
+router.get(
+  "/casting/focus/sorted/2",
+  castingController.getAllArtistFocusYearAsc
+);
+
+router.get(
+  "/casting/focus/sorted/3",
+  castingController.getAllArtistFocusYearDesc
+);
 router.get("/casting/:id", castingController.getAllMoviesByArtistId);
 router.get("/casting/:id/sorted/0", castingController.getAllSorted0);
 router.get("/casting/:id/sorted/1", castingController.getAllSorted1);

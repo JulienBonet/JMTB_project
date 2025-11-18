@@ -180,6 +180,51 @@ const findCastingById = (id) => {
   return db.query("SELECT * FROM casting WHERE id = ?", [id]);
 };
 
+const findAllArtistFocusRandom = () => {
+  return db.query(
+    `SELECT *
+     FROM casting
+     WHERE isFocus = 1
+     ORDER BY RAND();`
+  );
+};
+
+const findAllArtistFocusAsc = () => {
+  return db.query(
+    `SELECT *
+     FROM casting
+     WHERE isFocus = 1
+     ORDER BY SUBSTRING_INDEX(name, ' ', -1) ASC;`
+  );
+};
+
+const findAllArtistFocusDesc = () => {
+  return db.query(
+    `SELECT *
+     FROM casting
+     WHERE isFocus = 1
+     ORDER BY SUBSTRING_INDEX(name, ' ', -1) DESC;`
+  );
+};
+
+const findAllArtistFocusYearAsc = () => {
+  return db.query(
+    `SELECT *
+     FROM casting
+     WHERE isFocus = 1
+     ORDER BY birthDate ASC;`
+  );
+};
+
+const findAllArtistFocusYearDesc = () => {
+  return db.query(
+    `SELECT *
+     FROM casting
+     WHERE isFocus = 1
+     ORDER BY birthDate DESC;`
+  );
+};
+
 module.exports = {
   findAllArtistAsc,
   findAllArtistDesc,
@@ -192,4 +237,9 @@ module.exports = {
   findAllByLetter,
   findCastingByName,
   findCastingById,
+  findAllArtistFocusRandom,
+  findAllArtistFocusAsc,
+  findAllArtistFocusDesc,
+  findAllArtistFocusYearAsc,
+  findAllArtistFocusYearDesc,
 };

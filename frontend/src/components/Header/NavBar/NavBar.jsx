@@ -136,7 +136,14 @@ export default function navBar() {
                 to="/movie_thema_directors"
                 onClick={() => setAnchorCine(null)}
               >
-                GRANDS MAÎTRES
+                LES GRANDS MAÎTRES
+              </MenuItem>
+              <MenuItem
+                component={Link}
+                to="/movie_thema_casting"
+                onClick={() => setAnchorCine(null)}
+              >
+                LES STARS
               </MenuItem>
             </Menu>
           </div>
