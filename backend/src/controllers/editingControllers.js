@@ -3,6 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 const { resizeImage } = require("../middlewares/resizeImage");
+const { cleanTags } = require("../utils/tags");
 const editingModel = require("../models/editingModel");
 
 //-----------------------------
@@ -22,43 +23,6 @@ const addDirector = async (req, res) => {
     return res.status(500).json({ message: "Error director creation" });
   }
 };
-
-// const editingDirector = async (req, res) => {
-//   try {
-//     const { name, pitch, wikilink, imdblink } = req.body;
-//     const { id } = req.params;
-
-//     // Vérifier si les nouvelles données sont différentes des données existantes
-//     const existingDirector = await editingModel.findDirectorById(id);
-//     if (
-//       existingDirector[0].name === name &&
-//       existingDirector[0].pitch === pitch &&
-//       existingDirector[0].wikilink === wikilink &&
-//       existingDirector[0].imdblink === imdblink
-//     ) {
-//       return res
-//         .status(400)
-//         .json({ message: "Error updating director: no changes detected" });
-//     }
-
-//     // Mettre à jour le réalisateur
-//     const result = await editingModel.editDirector(
-//       name,
-//       pitch,
-//       wikilink,
-//       imdblink,
-//       id
-//     );
-
-//     if (result.affectedRows !== 0) {
-//       return res.status(200).json({ message: "Director successfully updated" });
-//     }
-//     return res.status(400).json({ message: "Error updating director" });
-//   } catch (error) {
-//     console.error("Stack trace :", error.stack);
-//     return res.status(500).json({ message: "Error updating director" });
-//   }
-// };
 
 const editingDirector = async (req, res) => {
   try {
@@ -544,6 +508,7 @@ const eraseScreenwriter = async (req, res = null) => {
 //-----------------------------
 // EDIT COMPOSITOR
 //-----------------------------
+
 const addCompositor = async (req, res) => {
   try {
     const { name } = req.body;
@@ -695,6 +660,7 @@ const eraseCompositor = async (req, res = null) => {
 //-----------------------------
 // EDIT STUDIO
 //-----------------------------
+
 const addStudio = async (req, res) => {
   try {
     const { name } = req.body;
@@ -844,6 +810,7 @@ const eraseStudio = async (req, res = null) => {
 //-----------------------------
 // EDIT COUNTRY
 //-----------------------------
+
 const addCountry = async (req, res) => {
   try {
     const { name } = req.body;
@@ -992,6 +959,7 @@ const getCountryByName = async (req, res, next) => {
 //-----------------------------
 // EDIT GENRE
 //-----------------------------
+
 const addGenre = async (req, res) => {
   try {
     const { name } = req.body;
@@ -1051,6 +1019,7 @@ const eraseGenre = async (req, res, next) => {
 //-----------------------------
 // EDIT LANGUAGE
 //----------------------------
+
 const addLanguage = async (req, res) => {
   try {
     const { name } = req.body;
@@ -1119,15 +1088,40 @@ const getLanguageByName = async (req, res, next) => {
 //-----------------------------
 // EDIT TAG
 //-----------------------------
+
 const addTag = async (req, res) => {
   try {
     const { name } = req.body;
+
     if (!name) {
       return res.status(400).json({ message: "Tag's name is required" });
     }
-    await editingModel.insertTag(name);
 
-    return res.status(201).json({ message: "Tag successfully created" });
+    // 🔹 Nettoyage et normalisation
+    const cleanedTags = cleanTags([{ name }]);
+
+    if (cleanedTags.length === 0) {
+      return res.status(400).json({ message: "No valid tag found" });
+    }
+
+    // 🔹 Vérifie l'existence ou insère en parallèle
+    const insertedTags = await Promise.all(
+      cleanedTags.map(async (tagName) => {
+        const existingTag = await editingModel.findTagByName(tagName);
+        if (existingTag) return existingTag.id;
+
+        const insertedId = await editingModel.insertTag(tagName);
+        return insertedId;
+      })
+    );
+
+    return res.status(201).json({
+      message: "Tag(s) successfully created",
+      // tagIds: insertedTags,
+      tags: await Promise.all(
+        insertedTags.map((id) => editingModel.findTagById(id)) // pas besoin de `await` ici
+      ),
+    });
   } catch (error) {
     console.error("Error Tag creation :", error);
     return res.status(500).json({ message: "Error Tag creation" });
@@ -1177,7 +1171,7 @@ const eraseTag = async (req, res, next) => {
 const getTagByName = async (req, res, next) => {
   try {
     const { name } = req.params;
-    const [[tag]] = await editingModel.findTagByName(name);
+    const tag = await editingModel.findTagByName(name); // déjà l'objet ou null
     res.status(200).json(tag);
   } catch (error) {
     next(error);
@@ -1187,6 +1181,7 @@ const getTagByName = async (req, res, next) => {
 //-----------------------------
 // EDIT FOCUS
 //-----------------------------
+
 const addFocus = async (req, res) => {
   try {
     const { name, categoryId } = req.body;

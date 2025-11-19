@@ -17,10 +17,6 @@ function CreateItemCard({ origin, onUpdate, closeModal }) {
   const [name, setName] = useState("");
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState("");
-  console.info("origin in CreateItemCard:", origin);
-  console.info("onUpdate in CreateItemCard:", onUpdate);
-  console.info("closeModal in CreateItemCard:", closeModal);
-  console.info("name in CreateItemCard:", name);
 
   // Fonctions pour filtrer les caractères interdits
   const regexInput = (value) => {

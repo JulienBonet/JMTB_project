@@ -3,10 +3,21 @@
 /* eslint-disable no-continue */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
+/* eslint-disable no-await-in-loop */
 require("dotenv").config();
+
+//-------------
+// COMMAND NODE
+//----------------------------------------------------
+// Avec reset (vide tag et movie_tag avant l’import)
+// npm run db:import-tags:reset
+//---------------------------------------------------
+// Sans reset (ajoute les tags aux existants)
+// npm run db:import-tags
+//---------------------------------------------------
+
 const mysql = require("mysql2/promise");
 
-// eslint-disable-next-line no-shadow
 const fetch = (...args) =>
   import("node-fetch").then(({ default: fetch }) => fetch(...args));
 
@@ -18,34 +29,27 @@ const fetch = (...args) =>
     database: process.env.DB_NAME,
   });
 
-  // pour reste les tables movie_tag et tag. s'enclenche ds node avec> npm run db:import-tags:reset
   const shouldReset = process.argv.includes("--reset");
 
   if (shouldReset) {
     console.log("🧹 Réinitialisation des tables tag et movie_tag...");
-
     await db.query("SET FOREIGN_KEY_CHECKS = 0");
     await db.query("TRUNCATE TABLE movie_tag");
     await db.query("TRUNCATE TABLE tag");
     await db.query("SET FOREIGN_KEY_CHECKS = 1");
-
     console.log("✅ Tables vidées avec succès !");
   }
 
-  // Abonder les tables movie_tag et tag. s'enclenche ds node avec> npm run db:import-tags
   try {
-    // 1️⃣ On récupère tous les films avec un id TMDB
     const [movies] = await db.query(
       "SELECT id, idTheMovieDb FROM movies WHERE idTheMovieDb IS NOT NULL"
     );
     console.log(`🎞️ ${movies.length} films trouvés avec idTheMovieDb.`);
 
-    // 2️⃣ On boucle sur chaque film
     for (const movie of movies) {
       try {
-        const [type, tmdbId] = movie.idTheMovieDb.split("/"); // "movie/680" -> ["movie", "680"]
+        const [type, tmdbId] = movie.idTheMovieDb.split("/");
 
-        // 🔹 Requête TMDB
         const res = await fetch(
           `https://api.themoviedb.org/3/${type}/${tmdbId}/keywords`,
           {
@@ -56,8 +60,6 @@ const fetch = (...args) =>
         );
 
         const data = await res.json();
-
-        // Vérification d'erreur côté TMDB
         if (data.status_code) {
           console.warn(
             `⚠️ Erreur TMDB pour ${movie.idTheMovieDb}: ${data.status_message}`
@@ -66,16 +68,23 @@ const fetch = (...args) =>
         }
 
         const keywords = data.keywords ?? data.results ?? [];
-        console.log(
-          `${movie.idTheMovieDb} - ${keywords.length} mots-clés trouvés`
-        );
+        const tagSet = new Set(); // pour dédoublonner par film
 
-        // 3️⃣ On insère chaque tag s’il n’existe pas encore
+        // 1️⃣ Split + trim + lowercase
         for (const kw of keywords) {
-          // Vérifier existence du tag
+          kw.name
+            .split(",")
+            .map((t) => t.trim())
+            .filter((t) => t.length > 0)
+            .forEach((t) => tagSet.add(t.toLowerCase()));
+        }
+
+        // 2️⃣ Insertion tags + association
+        for (const tagName of tagSet) {
+          // Vérifier si le tag existe déjà
           const [existing] = await db.execute(
             "SELECT id FROM tag WHERE name = ?",
-            [kw.name]
+            [tagName]
           );
 
           let tagId;
@@ -84,12 +93,12 @@ const fetch = (...args) =>
           } else {
             const [result] = await db.execute(
               "INSERT INTO tag (name) VALUES (?)",
-              [kw.name]
+              [tagName]
             );
             tagId = result.insertId;
           }
 
-          // 4️⃣ Lier film et tag sans doublon
+          // Lier le film au tag
           await db.execute(
             "INSERT IGNORE INTO movie_tag (movieId, tagId) VALUES (?, ?)",
             [movie.id, tagId]
@@ -97,10 +106,10 @@ const fetch = (...args) =>
         }
 
         console.log(
-          `✅ Tags ajoutés pour ${movie.idTheMovieDb} (${keywords.length} tags)`
+          `✅ Tags ajoutés pour ${movie.idTheMovieDb} (${tagSet.size} tags)`
         );
 
-        // Petite pause pour ne pas surcharger l’API
+        // Petite pause pour l'API
         await new Promise((r) => setTimeout(r, 300));
       } catch (err) {
         console.error(`❌ Erreur sur ${movie.idTheMovieDb}:`, err.message);

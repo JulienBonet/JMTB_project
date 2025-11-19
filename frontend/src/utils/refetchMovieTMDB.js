@@ -651,35 +651,106 @@ const refetchCasting = async (
 // ------------------
 // FETCH TAGS
 // ------------------
+// const refetchTags = async (
+//   idTheMovieDb,
+//   { searchTagInDatabase, createTagInDatabase, setSelectedTags }
+// ) => {
+//   const [mediaType, movieId] = idTheMovieDb.split("/");
+
+//   const keywordsResponse = await axios.get(
+//     `https://api.themoviedb.org/3/${mediaType}/${movieId}/keywords`,
+//     {
+//       headers: {
+//         accept: "application/json",
+//         Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
+//       },
+//     }
+//   );
+
+//   const keywordsData =
+//     mediaType === "tv"
+//       ? keywordsResponse.data.results
+//       : keywordsResponse.data.keywords;
+
+//   const tagsData = await Promise.all(
+//     keywordsData.map((keyword) =>
+//       fetchOrCreateEntity(keyword, searchTagInDatabase, createTagInDatabase)
+//     )
+//   );
+
+//   setSelectedTags(tagsData);
+//   console.info("🏷️ Tags rechargés :", tagsData);
+// };
+
 const refetchTags = async (
   idTheMovieDb,
   { searchTagInDatabase, createTagInDatabase, setSelectedTags }
 ) => {
-  const [mediaType, movieId] = idTheMovieDb.split("/");
+  try {
+    const [mediaType, movieId] = idTheMovieDb.split("/");
 
-  const keywordsResponse = await axios.get(
-    `https://api.themoviedb.org/3/${mediaType}/${movieId}/keywords`,
-    {
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
-      },
+    // 1️⃣ Récupérer les keywords depuis TMDB
+    const keywordsResponse = await axios.get(
+      `https://api.themoviedb.org/3/${mediaType}/${movieId}/keywords`,
+      {
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
+        },
+      }
+    );
+
+    const keywordsData =
+      mediaType === "tv"
+        ? keywordsResponse.data.results
+        : keywordsResponse.data.keywords;
+
+    if (!keywordsData || keywordsData.length === 0) {
+      setSelectedTags([]);
+      console.info("🏷️ Aucun tag trouvé pour ce film");
+      return;
     }
-  );
 
-  const keywordsData =
-    mediaType === "tv"
-      ? keywordsResponse.data.results
-      : keywordsResponse.data.keywords;
+    // 2️⃣ Split + nettoyage des tags contenant des virgules
+    const cleanedTags = keywordsData
+      .flatMap((kw) =>
+        kw.name
+          .split(",")
+          .map((t) => t.trim())
+          .filter(Boolean)
+      )
+      // supprimer doublons côté JS
+      .filter((v, i, a) => a.indexOf(v) === i);
 
-  const tagsData = await Promise.all(
-    keywordsData.map((keyword) =>
-      fetchOrCreateEntity(keyword, searchTagInDatabase, createTagInDatabase)
-    )
-  );
+    // 3️⃣ Créer ou récupérer chaque tag
+    const tagsData = await Promise.all(
+      cleanedTags.map(async (tagName) => {
+        const existingTag = await searchTagInDatabase(tagName);
+        if (existingTag?.id) return { id: existingTag.id, name: tagName };
 
-  setSelectedTags(tagsData);
-  console.info("🏷️ Tags rechargés :", tagsData);
+        const createdTag = await createTagInDatabase(tagName);
+        // fallback : rechercher si insertId pas renvoyé
+        if (!createdTag?.tagIds || !createdTag.tagIds[0]) {
+          const retry = await searchTagInDatabase(tagName);
+          if (!retry?.id) return null;
+          return { id: retry.id, name: tagName };
+        }
+
+        return { id: createdTag.tagIds[0], name: tagName };
+      })
+    );
+
+    // 4️⃣ Filtrer les nulls (création échouée)
+    setSelectedTags(tagsData.filter(Boolean));
+
+    console.info(
+      `🏷️ Tags rechargés pour ${idTheMovieDb} :`,
+      tagsData.filter(Boolean)
+    );
+  } catch (error) {
+    console.error("Erreur refetchTags :", error);
+    setSelectedTags([]);
+  }
 };
 
 // ------------------

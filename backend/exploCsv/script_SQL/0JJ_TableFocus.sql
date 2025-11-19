@@ -49,7 +49,7 @@ CREATE TABLE movie_focus (
 -- (nouvelles colonnes pour focus)
 -- ========================================
 ALTER TABLE director
-  ADD COLUMN isFocus TINYINT(1) DEFAULT 0 AFTER imdblink,
+ ADD COLUMN isFocus TINYINT(1) DEFAULT 0 AFTER imdblink,
   ADD COLUMN birthDate VARCHAR(10) NULL AFTER isFocus,
   ADD COLUMN deathDate VARCHAR(10) NULL AFTER birthDate;
   

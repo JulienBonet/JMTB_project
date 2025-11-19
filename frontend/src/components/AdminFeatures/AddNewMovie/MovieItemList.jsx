@@ -50,6 +50,7 @@ export default function TransferList({
   onSelectedFocusUpdate,
   dataType,
 }) {
+  console.info("dataType", dataType);
   let selectedItems;
   let onSelectedItemsUpdate;
 
@@ -122,7 +123,8 @@ export default function TransferList({
       case "languages/sorted_id":
         return "language";
       case "tags/sorted_id":
-        return "tag";
+      case "tags":
+        return "tag"; // <--- ici singular
       case "focus":
         return "focus";
       default:
@@ -138,15 +140,16 @@ export default function TransferList({
   const closeModal = () => {
     setShowModal(false);
   };
+  const [modalOrigin, setModalOrigin] = useState(""); // <- stocke le type d'item
 
-  const openModal = () => {
-    setShowModal(true);
-    setSearchTermRight("");
+  const openModal = (dt) => {
+    setShowModal(true); // ouvre le modal
+    setModalOrigin(dt); // stocke le dataType actuel
+    setSearchTermRight(""); // reset search si besoin
   };
 
   // Item List
   const [checked, setChecked] = useState([]);
-
   const [left, setLeft] = useState(selectedItems || []);
   const [right, setRight] = useState(
     (items || []).filter(
@@ -205,17 +208,18 @@ export default function TransferList({
   };
 
   // Fonction pour filtrer les items de droite en fonction de la recherche
-  const filteredRightItems = right.filter((item) =>
+
+  const cleanedRight = (right || []).filter(
+    (item) => item && item.name && item.name.trim() !== ""
+  );
+
+  const filteredRightItems = cleanedRight.filter((item) =>
     item.name.toLowerCase().includes(searchTermRight.toLowerCase())
   );
 
   // Fonction pour gérer l'ajout d'un nouvel élément
   const handleNewItem = async (name) => {
     try {
-      console.info(
-        "axios dans handleNewItem:",
-        `${import.meta.env.VITE_BACKEND_URL}/api/${getOriginFromDataType(dataType)}/byname/${name}`
-      );
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/api/${getOriginFromDataType(dataType)}/byname/${name}`
       );
@@ -366,7 +370,8 @@ export default function TransferList({
               sx={{ my: 0.5 }}
               variant="outlined"
               size="small"
-              onClick={() => openModal()}
+              // onClick={() => openModal()}
+              onClick={() => openModal(dataType)} // <--- ici on passe dataType
               aria-label="add new item"
             >
               +
@@ -420,9 +425,8 @@ export default function TransferList({
             >
               X Fermer
             </div>
-            {/* Composant CreateItemCard */}
             <CreateItemCard
-              origin={getOriginFromDataType(dataType)}
+              origin={getOriginFromDataType(modalOrigin)}
               onUpdate={(newItemName) => {
                 setShowModal(false);
                 handleNewItem(newItemName);
