@@ -27,6 +27,12 @@
   .focusCard_content {
     width: 850px;
   }
+  .focusCard_ico_container {
+    gap: 2rem;
+  }
+  .focusCard_ico {
+  width: 2.5rem;
+}
 }
 
 @media (max-width: 980px) {
@@ -60,12 +66,12 @@
   }
 
   .focusCard_divider_dashed {
-  margin: 1.5rem 0;
-}
+    margin: 1.5rem 0;
+  }
 
   .focusCard_ico_container {
-  justify-content: center;
-}
+    justify-content: center;
+  }
 }
 
 @media (max-width: 720px) {
@@ -81,7 +87,7 @@
     font-size: x-large;
   }
 
-    .focusCard_ico_container {
-  gap: 1.5rem
-}
+  .focusCard_ico_container {
+    gap: 1.5rem;
+  }
 }

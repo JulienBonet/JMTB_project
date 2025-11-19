@@ -4,9 +4,6 @@
   display: flex;
   justify-content: center;
 }
-
-.Focus_Modal_container {
-}
 .focus_modal_closed_btn {
   text-align: right;
   font-family: var(--font-04);

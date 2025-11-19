@@ -1,4 +1,9 @@
-
+.Main_movieArtistPage {
+  display: flex;
+  flex-direction: column;
+  height: 90vh;
+  overflow: hidden;
+}
 .artists_section {
   display: flex;
   align-items: center;
