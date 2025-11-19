@@ -18,258 +18,162 @@ import ToggleSortedButton from "../../components/ToggleSortedBtn/ToggleSortedBut
 import SideActionBar from "../../components/StickySideBar/StickySideBar";
 
 // Virtualisation ligne par ligne
-function getVisibleRows(movies, containerWidth, thumbnailWidth, gap) {
-  // Largeur d’une vignette + l’espace entre elles
+function getVisibleRows(moviesList, containerWidth, thumbnailWidth, gap) {
   const effectiveWidth = thumbnailWidth + gap;
-
-  // Nombre de colonnes qu’on peut placer dans la largeur
   const cols = Math.max(1, Math.floor((containerWidth + gap) / effectiveWidth));
-
-  // On découpe la liste des films en lignes
   const rows = [];
-  for (let i = 0; i < movies.length; i += cols) {
-    rows.push(movies.slice(i, i + cols));
+  for (let i = 0; i < moviesList.length; i += cols) {
+    rows.push(moviesList.slice(i, i + cols));
   }
-
   return rows;
 }
 
 function MovieSearch() {
-  const [data, setData] = useState([]);
+  // ---- source unique de vérité ----
+  const [movies, setMovies] = useState([]);
+
+  // filtres / tri
   const [search, setSearch] = useState("");
-  const [selectedTvShow, setSelectedTvShow] = useState("all");
   const [selectedKind, setSelectedKind] = useState("");
-  const [selectedYear, setSelectedYear] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
-  const [filteredMovies, setFilteredMovies] = useState([]);
-  const [isAscending, setIsAscending] = useState(true);
-  const [isChronologicalAscending, setIsChronologicalAscending] =
-    useState(true);
+  const [selectedYear, setSelectedYear] = useState("");
+  const [selectedTvShow, setSelectedTvShow] = useState("all");
+
+  const [orderby, setOrderby] = useState("id"); // default = id
+  const [direction, setDirection] = useState("DESC"); // default DESC for latest first
+
   const [isLoading, setIsLoading] = useState(true);
   const [openSideBar, setOpenSideBar] = useState(false);
 
+  // responsive / virtualisation
   const containerRef = useRef(null);
   const [containerWidth, setContainerWidth] = useState(1280);
   const [mobileToggleOpen, setMobileToggleOpen] = useState(false);
   const [isNarrow, setIsNarrow] = useState(window.innerWidth < 768);
 
-  console.info("filteredMovies", filteredMovies);
+  // DEBUG -> show movies instead of filteredMovies which doesn't exist anymore
+  console.info("movies", movies);
+  console.info("selectedKind", selectedKind);
+  console.info("selectedCountry", selectedCountry);
+  console.info("selectedYear", selectedYear);
+  console.info("selectedTvShow", selectedTvShow);
 
   //-----------------------------
   // SUIVRE L'ETAT DE isNarrow
   //-----------------------------
-
   useEffect(() => {
     const handleResize = () => setIsNarrow(window.innerWidth < 768);
     window.addEventListener("resize", handleResize);
-    handleResize(); // au cas où le composant se monte après un resize
+    handleResize();
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  //-----------------------------
-  // FETCH INITIAL DATA
-  //-----------------------------
-  useEffect(() => {
-    setIsLoading(true);
-    fetch(`${import.meta.env.VITE_BACKEND_URL}/api/movies/search-filter`)
-      .then((res) => res.json())
-      .then((moviesData) => {
-        setData(moviesData);
-        setFilteredMovies(moviesData);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setIsLoading(false);
-      });
-  }, []);
+  // ----------------------
+  // Construction URL unifiée (utilise ton endpoint existant)
+  // ----------------------
+  const buildUrl = () => {
+    const p = new URLSearchParams();
 
-  //-----------------------------
-  // TV SHOW FILTER
-  //-----------------------------
-  useEffect(() => {
-    setIsLoading(true);
-    let url = `${import.meta.env.VITE_BACKEND_URL}/api/movies/filter/tvshow`;
+    if (search) p.append("search", search);
+    if (selectedKind) p.append("kind", selectedKind);
+    if (selectedCountry) p.append("country", selectedCountry);
+    if (selectedYear) p.append("year", selectedYear);
 
-    if (selectedTvShow === "movies") url += "?isTvShow=0";
-    else if (selectedTvShow === "series") url += "?isTvShow=1";
+    if (selectedTvShow !== "all") {
+      // backend expects 0/1 for the old route; keep same semantics
+      p.append("tvshow", selectedTvShow === "movies" ? 0 : 1);
+    }
 
-    fetch(url)
-      .then((res) => res.json())
-      .then((moviesData) => {
-        setData(moviesData);
-        setFilteredMovies(moviesData);
-        setIsLoading(false);
-      })
-      .catch((err) => {
-        console.error(err);
-        setIsLoading(false);
-      });
-  }, [selectedTvShow]);
+    p.append("orderby", orderby);
+    p.append("direction", direction);
 
-  //-----------------------------
-  // FILTERS SEARCH
-  //-----------------------------
-  // useEffect(() => {
-  //   let filtered = data.filter((movie) =>
-  //     movie.title.toLowerCase().replace(/-/g, "").includes(search.toLowerCase())
-  //   );
+    return `${import.meta.env.VITE_BACKEND_URL}/api/movies/search-filter?${p.toString()}`;
+  };
 
-  //   if (selectedKind) {
-  //     filtered = filtered.filter((movie) =>
-  //       movie.genres?.split(", ").includes(selectedKind)
-  //     );
-  //   }
-
-  //   if (selectedYear) {
-  //     filtered = filtered.filter(
-  //       (movie) =>
-  //         Math.floor(movie.year / 10) * 10 === parseInt(selectedYear, 10)
-  //     );
-  //   }
-
-  //   if (selectedCountry) {
-  //     filtered = filtered.filter((movie) =>
-  //       movie.countries?.split(", ").includes(selectedCountry)
-  //     );
-  //   }
-
-  //   setFilteredMovies(filtered);
-  // }, [data, search, selectedKind, selectedYear, selectedCountry]);
-
-  useEffect(() => {
-    const lowerSearch = search.toLowerCase().replace(/-/g, "");
-
-    // fonction utilitaire pour éviter les erreurs si champ vide
-    const includesNormalized = (field) =>
-      !!field && field.toLowerCase().replace(/-/g, "").includes(lowerSearch);
-
-    let filtered = data.filter((movie) => {
-      if (!lowerSearch) return true;
-
-      if (!isNarrow) {
-        // >= 768px → recherche uniquement dans le titre
-        return includesNormalized(movie.title);
+  // ----------------------
+  // Fetch principal (appelé automatiquement via useEffect ci-dessous)
+  // ----------------------
+  const fetchMovies = async () => {
+    try {
+      setIsLoading(true);
+      const res = await fetch(buildUrl());
+      if (!res.ok) {
+        // tu peux adapter la gestion d'erreur
+        console.error("Erreur fetch movies:", res.statusText);
+        setMovies([]);
+        return;
       }
-
-      // < 768px → recherche dans tout (titre + champs associés)
-      return (
-        includesNormalized(movie.title) ||
-        includesNormalized(movie.directors) ||
-        includesNormalized(movie.castings) ||
-        includesNormalized(movie.screenwriters) ||
-        includesNormalized(movie.musics) ||
-        includesNormalized(movie.studios) ||
-        includesNormalized(movie.genres) ||
-        includesNormalized(movie.countries)
-      );
-    });
-
-    if (selectedKind) {
-      filtered = filtered.filter((movie) =>
-        movie.genres?.split(", ").includes(selectedKind)
-      );
+      const moviesData = await res.json();
+      setMovies(moviesData);
+    } catch (err) {
+      console.error("Erreur fetchMovies:", err);
+      setMovies([]);
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    if (selectedYear) {
-      filtered = filtered.filter(
-        (movie) =>
-          Math.floor(movie.year / 10) * 10 === parseInt(selectedYear, 10)
-      );
-    }
+  // ----------------------
+  // useEffect unique : fetch sur changement de filtres / tri / taille
+  // ----------------------
+  useEffect(() => {
+    fetchMovies();
+  }, [
+    search,
+    selectedKind,
+    selectedCountry,
+    selectedYear,
+    selectedTvShow,
+    orderby,
+    direction,
+    isNarrow,
+  ]);
 
-    if (selectedCountry) {
-      filtered = filtered.filter((movie) =>
-        movie.countries?.split(", ").includes(selectedCountry)
-      );
-    }
-
-    setFilteredMovies(filtered);
-  }, [data, search, selectedKind, selectedYear, selectedCountry, isNarrow]);
-
+  // ------------------------
+  // Handlers UI
+  // ------------------------
   const handleTyping = (e) => {
     let { value } = e.target;
     value = value.replace(/-/g, "").toLowerCase();
     setSearch(value);
   };
 
-  const handleKindChange = (kind) => setSelectedKind(kind);
-  const handleYearChange = (year) => setSelectedYear(year);
-  const handleCountryChange = (country) => setSelectedCountry(country);
+  const handleKindChange = (k) => setSelectedKind(k);
+  const handleYearChange = (y) => setSelectedYear(y);
+  const handleCountryChange = (c) => setSelectedCountry(c);
+
+  // TRI via SideActionBar -> change orderby/direction which déclenche fetch
+  const handleAlphabeticBtnClick = () => {
+    setOrderby("title");
+    setDirection((d) => (d === "ASC" ? "DESC" : "ASC"));
+  };
+
+  const handleChronologicBtnClick = () => {
+    setOrderby("year");
+    setDirection((d) => (d === "ASC" ? "DESC" : "ASC"));
+  };
+
   const handleResetSearch = () => {
     setSearch("");
     setSelectedKind("");
-    setSelectedYear("");
     setSelectedCountry("");
+    setSelectedYear("");
     setSelectedTvShow("all");
+    setOrderby("id");
+    setDirection("DESC");
   };
 
-  const movieAmount = filteredMovies.length;
-
-  //-----------------------------
-  // SORT FUNCTIONS
-  //-----------------------------
-  const ignoreSuffixes = [
-    "le",
-    "la",
-    "l'",
-    "un",
-    "une",
-    "des",
-    "d'",
-    "the",
-    "a",
-    "der",
-  ];
-  const removeIgnoredSuffixes = (title) => {
-    const words = title.split(" ");
-    const filteredWords = words.filter(
-      (word) => !ignoreSuffixes.includes(word.toLowerCase())
-    );
-    return filteredWords.join(" ");
-  };
-
-  const sortAlphabetically = () => {
-    const sortedMovies = [...filteredMovies].sort((a, b) => {
-      const titleA = removeIgnoredSuffixes(a.title);
-      const titleB = removeIgnoredSuffixes(b.title);
-      return isAscending
-        ? titleA.localeCompare(titleB, undefined, { sensitivity: "accent" })
-        : titleB.localeCompare(titleA, undefined, { sensitivity: "accent" });
-    });
-    setFilteredMovies(sortedMovies);
-  };
-  const handleAlphabeticBtnClick = () => {
-    sortAlphabetically();
-    setIsAscending(!isAscending);
-  };
-
-  const sortChronologically = () => {
-    const sortedMovies = [...filteredMovies].sort((a, b) => {
-      return isChronologicalAscending ? a.year - b.year : b.year - a.year;
-    });
-    setFilteredMovies(sortedMovies);
-  };
-  const handleChronologicBtnClick = () => {
-    sortChronologically();
-    setIsChronologicalAscending(!isChronologicalAscending);
-  };
-
-  //-----------------------------
-  // UPDATE / DELETE MOVIE
-  //-----------------------------
+  // -----------------------------
+  // UPDATE / DELETE MOVIE (modification locale de la liste)
+  // -----------------------------
   const handleUpdateMovie = (updatedMovieData) => {
-    const updatedMovies = data.map((movie) =>
-      movie.id === updatedMovieData.id ? updatedMovieData : movie
+    setMovies((prev) =>
+      prev.map((m) => (m.id === updatedMovieData.id ? updatedMovieData : m))
     );
-    setData(updatedMovies);
-    setFilteredMovies(updatedMovies);
   };
 
   const handleDeleteMovie = (movieId) => {
-    const updatedMovies = data.filter((movie) => movie.id !== movieId);
-    setData(updatedMovies);
-    setFilteredMovies(updatedMovies);
+    setMovies((prev) => prev.filter((m) => m.id !== movieId));
   };
 
   //-----------------------------
@@ -289,7 +193,7 @@ function MovieSearch() {
   };
 
   //-----------------------------
-  // Resize container width pour responsive
+  // Resize container width pour responsive (virtualisation)
   //-----------------------------
   useEffect(() => {
     const handleResize = () => {
@@ -298,19 +202,23 @@ function MovieSearch() {
       }
     };
     window.addEventListener("resize", handleResize);
-    handleResize(); // appel immédiat
+    handleResize();
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const THUMB_WIDTH = 200;
   const THUMB_GAP = 16;
 
+  // visibleRows doit utiliser movies (source unique)
   const visibleRows = getVisibleRows(
-    filteredMovies,
+    movies,
     containerWidth,
     THUMB_WIDTH,
     THUMB_GAP
   );
+
+  // nombre de films
+  const movieAmount = movies.length;
 
   //-----------------------------
   // RETURN
@@ -328,6 +236,7 @@ function MovieSearch() {
               placeholder="recherche"
             />
           </div>
+
           {/* Toggle button pour mobile */}
           <button
             type="button"
@@ -336,6 +245,7 @@ function MovieSearch() {
           >
             <span>{mobileToggleOpen ? "▲" : "▼"}</span>
           </button>
+
           {/* Dropdowns */}
           <div
             className="dropdown_search_container"
@@ -364,6 +274,7 @@ function MovieSearch() {
               selectedYearData={selectedYear}
             />
           </div>
+
           {/* Filter buttons */}
           <div
             className="filter_container_MovieSearch"
@@ -393,7 +304,7 @@ function MovieSearch() {
             </ToggleButtonGroup>
 
             <ToggleSortedButton
-              active={!!data}
+              active={movies.length > 0}
               onClick={() => setOpenSideBar(!openSideBar)}
             />
           </div>
@@ -418,7 +329,7 @@ function MovieSearch() {
               origin="movies"
             />
 
-            {filteredMovies.length > 0 ? (
+            {movies.length > 0 ? (
               <div className="MovieThumbnails">
                 {visibleRows.map((rowMovies) => (
                   <div

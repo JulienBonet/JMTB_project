@@ -258,15 +258,6 @@ const getAllDecades = async (req, res, next) => {
   }
 };
 
-const getAllForSearchFilter = async (req, res, next) => {
-  try {
-    const [movies] = await moviesModel.findAllForSearchFilter();
-    res.status(200).json(movies);
-  } catch (error) {
-    next(error);
-  }
-};
-
 const getByTvShow = async (req, res) => {
   try {
     const { isTvShow } = req.query; // "0", "1" ou vide
@@ -275,6 +266,34 @@ const getByTvShow = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Erreur serveur" });
+  }
+};
+
+const getFilteredMovies = async (req, res, next) => {
+  try {
+    const {
+      search = "",
+      kind = "",
+      country = "",
+      year = "",
+      tvshow,
+      orderby = "title",
+      direction = "ASC",
+    } = req.query;
+
+    const movies = await moviesModel.findFilteredMovies({
+      search,
+      kind,
+      country,
+      year,
+      tvshow,
+      orderby,
+      direction,
+    });
+
+    res.status(200).json(movies);
+  } catch (err) {
+    next(err);
   }
 };
 
@@ -301,6 +320,6 @@ module.exports = {
   getAllByCountrySorted2,
   getAllByCountrySorted3,
   getAllDecades,
-  getAllForSearchFilter,
   getByTvShow,
+  getFilteredMovies,
 };
