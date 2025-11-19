@@ -25,6 +25,9 @@ function CreateItemCard({ origin, onUpdate, closeModal }) {
     // Remplacer / et \ par un tiret, et , par un espace
     let cleaned = value.replace(/[\\/]/g, "-").replace(/,/g, " ");
 
+    // Supprimer l'espace au début
+    cleaned = cleaned.replace(/^\s+/, "");
+
     // Mettre la première lettre en majuscule
     cleaned = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
 
