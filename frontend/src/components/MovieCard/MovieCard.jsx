@@ -132,13 +132,13 @@ function MovieCard({
     idTheMovieDb: movie.idTheMovieDb || "",
   });
 
-  // useEffect(() => {
-  //   console.info("movie in MovieCard", movie);
-  // }, [movie]);
+  useEffect(() => {
+    console.info("movie in MovieCard", movie);
+  }, [movie]);
 
-  // useEffect(() => {
-  //   console.info("movieData1 in MovieCard", movieData);
-  // }, [movieData]);
+  useEffect(() => {
+    console.info("movieData1 in MovieCard", movieData);
+  }, [movieData]);
 
   console.info("selectedTags", selectedTags);
 
@@ -156,6 +156,7 @@ function MovieCard({
 
   const { idTheMovieDb } = movie;
   const isTvShow = movieData.isTvShow === 1;
+  const tvSeason = movieData.tvSeasons;
   const safeValue = (val) => val ?? "";
 
   //-----------------------------------------------
@@ -1346,7 +1347,12 @@ function MovieCard({
           ) : (
             // BLOCK 1 LISTEN MODE
             <div className="infos_bloc_1">
-              <p className="MovieCard_title">{movieData.title}</p>
+              <p className="MovieCard_title">
+                {movieData.title}{" "}
+                {isTvShow && tvSeason && (
+                  <span className="tvSeasonsBadge">Saison {tvSeason}</span>
+                )}
+              </p>
               <div className="divider" />
               {/* trailer */}
               {isTrailerVisible ? (
