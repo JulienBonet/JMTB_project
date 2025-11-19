@@ -7,6 +7,9 @@ router.get("/movies/search-filter", moviesController.getFilteredMovies);
 // ⭐ LISTE COMPLÈTE (non filtrée)
 router.get("/movies", moviesController.getAll);
 
+// ⭐ FILMS PAR NOM
+router.get("/movies/name/:name", moviesController.getByName);
+
 // ⭐ FILMS PAR ID
 router.get("/movies/:id", moviesController.getById);
 

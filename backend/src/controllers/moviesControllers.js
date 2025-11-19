@@ -158,7 +158,7 @@ const getAllCountryIdDesc = async (req, res, next) => {
 const getAllCountryByName = async (req, res, next) => {
   try {
     const { name } = req.params;
-    const [[country]] = await moviesModel.findStudioByName(name);
+    const [[country]] = await moviesModel.findCountryByName(name);
     res.status(200).json(country);
   } catch (error) {
     next(error);
@@ -297,6 +297,24 @@ const getFilteredMovies = async (req, res, next) => {
   }
 };
 
+const getByName = async (req, res) => {
+  const { name } = req.params;
+
+  if (!name) {
+    return res.status(400).json({ error: "Le paramètre name est requis" });
+  }
+
+  try {
+    const exists = await moviesModel.findByName(name);
+    return res.json({ exists });
+  } catch (err) {
+    console.error(err);
+    return res
+      .status(500)
+      .json({ error: "Erreur serveur lors de la vérification du titre" });
+  }
+};
+
 module.exports = {
   getAll,
   getById,
@@ -322,4 +340,5 @@ module.exports = {
   getAllDecades,
   getByTvShow,
   getFilteredMovies,
+  getByName,
 };

@@ -92,7 +92,7 @@ const findAllCountryIdDesc = () => {
   return db.query("SELECT * FROM country order by id desc;");
 };
 
-const findStudioByName = (name) => {
+const findCountryByName = (name) => {
   return db.query("SELECT * FROM country WHERE name = ?", [name]);
 };
 
@@ -264,6 +264,19 @@ const findFilteredMovies = async ({
   return rows;
 };
 
+const findByName = async (title) => {
+  try {
+    const [rows] = await db.query(
+      "SELECT COUNT(*) as count FROM movies WHERE title = ?",
+      [title]
+    );
+    return rows[0].count > 0; // true si existe, false sinon
+  } catch (err) {
+    console.error("Erreur dans Movie_ findByName:", err);
+    throw err;
+  }
+};
+
 module.exports = {
   findAll,
   findById,
@@ -271,7 +284,7 @@ module.exports = {
   findAllYears,
   findAllCountry,
   findAllCountryIdDesc,
-  findStudioByName,
+  findCountryByName,
   findByCountry,
   findByCountrySortedAlpha,
   findByCountrySortedZeta,
@@ -282,7 +295,7 @@ module.exports = {
   findByYearSortedZ,
   findAllDecades,
   findMoviesByDecade,
-
   findByTvShow,
   findFilteredMovies,
+  findByName,
 };

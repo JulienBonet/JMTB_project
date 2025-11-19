@@ -1,3 +1,4 @@
+/* eslint-disable no-alert */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-shadow */
 import { useState, useRef, useEffect } from "react";
@@ -663,6 +664,24 @@ function AddNewMovie() {
       event.preventDefault();
 
       setIsSubmitting(true); // Affiche le Backdrop
+
+      // 1️⃣ Vérifier si le titre existe
+      const checkResponse = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/movies/name/${encodeURIComponent(movie.title)}`
+      );
+      if (!checkResponse.ok)
+        throw new Error("Erreur lors de la vérification du titre");
+      const { exists } = await checkResponse.json();
+
+      if (exists) {
+        const confirmed = window.confirm(
+          "Ce titre existe déjà dans la base. Voulez-vous continuer quand même ?"
+        );
+        if (!confirmed) {
+          setIsSubmitting(false);
+          return; // Stop le submit si l'utilisateur annule
+        }
+      }
 
       const vostfr = version === "VOSTFR" ? 1 : 0;
       const multi = version === "MULTI" ? 1 : 0;

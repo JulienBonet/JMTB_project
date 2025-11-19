@@ -1200,7 +1200,7 @@ function MovieCard({
                   name="title"
                   value={safeValue(movieData.title)}
                   onChange={(e) => handleChange(e)}
-                  InputProps={{ readOnly: true }}
+                  // InputProps={{ readOnly: true }}
                   fullWidth
                   sx={textFieldSx}
                 />
@@ -1350,7 +1350,7 @@ function MovieCard({
               <p className="MovieCard_title">
                 {movieData.title}{" "}
                 {isTvShow && tvSeason && (
-                  <span className="tvSeasonsBadge">Saison {tvSeason}</span>
+                  <span className="tvSeasonsBadge">/Saison {tvSeason}</span>
                 )}
               </p>
               <div className="divider" />
