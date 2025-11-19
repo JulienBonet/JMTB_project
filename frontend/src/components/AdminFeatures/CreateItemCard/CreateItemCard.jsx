@@ -20,7 +20,15 @@ function CreateItemCard({ origin, onUpdate, closeModal }) {
 
   // Fonctions pour filtrer les caractères interdits
   const regexInput = (value) => {
-    return value.replace(/[/\\]/g, "-");
+    if (!value) return "";
+
+    // Remplacer / et \ par un tiret, et , par un espace
+    let cleaned = value.replace(/[\\/]/g, "-").replace(/,/g, " ");
+
+    // Mettre la première lettre en majuscule
+    cleaned = cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+
+    return cleaned;
   };
 
   const handleNameChange = (e) => {
