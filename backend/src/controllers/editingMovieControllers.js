@@ -1,3 +1,4 @@
+/* eslint-disable no-continue */
 /* eslint-disable no-unreachable */
 /* eslint-disable no-unused-vars */
 /* eslint-disable import/no-extraneous-dependencies */
