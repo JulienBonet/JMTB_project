@@ -4,6 +4,8 @@ const fs = require("fs");
 const path = require("path");
 const { resizeImage } = require("../middlewares/resizeImage");
 const { cleanTags } = require("../utils/tags");
+const { cleanStudioName } = require("../utils/studio");
+
 const editingModel = require("../models/editingModel");
 
 //-----------------------------
@@ -661,13 +663,32 @@ const eraseCompositor = async (req, res = null) => {
 // EDIT STUDIO
 //-----------------------------
 
+// const addStudio = async (req, res) => {
+//   try {
+//     const { name } = req.body;
+//     if (!name) {
+//       return res.status(400).json({ message: "Studio's name is required" });
+//     }
+//     await editingModel.insertStudio(name);
+
+//     return res.status(201).json({ message: "Studio successfully created" });
+//   } catch (error) {
+//     console.error("Error Studio creation :", error);
+//     return res.status(500).json({ message: "Error Studio creation" });
+//   }
+// };
+
 const addStudio = async (req, res) => {
   try {
     const { name } = req.body;
     if (!name) {
       return res.status(400).json({ message: "Studio's name is required" });
     }
-    await editingModel.insertStudio(name);
+
+    // 🔥 Nettoyage du nom
+    const cleanedName = cleanStudioName(name);
+
+    await editingModel.insertStudio(cleanedName);
 
     return res.status(201).json({ message: "Studio successfully created" });
   } catch (error) {

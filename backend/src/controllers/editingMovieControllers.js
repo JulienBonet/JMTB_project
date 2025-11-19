@@ -13,6 +13,7 @@ const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 const { resizeImage } = require("../middlewares/resizeImage");
 const { cleanTags } = require("../utils/tags");
+const { cleanStudioName } = require("../utils/studio");
 const editingController = require("./editingControllers");
 const editingModel = require("../models/editingModel");
 const editingMovieModel = require("../models/editingMovieModel");
@@ -355,8 +356,18 @@ const addMovie = async (req, res) => {
       const studioIds = [];
 
       for (let i = 0; i < studios.length; i++) {
-        const studioName = studios[i];
-        // Vérifie si le studio existe déjà
+        // 🔥 Nettoyage du nom
+        const rawStudioName = studios[i];
+        const studioName = cleanStudioName(rawStudioName);
+
+        if (!studioName) {
+          console.warn(
+            `Nom de studio invalide après nettoyage : "${rawStudioName}"`
+          );
+          continue; // ignore ce studio
+        }
+
+        // Vérifie si le studio existe déjà (avec nom nettoyé)
         const existingStudioId =
           await editingModel.findStudioByName(studioName);
 
@@ -366,9 +377,7 @@ const addMovie = async (req, res) => {
           // Insère le studio s'il n'existe pas
           const result = await editingModel.insertStudio(studioName);
           studioIds.push(result.insertId);
-          console.info(
-            `Studio créé: ${studioName} avec ID: ${result.insertId}`
-          );
+          console.info(`Studio créé : ${studioName} (ID: ${result.insertId})`);
         }
       }
 
@@ -433,103 +442,111 @@ const addMovie = async (req, res) => {
     }
 
     // INSERT TAGS
-
     // if (tags && tags.length > 0) {
+    //   console.info("Tags reçus :", tags);
+
     //   const cleanedTags = cleanTags(tags); // nettoyage et normalisation
+    //   console.info("Tags après cleanTags :", cleanedTags);
+
+    //   if (cleanedTags.length === 0) {
+    //     console.warn(
+    //       "cleanTags a renvoyé un tableau vide, aucun tag à insérer !"
+    //     );
+    //   }
+
     //   const tagIds = [];
 
     //   for (const tagName of cleanedTags) {
-    //     if (!tagName) {
-    //       // ignore les tags vides
-    //       // rien à faire, passe au prochain tag
-    //     } else {
-    //       const existingTag =
-    //         await editingModel.findTagByNameInBackend(tagName);
-    //       if (existingTag) {
+    //     if (!tagName || tagName.trim() === "") {
+    //       console.warn("Tag vide ou invalide ignoré :", tagName);
+    //       continue;
+    //     }
+
+    //     console.info("Traitement du tag :", tagName);
+
+    //     const existingTag = await editingModel.findTagByNameInBackend(tagName);
+
+    //     if (existingTag) {
+    //       console.info("Tag existant trouvé :", existingTag);
+    //       if (existingTag.id) {
     //         tagIds.push(existingTag.id);
+    //         console.info(
+    //           `Ajout de l'ID existant ${existingTag.id} au tableau tagIds`
+    //         );
     //       } else {
-    //         const result = await editingModel.insertTag(tagName);
-    //         if (result && result.insertId) tagIds.push(result.insertId);
+    //         console.warn("existingTag trouvé mais sans ID :", existingTag);
+    //       }
+    //     } else {
+    //       console.info("Tag inexistant, création en base :", tagName);
+    //       const result = await editingModel.insertTag(tagName);
+
+    //       if (result && result.insertId) {
+    //         tagIds.push(result.insertId);
+    //         console.info(`Nouveau tag créé avec ID ${result.insertId}`);
+    //       } else {
+    //         console.error(
+    //           "Impossible de créer le tag :",
+    //           tagName,
+    //           "résultat :",
+    //           result
+    //         );
     //       }
     //     }
     //   }
 
+    //   console.info("Tous les tagIds à associer au film :", tagIds);
+
     //   if (tagIds.length > 0) {
-    //     const tagPromises = tagIds.map((tagId) =>
-    //       editingMovieModel.addMovieTag(movieId, tagId)
-    //     );
+    //     const tagPromises = tagIds.map((tagId) => {
+    //       console.info(`Association movieId ${movieId} avec tagId ${tagId}`);
+    //       return editingMovieModel.addMovieTag(movieId, tagId);
+    //     });
+
     //     await Promise.all(tagPromises);
+    //     console.info("Tous les tags ont été associés au film avec succès.");
+    //   } else {
+    //     console.warn("Aucun tag à associer au film, skipping addMovieTag.");
     //   }
+    // } else {
+    //   console.info("Aucun tag reçu pour ce film, skipping insertion tags.");
     // }
 
-    // INSERT TAGS
     if (tags && tags.length > 0) {
-      console.info("Tags reçus :", tags);
-
       const cleanedTags = cleanTags(tags); // nettoyage et normalisation
-      console.info("Tags après cleanTags :", cleanedTags);
 
       if (cleanedTags.length === 0) {
-        console.warn(
-          "cleanTags a renvoyé un tableau vide, aucun tag à insérer !"
-        );
+        return; // rien à insérer
       }
 
       const tagIds = [];
 
       for (const tagName of cleanedTags) {
         if (!tagName || tagName.trim() === "") {
-          console.warn("Tag vide ou invalide ignoré :", tagName);
           continue;
         }
 
-        console.info("Traitement du tag :", tagName);
-
         const existingTag = await editingModel.findTagByNameInBackend(tagName);
 
-        if (existingTag) {
-          console.info("Tag existant trouvé :", existingTag);
-          if (existingTag.id) {
-            tagIds.push(existingTag.id);
-            console.info(
-              `Ajout de l'ID existant ${existingTag.id} au tableau tagIds`
-            );
-          } else {
-            console.warn("existingTag trouvé mais sans ID :", existingTag);
-          }
+        if (existingTag && existingTag.id) {
+          tagIds.push(existingTag.id);
         } else {
-          console.info("Tag inexistant, création en base :", tagName);
           const result = await editingModel.insertTag(tagName);
 
           if (result && result.insertId) {
             tagIds.push(result.insertId);
-            console.info(`Nouveau tag créé avec ID ${result.insertId}`);
           } else {
-            console.error(
-              "Impossible de créer le tag :",
-              tagName,
-              "résultat :",
-              result
-            );
+            // Important : garder cette erreur pour comprendre si la DB plante
+            console.error("Impossible de créer le tag :", tagName);
           }
         }
       }
 
-      console.info("Tous les tagIds à associer au film :", tagIds);
-
       if (tagIds.length > 0) {
-        const tagPromises = tagIds.map((tagId) => {
-          console.info(`Association movieId ${movieId} avec tagId ${tagId}`);
-          return editingMovieModel.addMovieTag(movieId, tagId);
-        });
-
+        const tagPromises = tagIds.map((tagId) =>
+          editingMovieModel.addMovieTag(movieId, tagId)
+        );
         await Promise.all(tagPromises);
-        console.info("Tous les tags ont été associés au film avec succès.");
-      } else {
-        console.warn("Aucun tag à associer au film, skipping addMovieTag.");
       }
-    } else {
-      console.info("Aucun tag reçu pour ce film, skipping insertion tags.");
     }
 
     // INSERT FOCUS
