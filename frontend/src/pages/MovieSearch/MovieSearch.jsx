@@ -29,7 +29,6 @@ function getVisibleRows(moviesList, containerWidth, thumbnailWidth, gap) {
 }
 
 function MovieSearch() {
-  // ---- source unique de vérité ----
   const [movies, setMovies] = useState([]);
 
   // filtres / tri
@@ -38,10 +37,8 @@ function MovieSearch() {
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedTvShow, setSelectedTvShow] = useState("all");
-
   const [orderby, setOrderby] = useState("id"); // default = id
   const [direction, setDirection] = useState("DESC"); // default DESC for latest first
-
   const [isLoading, setIsLoading] = useState(true);
   const [openSideBar, setOpenSideBar] = useState(false);
 
@@ -50,13 +47,6 @@ function MovieSearch() {
   const [containerWidth, setContainerWidth] = useState(1280);
   const [mobileToggleOpen, setMobileToggleOpen] = useState(false);
   const [isNarrow, setIsNarrow] = useState(window.innerWidth < 768);
-
-  // DEBUG -> show movies instead of filteredMovies which doesn't exist anymore
-  console.info("movies", movies);
-  console.info("selectedKind", selectedKind);
-  console.info("selectedCountry", selectedCountry);
-  console.info("selectedYear", selectedYear);
-  console.info("selectedTvShow", selectedTvShow);
 
   //-----------------------------
   // SUIVRE L'ETAT DE isNarrow
