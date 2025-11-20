@@ -20,6 +20,7 @@ const focusRouter = require("./routes/focusRoute");
 const editingRouter = require("./routes/editingRoute");
 const editingMovieRouter = require("./routes/editingMovieRoute");
 const purgeRouter = require("./routes/purgeRoute");
+const authRouter = require("./routes/authRoutes");
 
 // Apply routes
 router.use(moviesRouter);
@@ -35,6 +36,7 @@ router.use(focusRouter);
 router.use(editingRouter);
 router.use(editingMovieRouter);
 router.use(purgeRouter);
+router.use("/auth", authRouter);
 
 /* ************************************************************************* */
 

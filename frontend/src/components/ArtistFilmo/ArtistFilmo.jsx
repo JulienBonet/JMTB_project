@@ -195,9 +195,11 @@ function ArtistFilmo({
             origin={origin}
             openSideBar={openSideBar}
           />
+
           <div className="MovieCountArtistMovie_container">
             <MovieCountArtistMovie movieAmount={movieAmount} />
           </div>
+
           <div className="artists_filmo_thumbs">
             {data.map((filmo) => (
               <MovieThumbnail
