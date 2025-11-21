@@ -2147,6 +2147,8 @@ function MovieCard({
           {/* END INFO BLOCK 2 */}
         </section>
 
+        {!isAdmin && <section style={{ height: "2rem" }} />}
+
         {/* EDITING BUTTON */}
         {isAdmin && !homepage && (
           <section className="Movie_editing_btn-container">

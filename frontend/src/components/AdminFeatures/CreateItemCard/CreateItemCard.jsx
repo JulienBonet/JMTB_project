@@ -17,6 +17,9 @@ function CreateItemCard({ origin, onUpdate, closeModal }) {
   const [name, setName] = useState("");
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
 
   // Fonctions pour filtrer les caractères interdits
   const regexInput = (value) => {
@@ -51,49 +54,116 @@ function CreateItemCard({ origin, onUpdate, closeModal }) {
   }, []);
   // End Fetch catégories (origin === "focus")
 
+  // const handleValidate = async () => {
+  //   // Sécurité : si aucun catégorie n'est choisi dans focus
+  //   if (origin === "focus" && !categoryId) {
+  //     toast.error("Merci de choisir une catégorie pour ce focus.", {
+  //       className: "custom-toast",
+  //     });
+  //     return; // On bloque la validation
+  //   }
+
+  //   try {
+  //     const data = { name };
+
+  //     if (origin === "focus") {
+  //       data.categoryId = categoryId;
+  //     }
+
+  //     console.info(
+  //       "POST in CeateItemCard:",
+  //       `${import.meta.env.VITE_BACKEND_URL}/api/${origin}`
+  //     );
+
+  //     const response = await fetch(
+  //       `${import.meta.env.VITE_BACKEND_URL}/api/${origin}`,
+  //       {
+  //         method: "POST",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify(data),
+  //       }
+  //     );
+
+  //     if (!response.ok) {
+  //       console.error("Error creating item");
+  //       const errorMessage = await response.text();
+  //       console.error("Server error message:", errorMessage);
+  //       return;
+  //     }
+
+  //     console.info("Item successfully created");
+  //     toast.success(`${origin} successfully created`, {
+  //       className: "custom-toast",
+  //     });
+
+  //     onUpdate(name);
+  //     closeModal();
+  //   } catch (error) {
+  //     console.error("Request error:", error);
+  //   }
+  // };
+
   const handleValidate = async () => {
-    // Sécurité : si aucun catégorie n'est choisi dans focus
+    // Vérification des champs requis
+    if (!name || (origin === "user" && (!password || !confirmPassword))) {
+      toast.error("Please fill all required fields", {
+        className: "custom-toast",
+      });
+      return;
+    }
+
+    // Vérification correspondance des mots de passe pour les users
+    if (origin === "user" && password !== confirmPassword) {
+      toast.error("Passwords do not match", { className: "custom-toast" });
+      return;
+    }
+
+    // Vérification catégorie pour focus
     if (origin === "focus" && !categoryId) {
       toast.error("Merci de choisir une catégorie pour ce focus.", {
         className: "custom-toast",
       });
-      return; // On bloque la validation
+      return;
     }
 
     try {
-      const data = {
-        name,
-      };
+      // Préparer les données à envoyer
+      const data = { name };
+
+      if (origin === "user") {
+        data.password = password;
+        data.isAdmin = isAdmin ? 1 : 0;
+      }
 
       if (origin === "focus") {
         data.categoryId = categoryId;
       }
 
-      console.info(
-        "POST in CeateItemCard:",
-        `${import.meta.env.VITE_BACKEND_URL}/api/${origin}`
-      );
+      // Déterminer l'URL de l'API
+      const url =
+        origin === "user"
+          ? `${import.meta.env.VITE_BACKEND_URL}/api/auth/${origin}` // Auth spécifique pour user
+          : `${import.meta.env.VITE_BACKEND_URL}/api/${origin}`;
 
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/${origin}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(data),
-        }
-      );
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization:
+            origin === "user"
+              ? `Bearer ${localStorage.getItem("token")}`
+              : undefined,
+        },
+        body: JSON.stringify(data),
+      });
 
       if (!response.ok) {
-        console.error("Error creating item");
         const errorMessage = await response.text();
-        console.error("Server error message:", errorMessage);
+        toast.error(errorMessage || "Error creating item");
         return;
       }
 
-      console.info("Item successfully created");
-      toast.success(`${origin} successfully created`, {
+      toast.success(`${origin.toUpperCase()} successfully created`, {
         className: "custom-toast",
       });
 
@@ -101,6 +171,7 @@ function CreateItemCard({ origin, onUpdate, closeModal }) {
       closeModal();
     } catch (error) {
       console.error("Request error:", error);
+      toast.error("Error creating item");
     }
   };
 
@@ -135,9 +206,7 @@ function CreateItemCard({ origin, onUpdate, closeModal }) {
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
               input={<OutlinedInput label="Category" />}
-              sx={{
-                backgroundColor: "white",
-              }}
+              sx={{ backgroundColor: "white" }}
             >
               {categories.map((cat) => (
                 <MenuItem key={cat.id} value={cat.id}>
@@ -148,6 +217,41 @@ function CreateItemCard({ origin, onUpdate, closeModal }) {
           </FormControl>
         </div>
       )}
+      {origin === "user" && (
+        <>
+          <div className="Created_Info_item_line">
+            <h2 className="Created_ItemsCard_title">ENTER PASSWORD: </h2>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="created-item_input"
+            />
+          </div>
+          <div className="Created_Info_item_line">
+            <h2 className="Created_ItemsCard_title">CONFIRM PASSWORD:</h2>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              className="created-item_input"
+            />
+          </div>
+
+          <div className="Created_Info_item_line">
+            <h2 className="Created_ItemsCard_title">ROLE: </h2>
+            <select
+              value={isAdmin ? "admin" : "user"}
+              onChange={(e) => setIsAdmin(e.target.value === "admin")}
+              className="created-item_select"
+            >
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+        </>
+      )}
+
       <div className="Created_Info_Btn-Modify">
         <section className="Created_Item_Editing_Buttons">
           <DoneOutlineIcon

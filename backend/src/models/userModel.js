@@ -22,4 +22,14 @@ const findByName = (name) => {
   return db.query("SELECT * FROM user WHERE name = ?", [name]);
 };
 
-module.exports = { createUser, updatePassword, deleteUserById, findByName };
+const findAllByIdDesc = () => {
+  return db.query("SELECT * FROM user ORDER BY id DESC");
+};
+
+module.exports = {
+  createUser,
+  updatePassword,
+  deleteUserById,
+  findByName,
+  findAllByIdDesc,
+};
