@@ -4,6 +4,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable camelcase */
 import { useState, useEffect, useRef } from "react";
+
 import axios from "axios";
 import { toast } from "react-toastify";
 import "./movieCard.css";
@@ -44,6 +45,7 @@ import ListItemText from "@mui/material/ListItemText";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import MovieOutlinedIcon from "@mui/icons-material/MovieOutlined";
 import TvOutlinedIcon from "@mui/icons-material/TvOutlined";
+import { useAuth } from "../../Context/AuthContext";
 import TransferList from "../AdminFeatures/AddNewMovie/MovieItemList";
 import {
   refetchMovieTMDB,
@@ -91,6 +93,7 @@ function MovieCard({
   onUpdateMovie,
   onDeleteMovie,
 }) {
+  const { isAdmin } = useAuth();
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
   const [isModify, setIsModify] = useState(false);
   const [allowEdit, setAllowEdit] = useState(false);
@@ -165,22 +168,12 @@ function MovieCard({
 
   const textFieldSx = {
     width: "80%",
-    "& .MuiInputLabel-root": {
-      color: "white",
-    },
-    "& .MuiInputBase-input": {
-      color: "white",
-    },
+    "& .MuiInputLabel-root": { color: "white" },
+    "& .MuiInputBase-input": { color: "white" },
     "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        borderColor: "white",
-      },
-      "&:hover fieldset": {
-        borderColor: "orange",
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: "cyan",
-      },
+      "& fieldset": { borderColor: "white" },
+      "&:hover fieldset": { borderColor: "orange" },
+      "&.Mui-focused fieldset": { borderColor: "cyan" },
     },
   };
 
@@ -253,10 +246,7 @@ function MovieCard({
       return; // ignore les caractères invalides pendant la saisie
     }
 
-    setMovieData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setMovieData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   //-----------------------------------------------
@@ -325,10 +315,7 @@ function MovieCard({
 
       const imageResponse = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/api/${origin}/${movie.id}/image`,
-        {
-          method: "PUT",
-          body: imageData,
-        }
+        { method: "PUT", body: imageData }
       );
 
       if (imageResponse.ok) {
@@ -724,10 +711,7 @@ function MovieCard({
         };
       }
       // Sinon, on met juste à jour videoSupport
-      return {
-        ...prevData,
-        videoSupport: newSupport,
-      };
+      return { ...prevData, videoSupport: newSupport };
     });
   };
 
@@ -848,7 +832,7 @@ function MovieCard({
   };
 
   const closeModifyMode = () => {
-    purgeOrphanRecords(); // purger les données orphelines (souci avec l'affiche qui disparait)
+    purgeOrphanRecords();
 
     setIsModify(false);
   };
@@ -897,9 +881,7 @@ function MovieCard({
         `${import.meta.env.VITE_BACKEND_URL}/api/movie/${movieData.id}`,
         {
           method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             title: movieData.title,
             altTitle: movieData.altTitle,
@@ -1776,10 +1758,7 @@ function MovieCard({
                   <CloudSyncIcon
                     className="Btn_Refresh_items_MovieCard"
                     onClick={() =>
-                      refetchStory(idTheMovieDb, {
-                        movieData,
-                        setMovieData,
-                      })
+                      refetchStory(idTheMovieDb, { movieData, setMovieData })
                     }
                   />
                 )}
@@ -1923,12 +1902,7 @@ function MovieCard({
                     sx={textFieldSx}
                   />
 
-                  <FormControl
-                    sx={{
-                      m: 1,
-                      color: "white",
-                    }}
-                  >
+                  <FormControl sx={{ m: 1, color: "white" }}>
                     <FormLabel
                       // id="demo-row-radio-buttons-group-label"
                       sx={{
@@ -2044,9 +2018,7 @@ function MovieCard({
                       <Checkbox
                         sx={{
                           color: "white",
-                          "&.Mui-checked": {
-                            color: "var(--color-03)",
-                          },
+                          "&.Mui-checked": { color: "var(--color-03)" },
                         }}
                         checked={allowEdit}
                         onChange={(e) => setAllowEdit(e.target.checked)}
@@ -2176,7 +2148,7 @@ function MovieCard({
         </section>
 
         {/* EDITING BUTTON */}
-        {!homepage && (
+        {isAdmin && !homepage && (
           <section className="Movie_editing_btn-container">
             <section className="Item_Movie_Editing_Buttons">
               {isModify ? (

@@ -5,7 +5,11 @@ import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { AuthProvider } from "./Context/AuthContext.jsx";
+import RequireAuth from "./Context/RequireAuth.jsx";
+import RequireAdmin from "./Context/RequireAdmin.jsx";
 import App from "./App.jsx";
+import Login from "./pages/Login/Login.jsx";
 import Home from "./pages/Home/Home.jsx";
 import MovieSearch from "./pages/MovieSearch/MovieSearch.jsx";
 import MovieDirectors from "./pages/MovieArtist/MovieDirectors.jsx";
@@ -31,114 +35,105 @@ const backendUrl =
   `http://localhost:${isDevelopment ? 3310 : process.env.APP_PORT}`; // Utilisez APP_PORT pour la prod
 
 const router = createBrowserRouter([
+  // ----------------
+  // Routes publiques
+  // ----------------
+  { path: "/login", element: <Login /> },
+
+  // ----------------
+  // Routes nécessitant d'être connecté
+  // ----------------
   {
-    path: "/",
-    element: <App />,
+    element: <RequireAuth />,
     children: [
       {
         path: "/",
-        element: <Home />,
-        loader: async () => {
-          try {
-            const response = await fetch(`${backendUrl}/api/movies/sorted/nox`);
-            if (!response.ok) {
-              const text = await response.text(); // Lire la réponse comme texte
-              console.error("Response text: ", text); // Loguer le texte de la réponse
-              throw new Error("Network response was not ok");
-            }
-            const data = await response.json();
-            return data;
-          } catch (error) {
-            console.error("Fetch error: ", error);
-            throw error;
-          }
-        },
-      },
-      {
-        path: "/movie_search",
-        element: <MovieSearch />,
-      },
-      {
-        path: "/movie_directors",
-        element: <MovieDirectors />,
-        loader: () => {
-          return fetch(`${backendUrl}/api/directors`);
-        },
-      },
-      {
-        path: "/movie_casting",
-        element: <MovieCasting />,
-        loader: () => {
-          return fetch(`${backendUrl}/api/casting`);
-        },
-      },
-      {
-        path: "/movie_screenwriters",
-        element: <MovieScreenwriters />,
-        loader: () => {
-          return fetch(`${backendUrl}/api/screenwriters`);
-        },
-      },
-      {
-        path: "/movie_music",
-        element: <MovieMusic />,
-        loader: () => {
-          return fetch(`${backendUrl}/api/music`);
-        },
-      },
-      {
-        path: "/movie_studio",
-        element: <MovieStudio />,
-        loader: () => {
-          return fetch(`${backendUrl}/api/studio`);
-        },
-      },
-      {
-        path: "/movie_tag",
-        element: <MovieTag />,
-        loader: () => {
-          return fetch(`${backendUrl}/api/tags`);
-        },
-      },
-      {
-        path: "/movie_thema",
-        element: <MovieThema />,
-        loader: () => {
-          return fetch(`${backendUrl}/api/focus/1`);
-        },
-      },
-      {
-        path: "/movie_thema_festival",
-        element: <MovieFestival />,
-        loader: () => {
-          return fetch(`${backendUrl}/api/focus/2`);
-        },
-      },
-      {
-        path: "/movie_thema_directors",
-        element: <MovieFocusDirectors />,
-        loader: () => {
-          return fetch(`${backendUrl}/api/directors/focus/random`);
-        },
-      },
-      {
-        path: "/movie_thema_casting",
-        element: <MovieFocusCasting />,
-        loader: () => {
-          return fetch(`${backendUrl}/api/casting/focus/random`);
-        },
-      },
-      {
-        path: "/admin_feat",
-        element: <AdminFeat />,
-      },
-      {
-        path: "/new_movie",
-        element: <AddNewMovie />,
-      },
-      {
-        path: "/movie_entrance",
-        element: <MovieInfosEntrance />,
+        element: <App />,
+        children: [
+          {
+            index: true, // "/" par défaut -> Home
+            element: <Home />,
+            loader: async () => {
+              try {
+                const response = await fetch(
+                  `${backendUrl}/api/movies/sorted/nox`
+                );
+                if (!response.ok) {
+                  const text = await response.text();
+                  console.error("Response text: ", text);
+                  throw new Error("Network response was not ok");
+                }
+                return await response.json();
+              } catch (error) {
+                console.error("Fetch error: ", error);
+                throw error;
+              }
+            },
+          },
+          { path: "movie_search", element: <MovieSearch /> },
+          {
+            path: "movie_directors",
+            element: <MovieDirectors />,
+            loader: () => fetch(`${backendUrl}/api/directors`),
+          },
+          {
+            path: "movie_casting",
+            element: <MovieCasting />,
+            loader: () => fetch(`${backendUrl}/api/casting`),
+          },
+          {
+            path: "movie_screenwriters",
+            element: <MovieScreenwriters />,
+            loader: () => fetch(`${backendUrl}/api/screenwriters`),
+          },
+          {
+            path: "movie_music",
+            element: <MovieMusic />,
+            loader: () => fetch(`${backendUrl}/api/music`),
+          },
+          {
+            path: "movie_studio",
+            element: <MovieStudio />,
+            loader: () => fetch(`${backendUrl}/api/studio`),
+          },
+          {
+            path: "movie_tag",
+            element: <MovieTag />,
+            loader: () => fetch(`${backendUrl}/api/tags`),
+          },
+          {
+            path: "movie_thema",
+            element: <MovieThema />,
+            loader: () => fetch(`${backendUrl}/api/focus/1`),
+          },
+          {
+            path: "movie_thema_festival",
+            element: <MovieFestival />,
+            loader: () => fetch(`${backendUrl}/api/focus/2`),
+          },
+          {
+            path: "movie_thema_directors",
+            element: <MovieFocusDirectors />,
+            loader: () => fetch(`${backendUrl}/api/directors/focus/random`),
+          },
+          {
+            path: "movie_thema_casting",
+            element: <MovieFocusCasting />,
+            loader: () => fetch(`${backendUrl}/api/casting/focus/random`),
+          },
+
+          // ----------------
+          // Routes admin uniquement
+          // ----------------
+          {
+            element: <RequireAdmin />,
+            children: [
+              { path: "admin_feat", element: <AdminFeat /> },
+              { path: "new_movie", element: <AddNewMovie /> },
+              { path: "movie_entrance", element: <MovieInfosEntrance /> },
+            ],
+          },
+        ],
       },
     ],
   },
@@ -147,7 +142,9 @@ const router = createBrowserRouter([
 // Utiliser createRoot pour rendre l'application complète
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
-    <ToastContainer />
+    <AuthProvider>
+      <RouterProvider router={router} />
+      <ToastContainer />
+    </AuthProvider>
   </React.StrictMode>
 );

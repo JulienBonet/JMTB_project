@@ -4,7 +4,6 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import "./adminFeat.css";
-
 import AdminMovieList from "../../components/AdminFeatures/AdminItemsLists/AdminMovieList";
 import AdminDirectorList from "../../components/AdminFeatures/AdminItemsLists/AdminDirectorList";
 import AdminCastingList from "../../components/AdminFeatures/AdminItemsLists/AdminCastingList";
@@ -19,14 +18,7 @@ import AdminFocusList from "../../components/AdminFeatures/AdminItemsLists/Admin
 
 function AdminFeat() {
   const theme = createTheme({
-    palette: {
-      primary: {
-        main: "#00d9c0",
-      },
-      secondary: {
-        main: "#ffebaa",
-      },
-    },
+    palette: { primary: { main: "#00d9c0" }, secondary: { main: "#ffebaa" } },
   });
 
   const [selectedItem, setSelectedItem] = useState("FILMS");
@@ -98,11 +90,7 @@ function AdminFeat() {
                 variant={selectedItem === item ? "contained" : "outlined"}
                 color="primary"
                 onClick={() => handleItemClick(item)}
-                sx={{
-                  flex: "1 1 140px",
-                  minWidth: "120px",
-                  maxWidth: "200px",
-                }}
+                sx={{ flex: "1 1 140px", minWidth: "120px", maxWidth: "200px" }}
               >
                 {item}
               </Button>
