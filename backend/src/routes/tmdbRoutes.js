@@ -10,7 +10,15 @@ const {
   fetchCoverFromTMDB,
   fetchKeywordsFromTMDB,
   fetchTvSeasons,
+  searchTMDB,
+  fetchMovieDetails,
 } = require("../controllers/tmdbController");
+
+// TMDB search
+router.get("/tmdb/search", searchTMDB);
+
+// movie Details
+router.get("/tmdb/:mediaType/:movieId/details", fetchMovieDetails);
 
 // TV SEASON
 router.get("/tmdb/:mediaType/:movieId/seasons", fetchTvSeasons);
