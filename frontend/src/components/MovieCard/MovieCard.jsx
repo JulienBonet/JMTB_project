@@ -4,8 +4,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable camelcase */
 import { useState, useEffect, useRef } from "react";
-
-import axios from "axios";
 import { toast } from "react-toastify";
 import "./movieCard.css";
 import "./movieCardMediaQueries.css";
@@ -142,8 +140,6 @@ function MovieCard({
   useEffect(() => {
     console.info("movieData1 in MovieCard", movieData);
   }, [movieData]);
-
-  console.info("selectedTags", selectedTags);
 
   const {
     genres,
@@ -360,45 +356,26 @@ function MovieCard({
 
   // Récupération des infos season episodes TMDB
   useEffect(() => {
-    if (isModify && isTvShow && idTheMovieDb) {
-      setSeasonsInfo([]); // nettoie avant fetch
+    if (!isModify || !isTvShow || !idTheMovieDb) return;
 
-      const fetchSeasonsInfo = async () => {
-        try {
-          const [mediaType, movieId] = idTheMovieDb.split("/");
+    const fetchSeasonsInfo = async () => {
+      try {
+        const [mediaType, movieId] = idTheMovieDb.split("/");
+        const res = await fetch(
+          `${backendUrl}/api/tmdb/${mediaType}/${movieId}/seasons`
+        );
+        const data = await res.json();
 
-          const options = {
-            method: "GET",
-            url: `https://api.themoviedb.org/3/${mediaType}/${movieId}?language=fr-FR`,
-            headers: {
-              accept: "application/json",
-              Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
-            },
-          };
-
-          const res = await axios.request(options);
-
-          if (res.data && res.data.seasons) {
-            setSeasonsInfo(
-              res.data.seasons
-                .filter((s) => s.season_number > 0)
-                .map((s) => ({
-                  season_number: s.season_number,
-                  episode_count: s.episode_count,
-                }))
-            );
-          }
-        } catch (error) {
-          console.error(
-            "Erreur lors de la récupération des saisons TMDB :",
-            error.response?.status,
-            error.response?.data || error
-          );
+        if (data.seasons && data.seasons.length > 0) {
+          setSeasonsInfo(data.seasons);
         }
-      };
+      } catch (err) {
+        console.error("Erreur récupération saisons via backend :", err);
+        setSeasonsInfo([]);
+      }
+    };
 
-      fetchSeasonsInfo();
-    }
+    fetchSeasonsInfo();
   }, [isModify, isTvShow, idTheMovieDb]);
 
   // Mise à jour du nombre total d’épisodes

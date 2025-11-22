@@ -12,9 +12,10 @@ function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const { login } = useAuth(); // hook de ton AuthContext
+  const { login } = useAuth();
   const navigate = useNavigate();
 
+  // SUBMIT
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -31,6 +32,34 @@ function Login() {
     }
   };
 
+  // SX
+  const textFieldSx = {
+    backgroundColor: "white",
+    marginBottom: 2,
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": {
+        borderColor: "var(--color-04)", // bord normal
+      },
+      "&:hover fieldset": {
+        borderColor: "var(--color-02)", // bord hover
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: "var(--color-02)", // bord focus
+      },
+    },
+    "& .MuiInputLabel-root.Mui-focused": {
+      color: "var(--color-02)", // label focus
+      fontWeight: "bold",
+    },
+  };
+
+  const SubmitButtonSx = {
+    width: "50%",
+    backgroundColor: "var(--color-03)",
+    color: "var(--color-04)",
+    "&:hover": { backgroundColor: "var(--color-02)", color: "var(--color-05)" },
+  };
+
   return (
     <main className="main_login_page">
       <section className="content_login_page">
@@ -39,31 +68,29 @@ function Login() {
         <form className="form_login" onSubmit={handleSubmit}>
           <TextField
             required
+            variant="outlined"
             label="Login"
-            sx={{ backgroundColor: "white", marginBottom: 2 }}
+            sx={textFieldSx}
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
 
           <TextField
             required
+            variant="outlined"
             label="Password"
             type="password"
-            sx={{ backgroundColor: "white", marginBottom: 3 }}
+            sx={textFieldSx}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
 
           {error && <p className="error_message">{error}</p>}
-
-          <Button
-            variant="contained"
-            color="primary"
-            type="submit"
-            sx={{ width: "100%" }}
-          >
-            Se connecter
-          </Button>
+          <div className="Button_Container_Login_Page">
+            <Button variant="contained" type="submit" sx={SubmitButtonSx}>
+              Se connecter
+            </Button>
+          </div>
         </form>
       </section>
     </main>

@@ -1,21 +1,32 @@
 .main_login_page {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
 }
 
 .content_login_page,
-.form_login{
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
-    width: 450px;
+.form_login {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 450px;
 }
 
-.title_login_page{
-    font-family: var(--font-01);
-    color: var(--color-01);
-    font-size: xx-large;
+.title_login_page {
+  font-family: var(--font-01);
+  color: var(--color-01);
+  font-size: xxx-large;
+  text-align: center;
+}
+
+.Button_Container_Login_Page {
+  display: flex;
+  justify-content: center;
+}
+
+.error_message{
+    color:red;
     text-align: center;
+    font-size: large;
 }
