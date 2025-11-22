@@ -51,13 +51,6 @@ function MovieSearch() {
   const [mobileToggleOpen, setMobileToggleOpen] = useState(false);
   const [isNarrow, setIsNarrow] = useState(window.innerWidth < 768);
 
-  // DEBUG -> show movies instead of filteredMovies which doesn't exist anymore
-  console.info("movies", movies);
-  console.info("selectedKind", selectedKind);
-  console.info("selectedCountry", selectedCountry);
-  console.info("selectedYear", selectedYear);
-  console.info("selectedTvShow", selectedTvShow);
-
   //-----------------------------
   // SUIVRE L'ETAT DE isNarrow
   //-----------------------------

@@ -127,7 +127,8 @@ const handleMovieClick = async (movieId, mediaType, deps, backendUrl) => {
     const genreNames = Array.isArray(movieData.genres)
       ? movieData.genres.map((g) => g.name)
       : [];
-    if (movieData.adult) genreNames.push("adulte");
+    // if (movieData.adult) genreNames.push("adulte");
+    if (movieData.adult) genreNames.push("Xadulte");
     const genresData = await Promise.all(
       genreNames.map((name) =>
         fetchOrCreateEntity(name, searchGenreInDatabase, createGenreInDatabase)
