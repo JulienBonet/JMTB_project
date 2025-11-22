@@ -9,6 +9,15 @@ const getAllKinds = async (req, res, next) => {
   }
 };
 
+const getAllKindsNameAsc = async (req, res, next) => {
+  try {
+    const [kinds] = await kindsModel.findAllKindsNameAsc();
+    res.status(200).json(kinds);
+  } catch (error) {
+    next(error);
+  }
+};
+
 const getAllKindsIdDesc = async (req, res, next) => {
   try {
     const [kinds] = await kindsModel.findAllKindsIdDesc();
@@ -80,6 +89,7 @@ const getAllByName = async (req, res, next) => {
 
 module.exports = {
   getAllKinds,
+  getAllKindsNameAsc,
   getAllKindsIdDesc,
   getAllMovieByKinds,
   getAllSorted0,

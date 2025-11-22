@@ -19,6 +19,7 @@ function MovieInfosEntrance({ title, onMovieClick, handleCloseModalMIE }) {
   const [error, setError] = useState(null);
   const [genresLoaded, setGenresLoaded] = useState(false); // Nouvel état pour indiquer si les genres sont chargés
 
+  const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const encodedTitle = encodeURIComponent(title);
 
   // Fonction pour récupérer les genres d'un film
@@ -58,100 +59,149 @@ function MovieInfosEntrance({ title, onMovieClick, handleCloseModalMIE }) {
     },
   }));
 
+  // useEffect(() => {
+  //   setError(null);
+  //   setData([]);
+  //   setGenresLoaded(false);
+
+  //   const headers = {
+  //     accept: "application/json",
+  //     Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
+  //   };
+
+  //   // Requête pour les films
+  //   const movieRequest = axios.get(
+  //     "https://api.themoviedb.org/3/search/movie",
+  //     {
+  //       params: {
+  //         query: encodedTitle,
+  //         include_adult: adult,
+  //         language: "fr-FR",
+  //         page,
+  //       },
+  //       headers,
+  //     }
+  //   );
+
+  //   // Requête pour les séries
+  //   const tvRequest = axios.get("https://api.themoviedb.org/3/search/tv", {
+  //     params: {
+  //       query: encodedTitle,
+  //       include_adult: adult,
+  //       language: "fr-FR",
+  //       page,
+  //     },
+  //     headers,
+  //   });
+
+  //   // On lance les deux en parallèle
+  //   Promise.all([movieRequest, tvRequest])
+  //     .then(([movieRes, tvRes]) => {
+  //       // Ajouter un champ "type" pour distinguer films/séries
+  //       const movieResults = movieRes.data.results.map((m) => ({
+  //         ...m,
+  //         media_type: "movie",
+  //       }));
+  //       const tvResults = tvRes.data.results.map((t) => ({
+  //         ...t,
+  //         media_type: "tv",
+  //       }));
+
+  //       // Fusionner les deux tableaux
+  //       const combined = [...movieResults, ...tvResults];
+
+  //       // Trier les résultats par popularité (optionnel)
+  //       combined.sort((a, b) => b.popularity - a.popularity);
+
+  //       setData(combined);
+
+  //       // Pour la pagination (on peut choisir celle avec le plus de pages)
+  //       setFullData({
+  //         total_results: movieRes.data.total_results + tvRes.data.total_results,
+  //         total_pages: Math.max(
+  //           movieRes.data.total_pages,
+  //           tvRes.data.total_pages
+  //         ),
+  //       });
+
+  //       // Charger les genres (films + séries)
+  //       const genresMovie = axios.get(
+  //         "https://api.themoviedb.org/3/genre/movie/list",
+  //         { headers, params: { language: "fr-FR" } }
+  //       );
+  //       const genresTV = axios.get(
+  //         "https://api.themoviedb.org/3/genre/tv/list",
+  //         { headers, params: { language: "fr-FR" } }
+  //       );
+
+  //       Promise.all([genresMovie, genresTV])
+  //         .then(([movieGenres, tvGenres]) => {
+  //           setGenres([
+  //             ...movieGenres.data.genres,
+  //             ...tvGenres.data.genres.filter(
+  //               (tvG) => !movieGenres.data.genres.some((mG) => mG.id === tvG.id)
+  //             ),
+  //           ]);
+  //           setGenresLoaded(true);
+  //         })
+  //         .catch(() => setError("Erreur lors de la récupération des genres"));
+  //     })
+  //     .catch((error) => {
+  //       console.error(error);
+  //       setError("Erreur lors de la récupération des données");
+  //     });
+  // }, [page, adult, encodedTitle]);
+
+  // Fonction pour faire défiler vers le haut de la page
+
   useEffect(() => {
     setError(null);
     setData([]);
     setGenresLoaded(false);
 
-    const headers = {
-      accept: "application/json",
-      Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
-    };
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(`${backendUrl}/api/tmdb/search`, {
+          params: { query: encodedTitle, include_adult: adult, page },
+        });
 
-    // Requête pour les films
-    const movieRequest = axios.get(
-      "https://api.themoviedb.org/3/search/movie",
-      {
-        params: {
-          query: encodedTitle,
-          include_adult: adult,
-          language: "fr-FR",
-          page,
-        },
-        headers,
-      }
-    );
+        const { movieRes, tvRes, genresMovie, genresTV } = res.data;
 
-    // Requête pour les séries
-    const tvRequest = axios.get("https://api.themoviedb.org/3/search/tv", {
-      params: {
-        query: encodedTitle,
-        include_adult: adult,
-        language: "fr-FR",
-        page,
-      },
-      headers,
-    });
-
-    // On lance les deux en parallèle
-    Promise.all([movieRequest, tvRequest])
-      .then(([movieRes, tvRes]) => {
-        // Ajouter un champ "type" pour distinguer films/séries
-        const movieResults = movieRes.data.results.map((m) => ({
+        const movieResults = movieRes.results.map((m) => ({
           ...m,
           media_type: "movie",
         }));
-        const tvResults = tvRes.data.results.map((t) => ({
+        const tvResults = tvRes.results.map((t) => ({
           ...t,
           media_type: "tv",
         }));
 
-        // Fusionner les deux tableaux
-        const combined = [...movieResults, ...tvResults];
-
-        // Trier les résultats par popularité (optionnel)
-        combined.sort((a, b) => b.popularity - a.popularity);
+        const combined = [...movieResults, ...tvResults].sort(
+          (a, b) => b.popularity - a.popularity
+        );
 
         setData(combined);
-
-        // Pour la pagination (on peut choisir celle avec le plus de pages)
         setFullData({
-          total_results: movieRes.data.total_results + tvRes.data.total_results,
-          total_pages: Math.max(
-            movieRes.data.total_pages,
-            tvRes.data.total_pages
-          ),
+          total_results: movieRes.total_results + tvRes.total_results,
+          total_pages: Math.max(movieRes.total_pages, tvRes.total_pages),
         });
 
-        // Charger les genres (films + séries)
-        const genresMovie = axios.get(
-          "https://api.themoviedb.org/3/genre/movie/list",
-          { headers, params: { language: "fr-FR" } }
-        );
-        const genresTV = axios.get(
-          "https://api.themoviedb.org/3/genre/tv/list",
-          { headers, params: { language: "fr-FR" } }
-        );
-
-        Promise.all([genresMovie, genresTV])
-          .then(([movieGenres, tvGenres]) => {
-            setGenres([
-              ...movieGenres.data.genres,
-              ...tvGenres.data.genres.filter(
-                (tvG) => !movieGenres.data.genres.some((mG) => mG.id === tvG.id)
-              ),
-            ]);
-            setGenresLoaded(true);
-          })
-          .catch(() => setError("Erreur lors de la récupération des genres"));
-      })
-      .catch((error) => {
-        console.error(error);
+        setGenres([
+          ...genresMovie.genres,
+          ...genresTV.genres.filter(
+            (tvG) => !genresMovie.genres.some((mG) => mG.id === tvG.id)
+          ),
+        ]);
+        setGenresLoaded(true);
+      } catch (err) {
+        console.error(err);
         setError("Erreur lors de la récupération des données");
-      });
+      }
+    };
+
+    fetchData();
   }, [page, adult, encodedTitle]);
 
-  // Fonction pour faire défiler vers le haut de la page
   const scrollToTop = () => {
     const topElement = document.getElementById("top");
     if (topElement) {

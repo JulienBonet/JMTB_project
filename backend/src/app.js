@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
 const cors = require("cors");
+const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
@@ -8,7 +9,7 @@ const app = express();
 app.use(
   cors({
     origin: [process.env.FRONTEND_URL],
-    methods: ["GET", "POST", "PUT", "DELETE"], // Méthodes autorisées
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"], // Méthodes autorisées
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
@@ -18,6 +19,9 @@ app.use(express.json({ limit: "30mb" }));
 app.use(
   express.urlencoded({ extended: false, limit: "30mb", parameterLimit: 50000 })
 );
+
+// Toutes les routes d’auth (login, register, changePassword)
+app.use("/auth", authRoutes);
 
 // *** Servir les fichiers statiques à partir du dossier 'public' ***
 app.use("/images", express.static(path.join(__dirname, "../public/images")));

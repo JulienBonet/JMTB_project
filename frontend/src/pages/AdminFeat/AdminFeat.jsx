@@ -4,7 +4,6 @@ import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import "./adminFeat.css";
-
 import AdminMovieList from "../../components/AdminFeatures/AdminItemsLists/AdminMovieList";
 import AdminDirectorList from "../../components/AdminFeatures/AdminItemsLists/AdminDirectorList";
 import AdminCastingList from "../../components/AdminFeatures/AdminItemsLists/AdminCastingList";
@@ -16,17 +15,11 @@ import AdminCountryList from "../../components/AdminFeatures/AdminItemsLists/Adm
 import AdminTagsList from "../../components/AdminFeatures/AdminItemsLists/AdminTagsList";
 import AdminLanguagesList from "../../components/AdminFeatures/AdminItemsLists/AdminLanguagesList";
 import AdminFocusList from "../../components/AdminFeatures/AdminItemsLists/AdminFocusList";
+import AdminUserList from "../../components/AdminFeatures/AdminItemsLists/AdminUserList";
 
 function AdminFeat() {
   const theme = createTheme({
-    palette: {
-      primary: {
-        main: "#00d9c0",
-      },
-      secondary: {
-        main: "#ffebaa",
-      },
-    },
+    palette: { primary: { main: "#00d9c0" }, secondary: { main: "#ffebaa" } },
   });
 
   const [selectedItem, setSelectedItem] = useState("FILMS");
@@ -59,6 +52,8 @@ function AdminFeat() {
         return <AdminTagsList />;
       case "FOCUS":
         return <AdminFocusList />;
+      case "USERS":
+        return <AdminUserList />;
       default:
         return null;
     }
@@ -76,6 +71,7 @@ function AdminFeat() {
     "LANGUES",
     "TAGS",
     "FOCUS",
+    "USERS",
   ];
 
   return (
@@ -98,11 +94,7 @@ function AdminFeat() {
                 variant={selectedItem === item ? "contained" : "outlined"}
                 color="primary"
                 onClick={() => handleItemClick(item)}
-                sx={{
-                  flex: "1 1 140px",
-                  minWidth: "120px",
-                  maxWidth: "200px",
-                }}
+                sx={{ flex: "1 1 140px", minWidth: "120px", maxWidth: "200px" }}
               >
                 {item}
               </Button>

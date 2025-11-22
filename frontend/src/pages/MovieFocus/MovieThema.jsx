@@ -17,8 +17,10 @@ import "./movieFocusMediaqueries.css";
 
 function MovieThema() {
   const themaData = useLoaderData();
-  const [Focus, setFocus] = useState(themaData);
+  // const [Focus, setFocus] = useState(themaData);
+  const [Focus, setFocus] = useState(themaData || []);
   const [selectedFocus, setSelectedFocus] = useState(null);
+  // const [films, setFilms] = useState([]);
   const [films, setFilms] = useState([]);
   const [openSideBar, setOpenSideBar] = useState(false);
   const [openMovieSideBar, setOpenMovieSideBar] = useState(false);
@@ -29,6 +31,8 @@ function MovieThema() {
 
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
   const origin = "focus";
+
+  console.info("themaData", themaData);
 
   //------------------------------------------
   // SORTED THEMAS
@@ -158,9 +162,7 @@ function MovieThema() {
                 <h1 className="h1_titlePage_MF">{selectedFocus.name}</h1>
                 <IconButton
                   onClick={openModal}
-                  sx={{
-                    color: "var(--color-01)",
-                  }}
+                  sx={{ color: "var(--color-01)" }}
                   aria-label="info +"
                 >
                   <InfoOutlinedIcon

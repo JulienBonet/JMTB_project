@@ -6,9 +6,12 @@ import Stack from "@mui/material/Stack";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import { useAuth } from "../../../Context/AuthContext";
 import "./NavBar.css";
 
 export default function navBar() {
+  const { isAdmin } = useAuth();
+
   // Menu 1 : Recherche par
   const [anchorSearch, setAnchorSearch] = useState(null);
   const openSearch = Boolean(anchorSearch);
@@ -149,11 +152,13 @@ export default function navBar() {
           </div>
 
           {/* Bouton ADMIN */}
-          <Link to="/admin_feat">
-            <Button variant="outlined" color="JmdbColorNav">
-              ADMIN
-            </Button>
-          </Link>
+          {isAdmin && (
+            <Link to="/admin_feat">
+              <Button variant="outlined" color="JmdbColorNav">
+                ADMIN
+              </Button>
+            </Link>
+          )}
         </Stack>
       </ThemeProvider>
     </section>

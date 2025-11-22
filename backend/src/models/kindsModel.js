@@ -4,8 +4,15 @@ const findAllKinds = () => {
   return db.query(`SELECT * FROM genre WHERE name IS NOT NULL`, []);
 };
 
+const findAllKindsNameAsc = () => {
+  return db.query(
+    `SELECT * FROM genre WHERE name IS NOT NULL order by name ASC`,
+    []
+  );
+};
+
 const findAllKindsIdDesc = () => {
-  return db.query(`SELECT * FROM genre order by id desc`, []);
+  return db.query(`SELECT * FROM genre order by id DESC`, []);
 };
 
 const findAllMoviesByKinds = (genre) => {
@@ -49,6 +56,7 @@ const findGenreByName = (name) => {
 
 module.exports = {
   findAllKinds,
+  findAllKindsNameAsc,
   findAllKindsIdDesc,
   findAllMoviesByKinds,
   findAllSortedAlpha,

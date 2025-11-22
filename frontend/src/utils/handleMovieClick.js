@@ -7,7 +7,9 @@ import { translateLanguage } from "./languages";
 
 countries.registerLocale(frLocale);
 
-const handleMovieClick = async (movieId, mediaType, deps) => {
+const handleMovieClick = async (movieId, mediaType, deps, backendUrl) => {
+  const url = `${backendUrl || import.meta.env.VITE_BACKEND_URL}/api/tmdb/${mediaType}/${movieId}/details`;
+
   const {
     resetStates,
     setSeasonsInfo,
@@ -47,336 +49,261 @@ const handleMovieClick = async (movieId, mediaType, deps) => {
   await resetStates(undefined, false);
 
   try {
-    const options = {
-      method: "GET",
-      url: `https://api.themoviedb.org/3/${mediaType}/${movieId}?language=fr-FR`,
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
-      },
-    };
+    const response = await axios.get(url);
 
-    const response = await axios(options);
-    const movieData = response.data;
-    console.info("responseApiTMDB", response);
-    console.info("movieDataApiTMDB", movieData);
+    const {
+      movieData = {},
+      credits = { cast: [], crew: [] },
+      videos = [],
+      keywords = [],
+    } = response.data;
 
-    // Variables spécifiques TV
     const isTV = mediaType === "tv";
-    const nbTvSeasons = isTV ? movieData.number_of_seasons : null;
-    const nbTvEpisodes = isTV ? movieData.number_of_episodes : null;
+
+    const nbTvSeasons = isTV ? movieData.number_of_seasons || 0 : null;
+    const nbTvEpisodes = isTV ? movieData.number_of_episodes || 0 : null;
     const episodeDuration =
-      isTV && movieData.episode_run_time?.length > 0
+      isTV &&
+      Array.isArray(movieData.episode_run_time) &&
+      movieData.episode_run_time.length > 0
         ? movieData.episode_run_time[0]
         : null;
 
-    // Si c'est une série, on récupère la liste des saisons
-    const seasonsInfo = isTV
-      ? movieData.seasons.map((s) => ({
-          season_number: s.season_number,
-          episode_count: s.episode_count,
-        }))
-      : [];
-
+    const seasonsInfo =
+      isTV && Array.isArray(movieData.seasons)
+        ? movieData.seasons.map((s) => ({
+            season_number: s.season_number,
+            episode_count: s.episode_count,
+          }))
+        : [];
     setSeasonsInfo(seasonsInfo);
-    console.info("seasonsInfo", seasonsInfo);
 
-    // Gestion du titre alternatif sans ternaires imbriqués
     let altTitle = "";
-    if (isTV) {
-      if (
-        movieData.original_name &&
-        movieData.original_name !== movieData.name
-      ) {
-        altTitle = movieData.original_name;
-      }
+
+    if (
+      isTV &&
+      movieData.original_name &&
+      movieData.original_name !== movieData.name
+    ) {
+      altTitle = movieData.original_name;
     } else if (
+      !isTV &&
       movieData.original_title &&
       movieData.original_title !== movieData.title
     ) {
       altTitle = movieData.original_title;
     }
 
-    // Mise à jour de l’état du film
-    if (typeof setMovie === "function") {
-      setMovie({
-        ...movie,
-        title: isTV ? movieData.name : movieData.title,
-        altTitle,
-        year:
-          (isTV ? movieData.first_air_date : movieData.release_date)?.substring(
-            0,
-            4
-          ) || "",
-        pitch: movieData.tagline || "",
-        story: movieData.overview || "",
-        idTheMovieDb: `${mediaType}/${movieData.id}`,
-        idIMDB: isTV ? null : movieData.imdb_id,
-        isTvShow: isTV,
-        duration: movieData.runtime,
-        nbTvSeasons,
-        tvSeasons,
-        nbTvEpisodes,
-        episodeDuration,
-      });
-    }
+    setMovie({
+      ...movie,
+      title: isTV ? movieData.name || "" : movieData.title || "",
+      altTitle,
+      year:
+        (isTV ? movieData.first_air_date : movieData.release_date)?.substring(
+          0,
+          4
+        ) || "",
+      pitch: movieData.tagline || "",
+      story: movieData.overview || "",
+      idTheMovieDb: `${mediaType}/${movieData.id || movieId}`,
+      idIMDB: isTV ? null : movieData.imdb_id || null,
+      isTvShow: isTV,
+      duration: movieData.runtime || 0,
+      nbTvSeasons,
+      tvSeasons,
+      nbTvEpisodes,
+      episodeDuration,
+    });
 
-    // Fetch GENRES
-    const fetchGenre = async (genreName) => {
-      const genreData = await searchGenreInDatabase(genreName);
-      if (genreData) {
-        return { id: genreData.id, name: genreData.name };
-      }
-      const newGenreData = await createGenreInDatabase(genreName);
-      return { id: newGenreData.id, name: genreName };
+    // Utility to fetch or create entity in DB
+    const fetchOrCreateEntity = async (entityName, searchFunc, createFunc) => {
+      let data = await searchFunc(entityName);
+      if (!data) data = await createFunc(entityName);
+      return { id: data.id, name: entityName };
     };
 
-    // Fetch genres and add "adulte" genre if the movie is for adults
-    const genresToFetch = movieData.genres.map((genre) => genre.name);
-    if (movieData.adult) {
-      genresToFetch.push("adulte");
-    }
-
-    const genresData = await Promise.all(genresToFetch.map(fetchGenre));
+    // -------------------
+    // GENRES
+    const genreNames = Array.isArray(movieData.genres)
+      ? movieData.genres.map((g) => g.name)
+      : [];
+    // if (movieData.adult) genreNames.push("adulte");
+    if (movieData.adult) genreNames.push("Xadulte");
+    const genresData = await Promise.all(
+      genreNames.map((name) =>
+        fetchOrCreateEntity(name, searchGenreInDatabase, createGenreInDatabase)
+      )
+    );
     setSelectedKinds(genresData);
 
-    // Fetch STUDIO
-    const fetchStudio = async (studio) => {
-      const studioData = await searchStudioInDatabase(studio.name);
-      if (studioData) {
-        return { id: studioData.id, name: studioData.name };
-      }
-      const newStudioData = await createStudioInDatabase(studio.name);
-      return { id: newStudioData.id, name: studio.name };
-    };
-
+    // -------------------
+    // STUDIOS
     const studiosData = await Promise.all(
-      movieData.production_companies.map(fetchStudio)
+      (movieData.production_companies || []).map((s) =>
+        fetchOrCreateEntity(
+          s.name,
+          searchStudioInDatabase,
+          createStudioInDatabase
+        )
+      )
     );
     setSelectedStudios(studiosData);
 
-    // Fetch COUNTRY
+    // -------------------
+    // COUNTRIES
+    // -------------------
+
+    // const countriesData = await Promise.all(
+    //   (movieData.production_countries || []).map((c) =>
+    //     fetchOrCreateEntity(
+    //       c.name,
+    //       searchCountryInDatabase,
+    //       createCountryInDatabase
+    //     )
+    //   )
+    // );
+    // setSelectedCountries(countriesData);
 
     const fetchCountry = async (country) => {
-      // Traduction + correction automatique
       const countryNameFr = translateCountry(country.iso_3166_1, country.name);
-
-      // Cherche le pays dans la base avec le nom français
-      const countryData = await searchCountryInDatabase(countryNameFr);
-      if (countryData) {
-        return { id: countryData.id, name: countryData.name };
-      }
-
-      // Sinon, crée le pays dans la base avec le nom français
-      const newCountryData = await createCountryInDatabase(countryNameFr);
-      return { id: newCountryData.id, name: countryNameFr };
+      let data = await searchCountryInDatabase(countryNameFr);
+      if (!data) data = await createCountryInDatabase(countryNameFr);
+      return { id: data.id, name: countryNameFr };
     };
 
-    // On map tous les pays du film
     const countriesData = await Promise.all(
-      movieData.production_countries.map(fetchCountry)
+      (movieData.production_countries || []).map(fetchCountry)
     );
-
-    // On met à jour le state
     setSelectedCountries(countriesData);
 
-    // Fetch LANGUAGE
+    // -------------------
+    // LANGUAGES
+
+    // const languagesData = await Promise.all(
+    //   (movieData.spoken_languages || []).map((l) =>
+    //     fetchOrCreateEntity(
+    //       l.name,
+    //       searchLanguageInDatabase,
+    //       createLanguageInDatabase
+    //     )
+    //   )
+    // );
+    // setSelectedLanguages(languagesData);
+
     const fetchLanguage = async (language) => {
       const languageNameFr = translateLanguage(
         language.iso_639_1,
         language.name
       );
-      const languageData = await searchLanguageInDatabase(languageNameFr);
-      if (languageData) {
-        return { id: languageData.id, name: languageData.name };
-      }
-      const newLanguageData = await createLanguageInDatabase(languageNameFr);
-      return { id: newLanguageData.id, name: languageNameFr };
+      let data = await searchLanguageInDatabase(languageNameFr);
+      if (!data) data = await createLanguageInDatabase(languageNameFr);
+      return { id: data.id, name: languageNameFr };
     };
 
     const languagesData = await Promise.all(
-      movieData.spoken_languages.map(fetchLanguage)
+      (movieData.spoken_languages || []).map(fetchLanguage)
     );
     setSelectedLanguages(languagesData);
 
-    // CREDITS FETCH (cast & crew)
-    const options2 = {
-      method: "GET",
-      url: `https://api.themoviedb.org/3/${mediaType}/${movieId}/credits?language=fr-FR`,
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
-      },
-    };
-
-    const response2 = await axios(options2);
-    const crewData = response2.data.crew;
-    const castData = response2.data.cast;
-
-    // Utility function to fetch or create entity in database
-    const fetchOrCreateEntity = async (entity, searchFunc, createFunc) => {
-      let entityData = await searchFunc(entity.name);
-      if (!entityData) {
-        entityData = await createFunc(entity.name);
-      }
-      return { id: entityData.id, name: entity.name };
-    };
-
-    // Fetch DIRECTORS
-    // ---- DIRECTORS / CREATORS ----
-    let directorsData = [];
-
+    // -------------------
+    // DIRECTORS
+    let directors = [];
     if (isTV) {
-      // Pour les séries : récupérer les créateurs
-      if (movieData.created_by && movieData.created_by.length > 0) {
-        directorsData = await Promise.all(
-          movieData.created_by.map((creator) =>
-            fetchOrCreateEntity(
-              { name: creator.name },
-              searchDirectorInDatabase,
-              createDirectorInDatabase
-            )
-          )
-        );
-      }
+      directors = Array.isArray(movieData.created_by)
+        ? movieData.created_by.map((c) => ({ name: c.name }))
+        : [];
     } else {
-      // Pour les films : récupérer les réalisateurs depuis crewData
-      directorsData = await Promise.all(
-        crewData
-          .filter((crewMember) => crewMember.job === "Director")
-          .map((director) =>
-            fetchOrCreateEntity(
-              director,
-              searchDirectorInDatabase,
-              createDirectorInDatabase
-            )
-          )
-      );
+      directors = (credits.crew || [])
+        .filter((c) => c.job === "Director")
+        .map((d) => ({ name: d.name }));
     }
-
+    const directorsData = await Promise.all(
+      directors.map((d) =>
+        fetchOrCreateEntity(
+          d.name,
+          searchDirectorInDatabase,
+          createDirectorInDatabase
+        )
+      )
+    );
     setSelectedDirectors(directorsData);
 
-    // Fetch SCREENWRITERS
+    // -------------------
+    // SCREENWRITERS
+    const screenwriters = (credits.crew || []).filter((c) =>
+      ["Screenplay", "Writer", "Author"].includes(c.job)
+    );
     const screenwritersData = await Promise.all(
-      crewData
-        .filter(
-          (crewMember) =>
-            crewMember.job === "Screenplay" ||
-            crewMember.job === "Writer" ||
-            crewMember.job === "Author"
+      screenwriters.map((s) =>
+        fetchOrCreateEntity(
+          s.name,
+          searchScreenwriterInDatabase,
+          createScreenwriterInDatabase
         )
-        .map((screenwriter) =>
-          fetchOrCreateEntity(
-            screenwriter,
-            searchScreenwriterInDatabase,
-            createScreenwriterInDatabase
-          )
-        )
+      )
     );
     setSelectedScreenwriters(screenwritersData);
 
-    // Fetch COMPOSITORS
+    // -------------------
+    // COMPOSITORS
+    const compositors = (credits.crew || []).filter((c) =>
+      ["Original Music Composer", "Music"].includes(c.job)
+    );
     const compositorsData = await Promise.all(
-      crewData
-        .filter(
-          (crewMember) =>
-            crewMember.job === "Original Music Composer" ||
-            crewMember.job === "Music"
+      compositors.map((m) =>
+        fetchOrCreateEntity(
+          m.name,
+          searchCompositorInDatabase,
+          createCompositorInDatabase
         )
-        .map((compositor) =>
-          fetchOrCreateEntity(
-            compositor,
-            searchCompositorInDatabase,
-            createCompositorInDatabase
-          )
-        )
+      )
     );
     setSelectedMusic(compositorsData);
 
-    // Fetch CASTING
+    // -------------------
+    // CASTING
+    const castings = Array.isArray(credits.cast)
+      ? credits.cast.slice(0, 5)
+      : [];
     const castingsData = await Promise.all(
-      castData
-        .sort((a, b) => a.order - b.order) // trier par ordre croissant
-        .slice(0, 5) // ne prendre que les 5 premiers
-        .map((casting) =>
-          fetchOrCreateEntity(
-            casting,
-            searchCastingInDatabase,
-            createCastingInDatabase
-          )
+      castings.map((c) =>
+        fetchOrCreateEntity(
+          c.name,
+          searchCastingInDatabase,
+          createCastingInDatabase
         )
+      )
     );
     setSelectedCasting(castingsData);
-    console.info("castingsData", castingsData);
 
-    // Fetch trailer
-    const trailerOptions = {
-      method: "GET",
-      url: `https://api.themoviedb.org/3/${mediaType}/${movieId}/videos?language=fr-FR`,
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
-      },
-    };
-
-    const trailerResponse = await axios(trailerOptions);
-    const trailerData = trailerResponse.data.results.find(
-      (video) => video.type === "Trailer" && video.site === "YouTube"
-    );
-    const videoUrl = trailerData
-      ? `https://www.youtube.com/watch?v=${trailerData.key}`
-      : "";
-
-    setMovie((prevMovie) => ({
-      ...prevMovie,
-      trailer: videoUrl,
+    // -------------------
+    // TRAILER
+    const trailer = Array.isArray(videos)
+      ? videos.find((v) => v.type === "Trailer" && v.site === "YouTube")
+      : null;
+    setMovie((prev) => ({
+      ...prev,
+      trailer: trailer ? `https://www.youtube.com/watch?v=${trailer.key}` : "",
     }));
 
-    console.info("videoUrl", videoUrl);
-
-    // Fetch keywords (tags)
-    const keywordsOptions = {
-      method: "GET",
-      url: `https://api.themoviedb.org/3/${mediaType}/${movieId}/keywords`,
-      headers: {
-        accept: "application/json",
-        Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
-      },
-    };
-
-    const keywordsResponse = await axios(keywordsOptions);
-
-    // TMDB renvoie `keywords` pour les films, et `results` pour les séries
-    const keywordsData =
-      mediaType === "tv"
-        ? keywordsResponse.data.results
-        : keywordsResponse.data.keywords;
-
-    console.info("keywordsData:", keywordsData);
-
-    // Fetch or create tags in database
+    // -------------------
+    // TAGS / KEYWORDS
     const tagsData = await Promise.all(
-      keywordsData.map((keyword) =>
-        fetchOrCreateEntity(
-          { name: keyword.name },
-          searchTagInDatabase,
-          createTagInDatabase
-        )
+      (keywords || []).map((k) =>
+        fetchOrCreateEntity(k.name, searchTagInDatabase, createTagInDatabase)
       )
     );
     setSelectedTags(tagsData);
 
-    // fetch movie cover
+    // -------------------
+    // POSTER
     const posterUrl = movieData.poster_path
       ? `https://image.tmdb.org/t/p/original${movieData.poster_path}`
       : null;
     setCoverPreview(posterUrl);
-    setMovie((prevMovie) => ({
-      ...prevMovie,
-      posterUrl,
-    }));
-  } catch (error) {
-    console.error("Error:", error);
+    setMovie((prev) => ({ ...prev, posterUrl }));
+  } catch (err) {
+    console.error("Error in handleMovieClick:", err);
   }
 };
 

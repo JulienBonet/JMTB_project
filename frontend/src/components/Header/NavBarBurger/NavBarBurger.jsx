@@ -1,6 +1,7 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
+import LogoutIcon from "@mui/icons-material/Logout";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -8,14 +9,26 @@ import CloseIcon from "@mui/icons-material/Close";
 import Divider from "@mui/material/Divider";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
+import { useAuth } from "../../../Context/AuthContext";
 import "../../../assets/css/var_font_color.css";
 
 export default function BasicMenu() {
+  const { isAdmin } = useAuth();
+  const navigate = useNavigate();
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
 
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
+
+  // Fonction logout
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("user");
+    navigate("/login"); // redirection vers login
+  };
 
   return (
     <div>
@@ -39,9 +52,7 @@ export default function BasicMenu() {
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
-        MenuListProps={{
-          "aria-labelledby": "burgerMenuButton",
-        }}
+        MenuListProps={{ "aria-labelledby": "burgerMenuButton" }}
         slotProps={{
           paper: {
             sx: {
@@ -65,9 +76,7 @@ export default function BasicMenu() {
         >
           RECHERCHE FILMS
         </MenuItem>
-
         <Divider sx={{ backgroundColor: "var(--color-02)", marginY: 1 }} />
-
         {/* TITRE : RECHERCHE PAR (non cliquable) */}
         <Box sx={{ px: 2, textAlign: "center" }}>
           <Typography
@@ -82,7 +91,6 @@ export default function BasicMenu() {
             - RECHERCHE PAR -
           </Typography>
         </Box>
-
         {/* LISTE DES RECHERCHES PAR */}
         <MenuItem
           onClick={handleClose}
@@ -92,7 +100,6 @@ export default function BasicMenu() {
         >
           RÉALISATEUR
         </MenuItem>
-
         <MenuItem
           onClick={handleClose}
           component={Link}
@@ -101,7 +108,6 @@ export default function BasicMenu() {
         >
           CASTING
         </MenuItem>
-
         <MenuItem
           onClick={handleClose}
           component={Link}
@@ -110,7 +116,6 @@ export default function BasicMenu() {
         >
           SCÉNARISTE
         </MenuItem>
-
         <MenuItem
           onClick={handleClose}
           component={Link}
@@ -119,7 +124,6 @@ export default function BasicMenu() {
         >
           COMPOSITEUR
         </MenuItem>
-
         <MenuItem
           onClick={handleClose}
           component={Link}
@@ -128,7 +132,6 @@ export default function BasicMenu() {
         >
           STUDIO
         </MenuItem>
-
         <MenuItem
           onClick={handleClose}
           component={Link}
@@ -168,7 +171,6 @@ export default function BasicMenu() {
         >
           FESTIVALS
         </MenuItem>
-
         <MenuItem
           component={Link}
           to="/movie_thema_directors"
@@ -185,15 +187,28 @@ export default function BasicMenu() {
         >
           LES STARS
         </MenuItem>
-        <Divider sx={{ backgroundColor: "var(--color-02)", marginY: 1 }} />
         {/* ADMIN */}
+        {isAdmin && (
+          <>
+            <Divider sx={{ backgroundColor: "var(--color-02)", marginY: 1 }} />
+            <MenuItem
+              onClick={handleClose}
+              component={Link}
+              to="/admin_feat"
+              sx={{ justifyContent: "center" }}
+            >
+              ADMIN
+            </MenuItem>
+          </>
+        )}
+        <Divider sx={{ backgroundColor: "var(--color-02)", marginY: 1 }} />
+        {/* LOGOUT */}
         <MenuItem
-          onClick={handleClose}
+          onClick={handleLogout}
           component={Link}
-          to="/admin_feat"
           sx={{ justifyContent: "center" }}
         >
-          ADMIN
+          <LogoutIcon /> LOGOUT
         </MenuItem>
       </Menu>
     </div>

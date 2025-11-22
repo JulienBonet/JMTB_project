@@ -51,6 +51,7 @@ function ArtistList({
           </ThemeProvider>
         </div>
       )}
+
       {search !== "" && (
         <div className="artists_groups_content">
           <ThemeProvider theme={theme}>

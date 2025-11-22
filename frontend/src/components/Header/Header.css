@@ -10,10 +10,9 @@
   z-index: 1000;
 }
 
-.header_01,
-.header_03 {
+/* .header_01 {
   width: 25%;
-}
+} */
 
 .header_01 {
   display: flex;

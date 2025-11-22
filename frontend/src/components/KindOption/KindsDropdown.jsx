@@ -36,10 +36,6 @@ function KindsDropdown({
       .then((res) => res.json())
       .then(setKinds)
       .catch((err) => console.error("Error fetching kinds data:", err));
-
-    //   const handleResize = () => setIsMobile(window.innerWidth <= 1279);
-    //   window.addEventListener("resize", handleResize);
-    //   return () => window.removeEventListener("resize", handleResize);
   }, [search, handleUpdateMovie, handleDeleteMovie]);
 
   const handleChange = (event) => onKindChange(event.target.value);

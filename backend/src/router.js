@@ -20,6 +20,9 @@ const focusRouter = require("./routes/focusRoute");
 const editingRouter = require("./routes/editingRoute");
 const editingMovieRouter = require("./routes/editingMovieRoute");
 const purgeRouter = require("./routes/purgeRoute");
+const userRouter = require("./routes/userRoutes");
+const authRouter = require("./routes/authRoutes");
+const tmdbRoutes = require("./routes/tmdbRoutes");
 
 // Apply routes
 router.use(moviesRouter);
@@ -35,6 +38,9 @@ router.use(focusRouter);
 router.use(editingRouter);
 router.use(editingMovieRouter);
 router.use(purgeRouter);
+router.use(userRouter);
+router.use(tmdbRoutes);
+router.use("/auth", authRouter);
 
 /* ************************************************************************* */
 

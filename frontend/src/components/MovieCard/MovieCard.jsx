@@ -4,7 +4,6 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable camelcase */
 import { useState, useEffect, useRef } from "react";
-import axios from "axios";
 import { toast } from "react-toastify";
 import "./movieCard.css";
 import "./movieCardMediaQueries.css";
@@ -44,6 +43,7 @@ import ListItemText from "@mui/material/ListItemText";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import MovieOutlinedIcon from "@mui/icons-material/MovieOutlined";
 import TvOutlinedIcon from "@mui/icons-material/TvOutlined";
+import { useAuth } from "../../Context/AuthContext";
 import TransferList from "../AdminFeatures/AddNewMovie/MovieItemList";
 import {
   refetchMovieTMDB,
@@ -91,6 +91,7 @@ function MovieCard({
   onUpdateMovie,
   onDeleteMovie,
 }) {
+  const { isAdmin } = useAuth();
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
   const [isModify, setIsModify] = useState(false);
   const [allowEdit, setAllowEdit] = useState(false);
@@ -140,8 +141,6 @@ function MovieCard({
     console.info("movieData1 in MovieCard", movieData);
   }, [movieData]);
 
-  console.info("selectedTags", selectedTags);
-
   const {
     genres,
     countries,
@@ -165,22 +164,12 @@ function MovieCard({
 
   const textFieldSx = {
     width: "80%",
-    "& .MuiInputLabel-root": {
-      color: "white",
-    },
-    "& .MuiInputBase-input": {
-      color: "white",
-    },
+    "& .MuiInputLabel-root": { color: "white" },
+    "& .MuiInputBase-input": { color: "white" },
     "& .MuiOutlinedInput-root": {
-      "& fieldset": {
-        borderColor: "white",
-      },
-      "&:hover fieldset": {
-        borderColor: "orange",
-      },
-      "&.Mui-focused fieldset": {
-        borderColor: "cyan",
-      },
+      "& fieldset": { borderColor: "white" },
+      "&:hover fieldset": { borderColor: "orange" },
+      "&.Mui-focused fieldset": { borderColor: "cyan" },
     },
   };
 
@@ -253,10 +242,7 @@ function MovieCard({
       return; // ignore les caractères invalides pendant la saisie
     }
 
-    setMovieData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setMovieData((prevData) => ({ ...prevData, [name]: value }));
   };
 
   //-----------------------------------------------
@@ -325,10 +311,7 @@ function MovieCard({
 
       const imageResponse = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/api/${origin}/${movie.id}/image`,
-        {
-          method: "PUT",
-          body: imageData,
-        }
+        { method: "PUT", body: imageData }
       );
 
       if (imageResponse.ok) {
@@ -373,45 +356,26 @@ function MovieCard({
 
   // Récupération des infos season episodes TMDB
   useEffect(() => {
-    if (isModify && isTvShow && idTheMovieDb) {
-      setSeasonsInfo([]); // nettoie avant fetch
+    if (!isModify || !isTvShow || !idTheMovieDb) return;
 
-      const fetchSeasonsInfo = async () => {
-        try {
-          const [mediaType, movieId] = idTheMovieDb.split("/");
+    const fetchSeasonsInfo = async () => {
+      try {
+        const [mediaType, movieId] = idTheMovieDb.split("/");
+        const res = await fetch(
+          `${backendUrl}/api/tmdb/${mediaType}/${movieId}/seasons`
+        );
+        const data = await res.json();
 
-          const options = {
-            method: "GET",
-            url: `https://api.themoviedb.org/3/${mediaType}/${movieId}?language=fr-FR`,
-            headers: {
-              accept: "application/json",
-              Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
-            },
-          };
-
-          const res = await axios.request(options);
-
-          if (res.data && res.data.seasons) {
-            setSeasonsInfo(
-              res.data.seasons
-                .filter((s) => s.season_number > 0)
-                .map((s) => ({
-                  season_number: s.season_number,
-                  episode_count: s.episode_count,
-                }))
-            );
-          }
-        } catch (error) {
-          console.error(
-            "Erreur lors de la récupération des saisons TMDB :",
-            error.response?.status,
-            error.response?.data || error
-          );
+        if (data.seasons && data.seasons.length > 0) {
+          setSeasonsInfo(data.seasons);
         }
-      };
+      } catch (err) {
+        console.error("Erreur récupération saisons via backend :", err);
+        setSeasonsInfo([]);
+      }
+    };
 
-      fetchSeasonsInfo();
-    }
+    fetchSeasonsInfo();
   }, [isModify, isTvShow, idTheMovieDb]);
 
   // Mise à jour du nombre total d’épisodes
@@ -724,10 +688,7 @@ function MovieCard({
         };
       }
       // Sinon, on met juste à jour videoSupport
-      return {
-        ...prevData,
-        videoSupport: newSupport,
-      };
+      return { ...prevData, videoSupport: newSupport };
     });
   };
 
@@ -848,7 +809,7 @@ function MovieCard({
   };
 
   const closeModifyMode = () => {
-    purgeOrphanRecords(); // purger les données orphelines (souci avec l'affiche qui disparait)
+    purgeOrphanRecords();
 
     setIsModify(false);
   };
@@ -897,9 +858,7 @@ function MovieCard({
         `${import.meta.env.VITE_BACKEND_URL}/api/movie/${movieData.id}`,
         {
           method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             title: movieData.title,
             altTitle: movieData.altTitle,
@@ -1776,10 +1735,7 @@ function MovieCard({
                   <CloudSyncIcon
                     className="Btn_Refresh_items_MovieCard"
                     onClick={() =>
-                      refetchStory(idTheMovieDb, {
-                        movieData,
-                        setMovieData,
-                      })
+                      refetchStory(idTheMovieDb, { movieData, setMovieData })
                     }
                   />
                 )}
@@ -1923,12 +1879,7 @@ function MovieCard({
                     sx={textFieldSx}
                   />
 
-                  <FormControl
-                    sx={{
-                      m: 1,
-                      color: "white",
-                    }}
-                  >
+                  <FormControl sx={{ m: 1, color: "white" }}>
                     <FormLabel
                       // id="demo-row-radio-buttons-group-label"
                       sx={{
@@ -2044,9 +1995,7 @@ function MovieCard({
                       <Checkbox
                         sx={{
                           color: "white",
-                          "&.Mui-checked": {
-                            color: "var(--color-03)",
-                          },
+                          "&.Mui-checked": { color: "var(--color-03)" },
                         }}
                         checked={allowEdit}
                         onChange={(e) => setAllowEdit(e.target.checked)}
@@ -2175,8 +2124,10 @@ function MovieCard({
           {/* END INFO BLOCK 2 */}
         </section>
 
+        {!isAdmin && <section style={{ height: "2rem" }} />}
+
         {/* EDITING BUTTON */}
-        {!homepage && (
+        {isAdmin && !homepage && (
           <section className="Movie_editing_btn-container">
             <section className="Item_Movie_Editing_Buttons">
               {isModify ? (
