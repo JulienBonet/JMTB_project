@@ -1,7 +1,9 @@
 const { writeToStream } = require("@fast-csv/format");
+const { exec } = require("child_process");
 const fs = require("fs");
 const path = require("path");
 const db = require("../../database/client");
+require("dotenv").config();
 
 const exportCSV = async (req, res) => {
   try {
@@ -94,7 +96,10 @@ const exportCSV = async (req, res) => {
     const tmpDir = path.join(__dirname, "../tmp");
     if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir);
 
-    const filePath = path.join(tmpDir, "movies_export.csv");
+    const filePath = path.join(
+      tmpDir,
+      `movies_export_${new Date().toISOString().replace(/[:.]/g, "-")}.csv`
+    );
     const ws = fs.createWriteStream(filePath);
 
     writeToStream(ws, rows, { headers: true })
@@ -113,4 +118,42 @@ const exportCSV = async (req, res) => {
   }
 };
 
-module.exports = { exportCSV };
+const exportSQL = async (req, res) => {
+  try {
+    // Dossier temporaire
+    const tmpDir = path.join(__dirname, "../tmp");
+    if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir);
+
+    const filePath = path.join(
+      tmpDir,
+      `jmdb_database_backup_${new Date().toISOString().replace(/[:.]/g, "-")}.sql`
+    );
+
+    // Récupérer les infos depuis le .env
+    const { DB_USER, DB_PASSWORD, DB_NAME } = process.env;
+
+    // Commande mysqldump dynamique
+    // Attention : pas d'espace entre -p et le mot de passe
+    const cmd = `mysqldump -u ${DB_USER} -p${DB_PASSWORD} ${DB_NAME} > "${filePath}"`;
+
+    exec(cmd, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Erreur export SQL: ${error.message}`);
+        return res.status(500).send("Erreur lors de l'export SQL");
+      }
+      if (stderr) {
+        console.error(`stderr: ${stderr}`);
+      }
+
+      // Téléchargement du fichier
+      res.download(filePath, `${DB_NAME}_backup.sql`, (err) => {
+        if (!err) fs.unlinkSync(filePath);
+      });
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erreur serveur");
+  }
+};
+
+module.exports = { exportCSV, exportSQL };

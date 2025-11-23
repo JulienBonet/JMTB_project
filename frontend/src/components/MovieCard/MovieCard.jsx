@@ -2065,22 +2065,23 @@ function MovieCard({
                   {/* end Version VOSTFR - MULTI */}
                   {/* Support */}
                   {(movieData.videoSupport === "Fichier multimédia" ||
-                    movieData.videoSupport === "FICHIER MULTIMEDIA") && (
-                    <>
-                      {movieData.location && (
-                        <p className="MovieCard_info paraph_height">
-                          <span className="paraph_bolder">Emplacement:</span>{" "}
-                          {movieData.location}
-                        </p>
-                      )}
-                      {movieData.fileSize && (
-                        <p className="MovieCard_info">
-                          <span className="paraph_bolder">Size:</span>{" "}
-                          {movieData.fileSize}
-                        </p>
-                      )}
-                    </>
-                  )}
+                    movieData.videoSupport === "FICHIER MULTIMEDIA") &&
+                    isAdmin && (
+                      <>
+                        {movieData.location && (
+                          <p className="MovieCard_info paraph_height">
+                            <span className="paraph_bolder">Emplacement:</span>{" "}
+                            {movieData.location}
+                          </p>
+                        )}
+                        {movieData.fileSize && (
+                          <p className="MovieCard_info">
+                            <span className="paraph_bolder">Size:</span>{" "}
+                            {movieData.fileSize}
+                          </p>
+                        )}
+                      </>
+                    )}
                   {/* end Support */}
                   {/* Commentaire */}
                   {movieData.comment && (

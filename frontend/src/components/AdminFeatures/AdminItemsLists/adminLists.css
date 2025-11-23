@@ -67,6 +67,15 @@ tbody tr:nth-child(even) {
   border-radius: 25px;
   padding: 10px;
 }
+
+/* export page */
+.export_button_container_Admin_export_List{
+  display: flex;
+    justify-content: center;
+    margin: 2rem 0;
+}
+
+/* end export page */
 @media (max-width: 720px) {
   .HeaderAdminItemsSection {
     justify-content: center;
