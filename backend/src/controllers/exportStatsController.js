@@ -1,3 +1,4 @@
+/* eslint-disable consistent-return */
 const { writeToStream } = require("@fast-csv/format");
 const { exec } = require("child_process");
 const fs = require("fs");
@@ -156,4 +157,102 @@ const exportSQL = async (req, res) => {
   }
 };
 
-module.exports = { exportCSV, exportSQL };
+const getAdminStats = async (req, res) => {
+  try {
+    const stats = {};
+
+    // Nombre total de films
+    const [[{ totalMovies }]] = await db.query(
+      "SELECT COUNT(*) AS totalMovies FROM movies"
+    );
+    stats.totalMovies = totalMovies;
+
+    // Poids total des fichiers multimédia
+    const [[{ totalSize }]] = await db.query(
+      `SELECT SUM(
+        CASE
+          WHEN fileSize LIKE '%GB' THEN CAST(REPLACE(fileSize, ' GB', '') AS DECIMAL(10,2))*1024
+          WHEN fileSize LIKE '%MB' THEN CAST(REPLACE(fileSize, ' MB', '') AS DECIMAL(10,2))
+          ELSE 0
+        END
+      ) AS totalSize
+      FROM movies`
+    );
+    stats.totalSizeMB = totalSize ? Number(totalSize) : 0; // en MB
+
+    // Durée totale de tous les films (en minutes)
+    const [[{ totalDuration }]] = await db.query(
+      "SELECT SUM(duration) AS totalDuration FROM movies"
+    );
+    stats.totalDuration = totalDuration || 0;
+
+    // Nombre total de genres
+    const [[{ totalGenres }]] = await db.query(
+      "SELECT COUNT(*) AS totalGenres FROM genre"
+    );
+    stats.totalGenres = totalGenres;
+
+    // Liste des genres avec nombre de films par genre
+    const [genresByCount] = await db.query(`
+      SELECT g.name, COUNT(mg.movieId) AS movieCount
+      FROM genre g
+      LEFT JOIN movie_genre mg ON mg.genreId = g.id
+      GROUP BY g.id
+      ORDER BY movieCount DESC
+    `);
+    stats.genresByCount = genresByCount;
+
+    // Nombre total de réalisateurs
+    const [[{ totalDirectors }]] = await db.query(
+      "SELECT COUNT(*) AS totalDirectors FROM director"
+    );
+    stats.totalDirectors = totalDirectors;
+
+    // Nombre total de scénaristes
+    const [[{ totalScreenwriters }]] = await db.query(
+      "SELECT COUNT(*) AS totalScreenwriters FROM screenwriter"
+    );
+    stats.totalScreenwriters = totalScreenwriters;
+
+    // Nombre total de compositeurs
+    const [[{ totalComposers }]] = await db.query(
+      "SELECT COUNT(*) AS totalComposers FROM music"
+    );
+    stats.totalComposers = totalComposers;
+
+    // Nombre total de studios
+    const [[{ totalStudios }]] = await db.query(
+      "SELECT COUNT(*) AS totalStudios FROM studio"
+    );
+    stats.totalStudios = totalStudios;
+
+    // Nombre total de tags
+    const [[{ totalTags }]] = await db.query(
+      "SELECT COUNT(*) AS totalTags FROM tag"
+    );
+    stats.totalTags = totalTags;
+
+    // Nombre total de focus
+    const [[{ totalFocus }]] = await db.query(
+      "SELECT COUNT(*) AS totalFocus FROM focus"
+    );
+    stats.totalFocus = totalFocus;
+
+    // Liste des categories de focus avec nombres de focus
+    const [focusByCategory] = await db.query(`
+      SELECT fc.name AS categoryName, COUNT(f.id) AS focusCount
+      FROM focuscategory fc
+      LEFT JOIN focus f ON f.categoryId = fc.id
+      GROUP BY fc.id
+      ORDER BY focusCount DESC
+    `);
+    stats.focusByCategory = focusByCategory;
+
+    res.json(stats);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erreur lors de la récupération des stats");
+  }
+};
+
+module.exports = { exportCSV, exportSQL, getAdminStats };
