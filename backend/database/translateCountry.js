@@ -1,7 +1,7 @@
 // UTILITAIRE DE TRADUCTION DE NOMS PAYS //
 
-import countries from "i18n-iso-countries";
-import frLocale from "i18n-iso-countries/langs/fr.json";
+const countries = require("i18n-iso-countries");
+const frLocale = require("i18n-iso-countries/langs/fr.json");
 
 countries.registerLocale(frLocale);
 
@@ -18,7 +18,7 @@ const countryCorrections = {
  * @param {string} fallbackName - nom alternatif si la traduction échoue
  * @returns {string} Nom du pays en français corrigé
  */
-export function translateCountry(isoCode, fallbackName = "") {
+function translateCountry(isoCode, fallbackName = "") {
   let countryNameFr = countries.getName(isoCode, "fr") || fallbackName;
 
   if (countryCorrections[countryNameFr]) {
@@ -31,6 +31,8 @@ export function translateCountry(isoCode, fallbackName = "") {
 /**
  * Permet d'ajouter dynamiquement une correction
  */
-export function addCountryCorrection(original, corrected) {
+function addCountryCorrection(original, corrected) {
   countryCorrections[original] = corrected;
 }
+
+module.exports = { translateCountry, addCountryCorrection };
