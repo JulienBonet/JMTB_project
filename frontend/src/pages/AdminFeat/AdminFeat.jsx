@@ -16,6 +16,7 @@ import AdminTagsList from "../../components/AdminFeatures/AdminItemsLists/AdminT
 import AdminLanguagesList from "../../components/AdminFeatures/AdminItemsLists/AdminLanguagesList";
 import AdminFocusList from "../../components/AdminFeatures/AdminItemsLists/AdminFocusList";
 import AdminUserList from "../../components/AdminFeatures/AdminItemsLists/AdminUserList";
+import AdminExportStats from "../../components/AdminFeatures/AdminItemsLists/AdminExportStats";
 
 function AdminFeat() {
   const theme = createTheme({
@@ -54,6 +55,8 @@ function AdminFeat() {
         return <AdminFocusList />;
       case "USERS":
         return <AdminUserList />;
+      case "EXPORTS-STATS":
+        return <AdminExportStats />;
       default:
         return null;
     }
@@ -72,6 +75,7 @@ function AdminFeat() {
     "TAGS",
     "FOCUS",
     "USERS",
+    "EXPORTS-STATS",
   ];
 
   return (
