@@ -1,4 +1,4 @@
-USE jmdb2;
+USE jmdb;
 
 -- movie_casting TABLE
 DELETE FROM movie_casting

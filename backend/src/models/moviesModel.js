@@ -9,7 +9,7 @@ const findAllSortedNoX = () => {
     .query(
       `SELECT *
     FROM movies
-    WHERE id NOT IN (SELECT movieId FROM jmdb.movie_genre WHERE genreId = 1);`,
+    WHERE id NOT IN (SELECT movieId FROM jmdb.movie_genre WHERE genreId = 14);`,
       []
     )
     .then((result) => {

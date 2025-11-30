@@ -1,4 +1,4 @@
-use jmdb2;
+use jmdb;
 
 -- ========================================
 -- TABLE focusCategory

@@ -1,4 +1,4 @@
-USE jmdb2;
+USE jmdb;
 
 -- DIRECTOR TABLE
 DELETE FROM director WHERE id = 1919;

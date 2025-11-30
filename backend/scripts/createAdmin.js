@@ -2,7 +2,7 @@
 
 const bcrypt = require("bcrypt");
 
-const password = "MotDePasseAdmin123";
+const password = "Elliot2006!";
 const saltRounds = 10;
 
 bcrypt.hash(password, saltRounds, (err, hashed) => {

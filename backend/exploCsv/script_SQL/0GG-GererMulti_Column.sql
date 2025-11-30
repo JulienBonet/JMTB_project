@@ -1,4 +1,4 @@
-use jmdb2;
+use jmdb;
 
 -- Etape 0 liste et compté la base de départ
 SELECT * 

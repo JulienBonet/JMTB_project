@@ -1,4 +1,4 @@
-use jmdb2;
+use jmdb;
 
 CREATE TABLE user (
     id INT AUTO_INCREMENT PRIMARY KEY,

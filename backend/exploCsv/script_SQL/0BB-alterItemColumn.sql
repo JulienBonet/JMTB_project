@@ -1,4 +1,4 @@
-use jmdb2;
+use jmdb;
 
 ALTER TABLE movies
 MODIFY COLUMN cover VARCHAR(255) NOT NULL DEFAULT '00_cover_default.jpg',

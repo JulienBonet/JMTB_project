@@ -15,6 +15,21 @@ function AdminExportStats() {
   // STATS
   // --------------
   const [stats, setStats] = useState(null);
+  console.info("stats", stats);
+
+  // useEffect(() => {
+  //   const fetchStats = async () => {
+  //     try {
+  //       const res = await axios.get(
+  //         `${import.meta.env.VITE_BACKEND_URL}/api/admin/stats`
+  //       );
+  //       setStats(res.data);
+  //     } catch (err) {
+  //       console.error("Erreur stats:", err);
+  //     }
+  //   };
+  //   fetchStats();
+  // }, []);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -22,7 +37,28 @@ function AdminExportStats() {
         const res = await axios.get(
           `${import.meta.env.VITE_BACKEND_URL}/api/admin/stats`
         );
-        setStats(res.data);
+
+        const { data } = res;
+
+        // Conversion MB → TB (3 décimales)
+        const totalSizeTB =
+          typeof data.totalSizeMB === "number"
+            ? +(data.totalSizeMB / 1024 / 1024).toFixed(3)
+            : 0;
+
+        // Conversion minutes (string ou number) → heures arrondies à l'inférieur
+        const totalDurationMinutes =
+          typeof data.totalDuration === "string"
+            ? Number(data.totalDuration)
+            : data.totalDuration || 0;
+
+        const totalDurationHours = Math.floor(totalDurationMinutes / 60);
+
+        setStats({
+          ...data,
+          totalSizeTB,
+          totalDurationHours,
+        });
       } catch (err) {
         console.error("Erreur stats:", err);
       }
@@ -146,7 +182,7 @@ function AdminExportStats() {
         </Stack>
       </section>
       {/* STATS */}
-      <secion className="stats_container_Admin_export_List">
+      <section className="stats_container_Admin_export_List">
         <Typography
           variant="h4"
           gutterBottom
@@ -159,44 +195,42 @@ function AdminExportStats() {
           Statistiques générales
         </Typography>
 
-        {/* info stats */}
-        <div className="infoStats_container_Admin_export_List">
-          <Typography sx={infoStatsSX()}>
-            <span className="infoStatWeight">Total films:</span>{" "}
-            {stats.totalMovies}
-          </Typography>
-          <Typography sx={infoStatsSX()}>
-            <span className="infoStatWeight">Total poids fichiers (MB):</span>{" "}
-            {Number(stats.totalSizeMB || 0).toFixed(2)}
-          </Typography>
-          <Typography sx={infoStatsSX()}>
-            <span className="infoStatWeight">Total durée (min):</span>{" "}
-            {stats.totalDuration}
-          </Typography>
-          <Typography sx={infoStatsSX()}>
-            <span className="infoStatWeight">Total réalisateurs:</span>{" "}
-            {stats.totalDirectors}
-          </Typography>
-          <Typography sx={infoStatsSX()}>
-            <span className="infoStatWeight">Total scénaristes:</span>{" "}
-            {stats.totalScreenwriters}
-          </Typography>
-          <Typography sx={infoStatsSX()}>
-            <span className="infoStatWeight">Total compositeurs:</span>{" "}
-            {stats.totalComposers}
-          </Typography>
-          <Typography sx={infoStatsSX()}>
-            <span className="infoStatWeight">Total studios:</span>{" "}
-            {stats.totalStudios}
-          </Typography>
-          <Typography sx={infoStatsSX()}>
-            <span className="infoStatWeight">Total tags:</span>{" "}
-            {stats.totalTags}
-          </Typography>
-        </div>
-
         {/* Accordions */}
         <div className="accordion_container_Admin_export_List">
+          {/* infos films */}
+          <Accordion sx={accordionSX}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography sx={infoStatsSX()}>
+                <span className="infoStatWeight">Total films:</span>{" "}
+                {stats.totalMovies}
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography sx={infoStatsSX()}>
+                <span className="infoStatWeight">Fichier multimedia:</span>{" "}
+                {stats.totalMediaFiles}
+              </Typography>
+              <Typography sx={infoStatsSX()}>
+                <span className="infoStatWeight">DVD original:</span>{" "}
+                {stats.totalDVDOriginal}
+              </Typography>
+              <Typography sx={infoStatsSX()}>
+                <span className="infoStatWeight">DVD R/RW:</span>{" "}
+                {stats.totalDVDRRW}
+              </Typography>
+              <div className="stats_bar" />
+              <Typography sx={infoStatsSX()}>
+                <span className="infoStatWeight">Total poids fichiers:</span>{" "}
+                {Number(stats.totalSizeTB || 0).toFixed(2)} To
+              </Typography>
+              <Typography sx={infoStatsSX()}>
+                <span className="infoStatWeight">Total durée (H):</span>{" "}
+                {stats.totalDurationHours} heures
+              </Typography>
+            </AccordionDetails>
+          </Accordion>
+
+          {/* infos genres */}
           <Accordion sx={accordionSX}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography sx={infoStatsSX()}>
@@ -214,6 +248,7 @@ function AdminExportStats() {
             </AccordionDetails>
           </Accordion>
 
+          {/* infos focus */}
           <Accordion sx={accordionSX}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Typography sx={infoStatsSX()}>
@@ -237,7 +272,31 @@ function AdminExportStats() {
             </AccordionDetails>
           </Accordion>
         </div>
-      </secion>
+
+        {/* info stats */}
+        <div className="infoStats_container_Admin_export_List">
+          <Typography sx={infoStatsSX()}>
+            <span className="infoStatWeight">Total réalisateurs:</span>{" "}
+            {stats.totalDirectors}
+          </Typography>
+          <Typography sx={infoStatsSX()}>
+            <span className="infoStatWeight">Total scénaristes:</span>{" "}
+            {stats.totalScreenwriters}
+          </Typography>
+          <Typography sx={infoStatsSX()}>
+            <span className="infoStatWeight">Total compositeurs:</span>{" "}
+            {stats.totalComposers}
+          </Typography>
+          <Typography sx={infoStatsSX()}>
+            <span className="infoStatWeight">Total studios:</span>{" "}
+            {stats.totalStudios}
+          </Typography>
+          <Typography sx={infoStatsSX()}>
+            <span className="infoStatWeight">Total tags:</span>{" "}
+            {stats.totalTags}
+          </Typography>
+        </div>
+      </section>
     </main>
   );
 }

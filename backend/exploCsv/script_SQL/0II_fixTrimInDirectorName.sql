@@ -1,4 +1,4 @@
-use jmdb2;
+use jmdb;
 
 UPDATE director SET name = TRIM(name);
 

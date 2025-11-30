@@ -166,6 +166,23 @@ const getAdminStats = async (req, res) => {
       "SELECT COUNT(*) AS totalMovies FROM movies"
     );
     stats.totalMovies = totalMovies;
+    // Nombre de DVD original
+    const [[{ totalDVDOriginal }]] = await db.query(
+      "SELECT COUNT(*) AS totalDVDOriginal FROM movies WHERE videoSupport = 'DVD original'"
+    );
+    stats.totalDVDOriginal = totalDVDOriginal;
+
+    // Nombre de DVD R/RW
+    const [[{ totalDVDRRW }]] = await db.query(
+      "SELECT COUNT(*) AS totalDVDRRW FROM movies WHERE videoSupport = 'DVD R/RW'"
+    );
+    stats.totalDVDRRW = totalDVDRRW;
+
+    // Nombre de fichiers multimédias
+    const [[{ totalMediaFiles }]] = await db.query(
+      "SELECT COUNT(*) AS totalMediaFiles FROM movies WHERE videoSupport = 'Fichier multimédia'"
+    );
+    stats.totalMediaFiles = totalMediaFiles;
 
     // Poids total des fichiers multimédia
     const [[{ totalSize }]] = await db.query(
