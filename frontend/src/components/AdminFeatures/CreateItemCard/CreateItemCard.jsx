@@ -54,55 +54,6 @@ function CreateItemCard({ origin, onUpdate, closeModal }) {
   }, []);
   // End Fetch catégories (origin === "focus")
 
-  // const handleValidate = async () => {
-  //   // Sécurité : si aucun catégorie n'est choisi dans focus
-  //   if (origin === "focus" && !categoryId) {
-  //     toast.error("Merci de choisir une catégorie pour ce focus.", {
-  //       className: "custom-toast",
-  //     });
-  //     return; // On bloque la validation
-  //   }
-
-  //   try {
-  //     const data = { name };
-
-  //     if (origin === "focus") {
-  //       data.categoryId = categoryId;
-  //     }
-
-  //     console.info(
-  //       "POST in CeateItemCard:",
-  //       `${import.meta.env.VITE_BACKEND_URL}/api/${origin}`
-  //     );
-
-  //     const response = await fetch(
-  //       `${import.meta.env.VITE_BACKEND_URL}/api/${origin}`,
-  //       {
-  //         method: "POST",
-  //         headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify(data),
-  //       }
-  //     );
-
-  //     if (!response.ok) {
-  //       console.error("Error creating item");
-  //       const errorMessage = await response.text();
-  //       console.error("Server error message:", errorMessage);
-  //       return;
-  //     }
-
-  //     console.info("Item successfully created");
-  //     toast.success(`${origin} successfully created`, {
-  //       className: "custom-toast",
-  //     });
-
-  //     onUpdate(name);
-  //     closeModal();
-  //   } catch (error) {
-  //     console.error("Request error:", error);
-  //   }
-  // };
-
   const handleValidate = async () => {
     // Vérification des champs requis
     if (!name || (origin === "user" && (!password || !confirmPassword))) {

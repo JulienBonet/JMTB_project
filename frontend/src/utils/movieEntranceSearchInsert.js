@@ -1,7 +1,9 @@
 // -----------------/ MOVIE ENTRANCE SEARCH & INSERT FUNC in addNewMovie.jsx/----------------- //
 import axios from "axios";
 
+// --------------------------------------
 // GENRES SEARCH BY NAME METHOD
+// --------------------------------------
 const searchGenreInDatabase = async (genreName) => {
   try {
     const response = await axios.get(
@@ -19,7 +21,9 @@ const searchGenreInDatabase = async (genreName) => {
   }
 };
 
+// --------------------------------------
 // GENRES NEW INSERT METHOD
+// --------------------------------------
 const createGenreInDatabase = async (genreName) => {
   try {
     const response = await axios.post(
@@ -36,7 +40,9 @@ const createGenreInDatabase = async (genreName) => {
   }
 };
 
+// --------------------------------------
 // STUDIO SEARCH BY NAME METHOD
+// --------------------------------------
 const searchStudioInDatabase = async (studioName) => {
   try {
     // Remplacer les slashes par des tirets
@@ -55,7 +61,9 @@ const searchStudioInDatabase = async (studioName) => {
   }
 };
 
+// --------------------------------------
 // STUDIO NEW INSERT METHOD
+// --------------------------------------
 const createStudioInDatabase = async (studioName) => {
   try {
     // Remplacer les slashes par des tirets
@@ -72,7 +80,9 @@ const createStudioInDatabase = async (studioName) => {
   }
 };
 
+// --------------------------------------
 // COUNTRY SEARCH BY NAME METHOD
+// --------------------------------------
 const searchCountryInDatabase = async (countryName) => {
   try {
     const url = `${
@@ -90,7 +100,9 @@ const searchCountryInDatabase = async (countryName) => {
   }
 };
 
+// --------------------------------------
 // COUNTRY NEW INSERT METHOD
+// --------------------------------------
 const createCountryInDatabase = async (countryName) => {
   try {
     const response = await axios.post(
@@ -104,7 +116,9 @@ const createCountryInDatabase = async (countryName) => {
   }
 };
 
+// --------------------------------------
 // LANGUAGE SEARCH BY NAME METHOD
+// --------------------------------------
 const searchLanguageInDatabase = async (languageName) => {
   try {
     const url = `${
@@ -123,7 +137,9 @@ const searchLanguageInDatabase = async (languageName) => {
   }
 };
 
+// --------------------------------------
 // LANGUAGE NEW INSERT METHOD
+// --------------------------------------
 const createLanguageInDatabase = async (languageName) => {
   try {
     const response = await axios.post(
@@ -137,7 +153,9 @@ const createLanguageInDatabase = async (languageName) => {
   }
 };
 
+// --------------------------------------
 // DIRECTOR SEARCH BY NAME METHOD
+// --------------------------------------
 const searchDirectorInDatabase = async (directorsNames) => {
   try {
     const url = `${
@@ -157,7 +175,9 @@ const searchDirectorInDatabase = async (directorsNames) => {
   }
 };
 
+// --------------------------------------
 // DIRECTORS NEW INSERT METHOD
+// --------------------------------------
 const createDirectorInDatabase = async (directorName) => {
   try {
     const response = await axios.post(
@@ -171,7 +191,9 @@ const createDirectorInDatabase = async (directorName) => {
   }
 };
 
+// --------------------------------------
 // SCREENWRITER SEARCH BY NAME METHOD
+// --------------------------------------
 const searchScreenwriterInDatabase = async (screenwritersNames) => {
   try {
     const response = await axios.get(
@@ -191,7 +213,9 @@ const searchScreenwriterInDatabase = async (screenwritersNames) => {
   }
 };
 
+// --------------------------------------
 // SCREENWRITER NEW INSERT METHOD
+// --------------------------------------
 const createScreenwriterInDatabase = async (screenwriterName) => {
   try {
     const response = await axios.post(
@@ -205,7 +229,9 @@ const createScreenwriterInDatabase = async (screenwriterName) => {
   }
 };
 
+// --------------------------------------
 // COMPOSITOR SEARCH BY NAME METHOD
+// --------------------------------------
 const searchCompositorInDatabase = async (compositorsNames) => {
   try {
     const response = await axios.get(
@@ -225,7 +251,9 @@ const searchCompositorInDatabase = async (compositorsNames) => {
   }
 };
 
+// --------------------------------------
 // COMPOSITOR NEW INSERT METHOD
+// --------------------------------------
 const createCompositorInDatabase = async (compositorName) => {
   try {
     const response = await axios.post(
@@ -239,7 +267,9 @@ const createCompositorInDatabase = async (compositorName) => {
   }
 };
 
+// --------------------------------------
 // CASTING SEARCH BY NAME METHOD
+// --------------------------------------
 const searchCastingInDatabase = async (castingsNames) => {
   try {
     const response = await axios.get(
@@ -259,7 +289,9 @@ const searchCastingInDatabase = async (castingsNames) => {
   }
 };
 
+// --------------------------------------
 // CASTINGG NEW INSERT METHOD
+// --------------------------------------
 const createCastingInDatabase = async (castingName) => {
   try {
     const response = await axios.post(
@@ -273,7 +305,9 @@ const createCastingInDatabase = async (castingName) => {
   }
 };
 
+// --------------------------------------
 // TAG SEARCH BY NAME METHOD
+// --------------------------------------
 const searchTagInDatabase = async (tagsNames) => {
   try {
     const response = await axios.get(
@@ -291,7 +325,9 @@ const searchTagInDatabase = async (tagsNames) => {
   }
 };
 
+// --------------------------------------
 // TAG NEW INSERT METHOD
+// --------------------------------------
 const createTagInDatabase = async (TagName) => {
   try {
     const response = await axios.post(

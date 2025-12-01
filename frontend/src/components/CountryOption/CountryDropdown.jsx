@@ -25,18 +25,12 @@ function CountryDropdown({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // const [isMobile, setIsMobile] = useState(window.innerWidth <= 1279);
-
   // --- Fetch des pays ---
   useEffect(() => {
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/country`)
       .then((res) => res.json())
       .then(setCountries)
       .catch((err) => console.error("Erreur fetch countries:", err));
-
-    // const handleResize = () => setIsMobile(window.innerWidth <= 1279);
-    // window.addEventListener("resize", handleResize);
-    // return () => window.removeEventListener("resize", handleResize);
   }, [search, handleUpdateMovie, handleDeleteMovie]);
 
   const handleChange = (event) => {

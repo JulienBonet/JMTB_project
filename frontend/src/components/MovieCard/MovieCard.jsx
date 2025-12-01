@@ -133,13 +133,13 @@ function MovieCard({
     idTheMovieDb: movie.idTheMovieDb || "",
   });
 
-  useEffect(() => {
-    console.info("movie in MovieCard", movie);
-  }, [movie]);
+  // useEffect(() => {
+  //   console.info("movie in MovieCard", movie);
+  // }, [movie]);
 
-  useEffect(() => {
-    console.info("movieData1 in MovieCard", movieData);
-  }, [movieData]);
+  // useEffect(() => {
+  //   console.info("movieData1 in MovieCard", movieData);
+  // }, [movieData]);
 
   const {
     genres,

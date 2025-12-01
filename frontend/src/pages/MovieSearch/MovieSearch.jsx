@@ -58,9 +58,9 @@ function MovieSearch() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // ----------------------
-  // Construction URL unifiée (utilise ton endpoint existant)
-  // ----------------------
+  // -----------------------------------------------------------
+  // Construction URL unifiée (utilise endpoint existant)
+  // -----------------------------------------------------------
   const buildUrl = () => {
     const p = new URLSearchParams();
 
@@ -80,9 +80,9 @@ function MovieSearch() {
     return `${import.meta.env.VITE_BACKEND_URL}/api/movies/search-filter?${p.toString()}`;
   };
 
-  // ----------------------
+  // ------------------------------------------------------------------
   // Fetch principal (appelé automatiquement via useEffect ci-dessous)
-  // ----------------------
+  // ------------------------------------------------------------------
   const fetchMovies = async () => {
     try {
       setIsLoading(true);
@@ -103,9 +103,9 @@ function MovieSearch() {
     }
   };
 
-  // ----------------------
+  // ------------------------------------------------------------------
   // useEffect unique : fetch sur changement de filtres / tri / taille
-  // ----------------------
+  // ------------------------------------------------------------------
   useEffect(() => {
     fetchMovies();
   }, [
@@ -153,9 +153,9 @@ function MovieSearch() {
     setDirection("DESC");
   };
 
-  // -----------------------------
+  // --------------------------------------------------------
   // UPDATE / DELETE MOVIE (modification locale de la liste)
-  // -----------------------------
+  // --------------------------------------------------------
   const handleUpdateMovie = (updatedMovieData) => {
     setMovies((prev) =>
       prev.map((m) => (m.id === updatedMovieData.id ? updatedMovieData : m))
@@ -182,9 +182,9 @@ function MovieSearch() {
     },
   };
 
-  //-----------------------------
+  //--------------------------------------------------------
   // Resize container width pour responsive (virtualisation)
-  //-----------------------------
+  //--------------------------------------------------------
   useEffect(() => {
     const handleResize = () => {
       if (containerRef.current) {

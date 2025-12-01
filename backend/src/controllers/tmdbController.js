@@ -21,22 +21,27 @@ const fetchMovieById = async (req, res, next) => {
   const { mediaType, id } = req.params;
 
   try {
-    const movieData = await fetchTMDB(
-      `https://api.themoviedb.org/3/${mediaType}/${id}?language=fr-FR`
-    );
-    const credits = await fetchTMDB(
-      `https://api.themoviedb.org/3/${mediaType}/${id}/credits?language=fr-FR`
-    );
-    const videos = await fetchTMDB(
-      `https://api.themoviedb.org/3/${mediaType}/${id}/videos?language=fr-FR`
-    );
-    const keywords = await fetchTMDB(
-      `https://api.themoviedb.org/3/${mediaType}/${id}/keywords`
-    );
+    const [movieData, credits, videos, keywords] = await Promise.all([
+      fetchTMDB(
+        `https://api.themoviedb.org/3/${mediaType}/${id}?language=fr-FR`
+      ),
+      fetchTMDB(
+        `https://api.themoviedb.org/3/${mediaType}/${id}/credits?language=fr-FR`
+      ),
+      fetchTMDB(
+        `https://api.themoviedb.org/3/${mediaType}/${id}/videos?language=fr-FR`
+      ),
+      fetchTMDB(`https://api.themoviedb.org/3/${mediaType}/${id}/keywords`),
+    ]);
+
+    // Logs dev uniquement
+    if (process.env.NODE_ENV !== "production") {
+      console.info(`🌐 TMDB fetch success: ${mediaType} ${id}`);
+    }
 
     res.status(200).json({ ...movieData, ...credits, videos, keywords });
   } catch (err) {
-    console.error(err);
+    console.error(`🔥 TMDB fetchMovieById error: ${err.message}`);
     next(err);
   }
 };
@@ -49,18 +54,20 @@ const fetchTmdbData = async (req, res) => {
   const [mediaType, movieId] = idTheMovieDb.split("/");
 
   try {
-    const movieData = await fetchTMDB(
-      `https://api.themoviedb.org/3/${mediaType}/${movieId}?language=fr-FR`
-    );
-    const credits = await fetchTMDB(
-      `https://api.themoviedb.org/3/${mediaType}/${movieId}/credits?language=fr-FR`
-    );
-    const videos = await fetchTMDB(
-      `https://api.themoviedb.org/3/${mediaType}/${movieId}/videos?language=fr-FR`
-    );
-    const keywords = await fetchTMDB(
-      `https://api.themoviedb.org/3/${mediaType}/${movieId}/keywords`
-    );
+    const [movieData, credits, videos, keywords] = await Promise.all([
+      fetchTMDB(
+        `https://api.themoviedb.org/3/${mediaType}/${movieId}?language=fr-FR`
+      ),
+      fetchTMDB(
+        `https://api.themoviedb.org/3/${mediaType}/${movieId}/credits?language=fr-FR`
+      ),
+      fetchTMDB(
+        `https://api.themoviedb.org/3/${mediaType}/${movieId}/videos?language=fr-FR`
+      ),
+      fetchTMDB(
+        `https://api.themoviedb.org/3/${mediaType}/${movieId}/keywords`
+      ),
+    ]);
 
     res.status(200).json({
       mediaType,
@@ -69,11 +76,19 @@ const fetchTmdbData = async (req, res) => {
       crewData: credits.crew || [],
       castData: credits.cast || [],
       videosData: videos.results || [],
-      keywordsData: keywords.keywords || [],
+      keywordsData: keywords.results || keywords.keywords || [],
     });
   } catch (err) {
-    console.error("Erreur TMDB :", err.message);
-    res.status(500).json({ error: "Impossible de récupérer les données TMDB" });
+    console.error(`🔥 TMDB fetchTmdbData error: ${err.message}`);
+    res.status(500).json({
+      mediaType,
+      movieId,
+      moviefetchData: {},
+      crewData: [],
+      castData: [],
+      videosData: [],
+      keywordsData: [],
+    });
   }
 };
 
@@ -202,37 +217,20 @@ const searchTMDB = async (req, res) => {
   const { query, include_adult = false, page = 1 } = req.query;
 
   try {
-    // Fetch TMDB films / séries / genres en parallèle
-    const movieRequest = fetchTMDB(
-      `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(
-        query
-      )}&include_adult=${include_adult}&language=fr-FR&page=${page}`
-    );
-
-    const tvRequest = fetchTMDB(
-      `https://api.themoviedb.org/3/search/tv?query=${encodeURIComponent(
-        query
-      )}&include_adult=${include_adult}&language=fr-FR&page=${page}`
-    );
-
-    const genresMovieRequest = fetchTMDB(
-      `https://api.themoviedb.org/3/genre/movie/list?language=fr-FR`
-    );
-
-    const genresTVRequest = fetchTMDB(
-      `https://api.themoviedb.org/3/genre/tv/list?language=fr-FR`
-    );
-
     const [movieRes, tvRes, genresMovie, genresTV] = await Promise.all([
-      movieRequest,
-      tvRequest,
-      genresMovieRequest,
-      genresTVRequest,
+      fetchTMDB(
+        `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(query)}&include_adult=${include_adult}&language=fr-FR&page=${page}`
+      ),
+      fetchTMDB(
+        `https://api.themoviedb.org/3/search/tv?query=${encodeURIComponent(query)}&include_adult=${include_adult}&language=fr-FR&page=${page}`
+      ),
+      fetchTMDB(`https://api.themoviedb.org/3/genre/movie/list?language=fr-FR`),
+      fetchTMDB(`https://api.themoviedb.org/3/genre/tv/list?language=fr-FR`),
     ]);
 
     res.json({ movieRes, tvRes, genresMovie, genresTV });
   } catch (err) {
-    console.error("Erreur search TMDB :", err.message);
+    console.error(`🔥 TMDB searchTMDB error: ${err.message}`);
     res.status(500).json({
       movieRes: { results: [], total_results: 0, total_pages: 0 },
       tvRes: { results: [], total_results: 0, total_pages: 0 },
@@ -241,7 +239,6 @@ const searchTMDB = async (req, res) => {
     });
   }
 };
-
 /* -------------------------------------------
   7 SEARCH MOVIE + TV DETAILS (backend)
 -------------------------------------------- */
@@ -249,18 +246,20 @@ const fetchMovieDetails = async (req, res) => {
   const { mediaType, movieId } = req.params;
 
   try {
-    const movieData = await fetchTMDB(
-      `https://api.themoviedb.org/3/${mediaType}/${movieId}?language=fr-FR`
-    );
-    const credits = await fetchTMDB(
-      `https://api.themoviedb.org/3/${mediaType}/${movieId}/credits?language=fr-FR`
-    );
-    const videos = await fetchTMDB(
-      `https://api.themoviedb.org/3/${mediaType}/${movieId}/videos?language=fr-FR`
-    );
-    const keywords = await fetchTMDB(
-      `https://api.themoviedb.org/3/${mediaType}/${movieId}/keywords`
-    );
+    const [movieData, credits, videos, keywords] = await Promise.all([
+      fetchTMDB(
+        `https://api.themoviedb.org/3/${mediaType}/${movieId}?language=fr-FR`
+      ),
+      fetchTMDB(
+        `https://api.themoviedb.org/3/${mediaType}/${movieId}/credits?language=fr-FR`
+      ),
+      fetchTMDB(
+        `https://api.themoviedb.org/3/${mediaType}/${movieId}/videos?language=fr-FR`
+      ),
+      fetchTMDB(
+        `https://api.themoviedb.org/3/${mediaType}/${movieId}/keywords`
+      ),
+    ]);
 
     res.status(200).json({
       movieData: movieData || {},
@@ -271,7 +270,7 @@ const fetchMovieDetails = async (req, res) => {
         : keywords?.keywords || [],
     });
   } catch (err) {
-    console.error("Erreur TMDB fetchMovieDetails:", err.message);
+    console.error(`🔥 TMDB fetchMovieDetails error: ${err.message}`);
     res.status(500).json({
       movieData: null,
       credits: null,

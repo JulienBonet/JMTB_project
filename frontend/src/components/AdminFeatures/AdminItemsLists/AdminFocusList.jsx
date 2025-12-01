@@ -21,7 +21,6 @@ function AdminFocusList() {
   const [filteredData, setFilteredData] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [newFocus, setNewFocus] = useState(false);
-  console.info("data", data);
   const origin = "focus";
 
   const openModal = (DataItem) => {

@@ -8,7 +8,9 @@ import ArtistFilmo from "../../components/ArtistFilmo/ArtistFilmo";
 import MovieArtistSearchBar from "../../components/MovieArtistSearchBar/MovieArtistSearchBar";
 
 function MovieDirectors() {
+  // ---------------
   // DATAS
+  // ---------------
   const directorsData = useLoaderData();
   const [movies, setMovies] = useState([]);
   const [data, setData] = useState(movies);
@@ -21,7 +23,9 @@ function MovieDirectors() {
   const [selectedDirectorByLetter, setSelectedDirectorByLetter] = useState([]);
   const [openSideBar, setOpenSideBar] = useState(false);
 
+  // ----------------------------------
   // REQUEST ALL ARTIST BY LETTER
+  // ----------------------------------
   useEffect(() => {
     fetch(
       `${
@@ -42,7 +46,9 @@ function MovieDirectors() {
       });
   }, [selectedLetter]);
 
+  // ----------------------------------
   // REQUEST ALL MOVIES by ARTIST
+  // ----------------------------------
   const fetchMoviesByDirector = () => {
     fetch(
       `${import.meta.env.VITE_BACKEND_URL}/api/directors/${selectedDirector.id}`
@@ -66,18 +72,24 @@ function MovieDirectors() {
     fetchMoviesByDirector();
   }, [selectedDirector]);
 
+  // ----------------------------------
   // SELECT LETTER
+  // ----------------------------------
   const handleLetterChange = (letter) => {
     SetSelectedLetter(letter);
     setSearch("");
   };
 
+  // ----------------------------------
   // SELECT ARTIST
+  // ----------------------------------
   const handleArtistClick = (director) => {
     setSelectedDirector(director);
   };
 
+  // ----------------------------------
   // SEARCH BAR
+  // ----------------------------------
   const handleTyping = (e) => {
     let { value } = e.target;
     value = value.replace(/-/g, "").toLowerCase();
@@ -97,16 +109,22 @@ function MovieDirectors() {
       )
     : [];
 
+  // ----------------------------------
   // ARTISTS AMOUNT
+  // ----------------------------------
   const directorsAmount = selectedDirectorByLetter.length;
   const selectedDirectorAmount = filteredDirectors.length;
 
+  // -------------------
   // SORTED BTN
+  // -------------------
   useEffect(() => {
     setData(movies);
   }, [movies]);
 
+  // --------------------------------------------
   // REQUEST ALL MOVIES SORTED ALPHABETICAL ASC
+  // --------------------------------------------
   const movieSortedA = async () => {
     try {
       const response = await fetch(
@@ -125,7 +143,9 @@ function MovieDirectors() {
     }
   };
 
+  // --------------------------------------------
   // REQUEST ALL MOVIES SORTED ALPHABETICAL DESC
+  // --------------------------------------------
   const movieSortedZ = async () => {
     try {
       const response = await fetch(
@@ -144,7 +164,9 @@ function MovieDirectors() {
     }
   };
 
+  // --------------------------------------------
   // REQUEST ALL MOVIES SORTED CHRONOLOGICAL ASC
+  // --------------------------------------------
   const movieSortedYear = async () => {
     try {
       const response = await fetch(
@@ -163,7 +185,9 @@ function MovieDirectors() {
     }
   };
 
+  // --------------------------------------------
   // REQUEST ALL MOVIES SORTED CHRONOLOGICAL DSC
+  // --------------------------------------------
   const movieSortedYearDesc = async () => {
     try {
       const response = await fetch(
@@ -182,7 +206,9 @@ function MovieDirectors() {
     }
   };
 
+  // --------------------------------------------
   // STYLE MUI
+  // --------------------------------------------
   const theme = createTheme({
     palette: {
       primary: {
@@ -200,15 +226,21 @@ function MovieDirectors() {
     },
   });
 
+  // --------------------------------------------
   // PROPS FOR TEXTS & IMAGE
+  // --------------------------------------------
   const origin = "directors";
 
+  // ----------------------------------------------------
   // MISE A JOUR AFFICHAGE SI DELETE MOVIE DANS MOVIECARD
+  // ----------------------------------------------------
   const handleDeleteMovie = () => {
     fetchMoviesByDirector();
   };
 
+  // --------------------------------------------
   // FONCTION POUR BTN RESET SEARCH
+  // --------------------------------------------
   const handleResetSearch = () => {
     setSearch("");
     SetSelectedLetter("a"); // lettre par défaut
@@ -218,6 +250,9 @@ function MovieDirectors() {
     setMovieAmount(0);
   };
 
+  // --------------------------------------------
+  // RETURN
+  // --------------------------------------------
   return (
     <main className="Main_movieArtistPage">
       <section className="artists_content">

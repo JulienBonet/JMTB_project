@@ -17,10 +17,8 @@ import "./movieFocusMediaqueries.css";
 
 function MovieThema() {
   const themaData = useLoaderData();
-  // const [Focus, setFocus] = useState(themaData);
   const [Focus, setFocus] = useState(themaData || []);
   const [selectedFocus, setSelectedFocus] = useState(null);
-  // const [films, setFilms] = useState([]);
   const [films, setFilms] = useState([]);
   const [openSideBar, setOpenSideBar] = useState(false);
   const [openMovieSideBar, setOpenMovieSideBar] = useState(false);

@@ -8,7 +8,9 @@ import ArtistFilmo from "../../components/ArtistFilmo/ArtistFilmo";
 import MovieArtistSearchBar from "../../components/MovieArtistSearchBar/MovieArtistSearchBar";
 
 function MovieScreenwriters() {
+  // ----------
   // DATAS
+  // ----------
   const screenWData = useLoaderData();
   const [movies, setMovies] = useState([]);
   const [data, setData] = useState(movies);
@@ -21,7 +23,9 @@ function MovieScreenwriters() {
   const [selecteScreenWByLetter, setSelecteScreenWByLetter] = useState([]);
   const [openSideBar, setOpenSideBar] = useState(false);
 
+  // --------------------------------------------
   // REQUEST ALL ARTIST BY LETTER
+  // --------------------------------------------
   useEffect(() => {
     fetch(
       `${
@@ -42,7 +46,9 @@ function MovieScreenwriters() {
       });
   }, [selectedLetter]);
 
+  // --------------------------------------------
   // REQUEST ALL MOVIES by ARTIST
+  // --------------------------------------------
   const fetchMoviesByScreenwriter = () => {
     fetch(
       `${import.meta.env.VITE_BACKEND_URL}/api/screenwriters/${
@@ -68,18 +74,24 @@ function MovieScreenwriters() {
     fetchMoviesByScreenwriter();
   }, [selectedScreenW]);
 
+  // --------------------------------------------
   // SELECT LETTER
+  // --------------------------------------------
   const handleLetterChange = (letter) => {
     SetSelectedLetter(letter);
     setSearch("");
   };
 
+  // --------------------------------------------
   // SELECT ARTIST
+  // --------------------------------------------
   const handleArtistClick = (ScreenW) => {
     setselectedScreenW(ScreenW);
   };
 
+  // --------------------------------------------
   // SEARCH BAR
+  // --------------------------------------------
   const handleTyping = (e) => {
     let { value } = e.target;
     value = value.replace(/-/g, "").toLowerCase();
@@ -99,16 +111,22 @@ function MovieScreenwriters() {
       )
     : [];
 
+  // --------------------------------------------
   // ARTISTS AMOUNT
+  // --------------------------------------------
   const screenWriterAmount = selecteScreenWByLetter.length;
   const selectedscreenWriterAmount = filteredscreenWriter.length;
 
+  // --------------------------------------------
   // SORTED BTN
+  // --------------------------------------------
   useEffect(() => {
     setData(movies);
   }, [movies]);
 
+  // --------------------------------------------
   // REQUEST ALL MOVIES SORTED ALPHABETICAL ASC
+  // --------------------------------------------
   const movieSortedA = async () => {
     try {
       const response = await fetch(
@@ -127,7 +145,9 @@ function MovieScreenwriters() {
     }
   };
 
+  // --------------------------------------------
   // REQUEST ALL MOVIES SORTED ALPHABETICAL DESC
+  // --------------------------------------------
   const movieSortedZ = async () => {
     try {
       const response = await fetch(
@@ -146,7 +166,9 @@ function MovieScreenwriters() {
     }
   };
 
+  // --------------------------------------------
   // REQUEST ALL MOVIES SORTED CHRONOLOGICAL ASC
+  // --------------------------------------------
   const movieSortedYear = async () => {
     try {
       const response = await fetch(
@@ -165,7 +187,9 @@ function MovieScreenwriters() {
     }
   };
 
+  // --------------------------------------------
   // REQUEST ALL MOVIES SORTED CHRONOLOGICAL DESC
+  // --------------------------------------------
   const movieSortedYearDesc = async () => {
     try {
       const response = await fetch(
@@ -184,7 +208,9 @@ function MovieScreenwriters() {
     }
   };
 
+  // --------------------------------------------
   // STYLE MUI
+  // --------------------------------------------
   const theme = createTheme({
     palette: {
       primary: {
@@ -202,15 +228,21 @@ function MovieScreenwriters() {
     },
   });
 
+  // --------------------------------------------
   // PROPS FOR TEXTS & IMAGE
+  // --------------------------------------------
   const origin = "screenwriters";
 
+  // --------------------------------------------
   // MISE A JOUR AFFICHAGE SI DELETE MOVIE DANS MOVIECARD
+  // --------------------------------------------
   const handleDeleteMovie = () => {
     fetchMoviesByScreenwriter();
   };
 
+  // --------------------------------------------
   // FONCTION POUR BTN RESET SEARCH
+  // --------------------------------------------
   const handleResetSearch = () => {
     setSearch("");
     SetSelectedLetter("a"); // lettre par défaut
@@ -220,6 +252,9 @@ function MovieScreenwriters() {
     setMovieAmount(0);
   };
 
+  // --------------------------------------------
+  // RETURN
+  // --------------------------------------------
   return (
     <main>
       <section className="artists_content">

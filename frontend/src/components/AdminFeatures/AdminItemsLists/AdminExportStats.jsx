@@ -15,21 +15,6 @@ function AdminExportStats() {
   // STATS
   // --------------
   const [stats, setStats] = useState(null);
-  console.info("stats", stats);
-
-  // useEffect(() => {
-  //   const fetchStats = async () => {
-  //     try {
-  //       const res = await axios.get(
-  //         `${import.meta.env.VITE_BACKEND_URL}/api/admin/stats`
-  //       );
-  //       setStats(res.data);
-  //     } catch (err) {
-  //       console.error("Erreur stats:", err);
-  //     }
-  //   };
-  //   fetchStats();
-  // }, []);
 
   useEffect(() => {
     const fetchStats = async () => {

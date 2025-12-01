@@ -19,8 +19,6 @@ function YearDropdown({ onYearChange, selectedYearData, search }) {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // const [isMobile, setIsMobile] = useState(window.innerWidth <= 1279);
-
   //------------------
   // REQUEST ALL YEARS / DECADES
   //------------------

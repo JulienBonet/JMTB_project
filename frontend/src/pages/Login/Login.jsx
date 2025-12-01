@@ -15,7 +15,9 @@ function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
+  // ---------
   // SUBMIT
+  // ---------
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -32,7 +34,9 @@ function Login() {
     }
   };
 
+  // ---------
   // SX
+  // ---------
   const textFieldSx = {
     backgroundColor: "white",
     marginBottom: 2,
@@ -60,6 +64,9 @@ function Login() {
     "&:hover": { backgroundColor: "var(--color-02)", color: "var(--color-05)" },
   };
 
+  // ---------
+  // RETURN
+  // ---------
   return (
     <main className="main_login_page">
       <section className="content_login_page">

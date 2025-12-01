@@ -8,7 +8,6 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Pagination from "@mui/material/Pagination";
 import "./adminLists.css";
-// import PreviewIcon from "@mui/icons-material/Preview";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import AdminItemsCard from "../AdminItemsCards/AdminItemsCard5";
@@ -20,7 +19,6 @@ function AdminUsersList() {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [filteredData, setFilteredData] = useState([]);
-  //   const [selectedItem, setSelectedItem] = useState(null);
   const [newUser, setNewUser] = useState(false);
   const [passwordItem, setPasswordItem] = useState(null);
 

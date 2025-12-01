@@ -22,7 +22,9 @@ function MovieInfosEntrance({ title, onMovieClick, handleCloseModalMIE }) {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const encodedTitle = encodeURIComponent(title);
 
+  // --------------------------------------------
   // Fonction pour récupérer les genres d'un film
+  // --------------------------------------------
   const getMovieGenres = (movie) => {
     // Vérifier si genres est chargé ou non
     if (!genresLoaded) {
@@ -42,6 +44,10 @@ function MovieInfosEntrance({ title, onMovieClick, handleCloseModalMIE }) {
     return genreNames.join(", ");
   };
 
+  // --------------------------------------------
+  // SWITCH ADULT
+  // --------------------------------------------
+
   const handleAdultSwitchChange = (event) => {
     setAdult(event.target.checked);
     setPage(1);
@@ -59,101 +65,9 @@ function MovieInfosEntrance({ title, onMovieClick, handleCloseModalMIE }) {
     },
   }));
 
-  // useEffect(() => {
-  //   setError(null);
-  //   setData([]);
-  //   setGenresLoaded(false);
-
-  //   const headers = {
-  //     accept: "application/json",
-  //     Authorization: `Bearer ${import.meta.env.VITE_APP_TMDB_AUTH_TOKEN}`,
-  //   };
-
-  //   // Requête pour les films
-  //   const movieRequest = axios.get(
-  //     "https://api.themoviedb.org/3/search/movie",
-  //     {
-  //       params: {
-  //         query: encodedTitle,
-  //         include_adult: adult,
-  //         language: "fr-FR",
-  //         page,
-  //       },
-  //       headers,
-  //     }
-  //   );
-
-  //   // Requête pour les séries
-  //   const tvRequest = axios.get("https://api.themoviedb.org/3/search/tv", {
-  //     params: {
-  //       query: encodedTitle,
-  //       include_adult: adult,
-  //       language: "fr-FR",
-  //       page,
-  //     },
-  //     headers,
-  //   });
-
-  //   // On lance les deux en parallèle
-  //   Promise.all([movieRequest, tvRequest])
-  //     .then(([movieRes, tvRes]) => {
-  //       // Ajouter un champ "type" pour distinguer films/séries
-  //       const movieResults = movieRes.data.results.map((m) => ({
-  //         ...m,
-  //         media_type: "movie",
-  //       }));
-  //       const tvResults = tvRes.data.results.map((t) => ({
-  //         ...t,
-  //         media_type: "tv",
-  //       }));
-
-  //       // Fusionner les deux tableaux
-  //       const combined = [...movieResults, ...tvResults];
-
-  //       // Trier les résultats par popularité (optionnel)
-  //       combined.sort((a, b) => b.popularity - a.popularity);
-
-  //       setData(combined);
-
-  //       // Pour la pagination (on peut choisir celle avec le plus de pages)
-  //       setFullData({
-  //         total_results: movieRes.data.total_results + tvRes.data.total_results,
-  //         total_pages: Math.max(
-  //           movieRes.data.total_pages,
-  //           tvRes.data.total_pages
-  //         ),
-  //       });
-
-  //       // Charger les genres (films + séries)
-  //       const genresMovie = axios.get(
-  //         "https://api.themoviedb.org/3/genre/movie/list",
-  //         { headers, params: { language: "fr-FR" } }
-  //       );
-  //       const genresTV = axios.get(
-  //         "https://api.themoviedb.org/3/genre/tv/list",
-  //         { headers, params: { language: "fr-FR" } }
-  //       );
-
-  //       Promise.all([genresMovie, genresTV])
-  //         .then(([movieGenres, tvGenres]) => {
-  //           setGenres([
-  //             ...movieGenres.data.genres,
-  //             ...tvGenres.data.genres.filter(
-  //               (tvG) => !movieGenres.data.genres.some((mG) => mG.id === tvG.id)
-  //             ),
-  //           ]);
-  //           setGenresLoaded(true);
-  //         })
-  //         .catch(() => setError("Erreur lors de la récupération des genres"));
-  //     })
-  //     .catch((error) => {
-  //       console.error(error);
-  //       setError("Erreur lors de la récupération des données");
-  //     });
-  // }, [page, adult, encodedTitle]);
-
-  // Fonction pour faire défiler vers le haut de la page
-
+  // --------------------------------------------
+  // FETCH API
+  // --------------------------------------------
   useEffect(() => {
     setError(null);
     setData([]);
@@ -211,7 +125,9 @@ function MovieInfosEntrance({ title, onMovieClick, handleCloseModalMIE }) {
     }
   };
 
+  // --------------------------------------------
   // Fonction pour formater la date de sortie
+  // --------------------------------------------
   const getYear = (releaseDate) => {
     if (!releaseDate) {
       return "";
@@ -219,7 +135,9 @@ function MovieInfosEntrance({ title, onMovieClick, handleCloseModalMIE }) {
     return releaseDate.substring(0, 4);
   };
 
+  // -----------------------------------------------------
   // Fonction pour gérer le clic sur le bouton précédent
+  // -----------------------------------------------------
   const handlePrevPage = () => {
     if (page > 1) {
       setPage(page - 1);
@@ -227,7 +145,9 @@ function MovieInfosEntrance({ title, onMovieClick, handleCloseModalMIE }) {
     }
   };
 
+  // -----------------------------------------------------
   // Fonction pour gérer le clic sur le bouton suivant
+  // -----------------------------------------------------
   const handleNextPage = () => {
     if (fullData && page < fullData.total_pages) {
       setPage(page + 1);
@@ -245,7 +165,9 @@ function MovieInfosEntrance({ title, onMovieClick, handleCloseModalMIE }) {
     return <div>Chargement...</div>;
   }
 
-  // Rendu du composant MovieInfosEntrance
+  // -----------------------------------------------------
+  // RETURN
+  // -----------------------------------------------------
   return (
     <section className="MIE_container">
       <span id="top" />

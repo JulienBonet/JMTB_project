@@ -8,7 +8,9 @@ import ArtistFilmo from "../../components/ArtistFilmo/ArtistFilmo";
 import MovieArtistSearchBar from "../../components/MovieArtistSearchBar/MovieArtistSearchBar";
 
 function MovieStudio() {
+  // --------------------------------------------
   // DATAS
+  // --------------------------------------------
   const studioData = useLoaderData();
   const [movies, setMovies] = useState([]);
   const [data, setData] = useState(movies);
@@ -21,7 +23,9 @@ function MovieStudio() {
   const [selectedStudioByLetter, setSelectedStudioByLetter] = useState([]);
   const [openSideBar, setOpenSideBar] = useState(false);
 
+  // --------------------------------------------
   // REQUEST ALL STUDIOS BY LETTER
+  // --------------------------------------------
   useEffect(() => {
     fetch(
       `${import.meta.env.VITE_BACKEND_URL}/api/studio/sorted/${selectedLetter}`
@@ -40,7 +44,9 @@ function MovieStudio() {
       });
   }, [selectedLetter]);
 
+  // --------------------------------------------
   // REQUEST ALL MOVIES by STUDIO
+  // --------------------------------------------
   const fetchMoviesByStudio = () => {
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/studio/${selectedStudio.id}`)
       .then((response) => {
@@ -62,18 +68,24 @@ function MovieStudio() {
     fetchMoviesByStudio();
   }, [selectedStudio]);
 
+  // --------------------------------------------
   // SELECT LETTER
+  // --------------------------------------------
   const handleLetterChange = (letter) => {
     SetSelectedLetter(letter);
     setSearch("");
   };
 
+  // --------------------------------------------
   // SELECT STUDIO
+  // --------------------------------------------
   const handleArtistClick = (studio) => {
     setselectedStudio(studio);
   };
 
+  // --------------------------------------------
   // SEARCH BAR
+  // --------------------------------------------
   const handleTyping = (e) => {
     let { value } = e.target;
     value = value.replace(/-/g, "").toLowerCase();
@@ -93,16 +105,22 @@ function MovieStudio() {
       )
     : [];
 
+  // --------------------------------------------
   // AFFICHER LE NOMBRE D'ARTISTES
+  // --------------------------------------------
   const studioAmount = selectedStudioByLetter.length;
   const selectedStudioAmount = filteredStudio.length;
 
+  // --------------------------------------------
   // SORTED BTN
+  // --------------------------------------------
   useEffect(() => {
     setData(movies);
   }, [movies]);
 
+  // --------------------------------------------
   // REQUEST ALL MOVIES SORTED ALPHABETICAL ASC
+  // --------------------------------------------
   const movieSortedA = async () => {
     try {
       const response = await fetch(
@@ -121,7 +139,9 @@ function MovieStudio() {
     }
   };
 
+  // --------------------------------------------
   // REQUEST ALL MOVIES SORTED ALPHABETICAL DESC
+  // --------------------------------------------
   const movieSortedZ = async () => {
     try {
       const response = await fetch(
@@ -140,7 +160,9 @@ function MovieStudio() {
     }
   };
 
+  // --------------------------------------------
   // REQUEST ALL MOVIES SORTED CHRONOLOGICAL ASC
+  // --------------------------------------------
   const movieSortedYear = async () => {
     try {
       const response = await fetch(
@@ -159,7 +181,9 @@ function MovieStudio() {
     }
   };
 
+  // --------------------------------------------
   // REQUEST ALL MOVIES SORTED CHRONOLOGICAL DSC
+  // --------------------------------------------
   const movieSortedYearDesc = async () => {
     try {
       const response = await fetch(
@@ -178,7 +202,9 @@ function MovieStudio() {
     }
   };
 
+  // --------------------------------------------
   // STYLE MUI
+  // --------------------------------------------
   const theme = createTheme({
     palette: {
       primary: {
@@ -196,15 +222,21 @@ function MovieStudio() {
     },
   });
 
+  // --------------------------------------------
   // PROPS FOR TEXTS & IMAGE
+  // --------------------------------------------
   const origin = "studio";
 
+  // -----------------------------------------------------
   // MISE A JOUR AFFICHAGE SI DELETE MOVIE DANS MOVIECARD
+  // -----------------------------------------------------
   const handleDeleteMovie = () => {
     fetchMoviesByStudio();
   };
 
+  // --------------------------------------------
   // FONCTION POUR BTN RESET SEARCH
+  // --------------------------------------------
   const handleResetSearch = () => {
     setSearch("");
     SetSelectedLetter("a"); // lettre par défaut
@@ -214,6 +246,9 @@ function MovieStudio() {
     setMovieAmount(0);
   };
 
+  // --------------------------------------------
+  // RETURN
+  // --------------------------------------------
   return (
     <main>
       <section className="artists_content">

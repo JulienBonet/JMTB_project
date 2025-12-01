@@ -12,7 +12,9 @@ import MovieThumbnail from "../../components/MovieThumbnail3/MovieThumbnail3";
 function Home() {
   const data = useLoaderData();
 
+  // -----------------
   // SHUFFLE DE FILMS
+  // -----------------
   const [shuffledData, setShuffledData] = useState([]);
   const [moviesToShow, setMoviesToShow] = useState(10);
 
@@ -77,7 +79,9 @@ function Home() {
     };
   }, [data, moviesToShow]); // Recalculer à chaque changement de data ou de taille d'écran
 
-  // BTN STYLE ------------------------------------------/
+  // -----------------
+  // BTN STYLE
+  // -----------------
   const theme = createTheme({
     palette: {
       JmdbColorKindNav: {
@@ -101,6 +105,9 @@ function Home() {
     }, // end palette
   }); // const theme = createTheme
 
+  // -----------------
+  // RETURN
+  // -----------------
   return (
     <main>
       <section className="home_title_position">
@@ -121,7 +128,7 @@ function Home() {
             </div>
 
             <ThemeProvider theme={theme}>
-              <Stack spacing={2} direction="row" className="New_shuffle_stack">
+              <Stack spacing={2} direction="row">
                 <Button
                   value="New Shuffle"
                   onClick={handleShuffle}

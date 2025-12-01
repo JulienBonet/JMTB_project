@@ -106,10 +106,10 @@ function AddNewMovie() {
     nbTvEpisodes: "",
     episodeDuration: "",
   });
-  useEffect(() => {
-    console.info("data", data);
-    console.info("movie", movie);
-  }, [data]);
+  // useEffect(() => {
+  //   console.info("data", data);
+  //   console.info("movie", movie);
+  // }, [data]);
 
   //-----------------------------------------------
   // GESTION DES FIELDS SAISONS - EPISODES - DUREE

@@ -8,7 +8,9 @@ import { translateCountry } from "./countries";
 countries.registerLocale(frLocale);
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
+// -----------------------------------------------------------
 // Fonction qui récupère les données du film depuis le backend
+// -----------------------------------------------------------
 
 const fetchMovieViaBackend = async (mediaType, id) => {
   try {

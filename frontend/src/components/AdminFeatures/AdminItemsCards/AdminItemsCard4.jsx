@@ -169,6 +169,9 @@ function AdminItemsCard4({ item, origin, onUpdate, closeModal }) {
     setShowUploadButton(true);
   };
 
+  // -------------------------------
+  // HTML MODULE -- ReactQuill
+  // -------------------------------
   const modules = {
     toolbar: [
       [{ header: [1, 2, 3, false] }],

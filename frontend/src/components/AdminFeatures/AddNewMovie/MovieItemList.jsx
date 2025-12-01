@@ -124,7 +124,7 @@ export default function TransferList({
         return "language";
       case "tags/sorted_id":
       case "tags":
-        return "tag"; // <--- ici singular
+        return "tag";
       case "focus":
         return "focus";
       default:

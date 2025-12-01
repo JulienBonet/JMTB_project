@@ -8,7 +8,9 @@ import ArtistFilmo from "../../components/ArtistFilmo/ArtistFilmo";
 import MovieArtistSearchBar from "../../components/MovieArtistSearchBar/MovieArtistSearchBar";
 
 function MovieTag() {
+  // ---------------------
   // DATAS
+  // ---------------------
   const tagsData = useLoaderData();
   const [movies, setMovies] = useState([]);
   const [data, setData] = useState(movies);
@@ -21,7 +23,9 @@ function MovieTag() {
   const [selectedTagByLetter, setSelectedStudioByLetter] = useState([]);
   const [openSideBar, setOpenSideBar] = useState(false);
 
+  // --------------------------------------------
   // REQUEST ALL TAGS BY LETTER
+  // --------------------------------------------
   useEffect(() => {
     fetch(
       `${import.meta.env.VITE_BACKEND_URL}/api/tags/sorted/${selectedLetter}`
@@ -40,7 +44,9 @@ function MovieTag() {
       });
   }, [selectedLetter]);
 
+  // --------------------------------------------
   // REQUEST ALL MOVIES by TAG
+  // --------------------------------------------
   const fetchMoviesByTag = () => {
     fetch(`${import.meta.env.VITE_BACKEND_URL}/api/tags/${selectedTag.id}`)
       .then((response) => {
@@ -62,18 +68,24 @@ function MovieTag() {
     fetchMoviesByTag();
   }, [selectedTag]);
 
+  // --------------------------------------------
   // SELECT LETTER
+  // --------------------------------------------
   const handleLetterChange = (letter) => {
     SetSelectedLetter(letter);
     setSearch("");
   };
 
+  // --------------------------------------------
   // SELECT TAG
+  // --------------------------------------------
   const handleArtistClick = (tags) => {
     setselectedTag(tags);
   };
 
+  // --------------------------------------------
   // SEARCH BAR
+  // --------------------------------------------
   const handleTyping = (e) => {
     let { value } = e.target;
     value = value.replace(/-/g, "").toLowerCase();
@@ -93,16 +105,22 @@ function MovieTag() {
       )
     : [];
 
+  // --------------------------------------------
   // AFFICHER LE NOMBRE D'ARTISTES
+  // --------------------------------------------
   const tagsAmount = selectedTagByLetter.length;
   const selectedTagAmount = filteredTag.length;
 
+  // --------------------------------------------
   // SORTED BTN
+  // --------------------------------------------
   useEffect(() => {
     setData(movies);
   }, [movies]);
 
+  // --------------------------------------------
   // REQUEST ALL MOVIES SORTED ALPHABETICAL ASC
+  // --------------------------------------------
   const movieSortedA = async () => {
     try {
       const response = await fetch(
@@ -121,7 +139,9 @@ function MovieTag() {
     }
   };
 
+  // --------------------------------------------
   // REQUEST ALL MOVIES SORTED ALPHABETICAL DESC
+  // --------------------------------------------
   const movieSortedZ = async () => {
     try {
       const response = await fetch(
@@ -140,7 +160,9 @@ function MovieTag() {
     }
   };
 
+  // --------------------------------------------
   // REQUEST ALL MOVIES SORTED CHRONOLOGICAL ASC
+  // --------------------------------------------
   const movieSortedYear = async () => {
     try {
       const response = await fetch(
@@ -159,7 +181,9 @@ function MovieTag() {
     }
   };
 
+  // --------------------------------------------
   // REQUEST ALL MOVIES SORTED CHRONOLOGICAL DSC
+  // --------------------------------------------
   const movieSortedYearDesc = async () => {
     try {
       const response = await fetch(
@@ -178,7 +202,9 @@ function MovieTag() {
     }
   };
 
+  // --------------------------------------------
   // STYLE MUI
+  // --------------------------------------------
   const theme = createTheme({
     palette: {
       primary: {
@@ -196,15 +222,21 @@ function MovieTag() {
     },
   });
 
+  // --------------------------------------------
   // PROPS FOR TEXTS & IMAGE
+  // --------------------------------------------
   const origin = "tags";
 
+  // -----------------------------------------------------
   // MISE A JOUR AFFICHAGE SI DELETE MOVIE DANS MOVIECARD
+  // -----------------------------------------------------
   const handleDeleteMovie = () => {
     fetchMoviesByTag();
   };
 
+  // --------------------------------------------
   // FONCTION POUR BTN RESET SEARCH
+  // --------------------------------------------
   const handleResetSearch = () => {
     setSearch("");
     SetSelectedLetter("a"); // lettre par défaut
@@ -214,6 +246,9 @@ function MovieTag() {
     setMovieAmount(0);
   };
 
+  // --------------------------------------------
+  // RETURN
+  // --------------------------------------------
   return (
     <main>
       <section className="artists_content">
