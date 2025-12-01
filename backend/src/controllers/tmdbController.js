@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 /* eslint-disable consistent-return */
-const fetch = require("node-fetch"); // ou global fetch si Node >= 18
+const fetch = require("node-fetch");
 
 // Helper générique pour un fetch TMDB
 const fetchTMDB = async (url) => {
@@ -121,50 +121,6 @@ const fetchCoverFromTMDB = async (req, res) => {
 -------------------------------------------- */
 
 // const fetchKeywordsFromTMDB = async (req, res) => {
-//   const { mediaType, movieId } = req.params;
-
-//   const tmdbUrl = `https://api.themoviedb.org/3/${mediaType}/${movieId}/keywords`;
-//   console.log("🌐 Appel TMDB keywords :", tmdbUrl);
-
-//   try {
-//     // Appel direct à TMDB
-//     const response = await fetch(tmdbUrl, {
-//       headers: {
-//         Accept: "application/json",
-//         Authorization: `Bearer ${process.env.VITE_APP_TMDB_AUTH_TOKEN}`,
-//       },
-//     });
-
-//     console.log("📡 Status TMDB =", response.status);
-//     console.log("📡 Headers TMDB =", Object.fromEntries(response.headers));
-
-//     // Lire le texte brut pour debug avant JSON
-//     const rawText = await response.text();
-//     console.log("📡 RAW BODY TMDB =", rawText);
-
-//     let data;
-//     try {
-//       data = JSON.parse(rawText);
-//     } catch (jsonErr) {
-//       console.error("💥 Erreur parsing JSON TMDB :", jsonErr.message);
-//       return res.status(500).json({ keywordsData: [] });
-//     }
-
-//     // Récupération des keywords selon le type (movie / tv)
-//     const keywords = Array.isArray(data.keywords)
-//       ? data.keywords
-//       : Array.isArray(data.results)
-//         ? data.results
-//         : [];
-
-//     console.log("🏷️ Keywords extraits :", keywords);
-
-//     res.status(200).json({ keywordsData: keywords });
-//   } catch (err) {
-//     console.error("💥 Erreur TMDB keywords :", err.message);
-//     res.status(500).json({ keywordsData: [] });
-//   }
-// };
 
 const fetchKeywordsFromTMDB = async (req, res) => {
   const { mediaType, movieId } = req.params;

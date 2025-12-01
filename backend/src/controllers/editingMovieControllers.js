@@ -24,12 +24,12 @@ const purgeModel = require("../models/purgeModel");
 //-----------------------------------------------
 
 const downloadImage = async (url, filepath) => {
-  console.info("💡 downloadImage appelé avec :", url, filepath);
+  // console.info("💡 downloadImage appelé avec :", url, filepath);
   const response = await axios({
     url,
     responseType: "stream",
   });
-  console.info("💡 Flux reçu depuis l’URL, début de l’écriture...");
+  // console.info("💡 Flux reçu depuis l’URL, début de l’écriture...");
   return new Promise((resolve, reject) => {
     const writeStream = fs.createWriteStream(filepath);
     response.data
@@ -50,7 +50,7 @@ const downloadPoster = async (posterPath) => {
 
   await downloadImage(posterUrl, filepath);
 
-  console.info(`✅ Image TMDB téléchargée et redimensionnée : ${filename}`);
+  // console.info(`✅ Image TMDB téléchargée et redimensionnée : ${filename}`);
 
   return filename;
 }; // end const downloadPoster

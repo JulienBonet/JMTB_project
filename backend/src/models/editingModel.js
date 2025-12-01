@@ -241,7 +241,6 @@ const deleteCountry = (id) =>
 const findGenreByName = (name) => {
   db.query("SELECT * FROM genre WHERE name = ?", [name])
     .then(([rows]) => {
-      console.info(`SQL results: ${JSON.stringify(rows)}`);
       return rows;
     })
     .catch((err) => {
@@ -254,11 +253,9 @@ const findGenreById = (id) =>
   db.query("SELECT * FROM genre WHERE id = ?", [id]).then(([rows]) => rows);
 
 const insertGenre = async (name) => {
-  console.info("name in insert genre", name);
   const [result] = await db.query("INSERT INTO genre (name) VALUES (?);", [
     name,
   ]);
-  console.info("Result from INSERT query:", result);
   return { insertId: result.insertId };
 };
 
@@ -320,10 +317,6 @@ const findTagByName = async (name) => {
   return rows[0] || null;
 };
 
-// const findTagByNameInBackend = async (name) => {
-//   const [results] = await db.query("SELECT * FROM tag WHERE name = ?", [name]);
-//   return results.length > 0 ? results[0] : null; // Retourne le premier tag trouvé ou null
-// };
 const findTagByNameInBackend = async (name) => {
   const [rows] = await db.query("SELECT id, name FROM tag WHERE name = ?", [
     name,
@@ -335,10 +328,6 @@ const insertTag = async (name) => {
   const [result] = await db.query("INSERT INTO tag (name) VALUES (?);", [name]);
   return result.insertId;
 };
-// const insertTag = async (name) => {
-//   const [result] = await db.query("INSERT INTO tag (name) VALUES (?)", [name]);
-//   return { id: result.insertId, name };
-// };
 
 const editTag = async (name, id) => {
   const query = `

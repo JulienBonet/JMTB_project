@@ -663,21 +663,6 @@ const eraseCompositor = async (req, res = null) => {
 // EDIT STUDIO
 //-----------------------------
 
-// const addStudio = async (req, res) => {
-//   try {
-//     const { name } = req.body;
-//     if (!name) {
-//       return res.status(400).json({ message: "Studio's name is required" });
-//     }
-//     await editingModel.insertStudio(name);
-
-//     return res.status(201).json({ message: "Studio successfully created" });
-//   } catch (error) {
-//     console.error("Error Studio creation :", error);
-//     return res.status(500).json({ message: "Error Studio creation" });
-//   }
-// };
-
 const addStudio = async (req, res) => {
   try {
     const { name } = req.body;
@@ -1138,9 +1123,8 @@ const addTag = async (req, res) => {
 
     return res.status(201).json({
       message: "Tag(s) successfully created",
-      // tagIds: insertedTags,
       tags: await Promise.all(
-        insertedTags.map((id) => editingModel.findTagById(id)) // pas besoin de `await` ici
+        insertedTags.map((id) => editingModel.findTagById(id))
       ),
     });
   } catch (error) {

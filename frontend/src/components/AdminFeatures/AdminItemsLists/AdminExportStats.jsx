@@ -242,7 +242,7 @@ function AdminExportStats() {
               {stats.genresByCount.map((g) => (
                 <Typography key={g.name} sx={infoStatsSX()}>
                   <span className="infoStatWeight">{g.name}:</span>{" "}
-                  {g.movieCount}
+                  {g.movieCount} films
                 </Typography>
               ))}
             </AccordionDetails>

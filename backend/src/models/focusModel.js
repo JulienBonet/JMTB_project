@@ -20,12 +20,6 @@ const findAllFocusSortedIdDesc = () => {
   );
 };
 
-// const findAllFocusByCategoryIdRandom = (id) => {
-//   return db.query(`SELECT * FROM focus WHERE categoryId = ? ORDER BY RAND();`, [
-//     id,
-//   ]);
-// };
-
 const findAllFocusByCategoryIdRandom = (id) => {
   return db.query(
     `SELECT f.*
