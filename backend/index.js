@@ -1,5 +1,14 @@
 // Load environment variables from .env file
-require("dotenv").config();
+// require("dotenv").config();
+// require("dotenv").config({
+//   path: `.env.${process.env.NODE_ENV || "development"}`,
+// });
+require("dotenv").config({
+  path:
+    process.env.NODE_ENV === "production"
+      ? ".env.production"
+      : ".env.development",
+});
 
 // Import app from app.js
 const app = require("./src/app");

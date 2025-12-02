@@ -1,15 +1,17 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-  root: "./frontend",
+  // root: "./frontend",
+  root: ".",
   build: {
     outDir: "dist",
     emptyOutDir: true,
-    rollupOptions: {
-      input: "index.html",
-    },
+    // rollupOptions: {
+    //   input: "index.html",
+    // },
     terserOptions: {
       compress: {
         drop_console: true, // Retire tous les console.* du build prod

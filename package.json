@@ -6,7 +6,7 @@
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "server": "nodemon --cwd backend index.js",
     "client": "vite --host",
-    "build": "vite build",
+    "build": "npm --prefix frontend run build",
     "start": "node backend/index.js",
     "preview": "vite preview",
     "db:migrate": "node backend/migrate.js",
