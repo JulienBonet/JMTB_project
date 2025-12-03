@@ -8,8 +8,11 @@ const app = express();
 // CORS pour permettre les requêtes du frontend
 app.use(
   cors({
-    // origin: ["http://localhost:3310", process.env.FRONTEND_URL],
-    origin: process.env.FRONTEND_URL,
+    // origin: process.env.FRONTEND_URL,
+    origin: [
+      "http://localhost:5173",
+      "https://jmtbproject-production.up.railway.app",
+    ],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -29,11 +32,10 @@ app.use("/images", express.static(path.join(__dirname, "../public/images")));
 
 // Import des routes API
 const router = require("./router");
-// Assure-toi que le chemin soit correct
+
 app.use("/api", router); // Routes API
 
 // Chemin vers le build React (une fois construit)
-// const reactBuildPath = path.join(__dirname, "../../frontend/build");
 const reactBuildPath = path.join(__dirname, "../../frontend/dist"); // correction pour mise en prod
 app.use(express.static(reactBuildPath));
 
