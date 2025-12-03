@@ -2,8 +2,8 @@
 require("dotenv").config({
   path:
     process.env.NODE_ENV === "production"
-      ? ".env.production"
-      : ".env.development",
+      ? `${__dirname}/.env.production`
+      : `${__dirname}/.env.development`,
 });
 
 // Import app from app.js

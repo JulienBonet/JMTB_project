@@ -30,12 +30,11 @@ import MovieFocusCasting from "./pages/MovieFocus/MovieFocusCasting.jsx";
 const isDevelopment = import.meta.env.MODE === "development";
 
 // Configurer l'URL de votre backend en fonction de l'environnement
-// const backendUrl =
-//   import.meta.env.VITE_BACKEND_URL ||
-//   `http://localhost:${isDevelopment ? 3310 : process.env.APP_PORT}`; // Utilisez APP_PORT pour la prod
 const backendUrl = isDevelopment
   ? "http://localhost:3310"
   : import.meta.env.VITE_BACKEND_URL;
+
+console.log("backendUrl", backendUrl);
 
 const router = createBrowserRouter([
   // ----------------
