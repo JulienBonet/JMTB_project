@@ -8,8 +8,9 @@ const app = express();
 // CORS pour permettre les requêtes du frontend
 app.use(
   cors({
-    origin: [process.env.FRONTEND_URL],
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"], // Méthodes autorisées
+    // origin: ["http://localhost:3310", process.env.FRONTEND_URL],
+    origin: process.env.FRONTEND_URL,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
