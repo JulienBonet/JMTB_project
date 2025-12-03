@@ -32,7 +32,7 @@ const isDevelopment = import.meta.env.MODE === "development";
 // Configurer l'URL de votre backend en fonction de l'environnement
 const backendUrl = isDevelopment
   ? "http://localhost:3310"
-  : import.meta.env.VITE_BACKEND_URL;
+  : "https://jmtbproject-production.up.railway.app";
 
 console.log("backendUrl", backendUrl);
 
