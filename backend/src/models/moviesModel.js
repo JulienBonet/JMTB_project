@@ -8,8 +8,10 @@ const findAllSortedNoX = () => {
   return db
     .query(
       `SELECT *
-    FROM movies
-    WHERE id NOT IN (SELECT movieId FROM jmdb.movie_genre WHERE genreId = 14);`,
+        FROM movies
+        WHERE id NOT IN (SELECT movieId FROM jmdb.movie_genre WHERE genreId = 14)
+        ORDER BY RAND()
+        LIMIT 10;`,
       []
     )
     .then((result) => {

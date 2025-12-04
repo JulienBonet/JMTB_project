@@ -10,39 +10,17 @@ import "./homeMediaQueries.css";
 import MovieThumbnail from "../../components/MovieThumbnail3/MovieThumbnail3";
 
 function Home() {
-  const data = useLoaderData();
-
-  // -----------------
-  // SHUFFLE DE FILMS
-  // -----------------
-  const [shuffledData, setShuffledData] = useState([]);
+  // const data = useLoaderData();
+  const initialData = useLoaderData();
+  const [movies, setMovies] = useState(initialData);
   const [moviesToShow, setMoviesToShow] = useState(10);
 
-  const shuffleArray = (array) => {
-    const shuffled = JSON.parse(JSON.stringify(array));
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const randomIndex = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[randomIndex]] = [
-        shuffled[randomIndex],
-        shuffled[i],
-      ];
-    }
-    return shuffled;
-  };
+  const isDevelopment = import.meta.env.MODE === "development";
 
-  // Fonction qui gère le mélange et l'affichage des films en fonction de la taille de l'écran
-  const handleShuffle = () => {
-    if (Array.isArray(data) && data.length > 0) {
-      const newShuffledData = shuffleArray(data).slice(0, moviesToShow); // Nombre de films affichés selon moviesToShow
-      setShuffledData(newShuffledData);
-    } else {
-      console.error(
-        "No movies data available to shuffle or data is not an array."
-      );
-    }
-  };
+  const backendUrl = isDevelopment
+    ? "http://localhost:3310"
+    : "https://jmtbproject-production.up.railway.app";
 
-  // Fonction pour mettre à jour le nombre de films en fonction de la taille de l'écran
   const updateMoviesToShow = () => {
     if (window.matchMedia("(max-width: 767px)").matches) {
       setMoviesToShow(1);
@@ -65,19 +43,17 @@ function Home() {
     }
   };
 
-  // Appeler le premier mélange au chargement initial et mettre à jour le nombre de films à afficher
   useEffect(() => {
     updateMoviesToShow();
-    handleShuffle();
-
-    // Ajouter un écouteur d'événements pour détecter le redimensionnement de la fenêtre
     window.addEventListener("resize", updateMoviesToShow);
+    return () => window.removeEventListener("resize", updateMoviesToShow);
+  }, []);
 
-    // Nettoyage à la suppression du composant
-    return () => {
-      window.removeEventListener("resize", updateMoviesToShow);
-    };
-  }, [data, moviesToShow]); // Recalculer à chaque changement de data ou de taille d'écran
+  const handleShuffle = async () => {
+    const res = await fetch(`${backendUrl}/api/movies/sorted/nox`);
+    const newMovies = await res.json();
+    setMovies(newMovies);
+  };
 
   // -----------------
   // BTN STYLE
@@ -118,12 +94,8 @@ function Home() {
         <div className="welcome_content">
           <div className="ShuffleThumbnails_welcome">
             <div className="MovieThumbnails_welcome">
-              {shuffledData.map((movieData) => (
-                <MovieThumbnail
-                  key={movieData.id}
-                  data={movieData}
-                  className="thumbs_welcome"
-                />
+              {movies.slice(0, moviesToShow).map((movie) => (
+                <MovieThumbnail key={movie.id} data={movie} />
               ))}
             </div>
 

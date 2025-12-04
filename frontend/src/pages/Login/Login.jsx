@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 import "../../assets/css/common_elements.css";
 import "./login.css";
 import { useAuth } from "../../Context/AuthContext";
@@ -11,6 +12,7 @@ function Login() {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -21,25 +23,24 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
-      await login(name, password); // appel au login du contexte
+      await login(name, password);
       console.log("Connexion réussie !");
-
-      // redirection après connexion réussie
-      navigate("/"); // "/" correspond à Home
+      navigate("/");
     } catch (err) {
       console.error(err);
       setError("Identifiants incorrects");
+    } finally {
+      setLoading(false);
     }
   };
-
   // ---------
   // SX
   // ---------
   const textFieldSx = {
     backgroundColor: "white",
-    marginBottom: 2,
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
         borderColor: "var(--color-04)", // bord normal
@@ -52,8 +53,7 @@ function Login() {
       },
     },
     "& .MuiInputLabel-root.Mui-focused": {
-      color: "var(--color-02)", // label focus
-      fontWeight: "bold",
+      color: "var(--color-05)", // label focus
     },
   };
 
@@ -73,30 +73,36 @@ function Login() {
         <h1 className="title_login_page">CONNEXION</h1>
 
         <form className="form_login" onSubmit={handleSubmit}>
-          <TextField
-            required
-            variant="outlined"
-            label="Login"
-            sx={textFieldSx}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+          <div className="textfeild_container_login">
+            <TextField
+              required
+              variant="outlined"
+              label="Login"
+              sx={textFieldSx}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
 
-          <TextField
-            required
-            variant="outlined"
-            label="Password"
-            type="password"
-            sx={textFieldSx}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
+            <TextField
+              required
+              variant="outlined"
+              label="Password"
+              type="password"
+              sx={textFieldSx}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
 
-          {error && <p className="error_message">{error}</p>}
+            {error && <p className="error_message">{error}</p>}
+          </div>
           <div className="Button_Container_Login_Page">
-            <Button variant="contained" type="submit" sx={SubmitButtonSx}>
-              Se connecter
-            </Button>
+            {loading ? (
+              <CircularProgress size={32} />
+            ) : (
+              <Button variant="contained" type="submit" sx={SubmitButtonSx}>
+                Se connecter
+              </Button>
+            )}
           </div>
         </form>
       </section>

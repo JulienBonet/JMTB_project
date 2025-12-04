@@ -13,6 +13,15 @@
   width: 450px;
 }
 
+.textfeild_container_login {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  background-color: white;
+  padding: 2rem;
+  border-radius: 10px;
+}
+
 .title_login_page {
   font-family: var(--font-01);
   color: var(--color-01);
@@ -25,8 +34,32 @@
   justify-content: center;
 }
 
-.error_message{
-    color:red;
-    text-align: center;
-    font-size: large;
+.error_message {
+  color: red;
+  text-align: center;
+  font-size: large;
+}
+
+/* LOADER */
+
+.loader_container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner {
+  width: 60px;
+  height: 60px;
+  border: 5px solid #ccc;
+  border-top-color: var(--color-02);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
