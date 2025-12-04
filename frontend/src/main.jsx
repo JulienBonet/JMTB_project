@@ -34,8 +34,6 @@ const backendUrl = isDevelopment
   ? "http://localhost:3310"
   : "https://jmtbproject-production.up.railway.app";
 
-console.log("backendUrl", backendUrl);
-
 const router = createBrowserRouter([
   // ----------------
   // Routes publiques
