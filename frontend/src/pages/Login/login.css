@@ -63,3 +63,20 @@
     transform: rotate(360deg);
   }
 }
+
+@media (max-width: 520px) {
+  .content_login_page {
+    width: 90%;
+    align-items: center;
+  }
+
+  .form_login {
+    width: 100%;
+  }
+  .title_login_page {
+    font-size: xx-large;
+  }
+  .textfeild_container_login {
+    padding: 1rem;
+}
+}
