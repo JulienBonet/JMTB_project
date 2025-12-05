@@ -4,7 +4,7 @@
 /* eslint-disable no-undef */
 import { useState, useEffect, useRef } from "react";
 import { FixedSizeGrid as Grid } from "react-window";
-import AutoSizer from "react-virtualized-auto-sizer";
+import { AutoSizer } from "react-virtualized";
 import "./movieSearch.css";
 import "./movieSearchMediaQueries.css";
 import "../../assets/css/scrollButton.css";
