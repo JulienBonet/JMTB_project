@@ -10,6 +10,11 @@ import "./movieSearchMediaQueries.css";
 import "../../assets/css/scrollButton.css";
 import CachedIcon from "@mui/icons-material/Cached";
 import { ToggleButton, ToggleButtonGroup } from "@mui/material";
+import TextField from "@mui/material/TextField";
+import InputAdornment from "@mui/material/InputAdornment";
+import IconButton from "@mui/material/IconButton";
+import SearchIcon from "@mui/icons-material/Search";
+import ClearIcon from "@mui/icons-material/Clear";
 import YearDropdown from "../../components/YearOption/YearDropdown";
 import CountryDropdown from "../../components/CountryOption/CountryDropdown";
 import KindsDropdown from "../../components/KindOption/KindsDropdown";
@@ -190,11 +195,57 @@ function MovieSearch() {
         <section className="search_bar_position">
           {/* Search bar */}
           <div className="search_bar_container">
-            <input
+            {/* <input
               value={search}
               onChange={handleTyping}
-              className="search_bar"
+              className="search_bar search_bar_MovieSearchPage"
               placeholder="recherche"
+            /> */}
+            <TextField
+              value={search}
+              onChange={handleTyping}
+              placeholder="Rechercher un film..."
+              variant="outlined"
+              size="small"
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: "#aaa" }} />
+                  </InputAdornment>
+                ),
+                endAdornment: search && (
+                  <InputAdornment position="end">
+                    <IconButton onClick={() => setSearch("")} size="small">
+                      <ClearIcon sx={{ color: "#888" }} />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
+              sx={{
+                borderRadius: 3,
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 3,
+                  backgroundColor: "#f5f5f5",
+                  "& fieldset": {
+                    borderColor: "#ccc",
+                  },
+                  "&:hover fieldset": {
+                    borderColor: "var(--color-03)",
+                  },
+                  "&.Mui-focused fieldset": {
+                    borderColor: "var(--color-03)",
+                    boxShadow: "0 0 8px rgba(0,0,0,0.1)",
+                  },
+                },
+                input: {
+                  color: "#333",
+                  "&::placeholder": {
+                    color: "#aaa",
+                    opacity: 1,
+                  },
+                },
+              }}
             />
           </div>
 

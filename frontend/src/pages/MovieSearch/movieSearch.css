@@ -24,8 +24,8 @@
   border-radius: 10px;
   padding: 10px;
 }
-.search_bar {
-  padding: 15px 10px;
+.search_bar_MovieSearchPage {
+  padding: 10px 10px;
   width: 350px;
 }
 
@@ -159,3 +159,4 @@
   transform: scale(0.95) rotate(-0.1turn);
   box-shadow: 0 0 10px var(--color-02) inset;
 }
+
