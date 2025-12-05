@@ -35,8 +35,6 @@
   .filter_container_MovieSearch {
     margin-bottom: 10px;
   }
-    /* .dropdown_search_container .css-1e6k89n-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root {
-  width: 50% !important;} */
 }
 
 @media (max-width: 768px) {
@@ -57,13 +55,14 @@
     background-color: var(--color-04);
   }
 
-  .dropdown_search_container,
   .filter_container_MovieSearch {
     flex-direction: column;
   }
 
-  .dropdown_search_container .css-1e6k89n-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root {
-  width: auto !important;
-  flex-wrap: wrap;
-}
+  .dropdown_search_container{
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 2rem;
+  }
+
 }

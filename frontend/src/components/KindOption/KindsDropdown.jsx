@@ -13,13 +13,13 @@ function KindsDropdown({
   const [kinds, setKinds] = useState([]);
 
   const [isTablet, setIsTablet] = useState(
-    window.innerWidth <= 1279 && window.innerWidth >= 769
+    window.innerWidth <= 1279 && window.innerWidth >= 0
   );
 
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
-      setIsTablet(width <= 1279 && width >= 769);
+      setIsTablet(width <= 1279 && width >= 0);
     };
 
     window.addEventListener("resize", handleResize);

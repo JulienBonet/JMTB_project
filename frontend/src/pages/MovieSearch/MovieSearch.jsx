@@ -195,12 +195,6 @@ function MovieSearch() {
         <section className="search_bar_position">
           {/* Search bar */}
           <div className="search_bar_container">
-            {/* <input
-              value={search}
-              onChange={handleTyping}
-              className="search_bar search_bar_MovieSearchPage"
-              placeholder="recherche"
-            /> */}
             <TextField
               value={search}
               onChange={handleTyping}
