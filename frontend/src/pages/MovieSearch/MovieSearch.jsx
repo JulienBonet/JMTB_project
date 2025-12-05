@@ -19,17 +19,6 @@ import LoaderCowardlySquid from "../../components/LoaderCowardlySquid/LoaderCowa
 import ToggleSortedButton from "../../components/ToggleSortedBtn/ToggleSortedButton";
 import SideActionBar from "../../components/StickySideBar/StickySideBar";
 
-// Virtualisation ligne par ligne
-// function getVisibleRows(moviesList, containerWidth, thumbnailWidth, gap) {
-//   const effectiveWidth = thumbnailWidth + gap;
-//   const cols = Math.max(1, Math.floor((containerWidth + gap) / effectiveWidth));
-//   const rows = [];
-//   for (let i = 0; i < moviesList.length; i += cols) {
-//     rows.push(moviesList.slice(i, i + cols));
-//   }
-//   return rows;
-// }
-
 function MovieSearch() {
   const [movies, setMovies] = useState([]);
 
@@ -39,19 +28,19 @@ function MovieSearch() {
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedYear, setSelectedYear] = useState("");
   const [selectedTvShow, setSelectedTvShow] = useState("all");
-  const [orderby, setOrderby] = useState("id"); // default = id
-  const [direction, setDirection] = useState("DESC"); // default DESC for latest first
+  const [orderby, setOrderby] = useState("id");
+  const [direction, setDirection] = useState("DESC");
   const [isLoading, setIsLoading] = useState(true);
   const [openSideBar, setOpenSideBar] = useState(false);
+
+  // nombre de films
+  const movieAmount = movies.length;
 
   // responsive / virtualisation
   const containerRef = useRef(null);
   // const [containerWidth, setContainerWidth] = useState(1280);
   const [mobileToggleOpen, setMobileToggleOpen] = useState(false);
   const [isNarrow, setIsNarrow] = useState(window.innerWidth < 768);
-
-  // nombre de films
-  const movieAmount = movies.length;
 
   //-----------------------------
   // SUIVRE L'ETAT DE isNarrow
@@ -179,6 +168,7 @@ function MovieSearch() {
     color: "var(--color-01)",
     border: "solid 1px white",
     borderRadius: "10px",
+    height: "40px",
     textTransform: "none",
     "&.Mui-selected": { color: "var(--color-03)" },
     "&:hover": {

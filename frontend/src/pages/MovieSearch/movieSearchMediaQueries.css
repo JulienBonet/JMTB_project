@@ -35,8 +35,8 @@
   .filter_container_MovieSearch {
     margin-bottom: 10px;
   }
-    .dropdown_search_container .css-1e6k89n-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root {
-  width: 50% !important;}
+    /* .dropdown_search_container .css-1e6k89n-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root {
+  width: 50% !important;} */
 }
 
 @media (max-width: 768px) {
@@ -64,5 +64,6 @@
 
   .dropdown_search_container .css-1e6k89n-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root {
   width: auto !important;
+  flex-wrap: wrap;
 }
 }

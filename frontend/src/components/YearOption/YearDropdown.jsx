@@ -46,7 +46,7 @@ function YearDropdown({ onYearChange, selectedYearData, search }) {
       onChange={handleChange}
       displayEmpty
       sx={{
-        height: "50px",
+        height: "40px",
         textAlign: "center",
         fontFamily: "var(--font-02)",
         color: "var(--color-02)",
