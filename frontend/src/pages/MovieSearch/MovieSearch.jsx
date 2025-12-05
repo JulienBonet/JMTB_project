@@ -3,6 +3,8 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable no-undef */
 import { useState, useEffect, useRef } from "react";
+import { FixedSizeGrid as Grid } from "react-window";
+import AutoSizer from "react-virtualized-auto-sizer";
 import "./movieSearch.css";
 import "./movieSearchMediaQueries.css";
 import "../../assets/css/scrollButton.css";
@@ -18,15 +20,15 @@ import ToggleSortedButton from "../../components/ToggleSortedBtn/ToggleSortedBut
 import SideActionBar from "../../components/StickySideBar/StickySideBar";
 
 // Virtualisation ligne par ligne
-function getVisibleRows(moviesList, containerWidth, thumbnailWidth, gap) {
-  const effectiveWidth = thumbnailWidth + gap;
-  const cols = Math.max(1, Math.floor((containerWidth + gap) / effectiveWidth));
-  const rows = [];
-  for (let i = 0; i < moviesList.length; i += cols) {
-    rows.push(moviesList.slice(i, i + cols));
-  }
-  return rows;
-}
+// function getVisibleRows(moviesList, containerWidth, thumbnailWidth, gap) {
+//   const effectiveWidth = thumbnailWidth + gap;
+//   const cols = Math.max(1, Math.floor((containerWidth + gap) / effectiveWidth));
+//   const rows = [];
+//   for (let i = 0; i < moviesList.length; i += cols) {
+//     rows.push(moviesList.slice(i, i + cols));
+//   }
+//   return rows;
+// }
 
 function MovieSearch() {
   const [movies, setMovies] = useState([]);
@@ -44,9 +46,12 @@ function MovieSearch() {
 
   // responsive / virtualisation
   const containerRef = useRef(null);
-  const [containerWidth, setContainerWidth] = useState(1280);
+  // const [containerWidth, setContainerWidth] = useState(1280);
   const [mobileToggleOpen, setMobileToggleOpen] = useState(false);
   const [isNarrow, setIsNarrow] = useState(window.innerWidth < 768);
+
+  // nombre de films
+  const movieAmount = movies.length;
 
   //-----------------------------
   // SUIVRE L'ETAT DE isNarrow
@@ -182,33 +187,9 @@ function MovieSearch() {
     },
   };
 
-  //--------------------------------------------------------
-  // Resize container width pour responsive (virtualisation)
-  //--------------------------------------------------------
-  useEffect(() => {
-    const handleResize = () => {
-      if (containerRef.current) {
-        setContainerWidth(containerRef.current.offsetWidth);
-      }
-    };
-    window.addEventListener("resize", handleResize);
-    handleResize();
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   const THUMB_WIDTH = 200;
   const THUMB_GAP = 16;
-
-  // visibleRows doit utiliser movies (source unique)
-  const visibleRows = getVisibleRows(
-    movies,
-    containerWidth,
-    THUMB_WIDTH,
-    THUMB_GAP
-  );
-
-  // nombre de films
-  const movieAmount = movies.length;
+  const THUMB_HEIGHT = 300;
 
   //-----------------------------
   // RETURN
@@ -320,23 +301,57 @@ function MovieSearch() {
             />
 
             {movies.length > 0 ? (
-              <div className="MovieThumbnails">
-                {visibleRows.map((rowMovies) => (
-                  <div
-                    key={rowMovies.map((m) => m.id).join("-")}
-                    className="MovieThumbnails_Row"
-                  >
-                    {rowMovies.map((movie) => (
-                      <MovieThumbnail
-                        key={movie.id}
-                        data={movie}
-                        onDeleteMovie={handleDeleteMovie}
-                        onUpdateMovie={handleUpdateMovie}
-                      />
-                    ))}
-                  </div>
-                ))}
-              </div>
+              <AutoSizer>
+                {({ width, height }) => {
+                  const columns = Math.max(
+                    1,
+                    Math.floor((width + THUMB_GAP) / (THUMB_WIDTH + THUMB_GAP))
+                  );
+                  const rowCount = Math.ceil(movies.length / columns);
+
+                  // largeur totale occupée par la ligne
+                  const totalRowWidth =
+                    columns * (THUMB_WIDTH + THUMB_GAP) - THUMB_GAP;
+                  const offsetX = Math.max(0, (width - totalRowWidth) / 2); // marge gauche pour centrer
+
+                  return (
+                    <Grid
+                      columnCount={columns}
+                      columnWidth={THUMB_WIDTH + THUMB_GAP}
+                      rowCount={rowCount}
+                      rowHeight={THUMB_HEIGHT + THUMB_GAP}
+                      width={width}
+                      height={height}
+                    >
+                      {({ columnIndex, rowIndex, style }) => {
+                        const index = rowIndex * columns + columnIndex;
+                        const movie = movies[index];
+                        if (!movie) return null;
+
+                        return (
+                          <div
+                            style={{
+                              ...style,
+                              left: style.left + offsetX, // ← décale chaque cellule pour centrer
+                              width: THUMB_WIDTH,
+                              height: THUMB_HEIGHT,
+                              padding: THUMB_GAP / 2,
+                              boxSizing: "border-box",
+                            }}
+                          >
+                            <MovieThumbnail
+                              key={movie.id}
+                              data={movie}
+                              onDeleteMovie={handleDeleteMovie}
+                              onUpdateMovie={handleUpdateMovie}
+                            />
+                          </div>
+                        );
+                      }}
+                    </Grid>
+                  );
+                }}
+              </AutoSizer>
             ) : (
               <div className="NoMovieMessageContainer">
                 <p>NO MOVIE FOUND ...</p>
