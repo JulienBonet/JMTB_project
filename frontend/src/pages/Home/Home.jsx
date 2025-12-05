@@ -22,6 +22,13 @@ function Home() {
     : "https://jmtbproject-production.up.railway.app";
 
   const updateMoviesToShow = () => {
+    // 👉 1) Si hauteur trop faible ET largeur desktop, on force 4 images
+    if (window.innerHeight < 850 && window.innerWidth >= 1024) {
+      setMoviesToShow(4);
+      return;
+    }
+
+    // 👉 2) Sinon, logique habituelle basée sur la largeur
     if (window.matchMedia("(max-width: 767px)").matches) {
       setMoviesToShow(1);
     } else if (
@@ -35,7 +42,7 @@ function Home() {
     } else if (
       window.matchMedia("(min-width: 1440px) and (max-width: 1740px)").matches
     ) {
-      setMoviesToShow(8);
+      setMoviesToShow(4);
     } else if (window.matchMedia("(min-width: 1741px)").matches) {
       setMoviesToShow(10);
     } else {
@@ -85,9 +92,11 @@ function Home() {
   // RETURN
   // -----------------
   return (
-    <main>
-      <section className="home_title_position">
-        <h1 className="home_Main_Title">J M D B</h1>
+    <main className="main_HomePage">
+      <section className="home_title_container">
+        <section className="home_title_position">
+          <h1 className="home_Main_Title">J M D B</h1>
+        </section>
       </section>
       <div className="dashed_secondary_bar" />
       <section className="welcome_container">
