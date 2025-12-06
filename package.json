@@ -41,6 +41,7 @@
     "react-dom": "^18.2.0",
     "react-player": "^2.14.1",
     "react-quill": "^2.0.0",
+    "react-resize-detector": "^12.3.0",
     "react-router-dom": "^6.30.2",
     "react-toastify": "^10.0.6",
     "react-window": "^1.8.11",
