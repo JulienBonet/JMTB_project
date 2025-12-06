@@ -2,9 +2,10 @@
 /* eslint-disable no-shadow */
 /* eslint-disable no-nested-ternary */
 /* eslint-disable no-undef */
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { FixedSizeGrid as Grid } from "react-window";
-import AutoSizer from "react-virtualized-auto-sizer";
+// eslint-disable-next-line import/no-unresolved
+import { useResizeDetector } from "react-resize-detector";
 import "./movieSearch.css";
 import "./movieSearchMediaQueries.css";
 import "../../assets/css/scrollButton.css";
@@ -26,6 +27,7 @@ import SideActionBar from "../../components/StickySideBar/StickySideBar";
 
 function MovieSearch() {
   const [movies, setMovies] = useState([]);
+  const { width, height, ref } = useResizeDetector();
 
   // filtres / tri
   const [search, setSearch] = useState("");
@@ -42,7 +44,6 @@ function MovieSearch() {
   const movieAmount = movies.length;
 
   // responsive / virtualisation
-  const containerRef = useRef(null);
   // const [containerWidth, setContainerWidth] = useState(1280);
   const [mobileToggleOpen, setMobileToggleOpen] = useState(false);
   const [isNarrow, setIsNarrow] = useState(window.innerWidth < 768);
@@ -320,7 +321,11 @@ function MovieSearch() {
       <div className="dashed_secondary_bar" />
       <MovieCount movieAmount={movieAmount} />
 
-      <section className="search_moviesList_position" ref={containerRef}>
+      <section
+        className="search_moviesList_position"
+        ref={ref}
+        style={{ width: "100%", height: "100%" }}
+      >
         {isLoading ? (
           <div className="MovieThumbnails_container MovieThumbnails_Loader">
             <LoaderCowardlySquid />
@@ -335,19 +340,29 @@ function MovieSearch() {
               origin="movies"
             />
 
-            {movies.length > 0 ? (
-              <AutoSizer>
-                {({ width, height }) => {
+            {movies.length === 0 && (
+              <div className="NoMovieMessageContainer">
+                <p>NO MOVIE FOUND ...</p>
+                <CachedIcon
+                  className="reset_search_btn_NoMovie"
+                  onClick={handleResetSearch}
+                />
+              </div>
+            )}
+
+            {movies.length > 0 && width && height && (
+              <>
+                {(() => {
                   const columns = Math.max(
                     1,
                     Math.floor((width + THUMB_GAP) / (THUMB_WIDTH + THUMB_GAP))
                   );
-                  const rowCount = Math.ceil(movies.length / columns);
 
-                  // largeur totale occupée par la ligne
+                  const rowCount = Math.ceil(movies.length / columns);
                   const totalRowWidth =
                     columns * (THUMB_WIDTH + THUMB_GAP) - THUMB_GAP;
-                  const offsetX = Math.max(0, (width - totalRowWidth) / 2); // marge gauche pour centrer
+
+                  const offsetX = Math.max(0, (width - totalRowWidth) / 2);
 
                   return (
                     <Grid
@@ -367,11 +382,10 @@ function MovieSearch() {
                           <div
                             style={{
                               ...style,
-                              left: style.left + offsetX, // ← décale chaque cellule pour centrer
+                              left: style.left + offsetX,
+                              padding: THUMB_GAP / 2,
                               width: THUMB_WIDTH,
                               height: THUMB_HEIGHT,
-                              padding: THUMB_GAP / 2,
-                              boxSizing: "border-box",
                             }}
                           >
                             <MovieThumbnail
@@ -385,16 +399,8 @@ function MovieSearch() {
                       }}
                     </Grid>
                   );
-                }}
-              </AutoSizer>
-            ) : (
-              <div className="NoMovieMessageContainer">
-                <p>NO MOVIE FOUND ...</p>
-                <CachedIcon
-                  className="reset_search_btn_NoMovie"
-                  onClick={handleResetSearch}
-                />
-              </div>
+                })()}
+              </>
             )}
           </div>
         )}
