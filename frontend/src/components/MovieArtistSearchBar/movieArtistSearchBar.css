@@ -9,15 +9,14 @@
 
 .MovieArtist_Search_bar_container {
   display: flex;
+  justify-content: center;
   align-items: center;
-  background-color: var(--search-bg, #fefee2);
-  padding: 10px 1rem;
-  border-radius: 1rem;
-  width: 30%;
+  border-radius: 10px;
+  padding: 10px;
 }
 
 .MovieArtist_search_bar {
-  flex:1;
+  flex: 1;
   width: 100%;
   text-align: center;
   border: none;
