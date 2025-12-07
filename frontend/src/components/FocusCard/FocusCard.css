@@ -31,6 +31,9 @@
   width: 30%;
   height: 30%;
 }
+.focusCard_text_container{
+  width: 100%;
+}
 
 .focusCard_titre {
   font-family: var(--font-02);
