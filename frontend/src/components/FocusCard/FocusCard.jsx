@@ -10,9 +10,6 @@ import senscritiqueIco from "../../assets/ico/sens_critique_ico.png";
 import webIco from "../../assets/ico/web_ico.png";
 
 function FocusCard({ selectedFocus, origin }) {
-  console.info("selectedFocus", selectedFocus);
-  console.info("origin", origin);
-
   if (!selectedFocus) return null;
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
