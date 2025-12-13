@@ -1,12 +1,16 @@
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable consistent-return */
 /* eslint-disable prefer-destructuring */
-const fs = require("fs");
-const path = require("path");
-const { resizeImage } = require("../middlewares/resizeImage");
 const { cleanTags } = require("../utils/tags");
 const { cleanStudioName } = require("../utils/studio");
 
+const { uploadBufferToCloudinary, cloudinary } = require("../utils/cloudinary");
+const { resizeAndCropBuffer } = require("../utils/imageUtils");
+
 const editingModel = require("../models/editingModel");
+
+const DEFAULT_IMAGE = "00_item_default.png";
+const CLOUD_FOLDER = "jmdb/covers";
 
 //-----------------------------
 // EDIT DIRECTOR
@@ -93,49 +97,45 @@ const editingDirector = async (req, res) => {
 const uploadDirectorImage = async (req, res) => {
   try {
     const { id } = req.params;
+    if (!req.file || !req.file.buffer)
+      return res.status(400).json({ message: "Aucun fichier fourni" });
 
-    if (!req.file) {
-      return res
-        .status(400)
-        .json({ message: "Aucun fichier n'a été téléchargé" });
-    }
+    const [director] = await editingModel.findDirectorById(id);
+    if (!director)
+      return res.status(404).json({ message: "Director introuvable" });
 
-    const director = await editingModel.findDirectorById(id);
-    const currentImageUrl = director[0].image;
+    const oldImage = director.image;
 
-    // Effacer la précédente image
-    if (currentImageUrl !== "00_item_default.png") {
+    // 🗑️ Supprim ancienne image Cloudinary
+    if (oldImage && oldImage !== DEFAULT_IMAGE) {
       try {
-        const fullPath = path.join(
-          __dirname,
-          "../../public/images",
-          currentImageUrl // Utilisation directe du nom de fichier
-        );
-        if (fs.existsSync(fullPath)) {
-          fs.unlinkSync(fullPath);
-        } else {
-          console.info(`Le fichier n'existe pas : ${fullPath}`);
-        }
-      } catch (unlinkError) {
-        console.error(
-          "Erreur lors de la suppression du fichier :",
-          unlinkError
-        );
+        const publicId = `${CLOUD_FOLDER}/${oldImage.replace(/\.[^.]+$/, "")}`;
+        await cloudinary.uploader.destroy(publicId);
+      } catch (err) {
+        console.error("❌ Cloudinary delete error:", err);
       }
     }
 
-    // Mettre à jour la nouvelle image
-    const imageUrl = req.file.filename;
-    await resizeImage(req.multerType, imageUrl);
-    const result = await editingModel.editDirectorImage(imageUrl, id);
+    // 🔄 Resize 1:1
+    const resizedBuffer = await resizeAndCropBuffer(req.file.buffer, 500, 500);
 
-    if (result.affectedRows > 0) {
-      return res.status(200).json({ message: "Image successfully updated" });
-    }
-    console.error("Erreur lors de la mise à jour de l'image");
-    return res.status(500).json({ message: "Error updating image" });
-  } catch (error) {
-    console.error("Erreur lors du téléchargement de l'image :", error);
+    // ☁ Upload Cloudinary
+    const { publicId, url } = await uploadBufferToCloudinary(
+      resizedBuffer,
+      CLOUD_FOLDER,
+      "director"
+    );
+
+    const filenameOnly = publicId.split("/").pop();
+    const filename = `${filenameOnly}.jpg`;
+
+    await editingModel.editDirectorImage(filename, id);
+
+    return res
+      .status(200)
+      .json({ message: "Image successfully updated", filename, url });
+  } catch (err) {
+    console.error("❌ uploadDirectorImage:", err);
     return res.status(500).json({ message: "Error updating image" });
   }
 };
@@ -143,47 +143,28 @@ const uploadDirectorImage = async (req, res) => {
 const eraseDirector = async (req, res = null) => {
   try {
     const directorId = req.params.id;
-
-    const directors = await editingModel.findDirectorById(directorId);
-    if (!directors || directors.length === 0) {
-      if (res) {
-        return res.status(404).json({ message: "Director non trouvé" });
-      }
+    const rows = await editingModel.findDirectorById(directorId);
+    if (!rows || rows.length === 0) {
+      if (res) return res.status(404).json({ message: "Director non trouvé" });
       return;
     }
 
-    const director = directors[0];
-    const imageUrl = director.image;
-    if (imageUrl && imageUrl !== "00_item_default.png") {
+    const imageUrl = rows[0].image;
+
+    // ☁ delete Cloudinary
+    if (imageUrl && imageUrl !== DEFAULT_IMAGE) {
       try {
-        const fullPath = path.join(
-          __dirname,
-          "../../public/images",
-          path.basename(imageUrl)
-        );
-        if (fs.existsSync(fullPath)) {
-          fs.unlinkSync(fullPath);
-        } else {
-          console.info(`Le fichier n'existe pas : ${fullPath}`);
-        }
-      } catch (unlinkError) {
-        console.error(
-          "Erreur lors de la suppression du fichier :",
-          unlinkError
-        );
+        const publicId = `${CLOUD_FOLDER}/${imageUrl.replace(/\.[^.]+$/, "")}`;
+        await cloudinary.uploader.destroy(publicId);
+      } catch (err) {
+        console.error("❌ Cloudinary delete error:", err);
       }
     }
 
     await editingModel.deleteDirector(directorId);
-    if (res) {
-      res.sendStatus(204);
-    }
-  } catch (error) {
-    if (res) {
-      res
-        .status(500)
-        .json({ message: "Erreur lors de la suppression du réalisateur" });
-    }
+    if (res) res.sendStatus(204);
+  } catch (err) {
+    if (res) res.status(500).json({ message: "Erreur lors de la suppression" });
   }
 };
 
@@ -259,95 +240,66 @@ const editingCasting = async (req, res) => {
 const uploadCastingImage = async (req, res) => {
   try {
     const { id } = req.params;
+    if (!req.file || !req.file.buffer)
+      return res.status(400).json({ message: "Aucun fichier fourni" });
 
-    if (!req.file) {
-      return res
-        .status(400)
-        .json({ message: "Aucun fichier n'a été téléchargé" });
-    }
+    const [casting] = await editingModel.findCastingById(id);
+    if (!casting)
+      return res.status(404).json({ message: "Casting introuvable" });
 
-    const casting = await editingModel.findCastingById(id);
-    const currentImageUrl = casting[0].image;
+    const oldImage = casting.image;
 
-    if (currentImageUrl !== "00_item_default.png") {
+    if (oldImage && oldImage !== DEFAULT_IMAGE) {
       try {
-        const fullPath = path.join(
-          __dirname,
-          "../../public/images",
-          currentImageUrl
-        );
-        if (fs.existsSync(fullPath)) {
-          fs.unlinkSync(fullPath);
-        } else {
-          console.info(`Le fichier n'existe pas : ${fullPath}`);
-        }
-      } catch (unlinkError) {
-        console.error(
-          "Erreur lors de la suppression du fichier :",
-          unlinkError
-        );
+        const publicId = `${CLOUD_FOLDER}/${oldImage.replace(/\.[^.]+$/, "")}`;
+        await cloudinary.uploader.destroy(publicId);
+      } catch (err) {
+        console.error("❌ delete cast:", err);
       }
     }
 
-    const imageUrl = req.file.filename;
-    await resizeImage(req.multerType, imageUrl);
-    const result = await editingModel.editCastingImage(imageUrl, id);
+    const resizedBuffer = await resizeAndCropBuffer(req.file.buffer, 500, 500);
 
-    if (result.affectedRows > 0) {
-      return res.status(200).json({ message: "Image successfully updated" });
-    }
-    console.error("Erreur lors de la mise à jour de l'image");
-    return res.status(500).json({ message: "Error updating image" });
-  } catch (error) {
-    console.error("Erreur lors du téléchargement de l'image :", error);
-    return res.status(500).json({ message: "Error updating image" });
+    const { publicId, url } = await uploadBufferToCloudinary(
+      resizedBuffer,
+      CLOUD_FOLDER,
+      "casting"
+    );
+
+    const filename = `${publicId.split("/").pop()}.jpg`;
+    await editingModel.editCastingImage(filename, id);
+
+    return res.status(200).json({ message: "Image updated", filename, url });
+  } catch (err) {
+    console.error("❌ uploadCastingImage:", err);
+    res.status(500).json({ message: "Error updating image" });
   }
 };
 
 const eraseCasting = async (req, res = null) => {
   try {
     const castingId = req.params.id;
-
-    const castings = await editingModel.findCastingById(castingId);
-    if (!castings || castings.length === 0) {
-      if (res) {
-        return res.status(404).json({ message: "Casting non trouvé" });
-      }
-      return; // Si pas de res, on arrête là
+    const rows = await editingModel.findCastingById(castingId);
+    if (!rows.length) {
+      if (res) return res.status(404).json({ message: "Casting non trouvé" });
+      return;
     }
 
-    const casting = castings[0];
-    const imageUrl = casting.image;
-    if (imageUrl && imageUrl !== "00_item_default.png") {
+    const imageUrl = rows[0].image;
+
+    if (imageUrl && imageUrl !== DEFAULT_IMAGE) {
       try {
-        const fullPath = path.join(
-          __dirname,
-          "../../public/images",
-          path.basename(imageUrl)
-        );
-        if (fs.existsSync(fullPath)) {
-          fs.unlinkSync(fullPath);
-        } else {
-          console.info(`Le fichier n'existe pas : ${fullPath}`);
-        }
-      } catch (unlinkError) {
-        console.error(
-          "Erreur lors de la suppression du fichier :",
-          unlinkError
-        );
+        const publicId = `${CLOUD_FOLDER}/${imageUrl.replace(/\.[^.]+$/, "")}`;
+        await cloudinary.uploader.destroy(publicId);
+      } catch (err) {
+        console.error("❌ delete cast:", err);
       }
     }
 
     await editingModel.deleteCasting(castingId);
-    if (res) {
-      res.sendStatus(204);
-    }
-  } catch (error) {
-    if (res) {
-      res
-        .status(500)
-        .json({ message: "Erreur lors de la suppression du casting" });
-    }
+    if (res) res.sendStatus(204);
+  } catch (err) {
+    if (res) res.status(500).json({ message: "Erreur lors de la suppression" });
   }
 };
 
@@ -413,97 +365,67 @@ const editingScreenwriter = async (req, res) => {
 const uploadScreenwriterImage = async (req, res) => {
   try {
     const { id } = req.params;
+    if (!req.file || !req.file.buffer)
+      return res.status(400).json({ message: "Aucun fichier fourni" });
 
-    if (!req.file) {
-      return res
-        .status(400)
-        .json({ message: "Aucun fichier n'a été téléchargé" });
-    }
+    const [row] = await editingModel.findScreenwriterById(id);
+    if (!row)
+      return res.status(404).json({ message: "Screenwriter introuvable" });
 
-    const screenwriter = await editingModel.findScreenwriterById(id);
-    const currentImageUrl = screenwriter[0].image;
-
-    if (currentImageUrl !== "00_item_default.png") {
+    const oldImage = row.image;
+    if (oldImage && oldImage !== DEFAULT_IMAGE) {
       try {
-        const fullPath = path.join(
-          __dirname,
-          "../../public/images",
-          currentImageUrl
-        );
-        if (fs.existsSync(fullPath)) {
-          fs.unlinkSync(fullPath);
-        } else {
-          console.info(`Le fichier n'existe pas : ${fullPath}`);
-        }
-      } catch (unlinkError) {
-        console.error(
-          "Erreur lors de la suppression du fichier :",
-          unlinkError
-        );
+        const publicId = `${CLOUD_FOLDER}/${oldImage.replace(/\.[^.]+$/, "")}`;
+        await cloudinary.uploader.destroy(publicId);
+      } catch (err) {
+        console.error("❌ delete screenwriter:", err);
       }
     }
 
-    const imageUrl = req.file.filename;
-    await resizeImage(req.multerType, imageUrl);
-    const result = await editingModel.editScreenwriterImage(imageUrl, id);
+    const resizedBuffer = await resizeAndCropBuffer(req.file.buffer, 500, 500);
 
-    if (result.affectedRows > 0) {
-      return res.status(200).json({ message: "Image successfully updated" });
-    }
-    console.error("Erreur lors de la mise à jour de l'image");
-    return res.status(500).json({ message: "Error updating image" });
-  } catch (error) {
-    console.error("Erreur lors du téléchargement de l'image :", error);
-    return res.status(500).json({ message: "Error updating image" });
+    const { publicId, url } = await uploadBufferToCloudinary(
+      resizedBuffer,
+      CLOUD_FOLDER,
+      "screenwriter"
+    );
+
+    const filename = `${publicId.split("/").pop()}.jpg`;
+    await editingModel.editScreenwriterImage(filename, id);
+
+    return res.status(200).json({ message: "Image updated", filename, url });
+  } catch (err) {
+    console.error("❌ uploadScreenwriterImage:", err);
+    res.status(500).json({ message: "Error updating image" });
   }
 };
 
 const eraseScreenwriter = async (req, res = null) => {
   try {
-    const screenwriterId = req.params.id;
+    const id = req.params.id;
 
-    const screenwriters =
-      await editingModel.findScreenwriterById(screenwriterId);
-    if (!screenwriters || screenwriters.length === 0) {
-      if (res) {
-        return res.status(404).json({ message: "Scénariste non trouvé" });
-      }
-      return; // Arrêter si aucune réponse HTTP n'est envoyée
+    const rows = await editingModel.findScreenwriterById(id);
+    if (!rows.length) {
+      if (res)
+        return res.status(404).json({ message: "Screenwriter non trouvé" });
+      return;
     }
 
-    const screenwriter = screenwriters[0];
-    const imageUrl = screenwriter.image;
-    if (imageUrl && imageUrl !== "00_item_default.png") {
+    const imageUrl = rows[0].image;
+
+    if (imageUrl && imageUrl !== DEFAULT_IMAGE) {
       try {
-        const fullPath = path.join(
-          __dirname,
-          "../../public/images",
-          path.basename(imageUrl)
-        );
-        if (fs.existsSync(fullPath)) {
-          fs.unlinkSync(fullPath);
-        } else {
-          console.info(`Le fichier n'existe pas : ${fullPath}`);
-        }
-      } catch (unlinkError) {
-        console.error(
-          "Erreur lors de la suppression du fichier :",
-          unlinkError
-        );
+        const pub = `${CLOUD_FOLDER}/${imageUrl.replace(/\.[^.]+$/, "")}`;
+        await cloudinary.uploader.destroy(pub);
+      } catch (err) {
+        console.error("❌ delete screenwriter:", err);
       }
     }
 
-    await editingModel.deleteScreenwriter(screenwriterId);
-
-    if (res) {
-      res.sendStatus(204); // Envoyer la réponse seulement si 'res' est défini
-    }
-  } catch (error) {
-    if (res) {
-      res
-        .status(500)
-        .json({ message: "Erreur lors de la suppression du scénariste" });
-    }
+    await editingModel.deleteScreenwriter(id);
+    if (res) res.sendStatus(204);
+  } catch (err) {
+    if (res) res.status(500).json({ message: "Erreur lors de la suppression" });
   }
 };
 
@@ -566,96 +488,67 @@ const editingCompositor = async (req, res) => {
 const uploadCompositorImage = async (req, res) => {
   try {
     const { id } = req.params;
+    if (!req.file?.buffer)
+      return res.status(400).json({ message: "Aucun fichier fourni" });
 
-    if (!req.file) {
-      return res
-        .status(400)
-        .json({ message: "Aucun fichier n'a été téléchargé" });
-    }
+    const [row] = await editingModel.findCompositorById(id);
+    if (!row)
+      return res.status(404).json({ message: "Compositor introuvable" });
 
-    const compositor = await editingModel.findCompositorById(id);
-    const currentImageUrl = compositor[0].image;
-
-    if (currentImageUrl !== "00_item_default.png") {
+    const old = row.image;
+    if (old && old !== DEFAULT_IMAGE) {
       try {
-        const fullPath = path.join(
-          __dirname,
-          "../../public/images",
-          currentImageUrl
-        );
-        if (fs.existsSync(fullPath)) {
-          fs.unlinkSync(fullPath);
-        } else {
-          console.info(`Le fichier n'existe pas : ${fullPath}`);
-        }
-      } catch (unlinkError) {
-        console.error(
-          "Erreur lors de la suppression du fichier :",
-          unlinkError
-        );
+        const pub = `${CLOUD_FOLDER}/${old.replace(/\.[^.]+$/, "")}`;
+        await cloudinary.uploader.destroy(pub);
+      } catch (err) {
+        console.error("❌ delete compositor:", err);
       }
     }
 
-    const imageUrl = req.file.filename;
-    await resizeImage(req.multerType, imageUrl);
-    const result = await editingModel.editCompositorImage(imageUrl, id);
+    const resized = await resizeAndCropBuffer(req.file.buffer, 500, 500);
 
-    if (result.affectedRows > 0) {
-      return res.status(200).json({ message: "Image successfully updated" });
-    }
-    console.error("Erreur lors de la mise à jour de l'image");
-    return res.status(500).json({ message: "Error updating image" });
-  } catch (error) {
-    console.error("Erreur lors du téléchargement de l'image :", error);
-    return res.status(500).json({ message: "Error updating image" });
+    const { publicId, url } = await uploadBufferToCloudinary(
+      resized,
+      CLOUD_FOLDER,
+      "compositor"
+    );
+
+    const filename = `${publicId.split("/").pop()}.jpg`;
+    await editingModel.editCompositorImage(filename, id);
+
+    return res.status(200).json({ filename, url });
+  } catch (err) {
+    console.error("❌ uploadCompositorImage:", err);
+    res.status(500).json({ message: "Error updating image" });
   }
 };
 
 const eraseCompositor = async (req, res = null) => {
   try {
-    const compositorId = req.params.id;
+    const id = req.params.id;
 
-    const compositors = await editingModel.findCompositorById(compositorId);
-    if (!compositors || compositors.length === 0) {
-      if (res) {
+    const rows = await editingModel.findCompositorById(id);
+    if (!rows.length) {
+      if (res)
         return res.status(404).json({ message: "Compositor non trouvé" });
-      }
-      return; // Arrêter l'exécution si aucune réponse HTTP n'est envoyée
+      return;
     }
 
-    const compositor = compositors[0];
-    const imageUrl = compositor.image;
-    if (imageUrl && imageUrl !== "00_item_default.png") {
+    const imageUrl = rows[0].image;
+
+    if (imageUrl && imageUrl !== DEFAULT_IMAGE) {
       try {
-        const fullPath = path.join(
-          __dirname,
-          "../../public/images",
-          path.basename(imageUrl)
-        );
-        if (fs.existsSync(fullPath)) {
-          fs.unlinkSync(fullPath);
-        } else {
-          console.info(`Le fichier n'existe pas : ${fullPath}`);
-        }
-      } catch (unlinkError) {
-        console.error(
-          "Erreur lors de la suppression du fichier :",
-          unlinkError
-        );
+        const pub = `${CLOUD_FOLDER}/${imageUrl.replace(/\.[^.]+$/, "")}`;
+        await cloudinary.uploader.destroy(pub);
+      } catch (err) {
+        console.error("❌ delete compositor:", err);
       }
     }
 
-    await editingModel.deleteCompositor(compositorId);
-
-    if (res) {
-      res.sendStatus(204); // Envoyer la réponse uniquement si 'res' est défini
-    }
-  } catch (error) {
-    if (res) {
-      res
-        .status(500)
-        .json({ message: "Erreur lors de la suppression du compositeur" });
-    }
+    await editingModel.deleteCompositor(id);
+    if (res) res.sendStatus(204);
+  } catch (err) {
+    if (res) res.status(500).json({ message: "Erreur lors de la suppression" });
   }
 };
 
@@ -720,96 +613,65 @@ const editingStudio = async (req, res) => {
 const uploadStudioImage = async (req, res) => {
   try {
     const { id } = req.params;
+    if (!req.file?.buffer)
+      return res.status(400).json({ message: "Aucun fichier fourni" });
 
-    if (!req.file) {
-      return res
-        .status(400)
-        .json({ message: "Aucun fichier n'a été téléchargé" });
-    }
+    const [row] = await editingModel.findStudioById(id);
+    if (!row) return res.status(404).json({ message: "Studio introuvable" });
 
-    const studio = await editingModel.findStudioById(id);
-    const currentImageUrl = studio[0].image;
-
-    if (currentImageUrl !== "00_jmtb_item_default.jpg") {
+    const old = row.image;
+    if (old && old !== "00_jmtb_item_default.jpg") {
       try {
-        const fullPath = path.join(
-          __dirname,
-          "../../public/images",
-          currentImageUrl
-        );
-        if (fs.existsSync(fullPath)) {
-          fs.unlinkSync(fullPath);
-        } else {
-          console.info(`Le fichier n'existe pas : ${fullPath}`);
-        }
-      } catch (unlinkError) {
-        console.error(
-          "Erreur lors de la suppression du fichier :",
-          unlinkError
-        );
+        const pub = `${CLOUD_FOLDER}/${old.replace(/\.[^.]+$/, "")}`;
+        await cloudinary.uploader.destroy(pub);
+      } catch (err) {
+        console.error("❌ delete studio:", err);
       }
     }
 
-    const imageUrl = req.file.filename;
-    await resizeImage(req.multerType, imageUrl);
-    const result = await editingModel.editStudioImage(imageUrl, id);
+    const resized = await resizeAndCropBuffer(req.file.buffer, 500, 500);
 
-    if (result.affectedRows > 0) {
-      return res.status(200).json({ message: "Image successfully updated" });
-    }
-    console.error("Erreur lors de la mise à jour de l'image");
-    return res.status(500).json({ message: "Error updating image" });
-  } catch (error) {
-    console.error("Erreur lors du téléchargement de l'image :", error);
-    return res.status(500).json({ message: "Error updating image" });
+    const { publicId, url } = await uploadBufferToCloudinary(
+      resized,
+      CLOUD_FOLDER,
+      "studio"
+    );
+
+    const filename = `${publicId.split("/").pop()}.jpg`;
+    await editingModel.editStudioImage(filename, id);
+
+    return res.status(200).json({ filename, url });
+  } catch (err) {
+    console.error("❌ uploadStudioImage:", err);
+    res.status(500).json({ message: "Error updating image" });
   }
 };
 
 const eraseStudio = async (req, res = null) => {
   try {
-    const studioId = req.params.id;
+    const id = req.params.id;
 
-    const studios = await editingModel.findStudioById(studioId);
-    if (!studios || studios.length === 0) {
-      if (res) {
-        return res.status(404).json({ message: "Studio non trouvé" });
-      }
-      return; // Arrêter l'exécution si aucune réponse HTTP n'est envoyée
+    const rows = await editingModel.findStudioById(id);
+    if (!rows.length) {
+      if (res) return res.status(404).json({ message: "Studio non trouvé" });
+      return;
     }
 
-    const studio = studios[0];
-    const imageUrl = studio.image;
-    if (imageUrl && imageUrl !== "00_jmtb_item_default.jpg") {
+    const imageUrl = rows[0].image;
+
+    if (imageUrl && imageUrl !== DEFAULT_IMAGE) {
       try {
-        const fullPath = path.join(
-          __dirname,
-          "../../public/images",
-          path.basename(imageUrl)
-        );
-        if (fs.existsSync(fullPath)) {
-          fs.unlinkSync(fullPath);
-        } else {
-          console.info(`Le fichier n'existe pas : ${fullPath}`);
-        }
-      } catch (unlinkError) {
-        console.error(
-          "Erreur lors de la suppression du fichier :",
-          unlinkError
-        );
+        const pub = `${CLOUD_FOLDER}/${imageUrl.replace(/\.[^.]+$/, "")}`;
+        await cloudinary.uploader.destroy(pub);
+      } catch (err) {
+        console.error("❌ delete studio:", err);
       }
     }
 
-    await editingModel.deleteStudio(studioId);
-
-    if (res) {
-      res.sendStatus(204); // Envoyer la réponse uniquement si 'res' est défini
-    }
-  } catch (error) {
-    if (res) {
-      res
-        .status(500)
-        .json({ message: "Erreur lors de la suppression du studio" });
-    }
+    await editingModel.deleteStudio(id);
+    if (res) res.sendStatus(204);
+  } catch (err) {
+    if (res) res.status(500).json({ message: "Erreur lors de la suppression" });
   }
 };
 
@@ -859,96 +721,77 @@ const editingCountry = async (req, res) => {
 const uploadCountryImage = async (req, res) => {
   try {
     const { id } = req.params;
-
-    if (!req.file) {
-      return res
-        .status(400)
-        .json({ message: "Aucun fichier n'a été téléchargé" });
-    }
+    if (!req.file?.buffer)
+      return res.status(400).json({ message: "Aucun fichier fourni" });
 
     const [country] = await editingModel.findCountryById(id);
-    const currentImageUrl = country.image;
+    if (!country)
+      return res.status(404).json({ message: "Country introuvable" });
 
-    if (currentImageUrl !== "00_jmtb_flag_item_default.jpg") {
+    const oldImage = country.image;
+
+    // 🗑️ Suppression ancienne image Cloudinary
+    if (oldImage && oldImage !== "00_jmtb_flag_item_default.jpg") {
       try {
-        const fullPath = path.join(
-          __dirname,
-          "../../public/images",
-          currentImageUrl
-        );
-        if (fs.existsSync(fullPath)) {
-          fs.unlinkSync(fullPath);
-        } else {
-          console.info(`Le fichier n'existe pas : ${fullPath}`);
-        }
-      } catch (unlinkError) {
-        console.error(
-          "Erreur lors de la suppression du fichier :",
-          unlinkError
-        );
+        const publicId = `${CLOUD_FOLDER}/${oldImage.replace(/\.[^.]+$/, "")}`;
+        await cloudinary.uploader.destroy(publicId);
+      } catch (err) {
+        console.error("❌ delete country:", err);
       }
     }
 
-    const imageUrl = req.file.filename;
-    await resizeImage(req.multerType, imageUrl);
-    const result = await editingModel.editCountryImage(imageUrl, id);
+    // 🔄 Resize (flag → carré OK comme les autres items)
+    const resizedBuffer = await resizeAndCropBuffer(req.file.buffer, 500, 281);
 
-    if (result.affectedRows > 0) {
-      return res.status(200).json({ message: "Image successfully updated" });
-    }
-    console.error("Erreur lors de la mise à jour de l'image");
-    return res.status(500).json({ message: "Error updating image" });
-  } catch (error) {
-    console.error("Erreur lors du téléchargement de l'image :", error);
+    // ☁ Upload Cloudinary
+    const { publicId, url } = await uploadBufferToCloudinary(
+      resizedBuffer,
+      CLOUD_FOLDER,
+      "country"
+    );
+
+    const filename = `${publicId.split("/").pop()}.jpg`;
+    await editingModel.editCountryImage(filename, id);
+
+    return res.status(200).json({
+      message: "Image successfully updated",
+      filename,
+      url,
+    });
+  } catch (err) {
+    console.error("❌ uploadCountryImage:", err);
     return res.status(500).json({ message: "Error updating image" });
   }
 };
 
 const eraseCountry = async (req, res = null) => {
   try {
-    const countryId = req.params.id;
+    const id = req.params.id;
 
-    const countries = await editingModel.findCountryById(countryId);
-    if (!countries || countries.length === 0) {
-      if (res) {
-        return res.status(404).json({ message: "Country non trouvé" });
-      }
-      return; // Arrêter l'exécution si aucune réponse HTTP n'est envoyée
+    const rows = await editingModel.findCountryById(id);
+    if (!rows || rows.length === 0) {
+      if (res) return res.status(404).json({ message: "Country non trouvé" });
+      return;
     }
 
-    const country = countries[0];
-    const imageUrl = country.image;
-    if (imageUrl && imageUrl !== "00_jmtb_flag_item_default.jpg") {
+    const imageUrl = rows[0].image;
+
+    if (imageUrl && imageUrl !== DEFAULT_IMAGE) {
       try {
-        const fullPath = path.join(
-          __dirname,
-          "../../public/images",
-          path.basename(imageUrl)
-        );
-        if (fs.existsSync(fullPath)) {
-          fs.unlinkSync(fullPath);
-        } else {
-          console.info(`Le fichier n'existe pas : ${fullPath}`);
-        }
-      } catch (unlinkError) {
-        console.error(
-          "Erreur lors de la suppression du fichier :",
-          unlinkError
-        );
+        const publicId = `${CLOUD_FOLDER}/${imageUrl.replace(/\.[^.]+$/, "")}`;
+        await cloudinary.uploader.destroy(publicId);
+      } catch (err) {
+        console.error("❌ delete country:", err);
       }
     }
 
-    await editingModel.deleteCountry(countryId);
-
-    if (res) {
-      res.sendStatus(204); // Envoyer la réponse uniquement si 'res' est défini
-    }
-  } catch (error) {
-    if (res) {
+    await editingModel.deleteCountry(id);
+    if (res) res.sendStatus(204);
+  } catch (err) {
+    if (res)
       res
         .status(500)
         .json({ message: "Erreur lors de la suppression du country" });
-    }
   }
 };
 
@@ -1235,49 +1078,58 @@ const editingFocus = async (req, res) => {
 
 const uploadFocusImage = async (req, res) => {
   try {
-    const { id } = req.params;
+    const focusId = req.params.id;
 
-    if (!req.file) {
-      return res
-        .status(400)
-        .json({ message: "Aucun fichier n'a été téléchargé" });
+    if (!req.file || !req.file.buffer) {
+      return res.status(400).json({ message: "Aucun fichier fourni" });
     }
 
-    const thema = await editingModel.findFocusById(id);
-    const currentImageUrl = thema[0].image;
+    // 1️⃣ Récupérer l'ancien enregistrement
+    const [focus] = await editingModel.findFocusById(focusId);
+    if (!focus) {
+      return res.status(404).json({ message: "Focus introuvable" });
+    }
 
-    if (currentImageUrl !== "00_jmtb_item_default.jpg") {
+    const oldImage = focus.image;
+
+    // 2️⃣ SUPPRESSION de l’ancienne image Cloudinary si ce n'est pas l'image par défaut
+    if (oldImage && oldImage !== "00_jmtb_item_default.jpg") {
       try {
-        const fullPath = path.join(
-          __dirname,
-          "../../public/images",
-          currentImageUrl
-        );
-        if (fs.existsSync(fullPath)) {
-          fs.unlinkSync(fullPath);
-        } else {
-          console.info(`Le fichier n'existe pas : ${fullPath}`);
-        }
-      } catch (unlinkError) {
-        console.error(
-          "Erreur lors de la suppression du fichier :",
-          unlinkError
-        );
+        const publicId = `jmdb/covers/${oldImage.replace(/\.[^.]+$/, "")}`;
+        await cloudinary.uploader.destroy(publicId);
+
+        // console.log("✔️ Ancienne image supprimée de Cloudinary");
+      } catch (err) {
+        console.error("❌ Erreur suppression ancienne image Cloudinary :", err);
       }
     }
+    // 3️⃣ RESIZE du buffer avant upload
+    const bufferToUpload = await resizeAndCropBuffer(req.file.buffer, 500, 500);
 
-    const imageUrl = req.file.filename;
-    await resizeImage(req.multerType, imageUrl);
-    const result = await editingModel.editFocusImage(imageUrl, id);
+    // 3️⃣ UPLOAD Cloudinary de la nouvelle image
+    const { publicId: newPublicId, url } = await uploadBufferToCloudinary(
+      bufferToUpload,
+      "jmdb/covers",
+      "focus"
+    );
 
-    if (result.affectedRows > 0) {
-      return res.status(200).json({ message: "Image successfully updated" });
-    }
-    console.error("Erreur lors de la mise à jour de l'image");
-    return res.status(500).json({ message: "Error updating image" });
+    // public_id ressemble à : jmdb/covers/focus-xxxx-xxxx
+    const filenameOnly = newPublicId.split("/").pop();
+    const filenameWithExt = `${filenameOnly}.jpg`;
+
+    // 4️⃣ Mise à jour en BDD
+    await editingModel.editFocusImage(filenameWithExt, focusId);
+
+    return res.status(200).json({
+      message: "Image focus uploadée avec succès",
+      filename: filenameWithExt,
+      url,
+    });
   } catch (error) {
-    console.error("Erreur lors du téléchargement de l'image :", error);
-    return res.status(500).json({ message: "Error updating image" });
+    console.error("❌ Erreur uploadFocusImage :", error);
+    return res
+      .status(500)
+      .json({ message: "Erreur lors de l'upload", error: error.message });
   }
 };
 
@@ -1285,47 +1137,41 @@ const eraseFocus = async (req, res = null) => {
   try {
     const focusId = req.params.id;
 
+    // 1️⃣ Récupérer le focus depuis la BDD
     const focus = await editingModel.findFocusById(focusId);
     if (!focus || focus.length === 0) {
-      if (res) {
-        return res.status(404).json({ message: "Thema non trouvé" });
-      }
-      return; // Arrêter l'exécution si aucune réponse HTTP n'est envoyée
+      if (res) return res.status(404).json({ message: "Thema non trouvé" });
+      return;
     }
 
     const f = focus[0];
     const imageUrl = f.image;
+
+    // 2️⃣ Supprimer l'image de Cloudinary si ce n'est pas l'image par défaut
     if (imageUrl && imageUrl !== "00_jmtb_item_default.jpg") {
       try {
-        const fullPath = path.join(
-          __dirname,
-          "../../public/images",
-          path.basename(imageUrl)
-        );
-        if (fs.existsSync(fullPath)) {
-          fs.unlinkSync(fullPath);
-        } else {
-          console.info(`Le fichier n'existe pas : ${fullPath}`);
-        }
-      } catch (unlinkError) {
-        console.error(
-          "Erreur lors de la suppression du fichier :",
-          unlinkError
-        );
+        // Supprimer l'extension pour obtenir le public_id Cloudinary
+        const publicId = `jmdb/covers/${imageUrl.replace(/\.[^.]+$/, "")}`;
+        console.log("➡️ Suppression Cloudinary public_id =", publicId);
+
+        await cloudinary.uploader.destroy(publicId);
+        console.log("✔️ Image supprimée de Cloudinary");
+      } catch (cloudErr) {
+        console.error("❌ Erreur suppression Cloudinary :", cloudErr);
       }
     }
 
+    // 3️⃣ Supprimer l'enregistrement en BDD
     await editingModel.deleteFocus(focusId);
 
-    if (res) {
-      res.sendStatus(204); // Envoyer la réponse uniquement si 'res' est défini
-    }
+    if (res) res.sendStatus(204); // réponse HTTP seulement si 'res' défini
   } catch (error) {
-    if (res) {
-      res
-        .status(500)
-        .json({ message: "Erreur lors de la suppression du thema" });
-    }
+    console.error("❌ Erreur eraseFocus :", error);
+    if (res)
+      res.status(500).json({
+        message: "Erreur lors de la suppression du thema",
+        error: error.message,
+      });
   }
 };
 

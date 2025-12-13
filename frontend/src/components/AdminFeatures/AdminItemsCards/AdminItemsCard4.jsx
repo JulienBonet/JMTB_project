@@ -1,3 +1,4 @@
+/* eslint-disable react/no-danger */
 /* eslint-disable react/prop-types */
 import { useState, useRef, useEffect } from "react";
 import { FormControl, Select, MenuItem, OutlinedInput } from "@mui/material";
@@ -16,21 +17,29 @@ import CachedIcon from "@mui/icons-material/Cached";
 import "./adminItemsCard.css";
 
 function AdminItemsCard4({ item, origin, onUpdate, closeModal }) {
-  console.info("origin", origin);
-  const backendUrl = `${import.meta.env.VITE_BACKEND_URL}/images`;
+  // console.info("origin", origin);
+
+  const CLOUDINARY_BASE_URL = import.meta.env.VITE_CLOUDINARY_BASE_URL;
   const isFocus = origin === "focus";
+
+  const getImageUrl = (publicId) => {
+    if (!publicId) return "00_jmtb_item_default.jpg";
+
+    return `${CLOUDINARY_BASE_URL}/${publicId}`;
+  };
 
   const [isModify, setIsModify] = useState(false);
   const [name, setName] = useState(item.name);
   const [pitch, setPitch] = useState(item.pitch);
-  const [image, setImage] = useState(`${backendUrl}/${item.image}`);
+  const [image, setImage] = useState(getImageUrl(item.image));
   const [showUploadButton, setShowUploadButton] = useState(true);
   const [categories, setCategories] = useState([]);
   const [categoryId, setCategoryId] = useState(
     item.categoryId ? Number(item.categoryId) : ""
   );
-
   const fileInputRef = useRef(null);
+
+  console.info("image", image);
 
   const openModif = () => {
     setIsModify(true);
@@ -55,25 +64,29 @@ function AdminItemsCard4({ item, origin, onUpdate, closeModal }) {
     const fileInput = fileInputRef.current;
     const file = fileInput.files[0];
 
-    if (file) {
-      const imageData = new FormData();
-      imageData.append("image", file);
+    if (!file) return null;
 
-      const imageResponse = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/${origin}/${item.id}/image`,
-        {
-          method: "PUT",
-          body: imageData,
-        }
-      );
+    const imageData = new FormData();
+    imageData.append("image", file);
 
-      if (imageResponse.ok) {
-        console.info("Item image successfully updated");
-        return `${backendUrl}/${file.name}`; // Retourne la nouvelle URL de l'image
+    // Ajoute l'id du focus
+    imageData.append("focusId", item.id);
+
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/${origin}/${item.id}/image`,
+      {
+        method: "PUT",
+        body: imageData,
       }
-      console.error("Error updating item image");
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Upload failed");
     }
-    return null; // Retourne null si aucun fichier n'est sélectionné
+
+    return data.url;
   };
 
   const handleValidate = async () => {
@@ -83,57 +96,58 @@ function AdminItemsCard4({ item, origin, onUpdate, closeModal }) {
         pitch !== item.pitch ||
         categoryId !== item.categoryId;
 
+      // 1️⃣ Mettre à jour les infos
       if (hasChanges) {
-        const data = {
-          name,
-          pitch,
-          categoryId,
-        };
-
-        // 1. Mettre à jour les infos
+        const data = { name, pitch, categoryId };
         const response = await fetch(
           `${import.meta.env.VITE_BACKEND_URL}/api/${origin}/${item.id}`,
           {
             method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),
           }
         );
 
         if (!response.ok) {
-          console.error("Error updating item");
-          return;
+          console.error("Error updating item image", data);
+          throw new Error(data.message || "Upload failed");
         }
         console.info("Item successfully updated");
       }
 
-      // 2. Mettre à jour l'image
-      let newImageUrl = image; // Garde l'ancienne URL par défaut
+      // 2️⃣ Mettre à jour l'image
+      let newImageUrl = image;
       if (fileInputRef.current.files[0]) {
-        newImageUrl = await handleUpdateImage(); // Récupère la nouvelle URL
-        console.info("Image successfully updated");
+        try {
+          newImageUrl = await handleUpdateImage();
+          setImage(newImageUrl);
+          console.info("Image successfully updated");
+        } catch (err) {
+          console.error("Erreur upload image :", err);
+          toast.error(`Erreur upload image : ${err.message}`, {
+            className: "custom-toast",
+          });
+          return;
+        }
       }
 
-      // Mettre à jour l'état avec la nouvelle URL d'image
-      if (newImageUrl) {
-        setImage(newImageUrl); // Met à jour l'image
-      }
+      // 3️⃣ Réinitialiser les états locaux
+      if (newImageUrl) setImage(newImageUrl);
 
-      // 3. Réinitialiser les états locaux
       toast.success(`${origin} successfully updated`, {
         className: "custom-toast",
       });
       setIsModify(false);
       setShowUploadButton(true);
-
-      onUpdate(); // Rafraîchir les données dans le composant parent
-      closeModal(); // Fermer le modal après tout
+      onUpdate();
+      closeModal();
     } catch (error) {
       console.error("Request error:", error);
+      toast.error(`Erreur inattendue : ${error.message}`, {
+        className: "custom-toast",
+      });
     }
-  }; // end handleValidate
+  };
 
   // Fonctions pour filtrer les caractères interdits
   const regexInput = (value) => {
@@ -149,7 +163,7 @@ function AdminItemsCard4({ item, origin, onUpdate, closeModal }) {
   const handleUndo = () => {
     setName(item.name);
     setPitch(item.pitch);
-    setImage(`${backendUrl}/${item.image}`);
+    setImage(getImageUrl(item.image));
     setIsModify(false);
     setShowUploadButton(true);
   };
@@ -165,7 +179,7 @@ function AdminItemsCard4({ item, origin, onUpdate, closeModal }) {
   };
 
   const handleResetImage = () => {
-    setImage(`${backendUrl}/${item.image}`);
+    setImage(getImageUrl(item.image));
     setShowUploadButton(true);
   };
 

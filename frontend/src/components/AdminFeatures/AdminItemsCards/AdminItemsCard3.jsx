@@ -11,12 +11,18 @@ import CachedIcon from "@mui/icons-material/Cached";
 import "./adminItemsCard.css";
 
 function AdminItemsCard3({ item, origin, onUpdate, closeModal }) {
-  const backendUrl = `${import.meta.env.VITE_BACKEND_URL}/images`;
+  const CLOUDINARY_BASE_URL = import.meta.env.VITE_CLOUDINARY_BASE_URL;
+
+  // Fonction Cloudinary
+  const getImageUrl = (publicId) => {
+    if (!publicId) return "00_jmtb_item_default.jpg";
+    return `${CLOUDINARY_BASE_URL}/${publicId}`;
+  };
 
   const [isModify, setIsModify] = useState(false);
   const [name, setName] = useState(item.name);
   const [isEditing, setIsEditing] = useState(false);
-  const [image, setImage] = useState(`${backendUrl}/${item.image}`);
+  const [image, setImage] = useState(getImageUrl(item.image));
   const [showUploadButton, setShowUploadButton] = useState(true);
   const fileInputRef = useRef(null);
 
@@ -30,28 +36,28 @@ function AdminItemsCard3({ item, origin, onUpdate, closeModal }) {
   };
 
   const handleUpdateImage = async () => {
-    const fileInput = fileInputRef.current;
-    const file = fileInput.files[0];
+    const file = fileInputRef.current.files[0];
+    if (!file) return null;
 
-    if (file) {
-      const imageData = new FormData();
-      imageData.append("image", file);
+    const formData = new FormData();
+    formData.append("image", file);
 
-      const imageResponse = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/${origin}/${item.id}/image`,
-        {
-          method: "PUT",
-          body: imageData,
-        }
-      );
-
-      if (imageResponse.ok) {
-        console.info("Item image successfully updated");
-        return `${backendUrl}/${file.name}`; // Retourne la nouvelle URL de l'image
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/${origin}/${item.id}/image`,
+      {
+        method: "PUT",
+        body: formData,
       }
-      console.error("Error updating item image");
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("❌ Erreur Cloudinary :", data);
+      throw new Error(data.message || "Upload failed");
     }
-    return null;
+
+    return data.url; // URL Cloudinary
   };
 
   const handleValidate = async () => {
@@ -83,15 +89,15 @@ function AdminItemsCard3({ item, origin, onUpdate, closeModal }) {
       }
 
       // 2. Mettre à jour l'image
-      let newImageUrl = image; // Garde l'ancienne URL par défaut
+      let newImageUrl = image;
       if (fileInputRef.current.files[0]) {
-        newImageUrl = await handleUpdateImage(); // Récupère la nouvelle URL
+        newImageUrl = await handleUpdateImage();
         console.info("Image successfully updated");
       }
 
       // Mettre à jour l'état avec la nouvelle URL d'image
       if (newImageUrl) {
-        setImage(newImageUrl); // Met à jour l'image
+        setImage(newImageUrl);
       }
 
       // 3. Réinitialiser les états locaux
@@ -102,8 +108,8 @@ function AdminItemsCard3({ item, origin, onUpdate, closeModal }) {
       setIsEditing(false);
       setShowUploadButton(true);
 
-      onUpdate(); // Rafraîchir les données dans le composant parent
-      closeModal(); // Fermer le modal après tout
+      onUpdate();
+      closeModal();
     } catch (error) {
       console.error("Request error:", error);
     }
@@ -122,7 +128,7 @@ function AdminItemsCard3({ item, origin, onUpdate, closeModal }) {
 
   const handleUndo = () => {
     setName(item.name);
-    setImage(`${backendUrl}/${item.image}`);
+    setImage(getImageUrl(item.image));
     setIsModify(false);
     setIsEditing(false);
     setShowUploadButton(true);
@@ -140,7 +146,7 @@ function AdminItemsCard3({ item, origin, onUpdate, closeModal }) {
   };
 
   const handleResetImage = () => {
-    setImage(`${backendUrl}/${item.image}`);
+    setImage(getImageUrl(item.image));
     setShowUploadButton(true);
   };
 

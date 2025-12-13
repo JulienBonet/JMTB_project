@@ -20,7 +20,13 @@ import "./adminItemsCard.css";
 import "./adminItemsCardMediaQueries.css";
 
 function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
-  const backendUrl = `${import.meta.env.VITE_BACKEND_URL}/images`;
+  const CLOUDINARY_BASE_URL = import.meta.env.VITE_CLOUDINARY_BASE_URL;
+
+  // Fonction Cloudinary
+  const getImageUrl = (publicId) => {
+    if (!publicId) return "00_jmtb_item_default.jpg";
+    return `${CLOUDINARY_BASE_URL}/${publicId}`;
+  };
 
   const [isModify, setIsModify] = useState(false);
   const [name, setName] = useState(item.name || "");
@@ -34,7 +40,7 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
   const [birthDate, setBirthDate] = useState(item.birthDate || "");
   const [deathDate, setDeathDate] = useState(item.deathDate || "");
   const [isFocus, setIsFocus] = useState(item.isFocus || "");
-  const [image, setImage] = useState(`${backendUrl}/${item.image}`);
+  const [image, setImage] = useState(getImageUrl(item.image));
   const [showUploadButton, setShowUploadButton] = useState(true);
   const fileInputRef = useRef(null);
 
@@ -49,43 +55,32 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
   };
 
   const handleUpdateImage = async () => {
-    const fileInput = fileInputRef.current;
-    const file = fileInput.files[0];
+    const file = fileInputRef.current.files[0];
+    if (!file) return null;
 
-    if (file) {
-      const imageData = new FormData();
-      imageData.append("image", file);
+    const formData = new FormData();
+    formData.append("image", file);
 
-      const imageResponse = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/${origin}/${item.id}/image`,
-        {
-          method: "PUT",
-          body: imageData,
-        }
-      );
-
-      if (imageResponse.ok) {
-        console.info("Item image successfully updated");
-      } else {
-        console.error("Error updating item image");
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/${origin}/${item.id}/image`,
+      {
+        method: "PUT",
+        body: formData,
       }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("❌ Erreur Cloudinary :", data);
+      throw new Error(data.message || "Upload failed");
     }
+
+    return data.url;
   };
 
   const handleValidate = async () => {
     try {
-      if (
-        isArtistFocus &&
-        Boolean(isFocus) &&
-        (!birthDate || birthDate === "")
-      ) {
-        toast.error(
-          "Impossible de valider : une date de naissance est obligatoire pour créer ce Focus.",
-          { className: "custom-toast" }
-        );
-        return;
-      }
-
       const hasChanges =
         name !== item.name ||
         (isArtistFocus && pitch !== item.pitch) ||
@@ -98,9 +93,7 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
         (isArtistFocus && isFocus !== item.isFocus);
 
       if (hasChanges) {
-        const data = {
-          name,
-        };
+        const data = { name };
 
         if (isArtistFocus) {
           data.pitch = pitch || null;
@@ -117,24 +110,24 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
           `${import.meta.env.VITE_BACKEND_URL}/api/${origin}/${item.id}`,
           {
             method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),
           }
         );
 
         if (!response.ok) {
-          console.error("Error updating item");
-          return;
+          const err = await response.json();
+          throw new Error(err.message || "Update failed");
         }
-        console.info("Item successfully updated");
       }
 
-      // Image
+      // UPLOAD IMAGE CLOUDINARY
+
+      let newImageUrl = image;
+
       if (fileInputRef.current.files[0]) {
-        await handleUpdateImage();
-        console.info("Image successfully updated");
+        newImageUrl = await handleUpdateImage();
+        setImage(newImageUrl);
       }
 
       toast.success(`${origin} successfully updated`, {
@@ -145,8 +138,9 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
       setShowUploadButton(true);
 
       onUpdate();
-    } catch (error) {
-      console.error("Request error:", error);
+      closeModal();
+    } catch (err) {
+      toast.error(`Erreur : ${err.message}`, { className: "custom-toast" });
     }
   };
 
@@ -170,7 +164,7 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
     setWikilink(item.wikilink);
     setImdblink(item.imdblink);
     setIsFocus(item.isFocus);
-    setImage(`${backendUrl}/${item.image}`);
+    setImage(getImageUrl(item.image));
     setShowUploadButton(false);
   };
 
@@ -186,7 +180,7 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
   };
 
   const handleResetImage = () => {
-    setImage(`${backendUrl}/${item.image}`);
+    setImage(getImageUrl(item.image));
     setShowUploadButton(true);
   };
 
