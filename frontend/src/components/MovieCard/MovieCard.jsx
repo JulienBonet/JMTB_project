@@ -93,6 +93,15 @@ function MovieCard({
 }) {
   const { isAdmin } = useAuth();
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
+
+  // const DEFAULT_COVER = "00_cover_default.jpg";
+  const CLOUDINARY_BASE_URL = import.meta.env.VITE_CLOUDINARY_BASE_URL;
+
+  const getImageUrl = (publicId) => {
+    if (!publicId) return getImageUrl("00_cover_default.jpg");
+    return `${CLOUDINARY_BASE_URL}/${publicId}`;
+  };
+
   const [isModify, setIsModify] = useState(false);
   const [allowEdit, setAllowEdit] = useState(false);
   const [selectedKinds, setSelectedKinds] = useState([]);
@@ -133,13 +142,13 @@ function MovieCard({
     idTheMovieDb: movie.idTheMovieDb || "",
   });
 
-  // useEffect(() => {
-  //   console.info("movie in MovieCard", movie);
-  // }, [movie]);
+  useEffect(() => {
+    console.info("movie in MovieCard", movie);
+  }, [movie]);
 
-  // useEffect(() => {
-  //   console.info("movieData1 in MovieCard", movieData);
-  // }, [movieData]);
+  useEffect(() => {
+    console.info("movieData1 in MovieCard", movieData);
+  }, [movieData]);
 
   const {
     genres,
@@ -265,22 +274,38 @@ function MovieCard({
   // MODIFY MODE - MODIFICATION DE L'AFFICHE
   //-----------------------------------------------
 
-  const [image, setImage] = useState(`${backendUrl}/images/${movie.cover}`);
+  const [image, setImage] = useState(getImageUrl(movie.cover));
+
+  console.info("image", image);
   const [showUploadButton, setShowUploadButton] = useState(true);
   const [showImageButton, setShowImageButton] = useState(true);
   const fileCoverRef = useRef(null);
 
+  // useEffect(() => {
+  //   if (isModify) {
+  //     // Lorsque le mode modification est activé, réinitialiser l'affichage du bouton d'upload
+  //     if (image === `${backendUrl}/images/${movie.cover}`) {
+  //       setShowUploadButton(true); // Si l'image n'a pas été changée, montrer l'icône d'upload
+  //     } else {
+  //       setShowUploadButton(false); // Si l'image a été modifiée, montrer l'icône de reset
+  //     }
+  //     // console.info("image", image);
+  //   }
+  // }, [isModify, image, movie.cover, backendUrl]);
+
   useEffect(() => {
-    if (isModify) {
-      // Lorsque le mode modification est activé, réinitialiser l'affichage du bouton d'upload
-      if (image === `${backendUrl}/images/${movie.cover}`) {
-        setShowUploadButton(true); // Si l'image n'a pas été changée, montrer l'icône d'upload
-      } else {
-        setShowUploadButton(false); // Si l'image a été modifiée, montrer l'icône de reset
-      }
-      // console.info("image", image);
+    if (!isModify) return;
+
+    const originalImageUrl = getImageUrl(movie.cover);
+
+    if (image === originalImageUrl) {
+      // Image inchangée → bouton upload
+      setShowUploadButton(true);
+    } else {
+      // Image modifiée (preview ou nouvelle image)
+      setShowUploadButton(false);
     }
-  }, [isModify, image, movie.cover, backendUrl]);
+  }, [isModify, image, movie.cover]);
 
   // Handle Cover Upload
   const handleCoverUpload = (event) => {
@@ -296,32 +321,35 @@ function MovieCard({
   };
 
   const handleResetImage = () => {
-    setImage(`${backendUrl}/images/${movie.cover}`); // Remettre l'image d'origine
-    setShowUploadButton(true); // Remettre l'icône d'upload
+    setImage(getImageUrl(movie.cover));
+    setShowUploadButton(true);
   };
 
   // Update Affiche
+
   const handleUpdateImage = async () => {
-    const fileInput = fileCoverRef.current;
-    const file = fileInput.files[0];
+    const file = fileCoverRef.current.files[0];
+    if (!file) return null;
 
-    if (file) {
-      const imageData = new FormData();
-      imageData.append("cover", file);
+    const formData = new FormData();
+    formData.append("cover", file);
 
-      const imageResponse = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/${origin}/${movie.id}/image`,
-        { method: "PUT", body: imageData }
-      );
+    const res = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/api/movie/${movie.id}/image`,
+      { method: "PUT", body: formData }
+    );
 
-      if (imageResponse.ok) {
-        const { movie: updatedMovie } = await imageResponse.json();
-        setImage(`${backendUrl}/images/${updatedMovie.cover}`); // Utiliser la nouvelle URL de l'image
-        console.info("Image successfully updated", updatedMovie.cover);
-      } else {
-        console.error("Error updating item image");
-      }
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || "Upload failed");
     }
+
+    // 🔥 AFFICHAGE = URL Cloudinary
+    setImage(data.url);
+
+    // 🔥 MAIS la DB contient seulement data.publicId
+    return data.publicId;
   };
 
   //-----------------------------------------------
@@ -816,7 +844,7 @@ function MovieCard({
 
   const handleUndo = () => {
     fetchMovieData(); // recharge les infos du film
-    setImage(`${backendUrl}/images/${movie.cover}`);
+    setImage(getImageUrl(movie.cover));
 
     // re-fetch des listes sélectionnées via la fonction générique
     fetchByNames(genres, "kind", setSelectedKinds);
