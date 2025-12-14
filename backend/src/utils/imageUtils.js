@@ -7,9 +7,6 @@ const sharp = require("sharp");
  * @param {number} height - hauteur max
  * @returns {Promise<Buffer>} buffer redimensionné
  */
-const resizeBuffer = async (buffer, width = 600, height = 600) => {
-  return sharp(buffer).resize(width, height, { fit: "inside" }).toBuffer();
-};
 
 const resizeAndCropBuffer = async (buffer, width, height) => {
   return sharp(buffer)
@@ -20,4 +17,4 @@ const resizeAndCropBuffer = async (buffer, width, height) => {
     .toBuffer();
 };
 
-module.exports = { resizeBuffer, resizeAndCropBuffer };
+module.exports = { resizeAndCropBuffer };

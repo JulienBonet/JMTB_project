@@ -6,7 +6,12 @@ const upload = require("../middlewares/fileUpload");
 const editingMovieController = require("../controllers/editingMovieControllers");
 
 // MOVIES ROUTES
-router.post("/movie", editingMovieController.addMovie);
+// router.post("/movie", editingMovieController.addMovie);
+router.post(
+  "/movie",
+  upload.single("cover"), // 🔥 local file
+  editingMovieController.addMovie
+);
 
 // --- Upload d'affiche depuis une URL ---
 router.post("/upload-cover", async (req, res) => {
