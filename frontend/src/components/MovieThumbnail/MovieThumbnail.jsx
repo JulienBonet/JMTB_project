@@ -9,9 +9,9 @@ import MovieCard from "../MovieCard/MovieCard";
 
 function MovieThumbnail({ data, onDeleteMovie, onUpdateMovie }) {
   const origin = "movie";
-  const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
+  const CLOUDINARY_BASE_URL = import.meta.env.VITE_CLOUDINARY_BASE_URL;
 
-  const { title, year, cover } = data;
+  const { title, year, cover: coverName } = data;
 
   const [selectedMovie, setSelectedMovie] = useState(null);
 
@@ -25,6 +25,12 @@ function MovieThumbnail({ data, onDeleteMovie, onUpdateMovie }) {
     setSelectedMovie(null);
   };
 
+  const getCoverUrl = (cover) => {
+    if (!cover) return `${CLOUDINARY_BASE_URL}/00_cover_default.jpg`;
+    if (cover.startsWith("http")) return cover;
+    return `${CLOUDINARY_BASE_URL}/${cover}`;
+  };
+
   return (
     <>
       <div
@@ -36,7 +42,7 @@ function MovieThumbnail({ data, onDeleteMovie, onUpdateMovie }) {
       >
         <img
           className="thumbail_cover"
-          src={`${backendUrl}/images/${cover}`}
+          src={getCoverUrl(coverName)}
           alt={`Cover ${title}`}
         />
         <p className="thumbail_title">

@@ -1,3 +1,4 @@
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-restricted-syntax */
 // -----------------/ MOVIE DATA FETCH IN MovieCard.jsx/----------------- //
 import axios from "axios";
@@ -7,6 +8,12 @@ import { translateCountry } from "./countries";
 
 countries.registerLocale(frLocale);
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
+const CLOUDINARY_BASE_URL = import.meta.env.VITE_CLOUDINARY_BASE_URL;
+
+const getImageUrl = (publicId) => {
+  if (!publicId) return "00_cover_default.jpg";
+  return `${CLOUDINARY_BASE_URL}/${publicId}`;
+};
 
 // -----------------------------------------------------------
 // Fonction qui récupère les données du film depuis le backend
@@ -738,7 +745,7 @@ const refetchMovieCoverFromTMDB = async (
       return;
     }
 
-    setImage(`${backendUrl}/images/${data.movie.cover}`);
+    setImage(getImageUrl(data.movie.cover));
     setShowImageButton(false);
     console.info("✅ Image mise à jour :", data.movie.cover);
   } catch (error) {

@@ -168,8 +168,8 @@ function MovieThema() {
                       fontSize: "2rem",
                       transition: "0.2s ease",
                       "&:hover": {
-                        color: "var(--color-03)", // ta couleur hover
-                        transform: "scale(1.15)", // petit zoom
+                        color: "var(--color-03)",
+                        transform: "scale(1.15)",
                       },
                     }}
                   />

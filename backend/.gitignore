@@ -5,4 +5,6 @@ coverage
 .env.production
 exploCsv
 scripts
+/backend/src/tmp/*.sql
+/backend/src/tmp/*.csv
 public/images/

@@ -5,10 +5,9 @@ const authRoutes = require("./routes/authRoutes");
 
 const app = express();
 
-// CORS pour permettre les requêtes du frontend
+// CORS
 app.use(
   cors({
-    // origin: process.env.FRONTEND_URL,
     origin: [
       "http://localhost:5173",
       "https://jmtbproject-production.up.railway.app",
@@ -18,39 +17,33 @@ app.use(
   })
 );
 
-// Middleware pour parser les données JSON
+// Parsing
 app.use(express.json({ limit: "30mb" }));
 app.use(
   express.urlencoded({ extended: false, limit: "30mb", parameterLimit: 50000 })
 );
 
-// Toutes les routes d’auth (login, register, changePassword)
+// Auth routes
 app.use("/auth", authRoutes);
-
-// *** Servir les fichiers statiques à partir du dossier 'public' ***
-app.use("/images", express.static(path.join(__dirname, "../public/images")));
 
 // Import des routes API
 const router = require("./router");
 
-app.use("/api", router); // Routes API
+app.use("/api", router);
 
-// Chemin vers le build React (une fois construit)
-const reactBuildPath = path.join(__dirname, "../../frontend/dist"); // correction pour mise en prod
+// Build React
+const reactBuildPath = path.join(__dirname, "../../frontend/dist");
 app.use(express.static(reactBuildPath));
 
-// Rediriger toutes les autres routes vers l'index.html de React
 app.get("*", (req, res) => {
   res.sendFile(path.join(reactBuildPath, "index.html"));
 });
 
-// --- Global Error Handler ---
-// eslint-disable-next-line no-unused-vars
-app.use((err, req, res, next) => {
+// Error handler
+app.use((err, req, res) => {
   console.error("🔥 Server Error:", err.message);
   console.error("➡️ On route:", req.method, req.url);
   res.status(500).json({ error: err.message });
 });
 
-// Exporter l'application sans la démarrer
 module.exports = app;

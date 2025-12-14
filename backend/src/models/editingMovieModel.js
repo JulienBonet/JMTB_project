@@ -4,55 +4,38 @@ const db = require("../../database/client");
 // ADD MOVIE
 //-----------------------------------------------
 
-const insertMovie = (
-  title,
-  altTitle,
-  year,
-  duration,
-  cover,
-  trailer,
-  pitch,
-  story,
-  location,
-  videoFormat,
-  videoSupport,
-  fileSize,
-  idTheMovieDb,
-  idIMDb,
-  vostfr,
-  multi,
-  isTvShow,
-  tvSeasons,
-  nbTvEpisodes,
-  episodeDuration,
-  comment
-) =>
-  db.query(
-    "INSERT INTO movies (title, altTitle, year, duration, cover, trailer, pitch, story, location, videoFormat, videoSupport, fileSize, idTheMovieDb, idIMDb, vostfr, multi, isTvShow, tvSeasons, nbTvEpisodes, episodeDuration, comment) VALUES (?,?,?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,? );",
-    [
-      title,
-      altTitle,
-      year,
-      duration,
-      cover,
-      trailer,
-      pitch,
-      story,
-      location,
-      videoFormat,
-      videoSupport,
-      fileSize,
-      idTheMovieDb,
-      idIMDb,
-      vostfr,
-      multi,
-      isTvShow,
-      tvSeasons,
-      nbTvEpisodes,
-      episodeDuration,
-      comment,
-    ]
-  );
+const insertMovie = (movieData) => {
+  return db
+    .query(
+      `INSERT INTO movies 
+      (title, altTitle, year, duration, cover, trailer, pitch, story, location, videoFormat, videoSupport, fileSize, idTheMovieDb, idIMDb, vostfr, multi, isTvShow, tvSeasons, nbTvEpisodes, episodeDuration, comment) 
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        movieData.title,
+        movieData.altTitle,
+        movieData.year,
+        movieData.duration,
+        movieData.cover,
+        movieData.trailer,
+        movieData.pitch,
+        movieData.story,
+        movieData.location,
+        movieData.videoFormat,
+        movieData.videoSupport,
+        movieData.fileSize,
+        movieData.idTheMovieDb,
+        movieData.idIMDb,
+        movieData.vostfr,
+        movieData.multi,
+        movieData.isTvShow,
+        movieData.tvSeasons,
+        movieData.nbTvEpisodes,
+        movieData.episodeDuration,
+        movieData.comment,
+      ]
+    )
+    .then(([result]) => result.insertId);
+};
 
 //-----------------------------------------------
 // UPDATE MOVIE

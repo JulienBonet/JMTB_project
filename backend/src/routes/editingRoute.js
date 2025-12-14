@@ -1,102 +1,104 @@
+/* eslint-disable consistent-return */
+/* eslint-disable no-restricted-syntax */
 const express = require("express");
 
 const router = express.Router();
-const { fileUpload, setType } = require("../middlewares/fileUpload");
+const upload = require("../middlewares/fileUpload");
 const editingController = require("../controllers/editingControllers");
 
-// DIRECTORS ROUTES
+// 🔧 Middleware commun pour toutes les routes d'upload
+const safeUpload = (req, res, next) => {
+  upload.single("image")(req, res, (err) => {
+    if (err) {
+      console.error("❌ Erreur Multer :", err.message);
+      return res.status(400).json({ message: err.message });
+    }
+    next();
+  });
+};
+
+// ---------------------- DIRECTORS ----------------------
 router.post("/director", editingController.addDirector);
 router.put("/director/:id", editingController.editingDirector);
 router.put(
   "/director/:id/image",
-  setType("director"),
-  fileUpload.single("image"),
+  safeUpload,
   editingController.uploadDirectorImage
 );
 router.delete("/director/delete/:id", editingController.eraseDirector);
 
-// CASTING ROUTES
+// ---------------------- CASTING ----------------------
 router.post("/casting", editingController.addCasting);
 router.put("/casting/:id", editingController.editingCasting);
 router.put(
   "/casting/:id/image",
-  setType("casting"),
-  fileUpload.single("image"),
+  safeUpload,
   editingController.uploadCastingImage
 );
 router.delete("/casting/:id", editingController.eraseCasting);
 
-// SCREENWRITER ROUTES
+// ---------------------- SCREENWRITER ----------------------
 router.post("/screenwriter", editingController.addScreenwriter);
 router.put("/screenwriter/:id", editingController.editingScreenwriter);
 router.put(
   "/screenwriter/:id/image",
-  setType("screenwriter"),
-  fileUpload.single("image"),
+  safeUpload,
   editingController.uploadScreenwriterImage
 );
 router.delete("/screenwriter/:id", editingController.eraseScreenwriter);
 
-// COMPOSITOR ROUTES
+// ---------------------- COMPOSITOR ----------------------
 router.post("/compositor", editingController.addCompositor);
 router.put("/compositor/:id", editingController.editingCompositor);
 router.put(
   "/compositor/:id/image",
-  setType("compositor"),
-  fileUpload.single("image"),
+  safeUpload,
   editingController.uploadCompositorImage
 );
 router.delete("/compositor/:id", editingController.eraseCompositor);
 
-// STUDIO ROUTES
+// ---------------------- STUDIO ----------------------
 router.post("/studio", editingController.addStudio);
 router.put("/studio/:id", editingController.editingStudio);
 router.put(
   "/studio/:id/image",
-  setType("studio"),
-  fileUpload.single("image"),
+  safeUpload,
   editingController.uploadStudioImage
 );
 router.delete("/studio/:id", editingController.eraseStudio);
 
-// COUNTRY ROUTES
+// ---------------------- COUNTRY ----------------------
 router.post("/country", editingController.addCountry);
 router.put("/country/:id", editingController.editingCountry);
 router.put(
   "/country/:id/image",
-  setType("country"),
-  fileUpload.single("image"),
+  safeUpload,
   editingController.uploadCountryImage
 );
 router.delete("/country/:id", editingController.eraseCountry);
 router.get("/country/byname/:name", editingController.getCountryByName);
 
-// GENRE ROUTES
+// ---------------------- GENRE ----------------------
 router.post("/kind", editingController.addGenre);
 router.put("/kind/:id", editingController.editingGenre);
 router.delete("/kind/:id", editingController.eraseGenre);
 
-// LANGUAGE ROUTES
+// ---------------------- LANGUAGE ----------------------
 router.post("/language", editingController.addLanguage);
 router.put("/language/:id", editingController.editingLanguage);
 router.delete("/language/:id", editingController.eraseLanguage);
 router.get("/language/byname/:name", editingController.getLanguageByName);
 
-// TAG ROUTES
+// ---------------------- TAG ----------------------
 router.post("/tag", editingController.addTag);
 router.put("/tag/:id", editingController.editingTag);
 router.delete("/tag/:id", editingController.eraseTag);
 router.get("/tag/byname/:name", editingController.getTagByName);
 
-// THEMA ROUTES
+// ---------------------- THEMA / FOCUS ----------------------
 router.post("/focus", editingController.addFocus);
 router.put("/focus/:id", editingController.editingFocus);
-router.put(
-  "/focus/:id/image",
-  setType("focus"),
-  fileUpload.single("image"),
-  editingController.uploadFocusImage
-);
+router.put("/focus/:id/image", safeUpload, editingController.uploadFocusImage);
 router.delete("/focus/:id", editingController.eraseFocus);
 
 module.exports = router;

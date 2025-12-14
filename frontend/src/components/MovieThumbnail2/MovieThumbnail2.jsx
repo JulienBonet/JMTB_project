@@ -9,11 +9,12 @@ import MovieCard from "../MovieCard/MovieCard";
 function MovieThumbnail2({ data }) {
   const origin = "movie";
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
+  const CLOUDINARY_BASE_URL = import.meta.env.VITE_CLOUDINARY_BASE_URL;
 
   // Initialisation des données du film à partir des props
   const [movieData, setMovieData] = useState(data);
 
-  const { title, year, cover } = movieData;
+  const { title, year, cover: coverName } = movieData;
 
   const [selectedMovie, setSelectedMovie] = useState(null);
 
@@ -45,6 +46,12 @@ function MovieThumbnail2({ data }) {
     }
   };
 
+  const getCoverUrl = (cover) => {
+    if (!cover) return `${CLOUDINARY_BASE_URL}/00_cover_default.jpg`;
+    if (cover.startsWith("http")) return cover;
+    return `${CLOUDINARY_BASE_URL}/${cover}`;
+  };
+
   return (
     <>
       <div
@@ -56,7 +63,7 @@ function MovieThumbnail2({ data }) {
       >
         <img
           className="thumbail_cover2"
-          src={`${backendUrl}/images/${cover}`}
+          src={getCoverUrl(coverName)}
           alt={`Cover ${title}`}
         />
         <p className="thumbail_title2">

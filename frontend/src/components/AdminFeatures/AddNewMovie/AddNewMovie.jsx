@@ -54,7 +54,9 @@ import purgeOrphanRecords from "../../../utils/purgeOrphanRecords";
 import "./addNewMovie.css";
 
 function AddNewMovie() {
-  const backendUrl = `${import.meta.env.VITE_BACKEND_URL}/images`;
+  // const backendUrl = `${import.meta.env.VITE_BACKEND_URL}/images`;
+  const CLOUDINARY_BASE_URL = import.meta.env.VITE_CLOUDINARY_BASE_URL;
+  const initialCoverPreview = `${CLOUDINARY_BASE_URL}/00_cover_default.jpg`;
 
   const [data, setData] = useState([]);
   const [dataType, setDataType] = useState("");
@@ -63,9 +65,7 @@ function AddNewMovie() {
   const [fileSize, setFileSize] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [selectedCoverFile, setSelectedCoverFile] = useState("");
-  const [coverPreview, setCoverPreview] = useState(
-    `${backendUrl}/00_cover_default.jpg`
-  );
+  const [coverPreview, setCoverPreview] = useState(initialCoverPreview);
   const [openModal, setOpenModal] = useState(false);
   const [openModalMIE, setOpenModalMIE] = useState(false);
   const [selectedKinds, setSelectedKinds] = useState([]);
@@ -78,7 +78,6 @@ function AddNewMovie() {
   const [selectedLanguages, setSelectedLanguages] = useState([]);
   const [selectedTags, setSelectedTags] = useState([]);
   const [selectedFocus, setSelectedFocus] = useState([]);
-  const [uploadLocal, setUploadLocal] = useState(false);
   const [version, setVersion] = useState("none");
   const [tvSeasons, setTvSeasons] = useState("");
   const [seasonsInfo, setSeasonsInfo] = useState([]);
@@ -380,9 +379,8 @@ function AddNewMovie() {
     setSelectedLanguages([]);
     setSelectedTags([]);
     setSelectedFocus([]);
-    setCoverPreview(`${backendUrl}/00_cover_default.jpg`);
+    setCoverPreview(initialCoverPreview);
     setSelectedCoverFile("");
-    setUploadLocal(false);
     setSeasonsInfo([]);
     setSelectedSeasons([]);
     setTvSeasons("");
@@ -578,64 +576,8 @@ function AddNewMovie() {
       };
       reader.readAsDataURL(file);
       setSelectedCoverFile(file); // Stocke le fichier sélectionné
-      setUploadLocal(true); // Passe en mode upload local
     }
   }; // end handleCoverChange
-
-  const handleFileUpload = async () => {
-    let coverFilename = "00_cover_default.jpg"; // Image par défaut
-
-    // Cas 1: Upload manuel d'une image
-    if (uploadLocal && selectedCoverFile) {
-      const formData = new FormData();
-      formData.append("cover", selectedCoverFile);
-
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/upload-local-cover`,
-          {
-            method: "POST",
-            body: formData,
-          }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          setCoverPreview(`${backendUrl}/${data.coverFilename}`);
-          coverFilename = data.coverFilename; // Fichier uploadé
-        }
-      } catch (error) {
-        console.error("Error uploading local file:", error);
-      }
-    }
-    // Cas 2: Récupération via une API
-    else if (!uploadLocal && movie.posterUrl) {
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/upload-cover`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ posterUrl: movie.posterUrl }),
-          }
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          setCoverPreview(`${backendUrl}/${data.coverFilename}`);
-          coverFilename = data.coverFilename; // Image récupérée via l'API
-        }
-      } catch (error) {
-        console.error("Error uploading cover via API:", error);
-      }
-    }
-
-    return coverFilename;
-  };
-
-  //-----------------------------------------------
-  // POST NEW MOVIE
-  //-----------------------------------------------
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -654,109 +596,71 @@ function AddNewMovie() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleFormSubmit = async (event) => {
-    if (!videoSupport) {
-      toast.warn("Merci de saisir un support");
-    } else {
-      event.preventDefault();
+    event.preventDefault();
 
-      setIsSubmitting(true); // Affiche le Backdrop
+    if (!movie.title) {
+      toast.warn("Merci de saisir un titre");
+      return;
+    }
 
-      // 1️⃣ Vérifier si le titre existe
-      const checkResponse = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/api/movies/name/${encodeURIComponent(movie.title)}`
-      );
-      if (!checkResponse.ok)
-        throw new Error("Erreur lors de la vérification du titre");
-      const { exists } = await checkResponse.json();
+    setIsSubmitting(true);
 
-      if (exists) {
-        const confirmed = window.confirm(
-          "Ce titre existe déjà dans la base. Voulez-vous continuer quand même ?"
-        );
-        if (!confirmed) {
-          setIsSubmitting(false);
-          return; // Stop le submit si l'utilisateur annule
-        }
-      }
+    try {
+      const formData = new FormData();
 
-      const vostfr = version === "VOSTFR" ? 1 : 0;
-      const multi = version === "MULTI" ? 1 : 0;
-
-      // Récupérer toutes les données sélectionnées
-      const selectedGenre = selectedKinds.map((kind) => kind);
-      const selectedDirectorsName = selectedDirectors.map(
-        (director) => director.name
-      );
-      const selectedCastingName = selectedCasting.map(
-        (casting) => casting.name
-      );
-      const selectedScreenwritersName = selectedScreenwriters.map(
-        (screenwriter) => screenwriter.name
-      );
-      const selectedMusicName = selectedMusic.map((music) => music.name);
-      const selectedStudiosName = selectedStudios.map((studio) => studio.name);
-      const selectedCountriesName = selectedCountries.map(
-        (country) => country.name
-      );
-      const selectedLanguagesName = selectedLanguages.map(
-        (language) => language.name
-      );
-
-      const selectedTagsName = selectedTags.map((tag) => tag.name);
-
-      // Créer le corps de la requête
-      const requestBody = {
+      // 1️⃣ Préparer tous les champs à envoyer
+      const bodyData = {
         ...movie,
-        genres: selectedGenre,
-        directors: selectedDirectorsName,
-        castings: selectedCastingName,
-        screenwriters: selectedScreenwritersName,
-        compositors: selectedMusicName,
-        studios: selectedStudiosName,
-        countries: selectedCountriesName,
-        languages: selectedLanguagesName,
-        tags: selectedTagsName,
+        vostfr: version === "VOSTFR" ? 1 : 0,
+        multi: version === "MULTI" ? 1 : 0,
+        isTvShow: movie.isTvShow ? 1 : 0,
         focus: selectedFocus,
-        vostfr,
-        multi,
+        genres: selectedKinds,
+        directors: selectedDirectors.map((d) => d.name),
+        castings: selectedCasting.map((c) => c.name),
+        screenwriters: selectedScreenwriters.map((s) => s.name),
+        compositors: selectedMusic.map((m) => m.name),
+        studios: selectedStudios.map((s) => s.name),
+        countries: selectedCountries.map((c) => c.name),
+        languages: selectedLanguages.map((l) => l.name),
+        tags: selectedTags.map((t) => t.name),
       };
-      // console.info("requestBody:", requestBody);
 
-      // Effectuer l'upload de l'image (que ce soit via API ou localement)
-      const coverFilename = await handleFileUpload(); // Attendre le résultat de l'upload
-
-      // Ajouter le nom du fichier de couverture au corps de la requête
-      requestBody.cover = coverFilename || "00_cover_default.jpg"; // Utiliser une valeur par défaut si pas d'upload
-
-      try {
-        const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/movie`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(requestBody),
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+      // 2️⃣ Ajouter tous les champs au FormData
+      Object.entries(bodyData).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          formData.append(key, JSON.stringify(value));
         }
+      });
 
-        // log verificication datas
-        const data = await response.json();
-        console.info("data:", data);
-        toast.success("Le film a été ajouté avec succès !");
-        handleReturn(); // Retour vers MovieItemList
-      } catch (error) {
-        console.error(error);
-        toast.error("Erreur lors de l'ajout du film. 😱 Veuillez réessayer. ");
-      } finally {
-        setIsSubmitting(false); // Masque le Backdrop une fois terminé
+      // 3️⃣ Image locale ou TMDB
+      if (selectedCoverFile) {
+        formData.append("cover", selectedCoverFile);
+      } else if (movie.posterUrl) {
+        formData.append("coverUrl", movie.posterUrl);
       }
-    } // end else
-  }; // end handleFormSubmit
+
+      // 4️⃣ Envoi POST
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/api/movie`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json();
+      console.info("Film créé :", data);
+      toast.success("Le film a été ajouté avec succès !");
+      handleReturn();
+    } catch (error) {
+      console.error(error);
+      toast.error("Erreur lors de l'ajout du film 😱");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   //-----------------------------------------------
   // BUTTON STYLE

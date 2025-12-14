@@ -12,9 +12,14 @@ import webIco from "../../assets/ico/web_ico.png";
 function FocusCard({ selectedFocus, origin }) {
   if (!selectedFocus) return null;
 
-  const backendUrl = import.meta.env.VITE_BACKEND_URL;
+  const CLOUDINARY_BASE_URL = import.meta.env.VITE_CLOUDINARY_BASE_URL;
+  const getImageUrl = (image) => {
+    if (!image) return `${CLOUDINARY_BASE_URL}/00_jmtb_item_default`;
+    if (image.startsWith("http")) return image;
+    return `${CLOUDINARY_BASE_URL}/${image}`;
+  };
 
-  const imageUrl = `${backendUrl}/images/${selectedFocus.image}`;
+  const imageUrl = getImageUrl(selectedFocus.image);
   const ArtistFocus = origin === "ArtistFocus";
 
   return (
