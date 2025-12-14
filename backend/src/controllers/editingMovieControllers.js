@@ -8,17 +8,11 @@
 /* eslint-disable prefer-destructuring */
 require("dotenv").config();
 const axios = require("axios");
-const fs = require("fs");
-const path = require("path");
-const { v4: uuidv4 } = require("uuid");
-const streamifier = require("streamifier");
-
 const { cloudinary, uploadBufferToCloudinary } = require("../utils/cloudinary");
 const { resizeAndCropBuffer } = require("../utils/imageUtils");
 
 const { cleanTags } = require("../utils/tags");
 const { cleanStudioName } = require("../utils/studio");
-const editingController = require("./editingControllers");
 const editingModel = require("../models/editingModel");
 const editingMovieModel = require("../models/editingMovieModel");
 const purgeModel = require("../models/purgeModel");
@@ -26,57 +20,7 @@ const purgeModel = require("../models/purgeModel");
 const DEFAULT_COVER = "00_cover_default.jpg";
 const CLOUD_FOLDER = "jmdb/covers";
 
-// -------------------------- Helpers Cloudinary --------------------------
-
-function extractPublicIdFromUrl(url) {
-  if (!url || typeof url !== "string") return null;
-  try {
-    const parts = url.split("/upload/");
-    if (parts.length < 2) return null;
-    const afterUpload = parts[1];
-    const withoutVersion = afterUpload.replace(/^v\d+\//, "");
-    const withoutExt = withoutVersion.replace(/\.[a-zA-Z0-9]+(\?.*)?$/, "");
-    return withoutExt;
-  } catch (e) {
-    return null;
-  }
-}
-
-async function uploadUrlToCloudinary(url, options = {}) {
-  return cloudinary.uploader.upload(url, options);
-}
-
-async function deleteCloudinaryCoverByFilename(filename) {
-  if (!filename || filename === DEFAULT_COVER) return;
-
-  const baseName = filename.replace(/\.[^.]+$/, "");
-  const publicId = `${CLOUD_FOLDER}/${baseName}`;
-
-  const result = await cloudinary.uploader.destroy(publicId, {
-    resource_type: "image",
-    invalidate: true,
-  });
-
-  console.info("🧹 Cloudinary delete:", publicId, result);
-}
-
 // -------------------------- Fonctions Cloudinary --------------------------
-
-const downloadPoster = async (posterPathOrUrl, movieId = null) => {
-  const source = posterPathOrUrl.startsWith("/")
-    ? `https://image.tmdb.org/t/p/original${posterPathOrUrl}`
-    : posterPathOrUrl;
-
-  const folder = movieId ? `jmdb/covers/${movieId}` : "jmdb/covers";
-
-  const result = await uploadUrlToCloudinary(source, {
-    folder,
-    public_id: movieId ? "cover" : undefined,
-    overwrite: true,
-  });
-
-  return result.secure_url;
-};
 
 const uploadLocalCover = async (localFilePath, movieId = null) => {
   const folder = movieId ? `jmdb/covers/${movieId}` : "jmdb/covers";
@@ -86,34 +30,6 @@ const uploadLocalCover = async (localFilePath, movieId = null) => {
     overwrite: true,
   });
   return result.secure_url;
-};
-
-const uploadLocalCoverToCloudinary = async (req, res) => {
-  try {
-    if (!req.file || !req.file.buffer)
-      return res.status(400).json({ message: "Aucun fichier fourni" });
-
-    const { movieId } = req.body;
-    if (!movieId) return res.status(400).json({ message: "movieId manquant" });
-
-    const uploadResult = await uploadBufferToCloudinary(req.file.buffer, {
-      folder: `jmdb/covers/${movieId}`,
-      public_id: "cover",
-      overwrite: true,
-    });
-
-    await editingMovieModel.updateMovieImage(uploadResult.secure_url, movieId);
-
-    return res.status(200).json({
-      message: "Image uploadée avec succès",
-      url: uploadResult.secure_url,
-    });
-  } catch (error) {
-    console.error("Erreur uploadLocalCoverToCloudinary :", error);
-    return res
-      .status(500)
-      .json({ message: "Erreur lors de l'upload", error: error.message });
-  }
 };
 
 const updateImageFromUrl = async (req, res) => {
@@ -156,7 +72,6 @@ const updateImageFromUrl = async (req, res) => {
         : `jmdb/covers/${oldPublicId}`;
 
       await cloudinary.uploader.destroy(fullPublicId);
-      console.info(`🗑️ Ancienne image supprimée : ${fullPublicId}`);
     }
 
     const [updatedMovie] = await editingMovieModel.findMovieById(id);
@@ -175,359 +90,7 @@ const updateImageFromUrl = async (req, res) => {
   }
 };
 
-/**
- * ADD MOVIE
- * - insère d'abord le film (avec cover par défaut)
- * - récupère movieId
- * - si req.file présent => upload buffer vers Cloudinary dans jmdb/covers/<movieId>/cover
- * - si req.body.cover est une URL (ex: envoyé depuis TMDB via frontend), on upload aussi et on met à jour
- */
-// const addMovie = async (req, res) => {
-//   try {
-//     const {
-//       title,
-//       altTitle,
-//       year,
-//       duration,
-//       trailer,
-//       pitch,
-//       story,
-//       location,
-//       videoFormat,
-//       videoSupport,
-//       fileSize,
-//       idTheMovieDb,
-//       idIMDb,
-//       genres = [],
-//       directors = [],
-//       castings = [],
-//       screenwriters = [],
-//       compositors = [],
-//       studios = [],
-//       countries = [],
-//       languages = [],
-//       tags = [],
-//       vostfr,
-//       multi,
-//       isTvShow,
-//       tvSeasons,
-//       nbTvEpisodes,
-//       episodeDuration,
-//       comment,
-//       focus = [],
-//     } = req.body;
-
-//     if (!title) {
-//       return res.status(400).json({ message: "Movie's title is required" });
-//     }
-
-//     const normalizeBool = (value) => {
-//       if (value === true || value === "true" || value === 1 || value === "1") {
-//         return 1;
-//       }
-//       return 0;
-//     };
-
-//     const normalizedIsTvShow = normalizeBool(isTvShow);
-//     const normalizedVostfr = normalizeBool(vostfr);
-//     const normalizedMulti = normalizeBool(multi);
-
-//     // 1) Insert movie with default cover (so we have movieId)
-//     const defaultCover = "00_cover_default.jpg";
-//     await editingMovieModel.insertMovie(
-//       title,
-//       altTitle || null,
-//       year || null,
-//       duration ? parseInt(duration, 10) : null,
-//       defaultCover,
-//       trailer || null,
-//       pitch || null,
-//       story || null,
-//       location || null,
-//       videoFormat || null,
-//       videoSupport || null,
-//       fileSize || null,
-//       idTheMovieDb || null,
-//       idIMDb || null,
-//       normalizedVostfr,
-//       normalizedMulti,
-//       normalizedIsTvShow,
-//       tvSeasons || null,
-//       nbTvEpisodes || null,
-//       episodeDuration || null,
-//       comment || null
-//     );
-
-//     const [[{ movieId }]] = await editingMovieModel.getLastInsertedMovieId();
-
-//     // 2) Associations (genres, directors, castings, etc.) — on réutilise ta logique existante
-//     // (je garde ici exactement ton code pour la création des relations)
-//     if (genres && genres.length > 0) {
-//       const genrePromises = genres.map((genre) =>
-//         editingMovieModel.addMovieKind(movieId, genre.id)
-//       );
-//       await Promise.all(genrePromises);
-//     }
-
-//     if (directors && directors.length > 0) {
-//       const directorsPromises = directors.map((directorName) =>
-//         editingModel.findDirectorByName(directorName)
-//       );
-//       const directorsExist = await Promise.all(directorsPromises);
-//       const directorIds = [];
-
-//       for (let i = 0; i < directorsExist.length; i++) {
-//         const director = directorsExist[i][0];
-//         if (!director) {
-//           const result = await editingModel.insertDirector(directors[i]);
-//           directorIds.push(result.insertId);
-//         } else {
-//           directorIds.push(director[0].id);
-//         }
-//       }
-
-//       const directorPromises = directorIds.map((directorId) =>
-//         editingMovieModel.addMovieDirector(movieId, directorId)
-//       );
-//       await Promise.all(directorPromises);
-//     }
-
-//     if (castings && castings.length > 0) {
-//       const castingsPromises = castings.map((castingName) =>
-//         editingModel.findCastingByName(castingName)
-//       );
-//       const castingExist = await Promise.all(castingsPromises);
-//       const castingIds = [];
-
-//       for (let i = 0; i < castingExist.length; i++) {
-//         const casting = castingExist[i][0];
-//         if (!casting) {
-//           const result = await editingModel.insertCasting(castings[i]);
-//           castingIds.push(result.insertId);
-//         } else {
-//           castingIds.push(casting[0].id);
-//         }
-//       }
-
-//       const castingPromises = castingIds.map((castingId) =>
-//         editingMovieModel.addMovieCasting(movieId, castingId)
-//       );
-//       await Promise.all(castingPromises);
-//     }
-
-//     if (screenwriters && screenwriters.length > 0) {
-//       const screenwritersPromises = screenwriters.map((screenwriterName) =>
-//         editingModel.findScreenwriterByName(screenwriterName)
-//       );
-
-//       const screenwriterExist = await Promise.all(screenwritersPromises);
-//       const screenwriterIds = [];
-
-//       for (let i = 0; i < screenwriterExist.length; i++) {
-//         const screenwriter = screenwriterExist[i][0];
-//         if (!screenwriter) {
-//           const result = await editingModel.insertScreenwriter(
-//             screenwriters[i]
-//           );
-//           screenwriterIds.push(result.insertId);
-//         } else {
-//           screenwriterIds.push(screenwriter[0].id);
-//         }
-//       }
-
-//       const screenwriterPromises = screenwriterIds.map((screenwriterId) =>
-//         editingMovieModel.addMovieScreenwriter(movieId, screenwriterId)
-//       );
-
-//       await Promise.all(screenwriterPromises);
-//     }
-
-//     if (compositors && compositors.length > 0) {
-//       const compositorsPromises = compositors.map((compositorName) =>
-//         editingModel.findCompositorByName(compositorName)
-//       );
-
-//       const compositorExist = await Promise.all(compositorsPromises);
-//       const compositorIds = [];
-
-//       for (let i = 0; i < compositorExist.length; i++) {
-//         const compositor = compositorExist[i][0];
-//         if (!compositor) {
-//           const result = await editingModel.insertCompositor(compositors[i]);
-//           compositorIds.push(result.insertId);
-//         } else {
-//           compositorIds.push(compositor[0].id);
-//         }
-//       }
-
-//       const compositorPromises = compositorIds.map((compositorId) =>
-//         editingMovieModel.addMovieMusic(movieId, compositorId)
-//       );
-//       await Promise.all(compositorPromises);
-//     }
-
-//     // Studios
-//     if (studios && studios.length > 0) {
-//       const studioIds = [];
-
-//       for (let i = 0; i < studios.length; i++) {
-//         const rawStudioName = studios[i];
-//         const studioName = cleanStudioName(rawStudioName);
-//         if (!studioName) continue;
-
-//         const existingStudioId =
-//           await editingModel.findStudioByName(studioName);
-//         if (existingStudioId) {
-//           studioIds.push(existingStudioId);
-//         } else {
-//           const result = await editingModel.insertStudio(studioName);
-//           studioIds.push(result.insertId);
-//         }
-//       }
-
-//       const studioPromises = studioIds.map((studioId) =>
-//         editingMovieModel.addMovieStudio(movieId, studioId)
-//       );
-//       await Promise.all(studioPromises);
-//     }
-
-//     // Countries
-//     if (countries && countries.length > 0) {
-//       const countriesPromises = countries.map((countryName) =>
-//         editingModel.findCountryByName(countryName)
-//       );
-//       const countryExist = await Promise.all(countriesPromises);
-//       const countryIds = [];
-
-//       for (let i = 0; i < countryExist.length; i++) {
-//         const country = countryExist[i][0];
-//         if (!country) {
-//           const result = await editingModel.insertCountry(countries[i]);
-//           countryIds.push(result.insertId);
-//         } else {
-//           countryIds.push(country[0].id);
-//         }
-//       }
-
-//       const countryPromises = countryIds.map((countryId) =>
-//         editingMovieModel.addMovieCountry(movieId, countryId)
-//       );
-//       await Promise.all(countryPromises);
-//     }
-
-//     // Languages
-//     if (languages && languages.length > 0) {
-//       const languagesPromises = languages.map((languageName) =>
-//         editingModel.findLanguageByName(languageName)
-//       );
-//       const languageExist = await Promise.all(languagesPromises);
-//       const languageIds = [];
-
-//       for (let i = 0; i < languageExist.length; i++) {
-//         const language = languageExist[i][0];
-//         if (!language) {
-//           const result = await editingModel.insertLanguage(languages[i]);
-//           languageIds.push(result.insertId);
-//         } else {
-//           languageIds.push(language[0].id);
-//         }
-//       }
-
-//       const languagePromises = languageIds.map((languageId) =>
-//         editingMovieModel.addMovieLanguage(movieId, languageId)
-//       );
-//       await Promise.all(languagePromises);
-//     }
-
-//     // Tags
-//     if (tags && tags.length > 0) {
-//       const cleanedTags = cleanTags(tags);
-//       if (cleanedTags.length > 0) {
-//         const tagIds = [];
-//         for (const tagName of cleanedTags) {
-//           if (!tagName || tagName.trim() === "") continue;
-//           const existingTag =
-//             await editingModel.findTagByNameInBackend(tagName);
-//           if (existingTag && existingTag.id) {
-//             tagIds.push(existingTag.id);
-//           } else {
-//             const result = await editingModel.insertTag(tagName);
-//             if (result && result.insertId) tagIds.push(result.insertId);
-//           }
-//         }
-//         if (tagIds.length > 0) {
-//           const tagPromises = tagIds.map((tagId) =>
-//             editingMovieModel.addMovieTag(movieId, tagId)
-//           );
-//           await Promise.all(tagPromises);
-//         }
-//       }
-//     }
-
-//     // Focus
-//     if (focus && focus.length > 0) {
-//       const focusIds = focus.map((f) => f.id);
-//       const focusPromises = focusIds.map((focusId) =>
-//         editingMovieModel.addMovieFocus(movieId, focusId)
-//       );
-//       await Promise.all(focusPromises);
-//     }
-
-//     // --------------------------
-//     // IMAGE HANDLING (POST)
-//     // --------------------------
-
-//     try {
-//       // 🟢 1️⃣ UPLOAD LOCAL (fichier envoyé via FormData)
-//       if (req.file && req.file.buffer) {
-//         const resizedBuffer = await resizeAndCropBuffer(
-//           req.file.buffer,
-//           306,
-//           459
-//         );
-
-//         const { publicId } = await uploadBufferToCloudinary(
-//           resizedBuffer,
-//           CLOUD_FOLDER,
-//           "cover"
-//         );
-
-//         const filename = `${publicId.split("/").pop()}.jpg`;
-//         await editingMovieModel.updateMovieImage(filename, movieId);
-//       }
-
-//       // 🔵 2️⃣ IMPORT TMDB (URL distante)
-//       else if (req.body.coverUrl) {
-//         const response = await axios.get(req.body.coverUrl, {
-//           responseType: "arraybuffer",
-//         });
-
-//         const buffer = Buffer.from(response.data);
-//         const resizedBuffer = await resizeAndCropBuffer(buffer, 306, 459);
-
-//         const { publicId } = await uploadBufferToCloudinary(
-//           resizedBuffer,
-//           CLOUD_FOLDER,
-//           "cover"
-//         );
-
-//         const filename = `${publicId.split("/").pop()}.jpg`;
-//         await editingMovieModel.updateMovieImage(filename, movieId);
-//       }
-//     } catch (e) {
-//       console.error("❌ Erreur upload cover (POST addMovie):", e);
-//       // ⚠️ on ne bloque PAS la création du film
-//     }
-
-//     // Purge orphan records
-//     await purgeModel.purgeOrphanedRecords();
-
-//     return res.status(201).json({ message: "Movie successfully created" });
-//   } catch (error) {
-//     console.error("Error movie creation :", error);
-//     return res.status(500).json({ message: "Error movie creation" });
-//   }
-// };
+// -------------------------- ADD MOVIE --------------------------
 
 const addMovie = async (req, res) => {
   try {
@@ -604,18 +167,13 @@ const addMovie = async (req, res) => {
     if (parsedBody.directors?.length > 0) {
       const directorIds = [];
       for (const name of parsedBody.directors) {
-        console.log("➡️ Processing director:", name);
-
         const [rows] = await editingModel.findDirectorByName(name);
         let existing = rows[0];
-        console.log("   Found in DB:", existing);
 
         if (!existing) {
-          console.log("   Director not found, inserting:", name);
           await editingModel.insertDirector(name);
           const [rowsAfter] = await editingModel.findDirectorByName(name);
           existing = rowsAfter[0];
-          console.log("   After insert, found:", existing);
         }
 
         if (!existing?.id)
@@ -626,7 +184,6 @@ const addMovie = async (req, res) => {
       await Promise.all(
         directorIds.map((id) => editingMovieModel.addMovieDirector(movieId, id))
       );
-      console.log("   Directors linked to movieId:", movieId);
     }
 
     // castings
@@ -693,13 +250,9 @@ const addMovie = async (req, res) => {
         if (!name) continue;
 
         let existingId = await editingModel.findStudioByName(name);
-        console.log("➡️ Processing studio:", name);
-        console.log("   Found in DB ID:", existingId);
 
         if (!existingId) {
-          console.log("   Studio not found, inserting:", name);
           const result = await editingModel.insertStudio(name);
-          console.log("   Insert result:", result[0]); // insertId dans result[0].insertId
           existingId = result[0].insertId;
         }
 
@@ -707,13 +260,9 @@ const addMovie = async (req, res) => {
         else console.warn("⚠️ Could not get ID for studio:", name);
       }
 
-      console.log("   Studio IDs to link:", studioIds);
-
       await Promise.all(
         studioIds.map((id) => editingMovieModel.addMovieStudio(movieId, id))
       );
-
-      console.log("   Studios linked to movieId:", movieId);
     }
 
     // countries
@@ -761,26 +310,19 @@ const addMovie = async (req, res) => {
         if (!t?.trim()) continue;
 
         let existing = await editingModel.findTagByNameInBackend(t);
-        console.log("➡️ Processing tag:", t, "Found in DB:", existing);
 
         if (!existing?.id) {
-          console.log("   Tag not found, inserting:", t);
           const insertId = await editingModel.insertTag(t);
           existing = { id: insertId };
-          console.log("   After insert, ID:", insertId);
         }
 
         if (existing?.id) tagIds.push(existing.id);
         else console.warn("⚠️ Could not get ID for tag:", t);
       }
 
-      console.log("   Tag IDs to link:", tagIds);
-
       await Promise.all(
         tagIds.map((id) => editingMovieModel.addMovieTag(movieId, id))
       );
-
-      console.log("   Tags linked to movieId:", movieId);
     }
 
     // focus
@@ -812,8 +354,6 @@ const deleteMovie = async (req, res) => {
   const { id } = req.params;
   const movieId = Number(id);
 
-  console.info("🗑️ Tentative de suppression du film avec ID:", movieId);
-
   try {
     // 1️⃣ Récupérer le film
     const [movie] = await editingMovieModel.findMovieById(movieId);
@@ -832,8 +372,6 @@ const deleteMovie = async (req, res) => {
         resource_type: "image",
         invalidate: true, // 🔥 indispensable (cache CDN)
       });
-
-      console.info("🧹 Cloudinary delete:", publicId, result);
     }
 
     // 3️⃣ Supprimer le film en base
@@ -854,63 +392,6 @@ const deleteMovie = async (req, res) => {
 };
 
 // -------------------------- EDIT MOVIE IMAGE (upload via req.file.buffer) --------------------------
-
-// const editMovieImage = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-
-//     // accepter soit req.file.buffer, soit body.imageUrl
-//     const fileBuffer = req.file ? req.file.buffer : null;
-//     const { imageUrl } = req.body;
-
-//     if (!fileBuffer && !imageUrl) {
-//       return res.status(400).json({ message: "Aucune image fournie" });
-//     }
-
-//     // récupérer l'ancienne image pour suppression éventuelle
-//     const [movieRow] = await editingMovieModel.findMovieById(id);
-//     const currentImageUrl = movieRow?.cover;
-
-//     let uploadResult;
-//     if (fileBuffer) {
-//       uploadResult = await uploadBufferToCloudinary(fileBuffer, {
-//         folder: `jmdb/covers/${id}`,
-//         public_id: "cover",
-//         overwrite: true,
-//       });
-//     } else if (imageUrl) {
-//       uploadResult = await uploadUrlToCloudinary(imageUrl, {
-//         folder: `jmdb/covers/${id}`,
-//         public_id: "cover",
-//         overwrite: true,
-//       });
-//     }
-
-//     if (!uploadResult || !uploadResult.secure_url) {
-//       return res.status(500).json({ message: "Erreur lors de l'upload" });
-//     }
-
-//     const newCoverUrl = uploadResult.secure_url;
-
-//     // mettre à jour la base avec la nouvelle URL
-//     await editingMovieModel.updateMovieImage(newCoverUrl, id);
-
-//     // supprimer l'ancienne image Cloudinary si nécessaire
-//     if (currentImageUrl && currentImageUrl !== "00_cover_default.jpg") {
-//       await deleteCloudinaryImageFromUrl(currentImageUrl);
-//     }
-
-//     const [updatedMovie] = await editingMovieModel.findMovieById(id);
-//     return res
-//       .status(200)
-//       .json({ message: "Image successfully updated", movie: updatedMovie });
-//   } catch (error) {
-//     console.error("Erreur lors du téléchargement de l'image :", error);
-//     return res
-//       .status(500)
-//       .json({ message: "Error updating image", error: error.message });
-//   }
-// };
 
 const editMovieImage = async (req, res) => {
   try {
@@ -1102,12 +583,10 @@ const editMovieById = async (req, res) => {
 };
 
 module.exports = {
-  downloadPoster,
   addMovie,
   deleteMovie,
   editMovieImage,
   editMovieById,
   updateImageFromUrl,
-  uploadLocalCoverToCloudinary,
   uploadLocalCover,
 };
