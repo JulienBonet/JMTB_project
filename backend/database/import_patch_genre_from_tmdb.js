@@ -1,8 +1,11 @@
+/* eslint-disable no-promise-executor-return */
+/* eslint-disable no-continue */
+/* eslint-disable no-shadow */
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-console */
 
-require("dotenv").config({ path: "../.env.development" });
+require("dotenv").config();
 const mysql = require("mysql2/promise");
 
 const fetch = (...args) =>
@@ -10,11 +13,10 @@ const fetch = (...args) =>
 
 (async () => {
   const db = await mysql.createConnection({
-    host: "gondola.proxy.rlwy.net",
-    port: "28587" || 3306,
-    user: "root",
-    password: "qrlqywGySEjWwLVhedEStcDxbpUfRKnk",
-    database: "jmdb",
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
   });
 
   // Genres à vérifier
@@ -54,6 +56,7 @@ const fetch = (...args) =>
         console.warn(
           `⚠️ Limite TMDB atteinte pour ${movie.idTheMovieDb}, pause 10s...`
         );
+        // eslint-disable-next-line no-promise-executor-return
         await new Promise((r) => setTimeout(r, 10000));
         continue;
       }
