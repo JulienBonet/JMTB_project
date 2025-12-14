@@ -4,7 +4,7 @@
   align-items: center;
   width: 15rem;
   height: 16rem;
-  gap: 15px;
+  gap: 1rem;
   margin: min(10px);
   margin-bottom: 1rem;
   cursor: pointer;
@@ -23,8 +23,7 @@
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 .thumbail_container3:hover .thumbail_cover3 {
-  transform: scale(1.08);
-  filter: brightness(1.15);
+  transform: scale(1.05);
 }
 
 .thumbail_container3:hover .thumbail_title3{
