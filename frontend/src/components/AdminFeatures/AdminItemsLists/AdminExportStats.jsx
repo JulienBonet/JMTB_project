@@ -8,6 +8,7 @@ import {
   AccordionSummary,
   AccordionDetails,
 } from "@mui/material";
+import CircularProgress from "@mui/material/CircularProgress";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 function AdminExportStats() {
@@ -15,6 +16,8 @@ function AdminExportStats() {
   // STATS
   // --------------
   const [stats, setStats] = useState(null);
+  const [isExportingCsv, setIsExportingCsv] = useState(false);
+  const [isExportingSql, setIsExportingSql] = useState(false);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -57,6 +60,7 @@ function AdminExportStats() {
   // EXPORT CSV
   // --------------
   const handleExportCsv = async () => {
+    setIsExportingCsv(true);
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/api/admin/export-csv`,
@@ -81,6 +85,8 @@ function AdminExportStats() {
       link.remove();
     } catch (err) {
       console.error("Erreur export CSV", err);
+    } finally {
+      setIsExportingCsv(false);
     }
   };
 
@@ -88,6 +94,7 @@ function AdminExportStats() {
   // EXPORT SQL
   // --------------
   const handleExportSql = async () => {
+    setIsExportingSql(true);
     try {
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/api/admin/export-sql`,
@@ -112,6 +119,8 @@ function AdminExportStats() {
       link.remove();
     } catch (err) {
       console.error("Erreur export SQL", err);
+    } finally {
+      setIsExportingSql(false);
     }
   };
 
@@ -125,6 +134,9 @@ function AdminExportStats() {
     fontFamily: "var(--font-01)",
     "&:hover": {
       backgroundColor: hoverColor,
+    },
+    "& .MuiCircularProgress-root": {
+      color: "#fff",
     },
     padding: "8px 24px",
     borderRadius: 2,
@@ -152,17 +164,46 @@ function AdminExportStats() {
       {/* EXPORT BUTTONS */}
       <section className="export_button_container_Admin_export_List">
         <Stack direction="column" spacing={3}>
+          {/* BOUTON EXPORT CSV */}
           <Button
-            sx={buttonSx("#1976d2", "#115293")} // bleu pour CSV
+            sx={{
+              ...buttonSx("#1976d2", "#115293"),
+              color: "#fff",
+              "&.Mui-disabled": {
+                color: "#fff",
+                backgroundColor: "#1976d2",
+              },
+            }}
             onClick={handleExportCsv}
+            disabled={isExportingCsv}
+            startIcon={
+              isExportingCsv ? (
+                <CircularProgress size={20} sx={{ color: "#fff" }} />
+              ) : null
+            }
           >
-            Exporter CSV
+            {isExportingCsv ? "Export CSV en cours..." : "Exporter CSV"}
           </Button>
+          {/* BOUTON EXPORT SQL */}
           <Button
-            sx={buttonSx("#9c27b0", "#6d1b7b")} // violet pour SQL
+            sx={{
+              ...buttonSx("#9c27b0", "#6d1b7b"),
+              color: "#fff",
+              "&.Mui-disabled": {
+                color: "#fff",
+                backgroundColor: "#9c27b0",
+                opacity: 0.8,
+              },
+            }}
             onClick={handleExportSql}
+            disabled={isExportingSql}
+            startIcon={
+              isExportingSql ? (
+                <CircularProgress size={20} sx={{ color: "#fff" }} />
+              ) : null
+            }
           >
-            Exporter SQL
+            {isExportingSql ? "Export SQL en cours..." : "Exporter SQL"}
           </Button>
         </Stack>
       </section>
