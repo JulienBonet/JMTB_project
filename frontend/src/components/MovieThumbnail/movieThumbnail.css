@@ -4,23 +4,36 @@
   align-items: center;
   width: 13rem;
   height: 18rem;
-  gap: 10px;
+  gap: 1rem;
   margin: min(10px);
   margin-bottom: 1rem;
   cursor: pointer;
 }
 .thumbail_cover {
   height: 13rem;
+  border-radius: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 .thumbail_title {
   font-family: var(--font-02);
   font-weight: bold;
   color: var(--color-01);
   text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-.thumbail_title:hover {
-  color: var(--color-02);
+.thumbail_container:hover .thumbail_cover {
+  transform: scale(1.05);
+      filter:
+    drop-shadow(0 0 2px rgba(255, 255, 255, 0.9))
+    drop-shadow(0 0 6px rgba(255, 255, 255, 0.7))
+    brightness(1.15);
 }
+
+.thumbail_container:hover .thumbail_title{
+  filter: brightness(1.15);
+}
+
+
 .thumbail_year {
   font-family: var(--font-02);
   font-weight: 600;

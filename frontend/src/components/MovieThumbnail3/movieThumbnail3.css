@@ -11,15 +11,24 @@
 }
 .thumbail_cover3 {
   height: 12rem;
+  border-radius: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
+
 .thumbail_title3 {
   font-family: var(--font-02);
   font-weight: bold;
   color: var(--color-01);
   text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
-.thumbail_title3:hover {
-  color: var(--color-03);
+.thumbail_container3:hover .thumbail_cover3 {
+  transform: scale(1.08);
+  filter: brightness(1.15);
+}
+
+.thumbail_container3:hover .thumbail_title3{
+  filter: brightness(1.15);
 }
 .thumbail_year3 {
   font-family: var(--font-02);
