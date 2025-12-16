@@ -8,7 +8,6 @@ scripts
 /backend/src/tmp/*.sql
 /backend/src/tmp/*.csv
 public/images/
-database
 jest.config.js
 migrate.js
 seed.js
