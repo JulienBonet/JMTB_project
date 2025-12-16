@@ -62,11 +62,3 @@
   width: 90%;
   margin: 0 auto;
 }
-.image_FocusThumbnail {
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.image_FocusThumbnail:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 0 15px var(--color-01);
-}

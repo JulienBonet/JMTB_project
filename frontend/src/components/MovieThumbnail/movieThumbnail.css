@@ -23,6 +23,7 @@
 }
 .thumbail_container:hover .thumbail_cover {
   transform: scale(1.05);
+  filter: brightness(1.15);
 }
 
 .thumbail_container:hover .thumbail_title{
