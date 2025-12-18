@@ -16,6 +16,7 @@ import DoneOutlineIcon from "@mui/icons-material/DoneOutline";
 import UndoIcon from "@mui/icons-material/Undo";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import CachedIcon from "@mui/icons-material/Cached";
+import CircularProgress from "@mui/material/CircularProgress";
 import "./adminItemsCard.css";
 import "./adminItemsCardMediaQueries.css";
 
@@ -42,6 +43,7 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
   const [isFocus, setIsFocus] = useState(item.isFocus || "");
   const [image, setImage] = useState(getImageUrl(item.image));
   const [showUploadButton, setShowUploadButton] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef(null);
 
   const isArtistFocus = origin === "director" || origin === "casting";
@@ -81,6 +83,8 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
 
   const handleValidate = async () => {
     try {
+      setIsLoading(true);
+
       const hasChanges =
         name !== item.name ||
         (isArtistFocus && pitch !== item.pitch) ||
@@ -141,6 +145,8 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
       closeModal();
     } catch (err) {
       toast.error(`Erreur : ${err.message}`, { className: "custom-toast" });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -365,10 +371,19 @@ function AdminItemsCard({ item, origin, onUpdate, closeModal }) {
         <div className="Info_Btn-Modify">
           {isModify ? (
             <section className="Item_Editing_Buttons">
-              <DoneOutlineIcon
-                className="Item_validateButton"
-                onClick={handleValidate}
-              />
+              {isLoading ? (
+                <CircularProgress
+                  size={22}
+                  thickness={5}
+                  color="inherit"
+                  className="Item_loader_mui"
+                />
+              ) : (
+                <DoneOutlineIcon
+                  className="Item_validateButton"
+                  onClick={handleValidate}
+                />
+              )}
               <UndoIcon className="Item_UndoButton" onClick={handleUndo} />
             </section>
           ) : (

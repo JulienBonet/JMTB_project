@@ -11,6 +11,7 @@ import {
 import "react-toastify/dist/ReactToastify.css";
 import DoneOutlineIcon from "@mui/icons-material/DoneOutline";
 import UndoIcon from "@mui/icons-material/Undo";
+import CircularProgress from "@mui/material/CircularProgress";
 import "./createItemCard.css";
 
 function CreateItemCard({ origin, onUpdate, closeModal }) {
@@ -20,6 +21,7 @@ function CreateItemCard({ origin, onUpdate, closeModal }) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Fonctions pour filtrer les caractères interdits
   const regexInput = (value) => {
@@ -78,6 +80,8 @@ function CreateItemCard({ origin, onUpdate, closeModal }) {
     }
 
     try {
+      setIsLoading(true);
+
       // Préparer les données à envoyer
       const data = { name };
 
@@ -123,6 +127,8 @@ function CreateItemCard({ origin, onUpdate, closeModal }) {
     } catch (error) {
       console.error("Request error:", error);
       toast.error("Error creating item");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -205,10 +211,23 @@ function CreateItemCard({ origin, onUpdate, closeModal }) {
 
       <div className="Created_Info_Btn-Modify">
         <section className="Created_Item_Editing_Buttons">
-          <DoneOutlineIcon
+          {/* <DoneOutlineIcon
             className="Created_Item_validateButton"
             onClick={handleValidate}
-          />
+          /> */}
+          {isLoading ? (
+            <CircularProgress
+              size={22}
+              thickness={5}
+              color="inherit"
+              className="Item_loader_mui"
+            />
+          ) : (
+            <DoneOutlineIcon
+              className="Created_Item_validateButton"
+              onClick={handleValidate}
+            />
+          )}
           <UndoIcon className="Created_Item_UndoButton" onClick={handleUndo} />
         </section>
       </div>
