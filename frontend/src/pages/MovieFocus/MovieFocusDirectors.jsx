@@ -71,7 +71,6 @@ function MovieThema() {
     const res = await fetch(`${backendUrl}/api/directors/${f.id}`);
     const data = await res.json();
     setFilms(data);
-    console.info("data", data);
   };
 
   //------------------------------------------

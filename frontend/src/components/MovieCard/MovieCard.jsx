@@ -142,13 +142,13 @@ function MovieCard({
     idTheMovieDb: movie.idTheMovieDb || "",
   });
 
-  useEffect(() => {
-    console.info("movie in MovieCard", movie);
-  }, [movie]);
+  // useEffect(() => {
+  //   console.info("movie in MovieCard", movie);
+  // }, [movie]);
 
-  useEffect(() => {
-    console.info("movieData1 in MovieCard", movieData);
-  }, [movieData]);
+  // useEffect(() => {
+  //   console.info("movieData1 in MovieCard", movieData);
+  // }, [movieData]);
 
   const {
     genres,
@@ -275,23 +275,9 @@ function MovieCard({
   //-----------------------------------------------
 
   const [image, setImage] = useState(getImageUrl(movie.cover));
-
-  console.info("image", image);
   const [showUploadButton, setShowUploadButton] = useState(true);
   const [showImageButton, setShowImageButton] = useState(true);
   const fileCoverRef = useRef(null);
-
-  // useEffect(() => {
-  //   if (isModify) {
-  //     // Lorsque le mode modification est activé, réinitialiser l'affichage du bouton d'upload
-  //     if (image === `${backendUrl}/images/${movie.cover}`) {
-  //       setShowUploadButton(true); // Si l'image n'a pas été changée, montrer l'icône d'upload
-  //     } else {
-  //       setShowUploadButton(false); // Si l'image a été modifiée, montrer l'icône de reset
-  //     }
-  //     // console.info("image", image);
-  //   }
-  // }, [isModify, image, movie.cover, backendUrl]);
 
   useEffect(() => {
     if (!isModify) return;
@@ -311,9 +297,8 @@ function MovieCard({
   const handleCoverUpload = (event) => {
     const file = event.target.files[0];
     const newImageUrl = URL.createObjectURL(file);
-    console.info("newImageUrl", newImageUrl);
     setImage(newImageUrl);
-    setShowUploadButton(false); // Après le choix d'une image, afficher le bouton de reset
+    setShowUploadButton(false);
   };
 
   const handleUploadClick = () => {
@@ -877,8 +862,7 @@ function MovieCard({
     try {
       // Mettre à jour l'image (s'il y a un fichier sélectionné)
       if (fileCoverRef.current.files[0]) {
-        await handleUpdateImage(); // Attendre que l'image soit mise à jour avant de poursuivre
-        // console.info("Image successfully updated");
+        await handleUpdateImage();
       }
 
       // Mettre à jour les autres informations du film
@@ -923,12 +907,10 @@ function MovieCard({
 
       if (response.ok) {
         toast.success("Film mis à jour avec succès");
-        console.info("Film mis à jour avec succès");
         const updatedMovie = await response.json();
         const newMovie = Array.isArray(updatedMovie)
           ? updatedMovie[0]
           : updatedMovie;
-        console.info("updatedMovie", updatedMovie);
         setMovieData(newMovie);
         onUpdateMovie(newMovie);
         closeModifyMode();
@@ -959,13 +941,12 @@ function MovieCard({
 
   const handleCloseDeleteConfirm = () => {
     setIsConfirmDeleteOpen(false);
-    setMovieIdToDelete(null); // Réinitialise l'ID du film
+    setMovieIdToDelete(null);
   };
 
   const handleDeleteMovie = async () => {
-    if (!movieIdToDelete) return; // Vérifie si un ID est bien défini
+    if (!movieIdToDelete) return;
 
-    console.info("Tentative de suppression du film avec ID:", movieIdToDelete);
     setIsConfirmDeleteOpen(false);
 
     try {
@@ -976,7 +957,6 @@ function MovieCard({
 
       if (response.ok) {
         toast.info("Film supprimé avec succès");
-        console.info("Film supprimé avec succès");
         onDeleteMovie(movieData.id); // Appeler la fonction de rappel
         closeModal();
       } else {

@@ -32,8 +32,6 @@ function ArtistFilmo({
     setArtistMovies(data);
   }, [data]);
 
-  console.info("artistMovies", artistMovies);
-
   // ---------- Wrappers qui utilisent les fonctions backend si disponibles ----------
   const handleAlphabeticBtnClick = async () => {
     // si le parent a fourni movieSortedA/movieSortedZ et sortOrderA : on les utilise

@@ -28,3 +28,9 @@
     height: 85vh;
 }
 }
+
+@media (max-width: 520px) {
+  .artists_groups {
+    width: 50%;
+}
+}

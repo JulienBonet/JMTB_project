@@ -30,8 +30,6 @@ function MovieThema() {
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
   const origin = "focus";
 
-  console.info("themaData", themaData);
-
   //------------------------------------------
   // SORTED THEMAS
   //------------------------------------------
