@@ -22,6 +22,13 @@ function FocusCard({ selectedFocus, origin }) {
   const imageUrl = getImageUrl(selectedFocus.image);
   const ArtistFocus = origin === "ArtistFocus";
 
+  const focusLinks = [
+    { key: "wikilink", icon: wikipediaIco, alt: "Wikipedia" },
+    { key: "imdblink", icon: imdbIco, alt: "IMDb" },
+    { key: "senscritiquelink", icon: senscritiqueIco, alt: "Sens Critique" },
+    { key: "websitelink", icon: webIco, alt: "Website" },
+  ];
+
   return (
     <article className="focusCard_container">
       <section className="focusCard_content">
@@ -40,68 +47,24 @@ function FocusCard({ selectedFocus, origin }) {
               __html: DOMPurify.sanitize(selectedFocus.pitch),
             }}
           />
+          <div className="focusCard_divider_dashed" />
           {ArtistFocus &&
-            (selectedFocus?.wikilink ||
-              selectedFocus?.imdblink ||
-              selectedFocus?.senscritiquelink ||
-              selectedFocus?.websitelink) && (
-              <>
-                <div className="focusCard_divider_dashed" />
-                <div className="focusCard_ico_container">
-                  {selectedFocus.wikilink && (
-                    <a
-                      href={selectedFocus.wikilink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="focusCard_ico_container"
-                    >
-                      <img
-                        src={wikipediaIco}
-                        alt="wikipedia"
-                        className="focusCard_ico"
-                      />
-                    </a>
-                  )}
-                  {selectedFocus.imdblink && (
-                    <a
-                      href={selectedFocus.imdblink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="focusCard_ico_container"
-                    >
-                      <img src={imdbIco} alt="imdb" className="focusCard_ico" />
-                    </a>
-                  )}
-                  {selectedFocus.senscritiquelink && (
-                    <a
-                      href={selectedFocus.senscritiquelink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="focusCard_ico_container"
-                    >
-                      <img
-                        src={senscritiqueIco}
-                        alt="Sens Critique"
-                        className="focusCard_ico"
-                      />
-                    </a>
-                  )}
-                  {selectedFocus.websitelink && (
-                    <a
-                      href={selectedFocus.websitelink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="focusCard_ico_container"
-                    >
-                      <img
-                        src={webIco}
-                        alt="website"
-                        className="focusCard_ico"
-                      />
-                    </a>
-                  )}
-                </div>
-              </>
+            focusLinks.some((link) => selectedFocus?.[link.key]) && (
+              <div className="focusCard_ico_container">
+                {focusLinks.map(
+                  ({ key, icon, alt }) =>
+                    selectedFocus?.[key] && (
+                      <a
+                        key={key}
+                        href={selectedFocus[key]}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        <img src={icon} alt={alt} className="focusCard_ico" />
+                      </a>
+                    )
+                )}
+              </div>
             )}
         </div>
       </section>

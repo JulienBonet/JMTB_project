@@ -23,13 +23,12 @@
 }
 .thumbail_container:hover .thumbail_cover {
   transform: scale(1.05);
-  filter: brightness(1.15);
+  filter: brightness(1.20);
 }
 
 .thumbail_container:hover .thumbail_title{
-  filter: brightness(1.15);
+  filter: brightness(1.20);
 }
-
 
 .thumbail_year {
   font-family: var(--font-02);

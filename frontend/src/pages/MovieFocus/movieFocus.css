@@ -20,6 +20,7 @@
   justify-content: space-between;
   height: 5rem;
   padding: 0 2rem;
+  gap: min(1rem)
 }
 .thema_icon{
   height: 3rem;

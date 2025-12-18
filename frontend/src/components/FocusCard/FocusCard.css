@@ -3,6 +3,9 @@
   margin: 0 5%;
   display: flex;
   justify-content: center;
+  max-height: 100dvh; /* IMPORTANT mobile */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .focus_modal_closed_btn {
   text-align: right;
@@ -30,8 +33,9 @@
 .focusCard_image {
   width: 30%;
   height: 30%;
+  border-radius: 10px;
 }
-.focusCard_text_container{
+.focusCard_text_container {
   width: 100%;
 }
 
@@ -45,6 +49,10 @@
   font-family: var(--font-02);
   color: var(--color-01);
   font-size: medium;
+}
+
+.focusCard_spacer {
+  height: 0.5rem;
 }
 
 .focusCard_divider {
@@ -69,4 +77,9 @@
 .focusCard_ico {
   width: 2rem;
   cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.focusCard_ico:hover {
+  transform: scale(1.1);
 }
