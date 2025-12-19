@@ -7,10 +7,7 @@ exploCsv
 scripts
 /backend/src/tmp/*.sql
 /backend/src/tmp/*.csv
-/backend/import_patch_genre_from_tmdb.js
-/backend/import_patch_usa_country_from_tmdb.js
-/backend/import_some_items_from_tmdb.js
-/backend/import_tags_from_tmdb.js
+database_patch
 public/images/
 jest.config.js
 migrate.js
