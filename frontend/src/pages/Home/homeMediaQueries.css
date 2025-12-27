@@ -1,3 +1,9 @@
+@media (min-width: 1680px) and (min-height: 1050px) {
+  .ShuffleThumbnails_welcome {
+    width: auto;
+  }
+}
+
 @media (min-width: 1440px) and (min-height: 900px) {
   .ShuffleThumbnails_welcome {
     width: 75%;
