@@ -197,7 +197,7 @@ function MovieThema() {
                 alt="Les grands maîtres"
                 className="thema_icon"
               />
-              <h1 className="h1_titlePage_MF">LES GRANDS MAÎTRES</h1>
+              <h1 className="h1_titlePage_MF">LES GRANDS AUTEURS</h1>
               <ToggleSortedButton
                 active={!!themaData}
                 onClick={() => setOpenSideBar(!openSideBar)}

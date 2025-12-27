@@ -177,16 +177,16 @@ export default function BasicMenu() {
           onClick={handleClose}
           sx={{ justifyContent: "center" }}
         >
-          LES GRANDS MAÎTRES
+          LES GRANDS AUTEURS
         </MenuItem>
-        <MenuItem
+        {/* <MenuItem
           component={Link}
           to="/movie_thema_casting"
           onClick={handleClose}
           sx={{ justifyContent: "center" }}
         >
           LES STARS
-        </MenuItem>
+        </MenuItem> */}
         {/* ADMIN */}
         {isAdmin && (
           <>
