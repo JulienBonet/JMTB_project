@@ -148,7 +148,7 @@ function AdminCastingList() {
             <TextField
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Rechercher un film..."
+              placeholder="Rechercher un acteur..."
               variant="outlined"
               size="small"
               fullWidth

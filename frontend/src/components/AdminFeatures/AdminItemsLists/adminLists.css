@@ -125,7 +125,11 @@ tbody tr:nth-child(even) {
     display: none;
   }
   .admin_feat_tools_line {
+    flex-direction: column;
     justify-content: center;
+    width: 90%;
+  }
+  .Admin_search_bar_container{
     width: 90%;
   }
   /* Enveloppe de la table si possible */

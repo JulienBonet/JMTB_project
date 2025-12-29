@@ -154,7 +154,7 @@ function AdminCountryList() {
             <TextField
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Rechercher un film..."
+              placeholder="Rechercher un pays..."
               variant="outlined"
               size="small"
               fullWidth

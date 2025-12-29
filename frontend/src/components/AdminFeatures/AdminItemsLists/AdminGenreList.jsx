@@ -155,7 +155,7 @@ function AdminGenreList() {
             <TextField
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Rechercher un film..."
+              placeholder="Rechercher un genre..."
               variant="outlined"
               size="small"
               fullWidth
