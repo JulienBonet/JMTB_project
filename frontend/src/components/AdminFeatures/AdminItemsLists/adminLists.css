@@ -18,6 +18,7 @@
   align-items: center;
   width: 50%;
   justify-content: flex-end;
+  gap: 1rem;
 }
 .admin_search_bar {
   border: solid 1px gray;
