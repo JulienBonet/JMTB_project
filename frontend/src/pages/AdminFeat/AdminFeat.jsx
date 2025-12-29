@@ -55,7 +55,7 @@ function AdminFeat() {
         return <AdminFocusList />;
       case "USERS":
         return <AdminUserList />;
-      case "EXPORTS-STATS":
+      case "STATS":
         return <AdminExportStats />;
       default:
         return null;
@@ -75,7 +75,7 @@ function AdminFeat() {
     "TAGS",
     "FOCUS",
     "USERS",
-    "EXPORTS-STATS",
+    "STATS",
   ];
 
   return (
