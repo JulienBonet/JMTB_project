@@ -92,7 +92,7 @@ function Favorites() {
   // RENDER
   //------------------------------------------
   return (
-    <main className="Main_favoritesPage">
+    <main className="Main_movieFocusPage">
       {/* HEADER */}
       <section className="search_bar_container_MF">
         <div className="search_bar_content_selectefFocus_MF">
