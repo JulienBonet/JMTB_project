@@ -187,6 +187,16 @@ export default function BasicMenu() {
         >
           LES STARS
         </MenuItem> */}
+        <Divider sx={{ backgroundColor: "var(--color-02)", marginY: 1 }} />
+        {/* FAVORIS */}
+        <MenuItem
+          onClick={handleClose}
+          component={Link}
+          to="/movie_favorites"
+          sx={{ justifyContent: "center" }}
+        >
+          🧡 MA LISTE 🧡
+        </MenuItem>
         {/* ADMIN */}
         {isAdmin && (
           <>
