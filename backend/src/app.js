@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const express = require("express");
 const path = require("path");
 const cors = require("cors");
@@ -11,6 +12,7 @@ app.use(
     origin: ["http://localhost:5173", "https://jmdb.julienbonet.fr"],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   })
 );
 
@@ -37,7 +39,7 @@ app.get("*", (req, res) => {
 });
 
 // Error handler
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
   console.error("🔥 Server Error:", err.message);
   console.error("➡️ On route:", req.method, req.url);
   res.status(500).json({ error: err.message });

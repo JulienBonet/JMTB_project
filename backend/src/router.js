@@ -24,6 +24,7 @@ const userRouter = require("./routes/userRoutes");
 const authRouter = require("./routes/authRoutes");
 const tmdbRouter = require("./routes/tmdbRoutes");
 const exportStatsRouter = require("./routes/exportStatsRoutes");
+const favoriteRouter = require("./routes/favoriteRoutes");
 
 // Apply routes
 router.use(moviesRouter);
@@ -43,6 +44,7 @@ router.use(userRouter);
 router.use(tmdbRouter);
 router.use("/", exportStatsRouter);
 router.use("/auth", authRouter);
+router.use(favoriteRouter);
 
 /* ************************************************************************* */
 

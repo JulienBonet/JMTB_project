@@ -25,6 +25,7 @@ import MovieThema from "./pages/MovieFocus/MovieThema.jsx";
 import MovieFestival from "./pages/MovieFocus/MovieFestival.jsx";
 import MovieFocusDirectors from "./pages/MovieFocus/MovieFocusDirectors.jsx";
 import MovieFocusCasting from "./pages/MovieFocus/MovieFocusCasting.jsx";
+import MovieFavorite from "./pages/MovieFocus/MovieFavorite.jsx";
 
 // Déterminer si on est en mode développement
 const isDevelopment = import.meta.env.MODE === "development";
@@ -120,6 +121,10 @@ const router = createBrowserRouter([
             path: "movie_thema_casting",
             element: <MovieFocusCasting />,
             loader: () => fetch(`${backendUrl}/api/casting/focus/random`),
+          },
+          {
+            path: "movie_favorites",
+            element: <MovieFavorite />,
           },
 
           // ----------------

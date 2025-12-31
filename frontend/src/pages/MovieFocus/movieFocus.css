@@ -20,17 +20,16 @@
   justify-content: space-between;
   height: 5rem;
   padding: 0 2rem;
-  gap: min(1rem)
+  gap: min(1rem);
 }
-.thema_icon{
+.thema_icon {
   height: 3rem;
 }
-.SelectFocus_Title{
+.SelectFocus_Title {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 2rem;
-
 }
 .h1_titlePage_MF {
   font-family: var(--font-02);
@@ -63,3 +62,21 @@
   width: 90%;
   margin: 0 auto;
 }
+
+.NoFavoriteMessageContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 60vh;
+  text-align: center;
+  gap: 1.5rem;
+}
+
+.NoFavoriteMessageContainer p {
+  font-size: 3rem;
+  font-family: var(--font-02);
+  color: var(--color-03);
+}
+

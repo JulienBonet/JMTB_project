@@ -7,7 +7,12 @@ import "./movieThumbnail.css";
 import "./movieThumbnailMediaQueries.css";
 import MovieCard from "../MovieCard/MovieCard";
 
-function MovieThumbnail({ data, onDeleteMovie, onUpdateMovie }) {
+function MovieThumbnail({
+  data,
+  onDeleteMovie,
+  onUpdateMovie,
+  onFavoriteRemoved,
+}) {
   const origin = "movie";
   const CLOUDINARY_BASE_URL = import.meta.env.VITE_CLOUDINARY_BASE_URL;
 
@@ -72,6 +77,7 @@ function MovieThumbnail({ data, onDeleteMovie, onUpdateMovie }) {
                 origin={origin}
                 onUpdateMovie={onUpdateMovie}
                 onDeleteMovie={onDeleteMovie}
+                onFavoriteRemoved={onFavoriteRemoved}
               />
             </Container>
           </Box>

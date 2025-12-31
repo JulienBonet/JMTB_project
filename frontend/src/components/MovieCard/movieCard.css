@@ -115,7 +115,7 @@
   border-top: 1px dashed whitesmoke;
 }
 .divider_movie_cover_modify_button,
-.divider_movie_cover_modify_button2{
+.divider_movie_cover_modify_button2 {
   display: none;
 }
 
@@ -203,9 +203,20 @@
 
 .Item_Movie_Editing_Buttons {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   margin-top: 1rem;
   gap: 1rem;
+  align-items: center;
+}
+.Item_Movie_Editing_Buttons_2 {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1rem;
+  gap: 1rem;
+}
+.Item_Movie_Editing_Buttons_user {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .item_movie_mode_ico,
@@ -230,5 +241,3 @@
 .item_movie_done_ico {
   color: greenyellow;
 }
-
-

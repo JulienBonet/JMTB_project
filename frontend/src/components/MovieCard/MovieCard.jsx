@@ -43,6 +43,10 @@ import ListItemText from "@mui/material/ListItemText";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import MovieOutlinedIcon from "@mui/icons-material/MovieOutlined";
 import TvOutlinedIcon from "@mui/icons-material/TvOutlined";
+import IconButton from "@mui/material/IconButton";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import Tooltip from "@mui/material/Tooltip";
 import { useAuth } from "../../Context/AuthContext";
 import TransferList from "../AdminFeatures/AddNewMovie/MovieItemList";
 import {
@@ -86,12 +90,13 @@ import {
 function MovieCard({
   movie,
   origin,
-  homepage,
   closeModal,
   onUpdateMovie,
   onDeleteMovie,
+  onFavoriteRemoved,
 }) {
   const { isAdmin } = useAuth();
+  const { user } = useAuth();
   const backendUrl = `${import.meta.env.VITE_BACKEND_URL}`;
 
   // const DEFAULT_COVER = "00_cover_default.jpg";
@@ -239,6 +244,70 @@ function MovieCard({
 
   const handleTrailerReady = () => {
     setIsTrailerLoading(false); // Cache le loader quand la vidéo est prête
+  };
+
+  //-----------------------------------------------
+  // FAVORITE
+  //-----------------------------------------------
+
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  useEffect(() => {
+    if (!user || !movie?.id) return;
+
+    const fetchFavoriteStatus = async () => {
+      try {
+        const res = await fetch(
+          `${backendUrl}/api/favorites/${user.id}/${movie.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        const data = await res.json();
+        setIsFavorite(data.isFavorite);
+      } catch (err) {
+        console.error("Erreur récupération favori", err);
+      }
+    };
+
+    fetchFavoriteStatus();
+  }, [user?.id, movie?.id]);
+
+  const toggleFavorite = async () => {
+    if (!user) return;
+
+    try {
+      const method = isFavorite ? "DELETE" : "POST";
+
+      await fetch(`${backendUrl}/api/favorites`, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          movieId: movie.id,
+        }),
+      });
+
+      // Met à jour le cœur
+      setIsFavorite(!isFavorite);
+
+      // Rafraîchit la liste dans Favorites.jsx
+      onFavoriteRemoved?.();
+
+      // Affiche le toast approprié
+      toast[isFavorite ? "info" : "success"](
+        isFavorite ? "Retiré des favoris" : "Ajouté aux favoris ❤️"
+      );
+    } catch (err) {
+      console.error("Erreur favoris", err);
+      toast.error("Erreur favoris");
+    }
   };
 
   //-----------------------------------------------
@@ -2132,26 +2201,77 @@ function MovieCard({
           )}
           {/* END INFO BLOCK 2 */}
         </section>
+        {/* {user && (
+          <Tooltip
+            title={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+            placement="top"
+          >
+            <IconButton
+              onClick={toggleFavorite}
+              aria-label={
+                isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"
+              }
+              sx={{
+                color: isFavorite ? "error.main" : "text.secondary",
+                transition: "transform 0.15s ease, color 0.15s ease",
+                "&:hover": {
+                  color: "error.main",
+                  transform: "scale(1.15)",
+                },
+              }}
+            >
+              {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+            </IconButton>
+          </Tooltip>
+        )} */}
 
         {!isAdmin && <section style={{ height: "2rem" }} />}
 
         {/* EDITING BUTTON */}
-        {isAdmin && !homepage && (
+        {isAdmin ? (
           <section className="Movie_editing_btn-container">
-            <section className="Item_Movie_Editing_Buttons">
-              {isModify ? (
-                <>
-                  <UndoIcon
-                    className="item_movie_undo_ico"
-                    onClick={() => handleUndo()}
-                  />
-                  <DoneOutlineIcon
-                    className="item_movie_done_ico"
-                    onClick={handleOpenUpdateConfirm}
-                  />
-                </>
-              ) : (
-                <>
+            {isModify ? (
+              <section className="Item_Movie_Editing_Buttons">
+                <UndoIcon
+                  className="item_movie_undo_ico"
+                  onClick={() => handleUndo()}
+                />
+                <DoneOutlineIcon
+                  className="item_movie_done_ico"
+                  onClick={handleOpenUpdateConfirm}
+                />
+              </section>
+            ) : (
+              <section className="Item_Movie_Editing_Buttons">
+                <Tooltip
+                  title={
+                    isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"
+                  }
+                  placement="top"
+                >
+                  <IconButton
+                    onClick={toggleFavorite}
+                    size="small"
+                    className="item_movie_favorite_ico"
+                    aria-label={
+                      isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"
+                    }
+                    sx={{
+                      border: "solid 1px",
+                      borderRadius: "10px",
+                      padding: "0.3rem 0.5rem",
+                      color: isFavorite ? "error.main" : "whitesmoke",
+                      transition: "transform 0.15s ease, color 0.15s ease",
+                      "&:hover": {
+                        color: "error.main",
+                        transform: "scale(1.15)",
+                      },
+                    }}
+                  >
+                    {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                  </IconButton>
+                </Tooltip>
+                <div className="Item_Movie_Editing_Buttons_2">
                   <ModeIcon
                     className="item_movie_mode_ico"
                     onClick={() => isModifyMode()}
@@ -2160,59 +2280,88 @@ function MovieCard({
                     className="item_movie_delete_ico"
                     onClick={() => handleOpenDeleteConfirm(movieData.id)}
                   />
-                </>
-              )}
+                </div>
+              </section>
+            )}
 
-              <Dialog
-                open={isConfirmUpdateOpen}
-                onClose={handleCloseUpdateConfirm}
-              >
-                <DialogTitle>Confirmer la mise à jour</DialogTitle>
-                <DialogContent>
-                  <DialogContentText>
-                    Es-tu sûr de vouloir mettre à jour ce film ?
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={handleCloseUpdateConfirm} color="primary">
-                    Annuler
-                  </Button>
-                  <Button onClick={handleUpdateMovie} color="primary" autoFocus>
-                    Confirmer
-                  </Button>
-                </DialogActions>
-              </Dialog>
+            <Dialog
+              open={isConfirmUpdateOpen}
+              onClose={handleCloseUpdateConfirm}
+            >
+              <DialogTitle>Confirmer la mise à jour</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  Es-tu sûr de vouloir mettre à jour ce film ?
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleCloseUpdateConfirm} color="primary">
+                  Annuler
+                </Button>
+                <Button onClick={handleUpdateMovie} color="primary" autoFocus>
+                  Confirmer
+                </Button>
+              </DialogActions>
+            </Dialog>
 
-              <Dialog
-                open={isConfirmDeleteOpen}
-                onClose={handleCloseDeleteConfirm}
-              >
-                <DialogTitle>Confirmer Delete</DialogTitle>
-                <DialogContent>
-                  <DialogContentText>
-                    Es-tu sûr de vouloir effacer ce film ?
-                  </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={handleCloseDeleteConfirm} color="primary">
-                    Annuler
-                  </Button>
-                  <Button onClick={handleDeleteMovie} color="primary" autoFocus>
-                    Confirmer
-                  </Button>
-                </DialogActions>
-              </Dialog>
+            <Dialog
+              open={isConfirmDeleteOpen}
+              onClose={handleCloseDeleteConfirm}
+            >
+              <DialogTitle>Confirmer Delete</DialogTitle>
+              <DialogContent>
+                <DialogContentText>
+                  Es-tu sûr de vouloir effacer ce film ?
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={handleCloseDeleteConfirm} color="primary">
+                  Annuler
+                </Button>
+                <Button onClick={handleDeleteMovie} color="primary" autoFocus>
+                  Confirmer
+                </Button>
+              </DialogActions>
+            </Dialog>
 
-              <Backdrop
-                sx={(theme) => ({
-                  color: "#fff",
-                  zIndex: theme.zIndex.drawer + 1,
-                })}
-                open={isUpdating} // Contrôle l'affichage avec isUpdating
+            <Backdrop
+              sx={(theme) => ({
+                color: "#fff",
+                zIndex: theme.zIndex.drawer + 1,
+              })}
+              open={isUpdating} // Contrôle l'affichage avec isUpdating
+            >
+              <CircularProgress color="inherit" />
+            </Backdrop>
+          </section>
+        ) : (
+          <section className="Item_Movie_Editing_Buttons_user">
+            <Tooltip
+              title={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}
+              placement="top"
+            >
+              <IconButton
+                onClick={toggleFavorite}
+                size="small"
+                className="item_movie_favorite_ico"
+                aria-label={
+                  isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"
+                }
+                sx={{
+                  border: "solid 1px",
+                  borderRadius: "10px",
+                  padding: "0.3rem 0.5rem",
+                  color: isFavorite ? "error.main" : "var(--color-01)",
+                  transition: "transform 0.15s ease, color 0.15s ease",
+                  "&:hover": {
+                    color: "error.main",
+                    transform: "scale(1.15)",
+                  },
+                }}
               >
-                <CircularProgress color="inherit" />
-              </Backdrop>
-            </section>
+                {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+              </IconButton>
+            </Tooltip>
           </section>
         )}
         {/* END EDITING BUTTON */}

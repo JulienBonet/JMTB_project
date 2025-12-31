@@ -150,7 +150,12 @@ export default function navBar() {
               </MenuItem> */}
             </Menu>
           </div>
-
+          {/* Bouton FAVORIES */}
+          <Link to="movie_favorites">
+            <Button variant="outlined" color="JmdbColorNav">
+              MA LISTE
+            </Button>
+          </Link>
           {/* Bouton ADMIN */}
           {isAdmin && (
             <Link to="/admin_feat">
