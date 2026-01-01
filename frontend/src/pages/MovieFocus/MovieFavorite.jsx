@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Container } from "@mui/material";
+import { Container, CircularProgress, Box } from "@mui/material";
 import { useAuth } from "../../Context/AuthContext";
 import MovieThumbnail from "../../components/MovieThumbnail/MovieThumbnail";
 import ToggleSortedButton from "../../components/ToggleSortedBtn/ToggleSortedButton";
@@ -14,11 +14,13 @@ function Favorites() {
   const [openSideBar, setOpenSideBar] = useState(false);
   const [sortMoviesAsc, setSortMoviesAsc] = useState(true);
   const [sortMoviesYearAsc, setSortMoviesYearAsc] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const origin = "movies";
 
   const fetchFavorites = async () => {
+    setLoading(true);
     try {
       const res = await fetch(`${backendUrl}/api/favorites`, {
         headers: {
@@ -35,6 +37,8 @@ function Favorites() {
       setMovies(data);
     } catch (err) {
       console.error("Fetch favorites failed", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -128,11 +132,26 @@ function Favorites() {
         />
 
         <Container maxWidth={false}>
-          {movies.length === 0 ? (
+          {loading && (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                minHeight: "40vh",
+              }}
+            >
+              <CircularProgress />
+            </Box>
+          )}
+
+          {!loading && movies.length === 0 && (
             <div className="NoFavoriteMessageContainer">
               <p>AUCUN FILM DANS VOTRE LISTE</p>
             </div>
-          ) : (
+          )}
+
+          {!loading && movies.length > 0 && (
             <div className="Movies_thumbnails_container_MF">
               {movies.map((movie) => (
                 <MovieThumbnail
