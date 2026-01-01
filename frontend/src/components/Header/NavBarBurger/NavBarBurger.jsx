@@ -173,6 +173,14 @@ export default function BasicMenu() {
         </MenuItem>
         <MenuItem
           component={Link}
+          to="/movie_thema_collection"
+          onClick={handleClose}
+          sx={{ justifyContent: "center" }}
+        >
+          COLLECTIONS
+        </MenuItem>
+        <MenuItem
+          component={Link}
           to="/movie_thema_directors"
           onClick={handleClose}
           sx={{ justifyContent: "center" }}
