@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Container } from "@mui/material";
+import { useAuth } from "../../Context/AuthContext";
 import MovieThumbnail from "../../components/MovieThumbnail/MovieThumbnail";
 import ToggleSortedButton from "../../components/ToggleSortedBtn/ToggleSortedButton";
 import SideActionBar from "../../components/StickySideBar/StickySideBar";
@@ -8,6 +9,7 @@ import "./movieFocus.css";
 import "./movieFocusMediaqueries.css";
 
 function Favorites() {
+  const { token, user, isAuthenticated } = useAuth();
   const [movies, setMovies] = useState([]);
   const [openSideBar, setOpenSideBar] = useState(false);
   const [sortMoviesAsc, setSortMoviesAsc] = useState(true);
@@ -17,21 +19,29 @@ function Favorites() {
   const origin = "movies";
 
   const fetchFavorites = async () => {
-    const res = await fetch(`${backendUrl}/api/favorites`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-    });
+    try {
+      const res = await fetch(`${backendUrl}/api/favorites`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-    if (!res.ok) return;
+      if (!res.ok) {
+        console.error("Erreur fetch favorites");
+        return;
+      }
 
-    const data = await res.json();
-    setMovies(data);
+      const data = await res.json();
+      setMovies(data);
+    } catch (err) {
+      console.error("Fetch favorites failed", err);
+    }
   };
 
   useEffect(() => {
+    if (!isAuthenticated || !token || !user) return;
     fetchFavorites();
-  }, []);
+  }, [isAuthenticated, token, user?.id]);
 
   //------------------------------------------
   // SORTED MOVIES
