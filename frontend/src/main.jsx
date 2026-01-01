@@ -23,6 +23,7 @@ import AddNewMovie from "./components/AdminFeatures/AddNewMovie/AddNewMovie.jsx"
 import MovieInfosEntrance from "./components/AdminFeatures/AddNewMovie/MovieInfosEntrance.jsx";
 import MovieThema from "./pages/MovieFocus/MovieThema.jsx";
 import MovieFestival from "./pages/MovieFocus/MovieFestival.jsx";
+import MovieCollection from "./pages/MovieFocus/MovieCollection.jsx";
 import MovieFocusDirectors from "./pages/MovieFocus/MovieFocusDirectors.jsx";
 import MovieFocusCasting from "./pages/MovieFocus/MovieFocusCasting.jsx";
 import MovieFavorite from "./pages/MovieFocus/MovieFavorite.jsx";
@@ -111,6 +112,11 @@ const router = createBrowserRouter([
             path: "movie_thema_festival",
             element: <MovieFestival />,
             loader: () => fetch(`${backendUrl}/api/focus/2`),
+          },
+          {
+            path: "movie_thema_collection",
+            element: <MovieCollection />,
+            loader: () => fetch(`${backendUrl}/api/focus/3`),
           },
           {
             path: "movie_thema_directors",

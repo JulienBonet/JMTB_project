@@ -16,6 +16,7 @@ import Checkbox from "@mui/material/Checkbox";
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import TextField from "@mui/material/TextField";
+import MenuItem from "@mui/material/MenuItem";
 import CreateItemCard from "../CreateItemCard/CreateItemCard";
 
 function not(a, b) {
@@ -133,6 +134,8 @@ export default function TransferList({
 
   // État pour la barre de recherche dans la liste de droite
   const [searchTermRight, setSearchTermRight] = useState("");
+  const [focusCategory, setFocusCategory] = useState("all");
+  console.info("focusCategory", focusCategory);
 
   // Modal createdItemCard
   const [showModal, setShowModal] = useState(false);
@@ -206,15 +209,36 @@ export default function TransferList({
     onSelectedItemsUpdate(left.concat(rightChecked));
   };
 
-  // Fonction pour filtrer les items de droite en fonction de la recherche
+  // Fonction pour filtrer les items de droite en fonction de la recherche ou focus
 
   const cleanedRight = (right || []).filter(
     (item) => item && item.name && item.name.trim() !== ""
   );
 
-  const filteredRightItems = cleanedRight.filter((item) =>
-    item.name.toLowerCase().includes(searchTermRight.toLowerCase())
-  );
+  const focusCategories = React.useMemo(() => {
+    if (dataType !== "focus") return [];
+
+    const categories = cleanedRight
+      .map((item) => item.categoryName) // <- ici
+      .filter(Boolean);
+
+    return ["all", ...new Set(categories)];
+  }, [cleanedRight, dataType]);
+
+  const filteredRightItems = cleanedRight.filter((item) => {
+    const matchSearch = item.name
+      .toLowerCase()
+      .includes(searchTermRight.toLowerCase());
+
+    if (dataType !== "focus") {
+      return matchSearch;
+    }
+
+    const matchCategory =
+      focusCategory === "all" || item.categoryName === focusCategory; // <- ici
+
+    return matchSearch && matchCategory;
+  });
 
   // Fonction pour gérer l'ajout d'un nouvel élément
   const handleNewItem = async (name) => {
@@ -305,7 +329,6 @@ export default function TransferList({
       </FixedSizeList>
     </Paper>
   );
-
   return (
     <>
       <Grid
@@ -368,8 +391,7 @@ export default function TransferList({
               sx={{ my: 0.5 }}
               variant="outlined"
               size="small"
-              // onClick={() => openModal()}
-              onClick={() => openModal(dataType)} // <--- ici on passe dataType
+              onClick={() => openModal(dataType)}
               aria-label="add new item"
             >
               +
@@ -386,7 +408,7 @@ export default function TransferList({
             </Button>
           </Grid>
         </Grid>
-        {/* Liste de droite */}
+        {/* Liste de droite
         <Grid
           item
           sx={{
@@ -405,6 +427,89 @@ export default function TransferList({
           {customList(filteredRightItems, true, searchTermRight, (e) =>
             setSearchTermRight(e.target.value)
           )}
+        </Grid> */}
+        {/* Liste de droite */}
+        <Grid
+          item
+          sx={{
+            flexShrink: 1,
+            flexGrow: 1,
+            minWidth: { xs: "90%", sm: "40%", md: "40%", lg: "350px" },
+            maxWidth: 500,
+            display: "flex",
+            justifyContent: "center",
+            paddingRight: "10px",
+            "@media (max-width: 768px)": {
+              paddingRight: 0,
+            },
+          }}
+        >
+          <Paper
+            sx={{
+              width: 350,
+              height: { listHeight },
+              overflow: "auto",
+              overflowX: "hidden",
+              overflowY: "hidden",
+              border: "solid 1px var(--color-04)",
+            }}
+          >
+            {/* Barre de filtre uniquement pour focus */}
+            {dataType === "focus" && (
+              <TextField
+                select
+                label="Focus category"
+                value={focusCategory}
+                onChange={(e) => setFocusCategory(e.target.value)}
+                sx={{ m: 1, width: "95%" }}
+              >
+                {focusCategories.map((cat) => (
+                  <MenuItem key={cat} value={cat}>
+                    {cat === "all" ? "Toutes les catégories" : cat}
+                  </MenuItem>
+                ))}
+              </TextField>
+            )}
+
+            {/* Search */}
+            <TextField
+              sx={{ m: 1, width: "95%" }}
+              fullWidth
+              label="Search"
+              variant="outlined"
+              value={searchTermRight}
+              onChange={(e) => setSearchTermRight(e.target.value)}
+            />
+
+            {/* Liste des items */}
+            <FixedSizeList
+              height={listHeight}
+              width={350}
+              itemCount={filteredRightItems.length}
+              itemSize={50}
+              style={{ overflowX: "hidden", overflowY: "auto" }}
+            >
+              {({ index, style }) => (
+                <ListItemButton
+                  key={index}
+                  role="listitem"
+                  onClick={handleToggle(filteredRightItems[index])}
+                  style={style}
+                >
+                  <ListItemIcon>
+                    <Checkbox
+                      checked={
+                        checked.indexOf(filteredRightItems[index]) !== -1
+                      }
+                      tabIndex={-1}
+                      disableRipple
+                    />
+                  </ListItemIcon>
+                  <ListItemText primary={filteredRightItems[index].name} />
+                </ListItemButton>
+              )}
+            </FixedSizeList>
+          </Paper>
         </Grid>
       </Grid>
       <Modal open={showModal} onClose={closeModal} className="Movie_Modal">

@@ -133,6 +133,13 @@ export default function navBar() {
               >
                 FESTIVALS
               </MenuItem>
+              <MenuItem
+                component={Link}
+                to="/movie_thema_collection"
+                onClick={() => setAnchorCine(null)}
+              >
+                COLLECTIONS
+              </MenuItem>
 
               <MenuItem
                 component={Link}
