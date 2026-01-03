@@ -11,6 +11,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(
     JSON.parse(localStorage.getItem("user")) || null
   );
+  const [authReady, setAuthReady] = useState(false);
 
   const isAuthenticated = !!token;
   const isAdmin = user?.isAdmin === 1 || user?.isAdmin === true;
@@ -67,6 +68,10 @@ export function AuthProvider({ children }) {
     };
   }, [token]);
 
+  useEffect(() => {
+    setAuthReady(true);
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
@@ -74,6 +79,7 @@ export function AuthProvider({ children }) {
         user,
         isAuthenticated,
         isAdmin,
+        authReady,
         login,
         logout,
       }}

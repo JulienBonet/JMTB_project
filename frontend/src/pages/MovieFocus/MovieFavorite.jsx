@@ -9,7 +9,7 @@ import "./movieFocus.css";
 import "./movieFocusMediaqueries.css";
 
 function Favorites() {
-  const { token, user, isAuthenticated } = useAuth();
+  const { token, user, isAuthenticated, authReady } = useAuth();
   const [movies, setMovies] = useState([]);
   const [openSideBar, setOpenSideBar] = useState(false);
   const [sortMoviesAsc, setSortMoviesAsc] = useState(true);
@@ -20,6 +20,8 @@ function Favorites() {
   const origin = "movies";
 
   const fetchFavorites = async () => {
+    if (!token) return;
+
     setLoading(true);
     try {
       const res = await fetch(`${backendUrl}/api/favorites`, {
@@ -43,16 +45,14 @@ function Favorites() {
   };
 
   useEffect(() => {
-    if (!isAuthenticated || !token || !user) return;
+    if (!authReady || !isAuthenticated || !token || !user) return;
     fetchFavorites();
-  }, [isAuthenticated, token, user?.id]);
+  }, [authReady, isAuthenticated, token, user?.id]);
 
   //------------------------------------------
   // SORTED MOVIES
   //------------------------------------------
-  const authHeaders = {
-    Authorization: `Bearer ${localStorage.getItem("token")}`,
-  };
+  const authHeaders = token ? { Authorization: `Bearer ${token}` } : {};
 
   const handleSortedAlphabeticalMovies = async () => {
     const url = sortMoviesAsc
