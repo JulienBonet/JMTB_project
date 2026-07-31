@@ -25,12 +25,12 @@ JMDB (Julius Movie DataBase) is a personal movie library manager that lets you i
 
 ### > samples
 
-<img src="https://julienbonet.fr/julius_git/git_Jmdb_01.jpg" alt="JMDB illustration"/>
-<img src="https://julienbonet.fr/julius_git/git_Jmdb_02.jpg" alt="JMDB illustration"/>
-<img src="https://julienbonet.fr/julius_git/git_Jmdb_03.jpg" alt="JMDB illustration"/>
-<img src="https://julienbonet.fr/julius_git/git_Jmdb_04.jpg" alt="JMDB illustration"/>
-<img src="https://julienbonet.fr/julius_git/git_Jmdb_05.jpg" alt="JMDB illustration"/>
-<img src="https://julienbonet.fr/julius_git/git_Jmdb_06.jpg" alt="JMDB illustration"/>
-<img src="https://julienbonet.fr/julius_git/git_Jmdb_07.jpg" alt="JMDB illustration"/>
-<img src="https://julienbonet.fr/julius_git/git_Jmdb_08.jpg" alt="JMDB illustration"/>
-<img src="https://julienbonet.fr/julius_git/git_Jmdb_09.jpg" alt="JMDB illustration"/>
+<img src="https://res.cloudinary.com/upynf7jw/image/upload/v1785534623/git_Jmdb_01_iysbgj.jpg" alt="JMDB illustration"/>
+<img src="https://res.cloudinary.com/upynf7jw/image/upload/v1785534630/git_Jmdb_02_mkdqhy.jpg" alt="JMDB illustration"/>
+<img src="https://res.cloudinary.com/upynf7jw/image/upload/v1785534631/git_Jmdb_03_xqr1ao.jpg" alt="JMDB illustration"/>
+<img src="https://res.cloudinary.com/upynf7jw/image/upload/v1785534624/git_Jmdb_04_hpjvar.jpg" alt="JMDB illustration"/>
+<img src="https://res.cloudinary.com/upynf7jw/image/upload/v1785534625/git_Jmdb_05_c2tvqx.jpg" alt="JMDB illustration"/>
+<img src="https://res.cloudinary.com/upynf7jw/image/upload/v1785534627/git_Jmdb_06_nkuydx.jpg" alt="JMDB illustration"/>
+<img src="https://res.cloudinary.com/upynf7jw/image/upload/v1785534628/git_Jmdb_07_k5nv5f.jpg" alt="JMDB illustration"/>
+<img src="https://res.cloudinary.com/upynf7jw/image/upload/v1785534629/git_Jmdb_08_emvomr.jpg" alt="JMDB illustration"/>
+<img src="https://res.cloudinary.com/upynf7jw/image/upload/v1785534632/git_Jmdb_09_rs4drp.jpg" alt="JMDB illustration"/>
